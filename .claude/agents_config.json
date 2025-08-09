@@ -231,22 +231,39 @@
     "code_review": {
       "participants": ["author", "relevant_expert", "alex"],
       "process": "sequential_review_with_challenges",
-      "approval_threshold": 2
+      "approval_threshold": 2,
+      "max_rounds": 3,
+      "timeout_seconds": 90
     },
     "architecture_decision": {
       "participants": ["alex", "jordan", "relevant_experts"],
       "process": "consensus_with_lead_override",
-      "documentation_required": true
+      "documentation_required": true,
+      "innovation_budget": 0.2
     },
     "risk_assessment": {
       "participants": ["quinn", "alex", "strategy_owner"],
       "process": "conservative_veto_power",
-      "escalation": "immediate"
+      "escalation": "immediate",
+      "veto_override": "ceo_only"
     },
     "performance_optimization": {
       "participants": ["jordan", "morgan", "sam"],
       "process": "data_driven_consensus",
-      "benchmark_required": true
+      "benchmark_required": true,
+      "fallback": "alex_decides"
+    },
+    "deadlock_resolution": {
+      "max_debate_rounds": 3,
+      "circular_detection": true,
+      "escalation_path": ["data_comparison", "prototype_test", "alex_decision", "user_intervention"],
+      "timeout_per_round": 30
+    },
+    "innovation_protection": {
+      "experimental_budget": 0.2,
+      "protected_time": "fridays",
+      "failure_tolerance": 3,
+      "fast_track_threshold": "low_risk"
     }
   },
   "challenge_mechanisms": {
