@@ -1,0 +1,270 @@
+# Bot3 Enhanced Project Configuration
+version: 2.0
+project: bot3
+type: crypto_trading_platform
+remote_host: 192.168.100.64
+
+# Project Structure Enforcement
+structure:
+  enforce: true
+  src:
+    core:
+      description: "Core trading logic and main loop"
+      owner: alex
+    strategies:
+      description: "Trading strategies implementation"
+      owner: sam
+    indicators:
+      description: "Technical analysis indicators"
+      owner: sam
+      validation: no_fake_implementations
+    ml:
+      description: "Machine learning models"
+      owner: morgan
+      validation: no_overfitting
+    utils:
+      description: "Utility functions and helpers"
+      owner: jordan
+  
+  scripts:
+    location: scripts/
+    categories:
+      deploy:
+        prefix: deploy_
+        description: "Deployment scripts"
+      fix:
+        prefix: fix_
+        description: "Fix and recovery scripts"
+      test:
+        prefix: test_
+        description: "Testing scripts"
+      validate:
+        prefix: validate_
+        description: "Validation scripts"
+      backup:
+        prefix: backup_
+        description: "Backup scripts"
+
+# Git Configuration
+git:
+  enforce_format: true
+  commit_types:
+    - feat     # New feature
+    - fix      # Bug fix
+    - docs     # Documentation
+    - style    # Formatting
+    - refactor # Code restructuring
+    - test     # Testing
+    - perf     # Performance
+    - chore    # Maintenance
+  
+  branch_protection:
+    main:
+      require_review: true
+      run_tests: true
+      check_fakes: true
+    production:
+      require_approval: [alex, quinn]
+      full_test_suite: true
+  
+  hooks:
+    pre_commit:
+      - name: "Run unit tests"
+        command: "pytest tests/unit/"
+      - name: "Check code format"
+        command: "black --check src/"
+      - name: "Validate no fakes"
+        command: "python scripts/validate_no_fakes.py"
+    
+    pre_push:
+      - name: "Full test suite"
+        command: "pytest tests/"
+      - name: "Risk validation"
+        command: "python scripts/check_risk_limits.py"
+
+# Deployment Configuration
+deployment:
+  environments:
+    development:
+      host: localhost
+      port: 8000
+      database: bot3_dev
+      auto_deploy: true
+    
+    staging:
+      host: 192.168.100.64
+      port: 8001
+      database: bot3_staging
+      auto_deploy: true
+      health_check: true
+    
+    production:
+      host: 192.168.100.64
+      port: 8000
+      database: bot3_prod
+      manual_approval: true
+      backup_required: true
+      health_check: true
+      monitoring_period: 3600  # 1 hour
+  
+  docker:
+    registry: "hamster/bot3"
+    build_args:
+      - "--no-cache"
+      - "--compress"
+    multi_stage: true
+    scan_vulnerabilities: true
+
+# Testing Requirements
+testing:
+  coverage:
+    minimum: 80%
+    exclude:
+      - "*/tests/*"
+      - "*/migrations/*"
+  
+  unit_tests:
+    location: tests/unit/
+    parallel: true
+    timeout: 30
+    
+  integration_tests:
+    location: tests/integration/
+    services:
+      - postgresql
+      - redis
+      - mock_exchange
+    timeout: 120
+  
+  backtesting:
+    required_before_production: true
+    minimum_sharpe: 1.5
+    maximum_drawdown: 0.15
+    minimum_trades: 100
+
+# Monitoring & Alerts
+monitoring:
+  prometheus:
+    scrape_interval: 15s
+    retention: 30d
+    
+  metrics:
+    latency:
+      p50: 50ms
+      p99: 100ms
+      p999: 200ms
+    
+    error_rate:
+      threshold: 0.001  # 0.1%
+      window: 5m
+    
+    business:
+      daily_profit:
+        minimum: 0.5%
+        alert: -1%
+      sharpe_ratio:
+        minimum: 1.5
+        target: 2.0
+      max_drawdown:
+        warning: 10%
+        critical: 15%
+
+# Agent Validation Rules
+agents:
+  sam:
+    auto_validate:
+      - no_fake_implementations
+      - mathematical_correctness
+      - indicator_accuracy
+    rejection_patterns:
+      - "price * 0.02"
+      - "random.choice"
+      - "return 0  # TODO"
+      - "pass  # implement later"
+  
+  morgan:
+    ml_requirements:
+      train_test_split: [0.7, 0.2, 0.1]
+      cross_validation_folds: 5
+      max_overfit_gap: 0.05
+    required_outputs:
+      - confusion_matrix
+      - feature_importance
+      - learning_curves
+  
+  quinn:
+    risk_limits:
+      position_size:
+        max_single: 0.02  # 2%
+        max_total: 0.10   # 10%
+      leverage:
+        max_allowed: 3
+        default: 1
+      stop_loss:
+        required: true
+        max_distance: 0.05  # 5%
+    veto_triggers:
+      - no_stop_loss
+      - leverage_exceeded
+      - position_too_large
+  
+  jordan:
+    performance:
+      build_time: 120s
+      deploy_time: 300s
+      startup_time: 10s
+      health_check: 5s
+    infrastructure:
+      min_replicas: 2
+      max_replicas: 10
+      cpu_limit: 2000m
+      memory_limit: 4Gi
+
+# Maintenance Schedule
+maintenance:
+  automated_tasks:
+    - name: "Database vacuum"
+      schedule: "0 2 * * 0"  # Sunday 2 AM
+      command: "scripts/maintenance/vacuum_db.sh"
+    
+    - name: "Log rotation"
+      schedule: "0 0 * * *"  # Daily midnight
+      command: "scripts/maintenance/rotate_logs.sh"
+    
+    - name: "Cache cleanup"
+      schedule: "0 3 * * *"  # Daily 3 AM
+      command: "scripts/maintenance/clear_cache.sh"
+    
+    - name: "Backup database"
+      schedule: "0 1 * * *"  # Daily 1 AM
+      command: "scripts/backup/backup_db.sh"
+
+# Security
+security:
+  secrets_management:
+    provider: "environment"
+    rotation_days: 90
+  
+  api_keys:
+    never_commit: true
+    use_env_file: true
+    encrypt_at_rest: true
+  
+  network:
+    allowed_ips:
+      - 192.168.100.0/24
+      - 127.0.0.1
+    rate_limiting:
+      requests_per_minute: 60
+      burst: 100
+
+# Innovation Budget
+innovation:
+  time_allocation: 0.20  # 20% for experiments
+  protected_day: "friday"
+  failure_budget: 3  # failures per month
+  sandbox_requirements:
+    - paper_trading_only
+    - isolated_environment
+    - no_production_data
+    - time_boxed
