@@ -71,17 +71,48 @@ bot3/
 - WebSocket streaming
 - Unified Binance/Coinbase interface
 
-## Team Notes
+## Multi-Agent System
 
-This project uses a virtual team approach as configured in `.claude_project`:
-- Alex: Strategic Architect
-- Morgan: ML/AI Specialist
-- Sam: Strategy & TA Expert
-- Jordan: DevOps & Performance
-- Casey: Exchange Specialist
-- Riley: UI/UX Expert
-- Quinn: Risk Manager
-- Avery: Data Pipeline Specialist
+This project uses an advanced multi-agent system where virtual team members can interact, challenge each other, and collaborate:
+
+### Agent Roles & Capabilities
+- **Alex**: Strategic Architect (Team Lead, can override all decisions)
+- **Morgan**: ML/AI Specialist (Can challenge TA approaches with ML alternatives)
+- **Sam**: Strategy & TA Expert (Enforces no-fake-implementations rule)
+- **Quinn**: Risk Manager (Has veto power on risk-related decisions)
+- **Jordan**: DevOps & Performance (Ensures production readiness)
+- **Casey**: Exchange Specialist (Handles market connectivity)
+- **Riley**: UI/UX Expert (Focuses on user experience)
+- **Avery**: Data Pipeline Specialist (Ensures data quality)
+
+### How Agents Interact
+
+1. **Code Review**: Multiple agents review and challenge code
+2. **Decision Making**: Weighted voting with veto powers
+3. **Quality Gates**: Each agent enforces domain-specific standards
+4. **Challenge Mechanism**: Agents can challenge each other's approaches
+
+### Using the Agent System
+
+```bash
+# Single agent mode
+"Morgan, implement an ML model for price prediction"
+
+# Multi-agent review
+"I need Sam, Morgan, and Quinn to review this strategy"
+
+# Challenge mode
+"Sam, implement RSI, then have Morgan challenge your approach"
+
+# Full team meeting
+"All agents: discuss the architecture for order execution"
+```
+
+### Configuration Files
+- `.claude_project` - Basic persona definitions
+- `.claude/agents_config.json` - Advanced interaction rules
+- `.claude/AGENT_INTERACTION_GUIDE.md` - Complete usage guide
+- `.claude/agent_interaction_example.py` - Working demonstration
 
 ## Status
 

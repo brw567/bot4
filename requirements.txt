@@ -5,14 +5,14 @@ aiohttp==3.9.5
 uvloop==0.21.0
 
 # Exchange Connectivity
-ccxt==4.5.10
+ccxt==4.4.99
 websockets==15.0.1
 websocket-client==1.8.0
 
 # Technical Analysis
 ta==0.10.2
 pandas-ta==0.3.14b0
-talib-binary==0.4.26
+talib-binary
 
 # Machine Learning
 scikit-learn==1.4.0
