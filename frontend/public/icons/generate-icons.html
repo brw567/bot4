@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Icon Generator</title>
+</head>
+<body>
+    <h1>PWA Icon Generator</h1>
+    <p>This page generates placeholder icons for the PWA. In production, replace with actual logo.</p>
+    
+    <div id="icons"></div>
+    
+    <script>
+        const sizes = [16, 32, 72, 96, 128, 144, 152, 192, 384, 512];
+        const container = document.getElementById('icons');
+        
+        sizes.forEach(size => {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#3B82F6';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('B2', size / 2, size / 2);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL();
+            link.textContent = `Download ${size}x${size}`;
+            link.style.display = 'block';
+            link.style.margin = '10px';
+            
+            container.appendChild(canvas);
+            container.appendChild(link);
+        });
+    </script>
+</body>
+</html>

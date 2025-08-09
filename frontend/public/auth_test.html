@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bot2 Authentication Test</h1>
+    
+    <div>
+        <h2>Step 1: Login</h2>
+        <p>Username: demo, Password: demo</p>
+        <button onclick="login()">Login</button>
+        <div id="loginStatus"></div>
+    </div>
+    
+    <div>
+        <h2>Step 2: Test API Endpoints</h2>
+        <button onclick="testEndpoint('/api/system/health')" disabled id="testHealth">Test System Health</button>
+        <button onclick="testEndpoint('/api/monitoring/exchanges')" disabled id="testExchanges">Test Exchanges</button>
+        <button onclick="testEndpoint('/api/trades')" disabled id="testTrades">Test Trades</button>
+        <div id="apiStatus"></div>
+    </div>
+    
+    <div>
+        <h2>Current Token:</h2>
+        <pre id="tokenDisplay">Not logged in</pre>
+    </div>
+
+    <script>
+        let authToken = null;
+        
+        async function login() {
+            const formData = new FormData();
+            formData.append('username', 'demo');
+            formData.append('password', 'demo');
+            
+            try {
+                const response = await fetch('http://localhost:8000/token', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    
+                    // Store in localStorage like the real app
+                    localStorage.setItem('token', authToken);
+                    
+                    document.getElementById('loginStatus').innerHTML = 
+                        '<div class="status success">✅ Login successful!</div>';
+                    document.getElementById('tokenDisplay').textContent = authToken;
+                    
+                    // Enable test buttons
+                    document.getElementById('testHealth').disabled = false;
+                    document.getElementById('testExchanges').disabled = false;
+                    document.getElementById('testTrades').disabled = false;
+                } else {
+                    document.getElementById('loginStatus').innerHTML = 
+                        `<div class="status error">❌ Login failed: ${response.status}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('loginStatus').innerHTML = 
+                    `<div class="status error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testEndpoint(endpoint) {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:8000${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                const statusDiv = document.getElementById('apiStatus');
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = 
+                        `<div class="status success">✅ ${endpoint} - Status: ${response.status}</div>
+                         <pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    statusDiv.innerHTML = 
+                        `<div class="status error">❌ ${endpoint} - Status: ${response.status}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('apiStatus').innerHTML = 
+                    `<div class="status error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Check if token exists on page load
+        window.onload = function() {
+            const storedToken = localStorage.getItem('token');
+            if (storedToken) {
+                authToken = storedToken;
+                document.getElementById('tokenDisplay').textContent = authToken;
+                document.getElementById('loginStatus').innerHTML = 
+                    '<div class="status success">✅ Using stored token</div>';
+                document.getElementById('testHealth').disabled = false;
+                document.getElementById('testExchanges').disabled = false;
+                document.getElementById('testTrades').disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

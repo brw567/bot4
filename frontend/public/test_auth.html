@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Auth - Bot2</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { margin: 10px 5px; padding: 10px; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Test Authentication Flow</h1>
+    
+    <button onclick="testLogin()">1. Test Login</button>
+    <button onclick="testAuthAPI()">2. Test Authenticated API Call</button>
+    <button onclick="goToDashboard()">3. Go to Dashboard</button>
+    
+    <div id="result"></div>
+    
+    <script>
+    async function testLogin() {
+        const resultDiv = document.getElementById('result');
+        
+        try {
+            // Test login
+            const formData = new FormData();
+            formData.append('username', 'demo');
+            formData.append('password', 'demo');
+            
+            const response = await fetch('/token', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('token', data.access_token);
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Login Successful!</h3>
+                        <p>Token saved to localStorage</p>
+                        <pre>${data.access_token}</pre>
+                        <p>Now click "Test Authenticated API Call" to verify the token works</p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="error">Login failed: ${JSON.stringify(data)}</div>`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        }
+    }
+    
+    async function testAuthAPI() {
+        const resultDiv = document.getElementById('result');
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            resultDiv.innerHTML = '<div class="error">No token found. Please login first.</div>';
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/status', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ API Call Successful!</h3>
+                        <p>Authentication is working correctly</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <p>You can now go to the dashboard</p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="error">API call failed: ${response.status} - ${JSON.stringify(data)}</div>`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        }
+    }
+    
+    function goToDashboard() {
+        window.location.href = 'http://localhost:5173';
+    }
+    </script>
+</body>
+</html>

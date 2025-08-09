@@ -1,0 +1,91 @@
+# Core Dependencies
+python-dotenv==1.0.0
+asyncio==3.4.3
+aiohttp==3.9.5
+uvloop==0.21.0
+
+# Exchange Connectivity
+ccxt==4.5.10
+websockets==15.0.1
+websocket-client==1.8.0
+
+# Technical Analysis
+ta==0.10.2
+pandas-ta==0.3.14b0
+talib-binary==0.4.26
+
+# Machine Learning
+scikit-learn==1.4.0
+lightgbm==4.6.0
+optuna==4.0.0
+joblib==1.4.2
+
+# Data Processing
+pandas==2.2.3
+numpy==1.26.4
+scipy==1.12.0
+
+# Database
+psycopg2-binary==2.9.10
+redis==5.2.1
+sqlalchemy==2.0.35
+
+# API Framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+
+# Monitoring
+prometheus-client==0.22.1
+grafana-api==1.0.3
+
+# Utilities
+python-dateutil==2.9.0
+pytz==2024.2
+requests==2.32.3
+httpx==0.28.1
+
+# Development
+pytest==8.3.4
+pytest-asyncio==0.25.0
+pytest-cov==6.0.0
+black==24.10.0
+flake8==7.1.1
+mypy==1.13.0
+
+# Logging
+loguru==0.7.3
+structlog==24.4.0
+
+# Configuration
+pyyaml==6.0.2
+configparser==7.1.0
+
+# Security
+cryptography==44.0.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Performance
+cython==3.0.11
+numba==0.61.0
+
+# Backtesting
+backtrader==1.9.78.123
+vectorbt==0.26.2
+
+# Additional ML
+xgboost==2.1.3
+catboost==1.2.8
+
+# Data Validation
+marshmallow==3.24.0
+cerberus==1.3.6
+
+# Task Queue (optional)
+celery==5.4.0
+redis==5.2.1
+
+# Rate Limiting
+aioredis==2.0.1
+aiocache==0.12.3

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot2 Trading - Offline</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1F2937;
+            color: #F9FAFB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+        .icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            opacity: 0.5;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #F3F4F6;
+        }
+        p {
+            font-size: 1.125rem;
+            line-height: 1.5;
+            color: #9CA3AF;
+            margin-bottom: 2rem;
+        }
+        .retry-button {
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .retry-button:hover {
+            background-color: #2563EB;
+        }
+        .status {
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a5 5 0 010-7.072m0 0L6.343 6.343m0 0L3 3m3.343 3.343A9 9 0 015.636 18.364" />
+        </svg>
+        
+        <h1>You're Offline</h1>
+        <p>
+            The Bot2 Trading System requires an internet connection to fetch real-time market data and execute trades. 
+            Please check your connection and try again.
+        </p>
+        
+        <button class="retry-button" onclick="window.location.reload()">
+            Try Again
+        </button>
+        
+        <div class="status">
+            <p>Last cached data may be available in read-only mode.</p>
+        </div>
+    </div>
+
+    <script>
+        // Check connection status periodically
+        setInterval(() => {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }, 5000);
+
+        // Listen for connection changes
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>

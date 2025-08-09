@@ -1,0 +1,80 @@
+// Type definitions for Bot2 Monitoring Dashboard
+
+export interface MetricData {
+  pair: string;
+  volatility: number;
+  rsi: number;
+  adx: number;
+  orderImbalance: number;
+  openInterest: number;
+  fundingRate: number;
+  change: number;
+  regime: 'bull' | 'bear' | 'neutral';
+  mlConfidence: number;
+  winRate: number;
+  activeStrategy: string;
+  lastTrade?: Trade;
+}
+
+export interface Trade {
+  id: string;
+  pair: string;
+  side: 'buy' | 'sell';
+  price: number;
+  quantity: number;
+  timestamp: Date;
+  profit?: number;
+  strategy: string;
+}
+
+export interface ChangeEvent {
+  pair: string;
+  metric: string;
+  oldValue: number;
+  newValue: number;
+  changePercent: number;
+  timestamp: Date;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+}
+
+export interface StrategyPerformance {
+  strategy: string;
+  winRate: number;
+  avgProfit: number;
+  totalTrades: number;
+  activePairs: string[];
+  pnl24h: number;
+  sharpeRatio: number;
+}
+
+export interface SystemHealth {
+  cpuUsage: number;
+  memoryUsage: number;
+  diskUsage: number;
+  apiLatency: Record<string, number>;
+  redisConnected: boolean;
+  dbConnected: boolean;
+  errorCount1h: number;
+  warningCount1h: number;
+}
+
+export interface Alert {
+  id: string;
+  timestamp: Date;
+  severity: 'info' | 'warning' | 'error' | 'critical';
+  category: 'system' | 'trading' | 'ml' | 'api';
+  message: string;
+  pair?: string;
+  resolved: boolean;
+}
+
+export interface User {
+  username: string;
+  token: string;
+}
+
+export interface WebSocketMessage {
+  type: string;
+  data: any;
+  timestamp: string;
+}
