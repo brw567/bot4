@@ -1,0 +1,39 @@
+# Prometheus configuration for Bot4
+# Task 0.1.3: Monitoring stack setup
+# V5 Compliant
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'bot4-monitor'
+    environment: 'development'
+
+scrape_configs:
+  # Bot4 Trading Engine metrics
+  - job_name: 'bot4-trading'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+        labels:
+          service: 'trading-engine'
+          
+  # Redis metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+        labels:
+          service: 'cache'
+          
+  # PostgreSQL metrics (via postgres_exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+        labels:
+          service: 'database'
+          
+  # Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+        labels:
+          service: 'system'

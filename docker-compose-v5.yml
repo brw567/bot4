@@ -1,0 +1,183 @@
+version: '3.8'
+
+# Bot4 Trading Platform - V5 Compliant Docker Stack
+# Task 0.1.2: Setup local databases
+# Author: Alex (Team Lead)
+# Date: 2025-08-15
+
+services:
+  # PostgreSQL 15+ - Main database
+  postgres:
+    image: postgres:15-alpine
+    container_name: bot4-postgres
+    environment:
+      POSTGRES_DB: bot4_trading
+      POSTGRES_USER: bot4user
+      POSTGRES_PASSWORD: bot4pass_secure_2025
+      POSTGRES_MAX_CONNECTIONS: 200
+      POSTGRES_SHARED_BUFFERS: 256MB
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init_schema.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./sql/timescale_init.sql:/docker-entrypoint-initdb.d/02_timescale.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bot4user -d bot4_trading"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+  # TimescaleDB 2.0+ - Time-series data
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: bot4-timescale
+    environment:
+      POSTGRES_DB: bot4_timeseries
+      POSTGRES_USER: bot4user
+      POSTGRES_PASSWORD: bot4pass_secure_2025
+      TIMESCALEDB_TELEMETRY: off
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./sql/timescale_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bot4user -d bot4_timeseries"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+  # Redis 7+ - Cache and real-time data
+  redis:
+    image: redis:7-alpine
+    container_name: bot4-redis
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 2gb
+      --maxmemory-policy allkeys-lru
+      --requirepass bot4redis_secure_2025
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+  # Prometheus - Metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: bot4-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+  # Grafana - Monitoring dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: bot4-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=bot4admin
+      - GF_SECURITY_ADMIN_PASSWORD=bot4grafana_secure_2025
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,redis-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+      - redis
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+  # Loki - Log aggregation
+  loki:
+    image: grafana/loki:latest
+    container_name: bot4-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+  # Jaeger - Distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: bot4-jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+    volumes:
+      - jaeger_data:/badger
+    ports:
+      - "5775:5775/udp"  # Zipkin thrift
+      - "6831:6831/udp"  # Jaeger thrift
+      - "6832:6832/udp"  # Jaeger thrift
+      - "5778:5778"      # Config
+      - "16686:16686"    # Web UI
+      - "14268:14268"    # Collector
+      - "14250:14250"    # gRPC
+      - "9411:9411"      # Zipkin
+      - "4317:4317"      # OTLP gRPC
+      - "4318:4318"      # OTLP HTTP
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+networks:
+  bot4-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+    driver: local
+  timescale_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  loki_data:
+    driver: local
+  jaeger_data:
+    driver: local

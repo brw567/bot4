@@ -1,381 +1,452 @@
-# Bot4 Trading Platform - Project Context
+# CLAUDE.md
 
-## 🚨 CRITICAL RULES - READ FIRST
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-### MANDATORY DEVELOPMENT RULES (USER DIRECTIVE - NO EXCEPTIONS)
+## 🔴 ALEX'S MANDATORY INSTRUCTIONS - ABSOLUTE REQUIREMENTS
 
-#### PRIMARY TRACKING DOCUMENT
-1. **PROJECT_MANAGEMENT_TASK_LIST_V5.md** - THE ONLY source of truth for all tasks
-2. **ARCHITECTURE.md** - Complete technical specification (2,267 lines)
-3. **DEVELOPMENT_RULES.md** - Mandatory compliance rules
-4. Must be updated on EVERY activity (development, fixing, grooming)
-5. No development without task number reference from V5
+### 1. PROJECT GOAL
+Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading bot that is:
+- **Fully self-adjustable** - Adapts to market conditions automatically
+- **Auto-tunable** - Optimizes parameters without human intervention
+- **Full market auto-adaptation** - Learns and evolves with market changes
+- **Zero human intervention** - Extracts maximum value from cryptocurrency exchanges autonomously
 
-#### 🚨 COMPLETION VERIFICATION PROTOCOL
-1. **BEFORE marking ANY task complete**, MUST run: `./scripts/verify_completion.sh`
-2. **Task is ONLY complete** if ALL checks pass (compilation, tests, no fakes)
-3. **Git hooks ENFORCED** - Cannot commit fake implementations
-4. **See**: `.claude/QUALITY_ENFORCEMENT_CONFIG.md` for full criteria
+### 2. ZERO TOLERANCE POLICY - NO EXCEPTIONS!!!
+**ABSOLUTE REQUIREMENTS - VIOLATION = IMMEDIATE REJECTION:**
+- ❌ **NO fake implementations**
+- ❌ **NO incomplete code**
+- ❌ **NO empty functions**
+- ❌ **NO leftover TODOs**
+- ❌ **NO simplifications**
+- ❌ **NO hardcoded values**
+- **THIS IS MANDATORY - MUST DO!!!**
 
-#### 🚨 MANDATORY WORKFLOW
-1. **EVERY grooming session** MUST START with reading ARCHITECTURE.md and PROJECT_MANAGEMENT_TASK_LIST_V5.md
-2. **EVERY completed subtask** MUST END with updating both documents IMMEDIATELY
-3. **Goal**: Keep crucial information within Claude's context window at all times
-4. **Enforcement**: Work doesn't count if docs aren't updated
-5. **See**: `.claude/WORKFLOW_PROTOCOL.md` for detailed protocol
+### 3. MANDATORY DOCUMENTATION WORKFLOW
+**EVERY TASK - NO EXCEPTIONS:**
+1. **BEFORE starting ANY task**: Read PROJECT_MANAGEMENT_TASK_LIST_V5.md AND ARCHITECTURE.md
+2. **AFTER completing EACH sub-task**: Update BOTH documents IMMEDIATELY
+3. **This refreshes context and maintains documentation - MANDATORY!**
 
-#### ZERO TOLERANCE POLICY - NO FAKE CODE
-1. **NO fake implementations** - Every function must work with real functionality
-2. **NO simulations** - Real API calls only, no mocks in production code
-3. **NO empty functions** - Complete implementation or don't merge
-4. **NO compromises** - Quality over speed, always
-5. **NO shortcuts** - Build it right the first time
-6. **NO remote deployments** - Local development only
+### 4. 100% VALIDATION REQUIREMENTS
+**EACH TASK MUST HAVE:**
+- ✅ **100% test coverage** - FULL coverage, no exceptions
+- ✅ **100% implemented** - Complete functionality
+- ✅ **100% integrated** - Fully connected to system
+- ✅ **ZERO shortcuts** - No compromises
+- ✅ **100% tested** - All edge cases covered
+- ✅ **Fully integrated into logic** - Working with all components
+- **THIS IS A MUST!!!!**
 
-#### Task Completion Criteria
-A task is ONLY complete when ALL of these are true:
-- [x] Real implementation (no mocks, no stubs)
-- [x] Real tests (no placeholder assertions)
-- [x] Real data (no hardcoded values)
-- [x] Real API calls (actual exchange connections)
-- [x] Code reviewed by designated owner
-- [x] Integration tested with other components
-- [x] Performance validated against targets
-- [x] Documentation updated in same commit
+## 🚨 CRITICAL: Quality Gates & Enforcement
 
-#### Enforcement Protocol
-- Any fake code = IMMEDIATE REJECTION
-- Any shortcut = TASK REOPENED
-- Any compromise = VETO by Quinn (risk) or Sam (quality)
-- Any empty function = BUILD BLOCKED
-- Any mock in production = DEPLOYMENT STOPPED
-- Any remote deployment = BLOCKED (local only)
-- Any incomplete documentation = MERGE BLOCKED
-- Any task without verification = INVALID
-
----
-
-## Project Overview
-
-Bot4 is an institutional-grade multi-exchange cryptocurrency autonomous trading platform with deep and robust self-adaptation to market conditions and auto-finetuning to extract maximum value from the market. The project uses a multi-agent development approach with specialized personas for different aspects of development.
-
-### Key Objectives
-- **Target APY**: 200-300% in bull markets, 60-80% in bear markets
-- **Latency**: <50ns decision making, <100μs order submission
-- **Architecture**: 50/50 TA-ML hybrid approach
-- **Development**: Pure Rust, zero Python in production
-- **Deployment**: Local-only development and testing
-- **Quality**: 95%+ test coverage, zero fake implementations
-- **Timeline**: 12 weeks (12 phases as per V5)
-
-### Development Philosophy
-**"Build it right the first time"** - No shortcuts, no compromises. Every component must be production-ready from day one with full testing, documentation, and performance validation.
-
----
-
-## 🚨 QUALITY ENFORCEMENT (NON-NEGOTIABLE)
-
-### Git Hooks (MUST BE INSTALLED)
+### Mandatory Before ANY Development
 ```bash
-# Install immediately before any development
+# Install git hooks - REQUIRED
 cd /home/hamster/bot4
 cp .git-hooks/* .git/hooks/
 chmod +x .git/hooks/*
 ```
 
-### Pre-Commit Checks (Automatic)
-1. **No fake implementations** (`scripts/validate_no_fakes.py`)
-2. **Format check** (`cargo fmt --check`)
-3. **Linting** (`cargo clippy -- -D warnings`)
-4. **No TODOs without task IDs**
-5. **No hardcoded values** (0.02, 0.03, etc.)
+### Task Completion Verification
+```bash
+# MUST pass before marking ANY task complete
+./scripts/verify_completion.sh
 
-### Pre-Push Requirements
-1. **All tests pass** (`cargo test --all`)
-2. **Coverage >95%** (`cargo tarpaulin`)
-3. **Benchmarks pass** (`cargo bench`)
-4. **No security issues** (`cargo audit`)
+# Validate no fake implementations in Rust
+python scripts/validate_no_fakes_rust.py
 
-### Circuit Breakers & Safety
+# Run all tests
+cd rust_core && cargo test --all
+
+# Check formatting and linting
+cargo fmt --check
+cargo clippy -- -D warnings
+```
+
+## 🎯 Project Overview
+
+Bot4 is a next-generation, fully autonomous cryptocurrency trading platform combining **TA + ML + Grok xAI** for maximum market value extraction. Key characteristics:
+- **Hybrid Intelligence**: Technical Analysis + Machine Learning + Grok xAI integration
+- **Fully Autonomous**: Zero human intervention required
+- **Self-Adjustable**: Auto-tunes and adapts to market conditions
+- **Pure Rust implementation** - Zero Python in production
+- **<50ns decision latency** target
+- **200-300% APY target** in bull markets
+- **Local development only** at `/home/hamster/bot4/`
+- **Multi-agent development** with 8 specialized AI personas
+- **ZERO TOLERANCE** for fake implementations, incomplete code, or shortcuts
+
+## 📋 Task Management System
+
+### Primary Documents (Read These First)
+1. **PROJECT_MANAGEMENT_TASK_LIST_V5.md** - Master task list with 1,250+ tasks
+2. **ARCHITECTURE.md** - Complete technical specification (2,267 lines)
+3. **DEVELOPMENT_RULES.md** - Mandatory compliance rules
+
+### Task Workflow - MANDATORY PROCESS
+```bash
+# ALEX'S MANDATORY WORKFLOW - EVERY TASK MUST:
+1. READ PROJECT_MANAGEMENT_TASK_LIST_V5.md AND ARCHITECTURE.md FIRST!!!
+2. Reference a task ID from V5 (e.g., "Task 8.3.2")
+3. Start with grooming session if >2 hours work
+4. Implement with 100% functionality - NO SHORTCUTS
+5. Achieve 100% test coverage - NO EXCEPTIONS
+6. Validate 100% integration - MUST WORK WITH SYSTEM
+7. Update PROJECT_MANAGEMENT_TASK_LIST_V5.md IMMEDIATELY after EACH sub-task
+8. Update ARCHITECTURE.md with FULL implementation details
+9. Run ./scripts/verify_completion.sh - MUST PASS 100%
+10. NO TASK IS COMPLETE WITHOUT 100% VALIDATION!!!
+```
+
+## 🏗️ Build & Development Commands
+
+### Rust Development
+```bash
+# Build the project
+cd /home/hamster/bot4/rust_core
+cargo build --release
+
+# Run tests with coverage
+cargo test --all
+cargo tarpaulin --out Html  # If installed
+
+# Run benchmarks
+cargo bench
+
+# Format and lint
+cargo fmt
+cargo clippy -- -D warnings
+
+# Check for security issues
+cargo audit
+```
+
+### Database Setup
+```bash
+# PostgreSQL setup (bot3* naming is intentional - legacy compatibility)
+sudo -u postgres psql
+CREATE USER bot3user WITH PASSWORD 'bot3pass';
+CREATE DATABASE bot3trading OWNER bot3user;
+\q
+
+# Initialize schema
+PGPASSWORD=bot3pass psql -U bot3user -h localhost -d bot3trading -f /home/hamster/bot4/sql/init_schema.sql
+
+# TimescaleDB extensions
+PGPASSWORD=bot3pass psql -U bot3user -h localhost -d bot3trading -c "CREATE EXTENSION IF NOT EXISTS timescaledb;"
+```
+
+### Docker Operations
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f trading-engine
+
+# Restart a service
+docker-compose restart trading-engine
+
+# Full rebuild
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+## 🏛️ Architecture Overview
+
+### Project Structure
+```
+/home/hamster/bot4/
+├── rust_core/           # Pure Rust implementation (PRIMARY)
+│   ├── src/            # Main application code
+│   └── crates/         # Component crates (to be migrated)
+├── rust_core_old_epic7/ # Legacy Rust code (being migrated)
+│   └── crates/         # 50+ specialized crates
+├── frontend/           # React TypeScript UI
+├── scripts/            # Validation and automation
+└── sql/               # Database schemas
+```
+
+### Core Components (Rust)
+
+#### Trading Engine (`rust_core/crates/trading_engine/`)
+- Order management with <100μs execution
+- Position tracking with real-time P&L
+- Risk engine with circuit breakers
+- WebSocket bridge for real-time data
+
+#### Risk Management (`rust_core/crates/risk/`)
+- Position limits (2% max per trade)
+- Stop-loss enforcement (mandatory)
+- Max drawdown monitoring (15% limit)
+- Correlation analysis (<0.7 between positions)
+
+#### ML Pipeline (`rust_core/crates/ml/`)
+- Feature engineering pipeline
+- Model versioning system
+- Real-time inference (<50ns)
+- Backtesting integration
+
+#### Exchange Integration (`rust_core/crates/exchanges/`)
+- Binance, Kraken, Coinbase connectors
+- WebSocket stream management
+- Order routing with smart execution
+- Rate limiting and reconnection logic
+
+## 🔧 Development Patterns
+
+### Rust Code Standards
 ```rust
-// EVERY component must include circuit breakers
-pub struct SafetySystem {
+// EVERY component must include:
+pub struct ComponentName {
+    // Circuit breaker is MANDATORY
     circuit_breaker: CircuitBreaker,
     kill_switch: AtomicBool,
-    max_impact: f64,  // Maximum position/risk impact
-    rollback_ready: bool,
+    max_impact: f64,  // Position/risk limit
+}
+
+// Performance documentation required
+/// Phase: 2.3 - Trading Engine
+/// Performance: <100μs order submission
+/// Dependencies: risk_engine, exchange_connector
+impl ComponentName {
+    // Real implementations only - no todo!() or unimplemented!()
 }
 ```
 
-### Shadow Mode Testing
-**EVERY new feature must**:
-1. Run in shadow mode for 24 hours minimum
-2. Compare performance with baseline
-3. Prove improvement before enabling
-4. Have rollback plan ready
-
-### Performance Requirements
-- **Latency**: No regression >10% allowed
-- **Throughput**: Must maintain 10,000+ ops/sec
-- **Memory**: No leaks, bounded growth
-- **CPU**: No spinning, efficient algorithms
-
-### Documentation Standards
+### Testing Requirements - 100% COVERAGE MANDATORY
 ```rust
-/// Phase: 0.1 - Environment Setup
-/// Performance: <2ms latency, 10K ops/sec
-/// Impact: Foundation for all components
-/// Risk: Low - setup only
-/// Rollback: N/A
+#[cfg(test)]
+mod tests {
+    // ALEX'S MANDATE: 100% TEST COVERAGE - NO EXCEPTIONS!!!
+    // ✅ Unit tests: REQUIRED for ALL functions (public AND private)
+    // ✅ Integration tests: REQUIRED for ALL components
+    // ✅ Performance tests: REQUIRED for ALL paths
+    // ✅ Edge cases: ALL must be tested
+    // ✅ Error paths: ALL must be tested
+    // ✅ NO MOCKS - Real data only
+    // ✅ NO SHORTCUTS - Full validation
+    
+    #[test]
+    fn test_real_functionality() {
+        // MUST use real calculations
+        // MUST test all branches
+        // MUST test all edge cases
+        // MUST validate all outputs
+        // 100% COVERAGE OR TASK FAILS!!!
+    }
+}
 ```
 
----
+## 🚫 Common Pitfalls to Avoid
 
-## 🏗️ TECHNOLOGY STACK
+### Never Do This
+```rust
+// ❌ FORBIDDEN - Fake implementations
+fn calculate_atr() -> f64 {
+    price * 0.02  // REJECTED by validation
+}
 
-### Core Technology (As per ARCHITECTURE.md)
-- **Language**: Rust 1.75+ (stable channel)
-- **Why Rust**: Zero-cost abstractions, memory safety, <50ns latency targets
-- **No Python in Production**: All trading logic in Rust for performance
-- **Development**: Local-only at `/home/hamster/bot4/`
+// ❌ FORBIDDEN - Placeholder returns
+fn get_signal() -> Signal {
+    todo!()  // Build will FAIL
+}
 
-### Rust Dependencies
-```toml
-[dependencies]
-tokio = { version = "1.35", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-axum = "0.7"
-sqlx = { version = "0.7", features = ["postgres", "runtime-tokio"] }
-redis = { version = "0.24", features = ["tokio-comp"] }
-dashmap = "5.5"
-rayon = "1.8"
-criterion = "0.5"
+// ❌ FORBIDDEN - Mock data in production
+let mock_price = 50000.0;  // Will be caught
 ```
 
-### Infrastructure
-- **Database**: PostgreSQL 15+, TimescaleDB 2.0+
-- **Cache**: Redis 7.0+
-- **Monitoring**: Prometheus + Grafana
-- **Testing**: cargo test, criterion benchmarks
-- **Deployment**: Docker (local only)
+### Always Do This
+```rust
+// ✅ CORRECT - Real implementation
+fn calculate_atr(candles: &[Candle]) -> f64 {
+    // Actual ATR calculation
+    technical_indicators::atr(candles, 14)
+}
 
----
+// ✅ CORRECT - Complete error handling
+fn place_order(order: Order) -> Result<OrderId> {
+    // Real exchange API call with retry logic
+    exchange.place_order_with_retry(order, 3)
+}
+```
 
-## 📋 CURRENT PROJECT STATUS
+## 🎭 Multi-Agent System
+
+The project uses 8 virtual agents with specific roles:
+
+1. **Alex** - Team Lead: Coordinates all work, breaks deadlocks
+2. **Morgan** - ML Specialist: ML models, zero tolerance for overfitting
+3. **Sam** - Code Quality: Rust lead, VETO on fake code
+4. **Quinn** - Risk Manager: VETO on uncapped risk
+5. **Jordan** - Performance: <50ns latency enforcement
+6. **Casey** - Exchange Integration: Order accuracy, rate limits
+7. **Riley** - Testing: 95%+ coverage requirement
+8. **Avery** - Data Engineer: TimescaleDB optimization
+
+### Conflict Resolution
+- Max 3 debate rounds before Alex decides
+- Quinn has absolute veto on risk matters
+- Sam has absolute veto on fake implementations
+- Data-driven decisions when possible
+
+## 🔍 Quality Enforcement Scripts
+
+### Pre-commit Validation
+```bash
+# Automatic checks on every commit:
+scripts/validate_no_fakes.py      # Detects fake implementations
+scripts/validate_no_fakes_rust.py  # Rust-specific validation
+cargo fmt --check                  # Format verification
+cargo clippy -- -D warnings        # Linting
+```
+
+### Performance Monitoring
+```bash
+# Check latency targets
+cargo bench --bench trading_bench
+
+# Monitor memory usage
+valgrind --leak-check=full target/release/bot4-trading
+
+# Profile CPU usage
+perf record -g target/release/bot4-trading
+perf report
+```
+
+## 📊 Current Status & Priorities
 
 ### Active Phase: Phase 0 - Foundation Setup
-As per PROJECT_MANAGEMENT_TASK_LIST_V5.md, we are starting from the beginning:
+Current focus areas from PROJECT_MANAGEMENT_TASK_LIST_V5.md:
+- Task 0.1-0.5: Environment and tooling setup ✅
+- Task 1.x: Core infrastructure (in progress)
+- Task 2.x: Trading engine implementation (next)
 
-#### Phase 0 Tasks (Week 1)
-- [ ] Task 0.1: Environment Setup
-- [ ] Task 0.2: Rust Installation and Configuration
-- [ ] Task 0.3: Database Setup (PostgreSQL + TimescaleDB)
-- [ ] Task 0.4: Development Tools Setup
-- [ ] Task 0.5: Git Repository Configuration
+### Migration in Progress
+Moving from `rust_core_old_epic7/` to `rust_core/`:
+- Consolidating 50+ crates into organized workspace
+- Removing all Python dependencies
+- Implementing missing core components
 
-### Timeline Overview (12 Weeks Total)
-1. **Phase 0**: Foundation Setup (Week 1)
-2. **Phase 1**: Core Infrastructure (Week 1-2)
-3. **Phase 2**: Trading Engine Core (Week 2-3)
-4. **Phase 3**: Risk Management (Week 3-4)
-5. **Phase 4**: Data Pipeline (Week 4-5)
-6. **Phase 5**: ML Pipeline (Week 5-6)
-7. **Phase 6**: TA Engine (Week 6-7)
-8. **Phase 7**: Exchange Integration (Week 7-8)
-9. **Phase 8**: Strategy Development (Week 8-9)
-10. **Phase 9**: Performance Optimization (Week 9-10)
-11. **Phase 10**: Testing & Validation (Week 10-11)
-12. **Phase 11**: Production Preparation (Week 11-12)
-
----
-
-## Multi-Agent System
-
-### Agent Roles and Responsibilities
-The project uses 8 specialized agents with specific roles:
-
-1. **Alex (Team Lead)** - Strategic Architect
-   - Overall system architecture
-   - Conflict resolution
-   - Final decision authority
-   - Decision weight: 1.5
-
-2. **Morgan (ML Specialist)** - Data Scientist
-   - ML model development
-   - Feature engineering
-   - Zero tolerance for fake ML
-   - Decision weight: 1.2
-
-3. **Sam (Code Quality)** - Backend Developer
-   - Rust implementation lead
-   - Code standards enforcement
-   - VETO power on fake code
-   - Decision weight: 1.2
-
-4. **Quinn (Risk Manager)** - Quantitative Analyst
-   - Risk limits enforcement
-   - Position sizing validation
-   - VETO power on uncapped risk
-   - Decision weight: 1.3
-
-5. **Jordan (Performance)** - DevOps Engineer
-   - Infrastructure optimization
-   - Performance monitoring
-   - Latency requirements (<50ns)
-   - Decision weight: 1.0
-
-6. **Casey (Exchange Integration)** - Exchange Specialist
-   - Exchange connections
-   - WebSocket management
-   - Order routing
-   - Decision weight: 1.1
-
-7. **Riley (Testing)** - QA Engineer
-   - Test coverage (>95% requirement)
-   - Integration testing
-   - Backtesting validation
-   - Decision weight: 0.8
-
-8. **Avery (Data)** - Data Engineer
-   - Data pipeline design
-   - TimescaleDB optimization
-   - Zero data loss guarantee
-   - Decision weight: 0.9
-
-### Conflict Resolution Protocol
-- **3-Round Debate Limit**: Circular arguments auto-escalate to Alex
-- **Veto Powers**: Quinn (risk), Sam (quality) have absolute veto
-- **Innovation Budget**: 20% for experimentation
-- **Decision Hierarchy**: Technical → Risk → Strategic
-
----
-
-## 📁 Critical Implementation Documents
-
-### Must Read Daily
-1. **PROJECT_MANAGEMENT_TASK_LIST_V5.md** - Master task list (1,250 tasks)
-2. **ARCHITECTURE.md** - Complete technical specification
-3. **DEVELOPMENT_RULES.md** - Mandatory compliance rules
-4. **Current Phase Tasks** - Focus on immediate objectives
-
-### Configuration Files
-- `.claude/agents_config.json` - Team configuration
-- `.claude/agent_instructions.md` - Agent behaviors
-- `.claude/QUALITY_ENFORCEMENT_CONFIG.md` - Quality gates
-- `.claude/WORKFLOW_PROTOCOL.md` - Daily workflow
-
----
-
-## Project Structure
-
-```
-/home/hamster/bot4/
-├── rust_core/              # Rust implementation (to be created)
-│   ├── Cargo.toml          # Workspace configuration
-│   └── crates/             # Individual components
-├── .claude/                # Claude configuration
-│   ├── agents_config.json  # Agent interaction rules
-│   └── agent_instructions.md # Specific protocols
-├── scripts/                # Automation scripts
-│   ├── verify_completion.sh # Quality verification
-│   └── validate_no_fakes.py # Fake detection
-├── docs/                   # Documentation
-├── config/                 # Configuration files
-└── data/                   # Local data storage
-
-```
-
----
-
-## 🚨 Risk Management Rules
-
-### Position Limits (Enforced by Quinn)
-- **Max Position Size**: 2% per trade
-- **Max Total Exposure**: 10%
-- **Max Leverage**: 3x
-- **Max Drawdown**: 15%
-- **Required Stop Loss**: Yes (mandatory)
-- **Min Sharpe Ratio**: 1.0
-- **Max Correlation**: 0.7 between positions
-
-### Daily Operations
-- **Morning Checks**: Run validation suite
-- **Pre-Deployment**: Full test suite + risk validation
-- **Post-Deployment**: Health checks + monitoring
-
----
-
-## Validation Requirements
-
-### Code Quality (Sam's Domain)
-No fake implementations allowed:
-- No `price * 0.02` for calculations
-- No `random.choice()` for decisions
-- No placeholder returns
-- No `unimplemented!()` or `todo!()`
-
-### Testing Standards (Riley's Domain)
-- Unit test coverage: >95%
-- Integration tests: Required
-- Backtesting: Walk-forward analysis
-- Performance: <50ns latency target
-
----
-
-## Environment Variables Required
+## 🚀 Quick Development Workflow
 
 ```bash
-# Database Configuration
-DATABASE_URL=postgresql://bot4:bot4pass@localhost:5432/bot4
-TIMESCALE_URL=postgresql://bot4:bot4pass@localhost:5433/bot4_timeseries
-REDIS_URL=redis://localhost:6379/0
+# 1. Start your day
+cd /home/hamster/bot4
+git pull
+./scripts/verify_completion.sh  # Ensure clean state
 
-# Exchange Configuration (Testnet First)
+# 2. Pick a task from V5
+grep "TODO" PROJECT_MANAGEMENT_TASK_LIST_V5.md | head -20
+
+# 3. Create feature branch
+git checkout -b task-X.Y.Z-description
+
+# 4. Implement with TDD
+cd rust_core
+cargo test --test specific_test -- --nocapture  # Write test first
+# Implement feature
+cargo test --all  # Verify
+
+# 5. Validate before commit
+./scripts/verify_completion.sh
+cargo fmt
+cargo clippy -- -D warnings
+
+# 6. Update documentation
+# Update PROJECT_MANAGEMENT_TASK_LIST_V5.md - mark task complete
+# Update ARCHITECTURE.md - add implementation details
+
+# 7. Commit with task reference
+git add -A
+git commit -m "Task X.Y.Z: Description of implementation"
+```
+
+## 🔐 Security & Risk Management
+
+### Environment Variables
+```bash
+# Required in .env (never commit!)
+DATABASE_URL=postgresql://bot3user:bot3pass@localhost:5432/bot3trading
+REDIS_URL=redis://localhost:6379/0
 BINANCE_TESTNET=true
 BINANCE_API_KEY=your_testnet_key
 BINANCE_SECRET=your_testnet_secret
 
-# Risk Limits
+# Risk limits (enforced by Quinn)
 MAX_POSITION_SIZE=0.02
 MAX_LEVERAGE=3
 REQUIRE_STOP_LOSS=true
 MAX_DRAWDOWN=0.15
-
-# Performance Targets
-TARGET_LATENCY_NS=50
-MIN_THROUGHPUT_OPS=10000
 ```
 
----
+### Circuit Breakers
+Every component must implement circuit breakers:
+- Trip on 3 consecutive errors
+- Automatic reset after cooldown
+- Manual kill switch for emergencies
+- Cascade protection (upstream trips propagate)
 
-## Next Steps (Phase 0)
+## 📈 Performance Targets
 
-1. **Environment Setup** (Task 0.1)
-   - Install Rust 1.75+
-   - Setup VSCode with rust-analyzer
-   - Configure local development environment
+Critical metrics that must be maintained:
+- **Decision Latency**: <50ns (use SIMD where applicable)
+- **Order Submission**: <100μs including network
+- **Throughput**: 10,000+ orders/second capability
+- **Memory**: No unbounded growth, <1GB steady state
+- **Test Coverage**: **100% MANDATORY** - Alex's requirement, NO EXCEPTIONS!
+- **Integration**: 100% working with all components
+- **Validation**: 100% of functionality verified
 
-2. **Database Setup** (Task 0.3)
-   - Install PostgreSQL 15+
-   - Install TimescaleDB extension
-   - Install Redis 7.0+
+## ✅ ALEX'S VALIDATION CHECKLIST - EVERY TASK
 
-3. **Git Configuration** (Task 0.5)
-   - Setup git hooks
-   - Configure branch protection
-   - Initialize repository structure
+Before ANY task can be considered complete:
+- [ ] **100% Implemented** - No TODOs, no empty functions, no placeholders
+- [ ] **100% Tested** - Full test coverage, all edge cases
+- [ ] **100% Integrated** - Works with entire system
+- [ ] **Zero Shortcuts** - No simplifications or hardcoded values
+- [ ] **Zero Fakes** - All implementations are real and working
+- [ ] **Docs Updated** - V5 and ARCHITECTURE.md updated IMMEDIATELY
+- [ ] **Verification Passed** - ./scripts/verify_completion.sh SUCCESS
+- [ ] **Review Complete** - Validated by team member
+- [ ] **NO COMPROMISES** - This is MANDATORY!!!
 
----
+## 🧪 Testing Strategy
 
-## Critical Reminders
+### Test Hierarchy
+1. **Unit Tests**: Every public function
+2. **Integration Tests**: Component interactions
+3. **Performance Tests**: Latency benchmarks
+4. **Backtesting**: Strategy validation with real data
+5. **Shadow Mode**: 24-hour parallel run before production
 
-- **NO REMOTE SERVERS** - Everything runs locally at `/home/hamster/bot4/`
-- **NO FAKE CODE** - Every implementation must be real
-- **NO PYTHON IN PRODUCTION** - Pure Rust only
-- **FOLLOW V5 PLAN** - PROJECT_MANAGEMENT_TASK_LIST_V5.md is the authority
-- **TEST EVERYTHING** - 95%+ coverage required
-- **DOCUMENT ALWAYS** - Update docs in same commit as code
+### Running Specific Test Suites
+```bash
+# Unit tests only
+cargo test --lib
 
----
+# Integration tests
+cargo test --test '*'
 
-*Remember: Build it right the first time. The team is watching. Every decision matters.*
+# Specific component
+cargo test -p trading_engine
+
+# With output
+cargo test -- --nocapture
+
+# Benchmarks
+cargo bench --bench trading_bench
+```
+
+## 🎯 Remember
+
+1. **Build it right the first time** - No shortcuts, ever
+2. **Every line must be real** - No fake implementations
+3. **Task tracking is mandatory** - Always reference V5 task IDs
+4. **Documentation in same commit** - Code without docs doesn't exist
+5. **Local development only** - Never deploy to remote servers
+6. **95% test coverage minimum** - Non-negotiable
+7. **Performance over features** - Maintain <50ns latency
+8. **Risk management first** - Quinn has veto power
+9. **Multi-agent consensus** - Use grooming sessions for complex tasks
+10. **Continuous validation** - Run verify_completion.sh frequently
