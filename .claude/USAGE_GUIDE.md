@@ -1,4 +1,4 @@
-# Bot3 Multi-Agent System - Practical Usage Guide
+# Bot4 Multi-Agent System - Practical Usage Guide
 
 ## Quick Start Commands
 

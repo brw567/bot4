@@ -1,0 +1,232 @@
+{
+  "version": "1.0",
+  "model": "sonnet-4",
+  "description": "Optimized configuration for Sonnet 4 efficiency",
+  
+  "task_routing": {
+    "auto_routing": true,
+    "rules": [
+      {
+        "condition": "task_complexity == 'HIGH' || files_involved > 3",
+        "model": "opus-4.1",
+        "reason": "Complex multi-file reasoning required"
+      },
+      {
+        "condition": "task_type == 'architecture' || task_type == 'system_design'",
+        "model": "opus-4.1",
+        "reason": "Creative problem solving needed"
+      },
+      {
+        "condition": "task_type == 'debugging' && severity == 'complex'",
+        "model": "opus-4.1",
+        "reason": "Deep analysis required"
+      },
+      {
+        "condition": "task_type in ['documentation', 'testing', 'formatting']",
+        "model": "sonnet-4",
+        "reason": "Pattern-based, straightforward task"
+      },
+      {
+        "condition": "estimated_tokens < 10000 && single_file == true",
+        "model": "sonnet-4",
+        "reason": "Simple, focused task"
+      }
+    ],
+    "default_model": "sonnet-4"
+  },
+  
+  "context_optimization": {
+    "max_tokens": 10000,
+    "max_lines_per_file": 500,
+    "chunking": {
+      "enabled": true,
+      "chunk_size": 200,
+      "overlap": 20,
+      "maintain_state": true
+    },
+    "file_inclusion": {
+      "strategy": "selective",
+      "include_imports": true,
+      "include_docstrings": true,
+      "include_type_hints": true,
+      "exclude_comments": false,
+      "summarize_long_functions": true
+    },
+    "reference_mode": {
+      "documentation": "path_only",
+      "tests": "signature_only",
+      "external_libs": "import_only"
+    }
+  },
+  
+  "response_optimization": {
+    "structured_output": true,
+    "templates": {
+      "bug_fix": {
+        "format": "markdown",
+        "sections": ["issue", "root_cause", "fix", "validation"],
+        "max_length": 500
+      },
+      "implementation": {
+        "format": "code_with_explanation",
+        "sections": ["requirement", "approach", "code", "tests"],
+        "max_length": 1000
+      },
+      "test_generation": {
+        "format": "pytest",
+        "sections": ["arrange", "act", "assert"],
+        "include_edge_cases": true
+      },
+      "documentation": {
+        "format": "markdown",
+        "sections": ["summary", "usage", "examples"],
+        "max_length": 300
+      }
+    },
+    "code_style": {
+      "include_type_hints": true,
+      "include_docstrings": true,
+      "follow_pep8": true,
+      "max_line_length": 100
+    }
+  },
+  
+  "agent_specific_configs": {
+    "sam": {
+      "focus": "code_quality",
+      "batch_processing": true,
+      "parallel_files": 3,
+      "validation_checklist": [
+        "no_fake_implementations",
+        "no_hardcoded_values",
+        "proper_error_handling",
+        "type_hints_present"
+      ]
+    },
+    "riley": {
+      "focus": "testing",
+      "test_patterns": [
+        "unit_test_per_function",
+        "integration_test_per_feature",
+        "edge_case_coverage",
+        "mock_external_dependencies"
+      ],
+      "coverage_target": 100
+    },
+    "morgan": {
+      "focus": "ml_optimization",
+      "require_opus": true,
+      "validation_requirements": [
+        "no_overfitting",
+        "cross_validation",
+        "feature_importance"
+      ]
+    },
+    "quinn": {
+      "focus": "risk_management",
+      "mandatory_checks": [
+        "position_limits",
+        "stop_loss_present",
+        "risk_reward_ratio"
+      ],
+      "escalate_to_opus": "risk_level > medium"
+    },
+    "jordan": {
+      "focus": "performance",
+      "benchmarks": {
+        "latency_ms": 100,
+        "memory_mb": 500,
+        "cpu_percent": 50
+      },
+      "optimization_triggers": [
+        "latency > 100ms",
+        "memory > 500MB"
+      ]
+    }
+  },
+  
+  "progressive_enhancement": {
+    "enabled": true,
+    "stages": [
+      {
+        "name": "skeleton",
+        "model": "sonnet-4",
+        "focus": "structure",
+        "max_tokens": 2000
+      },
+      {
+        "name": "implementation",
+        "model": "sonnet-4",
+        "focus": "logic",
+        "max_tokens": 5000
+      },
+      {
+        "name": "error_handling",
+        "model": "sonnet-4",
+        "focus": "robustness",
+        "max_tokens": 3000
+      },
+      {
+        "name": "optimization",
+        "model": "opus-4.1",
+        "focus": "performance",
+        "condition": "if_needed"
+      }
+    ]
+  },
+  
+  "caching_strategy": {
+    "enabled": true,
+    "cache_patterns": true,
+    "cache_templates": true,
+    "cache_solutions": true,
+    "ttl_seconds": 3600,
+    "max_cache_size_mb": 100
+  },
+  
+  "batch_processing": {
+    "enabled": true,
+    "batch_similar_tasks": true,
+    "max_batch_size": 5,
+    "parallel_execution": true,
+    "maintain_context": true
+  },
+  
+  "quality_gates": {
+    "test_pass_rate": 100,
+    "code_coverage": 80,
+    "linting_errors": 0,
+    "documentation_complete": true,
+    "architecture_linked": true
+  },
+  
+  "escalation_rules": {
+    "auto_escalate_to_opus": {
+      "conditions": [
+        "error_rate > 0.2",
+        "context_overflow",
+        "requires_creativity",
+        "multi_system_integration",
+        "performance_critical"
+      ],
+      "notification": true
+    }
+  },
+  
+  "performance_monitoring": {
+    "track_metrics": true,
+    "metrics": [
+      "response_time",
+      "token_usage",
+      "task_completion_rate",
+      "error_rate",
+      "quality_score"
+    ],
+    "reporting_interval": "daily",
+    "optimization_threshold": {
+      "response_time_ms": 10000,
+      "tokens_per_task": 10000,
+      "success_rate": 0.95
+    }
+  }
+}

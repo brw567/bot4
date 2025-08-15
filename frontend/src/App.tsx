@@ -21,6 +21,7 @@ import AlertsPage from './pages/AlertsPage';
 import SystemHealthPage from './pages/SystemHealthPage';
 import AIIntegrationPage from './pages/AIIntegrationPage';
 import PortfolioPage from './pages/PortfolioPage';
+import ConfigurationPage from './pages/ConfigurationPage';
 
 // Styles
 import './index.css';
@@ -56,6 +57,7 @@ function AppRoutes() {
         <Route path="ai" element={<AIIntegrationPage />} />
         <Route path="alerts" element={<AlertsPage />} />
         <Route path="system" element={<SystemHealthPage />} />
+        <Route path="configuration" element={<ConfigurationPage />} />
       </Route>
     </Routes>
   );

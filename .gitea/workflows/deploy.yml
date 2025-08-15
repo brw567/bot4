@@ -1,0 +1,9 @@
+name: Deploy Bot4
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and Deploy
+        run: ./scripts/deploy.sh

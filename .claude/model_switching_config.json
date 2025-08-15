@@ -1,0 +1,174 @@
+{
+  "version": "1.0",
+  "created": "2025-01-10",
+  "description": "Automated model switching configuration for Bot3",
+  
+  "default_settings": {
+    "default_model": "sonnet-4",
+    "self_check_enabled": true,
+    "auto_escalation": true,
+    "track_performance": true,
+    "confidence_threshold": 0.75
+  },
+  
+  "model_capabilities": {
+    "sonnet-4": {
+      "strengths": [
+        "Pattern-based tasks",
+        "Single-file changes",
+        "Documentation",
+        "Test generation",
+        "Bug fixes with clear patterns",
+        "Code formatting"
+      ],
+      "limitations": [
+        "Complex debugging",
+        "Multi-system integration",
+        "Creative problem solving",
+        "Architecture design"
+      ],
+      "max_tokens": 10000,
+      "response_time_ms": 5000
+    },
+    "opus-4.1": {
+      "strengths": [
+        "Complex problem solving",
+        "Architecture design",
+        "Multi-file refactoring",
+        "Creative solutions",
+        "Deep debugging",
+        "ML model development"
+      ],
+      "limitations": [
+        "Higher cost",
+        "Slower response time"
+      ],
+      "max_tokens": 50000,
+      "response_time_ms": 15000
+    }
+  },
+  
+  "routing_rules": [
+    {
+      "name": "Force Opus for Critical",
+      "condition": "complexity == 'CRITICAL'",
+      "model": "opus-4.1",
+      "priority": 100
+    },
+    {
+      "name": "Force Opus for Multi-System",
+      "condition": "is_multi_system == true",
+      "model": "opus-4.1",
+      "priority": 95
+    },
+    {
+      "name": "Force Opus for Creative",
+      "condition": "requires_creativity == true",
+      "model": "opus-4.1",
+      "priority": 90
+    },
+    {
+      "name": "Force Opus for Many Files",
+      "condition": "files_involved > 3",
+      "model": "opus-4.1",
+      "priority": 85
+    },
+    {
+      "name": "Sonnet for Documentation",
+      "condition": "category == 'documentation'",
+      "model": "sonnet-4",
+      "priority": 80
+    },
+    {
+      "name": "Sonnet for Testing",
+      "condition": "category == 'test_generation'",
+      "model": "sonnet-4",
+      "priority": 75
+    },
+    {
+      "name": "Sonnet for Bug Fixes",
+      "condition": "category == 'bug_fix' && complexity != 'HIGH'",
+      "model": "sonnet-4",
+      "priority": 70
+    }
+  ],
+  
+  "self_check_config": {
+    "enabled_for": {
+      "sonnet-4": true,
+      "opus-4.1": false
+    },
+    "trigger_complexities": ["MEDIUM"],
+    "confidence_threshold": 0.9,
+    "escalation_keywords": [
+      "unclear",
+      "ambiguous",
+      "uncertain",
+      "complex",
+      "creative",
+      "architectural",
+      "multi-system"
+    ]
+  },
+  
+  "task_templates": {
+    "bug_fix": {
+      "template": "bug_fix_template.md",
+      "preferred_model": "sonnet-4",
+      "max_context_lines": 200
+    },
+    "test_generation": {
+      "template": "test_generation_template.md",
+      "preferred_model": "sonnet-4",
+      "max_context_lines": 100
+    },
+    "documentation": {
+      "template": "documentation_template.md",
+      "preferred_model": "sonnet-4",
+      "max_context_lines": 50
+    },
+    "implementation": {
+      "template": "implementation_template.md",
+      "preferred_model": "sonnet-4",
+      "max_context_lines": 300
+    }
+  },
+  
+  "performance_tracking": {
+    "enabled": true,
+    "metrics_to_track": [
+      "task_completion_time",
+      "model_accuracy",
+      "escalation_rate",
+      "token_usage",
+      "cost_per_task"
+    ],
+    "report_frequency": "daily",
+    "alert_thresholds": {
+      "escalation_rate": 0.3,
+      "average_completion_time_ms": 30000,
+      "cost_per_task_usd": 1.0
+    }
+  },
+  
+  "current_task_assignments": {
+    "Task 1.1": {
+      "description": "Fix fake implementations",
+      "assigned_model": "sonnet-4",
+      "complexity": "LOW",
+      "template": "bug_fix_template.md"
+    },
+    "Task 3.1.2": {
+      "description": "Add architecture headers",
+      "assigned_model": "sonnet-4",
+      "complexity": "LOW",
+      "template": "header_template.md"
+    },
+    "Task 2.1": {
+      "description": "Task numbering system",
+      "assigned_model": "sonnet-4",
+      "complexity": "MEDIUM",
+      "self_check": true
+    }
+  }
+}

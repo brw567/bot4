@@ -1,4 +1,4 @@
-# Multi-Agent Interaction Guide for Bot3
+# Multi-Agent Interaction Guide for Bot4
 
 ## How the Agent System Works
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppSelector } from '../hooks/redux';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -7,14 +7,17 @@ import {
   ChartBarIcon,
   CurrencyDollarIcon,
   ChartPieIcon,
-  ClockIcon
+  ClockIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 import MarketplaceStatus from '../components/MarketplaceStatus';
 import BalanceDisplay from '../components/Portfolio/BalanceDisplay';
 import TestNetToggle from '../components/TestNetToggle';
+import IntegratedSystemDashboard from '../components/Dashboard/IntegratedSystemDashboard';
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const [showSystemDashboard, setShowSystemDashboard] = useState(false);
   const { winRate, totalPnl, activePairs, metrics } = useAppSelector(state => state.metrics);
   const { health } = useAppSelector(state => state.system);
 
@@ -51,13 +54,27 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Real-time overview of your trading system performance
-        </p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Real-time overview of your trading system performance
+          </p>
+        </div>
+        <button
+          onClick={() => setShowSystemDashboard(!showSystemDashboard)}
+          className="flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          <Cog6ToothIcon className="h-5 w-5 mr-2" />
+          {showSystemDashboard ? 'Trading View' : 'System Dashboard'}
+        </button>
       </div>
 
+      {/* Conditional Rendering: System Dashboard or Trading Dashboard */}
+      {showSystemDashboard ? (
+        <IntegratedSystemDashboard />
+      ) : (
+        <>
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {stats.map((stat) => (
@@ -173,6 +190,8 @@ const DashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };

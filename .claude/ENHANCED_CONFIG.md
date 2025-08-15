@@ -1,4 +1,4 @@
-# Claude Enhanced Configuration Guide for Bot3
+# Claude Enhanced Configuration Guide for Bot4
 
 ## Part 1: MCP (Model Context Protocol) Configuration
 
@@ -32,7 +32,7 @@ Create `.mcp/config.json` in your home directory:
       "config": {
         "token": "${GITHUB_TOKEN}",
         "owner": "brw567",
-        "repo": "bot3"
+        "repo": "bot4"
       }
     },
     "database": {
@@ -40,7 +40,7 @@ Create `.mcp/config.json` in your home directory:
       "config": {
         "host": "localhost",
         "port": 5432,
-        "database": "bot3trading",
+        "database": "bot4trading",
         "user": "${DB_USER}",
         "password": "${DB_PASSWORD}"
       }
@@ -75,7 +75,7 @@ Create `.mcp/config.json` in your home directory:
 #### Step 4: Test MCP Connection
 ```bash
 # In Claude, you can now use:
-"Check GitHub issues in bot3 repository"
+"Check GitHub issues in bot4 repository"
 "Query PostgreSQL: SELECT * FROM trades WHERE profit > 100"
 "Deploy to remote Docker at 192.168.100.64"
 "Check Prometheus metrics for last hour"
@@ -86,9 +86,9 @@ Create `.mcp/config.json` in your home directory:
 ### Create `.claude/project_config.yaml`
 
 ```yaml
-# Bot3 Enhanced Project Configuration
+# Bot4 Enhanced Project Configuration
 version: 2.0
-project: bot3
+project: bot4
 type: crypto_trading_platform
 
 # Project Structure Enforcement
@@ -162,23 +162,23 @@ git:
 deployment:
   remote_host: 192.168.100.64
   remote_user: hamster
-  remote_path: /home/hamster/bot3_production
+  remote_path: /home/hamster/bot4_production
   
   stages:
     development:
       host: localhost
       port: 8000
-      database: bot3_dev
+      database: bot4_dev
     
     staging:
       host: 192.168.100.64
       port: 8001
-      database: bot3_staging
+      database: bot4_staging
     
     production:
       host: 192.168.100.64
       port: 8000
-      database: bot3_prod
+      database: bot4_prod
   
   checklist:
     - Run all tests
@@ -305,7 +305,7 @@ maintenance:
 ssh hamster@192.168.100.64 'docker ps'
 
 # View logs
-ssh hamster@192.168.100.64 'docker logs -f bot3-trading'
+ssh hamster@192.168.100.64 'docker logs -f bot4-trading'
 
 # Restart service
 ssh hamster@192.168.100.64 'docker-compose restart trading-engine'
@@ -336,7 +336,7 @@ set -e
 # Configuration
 REMOTE_HOST="192.168.100.64"
 REMOTE_USER="hamster"
-REMOTE_PATH="/home/hamster/bot3_production"
+REMOTE_PATH="/home/hamster/bot4_production"
 BACKUP_PATH="/home/hamster/backups"
 
 # Colors
@@ -373,7 +373,7 @@ backup_current() {
     ssh $REMOTE_USER@$REMOTE_HOST "
         cd $REMOTE_PATH
         docker-compose down
-        tar -czf $BACKUP_PATH/bot3_$(date +%Y%m%d_%H%M%S).tar.gz .
+        tar -czf $BACKUP_PATH/bot4_$(date +%Y%m%d_%H%M%S).tar.gz .
     "
     
     log_info "Backup completed"
@@ -384,18 +384,18 @@ deploy() {
     log_info "Deploying new version..."
     
     # Build Docker images
-    docker build -t bot3-trading:latest .
-    docker save bot3-trading:latest | gzip > bot3-trading.tar.gz
+    docker build -t bot4-trading:latest .
+    docker save bot4-trading:latest | gzip > bot4-trading.tar.gz
     
     # Transfer to remote
-    scp bot3-trading.tar.gz $REMOTE_USER@$REMOTE_HOST:/tmp/
+    scp bot4-trading.tar.gz $REMOTE_USER@$REMOTE_HOST:/tmp/
     
     # Deploy on remote
     ssh $REMOTE_USER@$REMOTE_HOST "
         cd $REMOTE_PATH
-        docker load < /tmp/bot3-trading.tar.gz
+        docker load < /tmp/bot4-trading.tar.gz
         docker-compose up -d
-        rm /tmp/bot3-trading.tar.gz
+        rm /tmp/bot4-trading.tar.gz
     "
     
     log_info "Deployment completed"
@@ -409,7 +409,7 @@ health_check() {
     
     # Check if services are running
     ssh $REMOTE_USER@$REMOTE_HOST "
-        docker ps | grep bot3-trading || exit 1
+        docker ps | grep bot4-trading || exit 1
     "
     
     # Check API health
@@ -436,7 +436,7 @@ main() {
             log_info "Rolling back to previous version..."
             ssh $REMOTE_USER@$REMOTE_HOST "
                 cd $BACKUP_PATH
-                latest_backup=\$(ls -t bot3_*.tar.gz | head -1)
+                latest_backup=\$(ls -t bot4_*.tar.gz | head -1)
                 cd $REMOTE_PATH
                 docker-compose down
                 tar -xzf $BACKUP_PATH/\$latest_backup
@@ -468,7 +468,7 @@ main "$@"
 ### Where Things Go
 
 ```
-bot3/
+bot4/
 ├── src/                 # Source code
 │   ├── core/           # Core trading logic
 │   ├── strategies/     # Trading strategies
@@ -782,7 +782,7 @@ With MCP configured, you can now use:
 "Check PR #45 status"
 
 # Remote Docker management
-"Deploy bot3-trading:v2.1 to 192.168.100.64"
+"Deploy bot4-trading:v2.1 to 192.168.100.64"
 "Check Docker logs on remote host"
 
 # Monitoring
@@ -799,7 +799,7 @@ With MCP configured, you can now use:
 alias deploy="./scripts/deploy_remote.sh"
 alias test="pytest tests/"
 alias backtest="python scripts/run_backtest.py"
-alias logs="ssh hamster@192.168.100.64 'docker logs -f bot3-trading'"
+alias logs="ssh hamster@192.168.100.64 'docker logs -f bot4-trading'"
 alias health="curl http://192.168.100.64:8000/health"
 ```
 
@@ -834,7 +834,7 @@ python scripts/check_risk_limits.py
 #!/bin/bash
 echo "=== System Status ==="
 echo "Remote Docker:" 
-ssh hamster@192.168.100.64 'docker ps | grep bot3'
+ssh hamster@192.168.100.64 'docker ps | grep bot4'
 echo "API Health:"
 curl -s http://192.168.100.64:8000/health | jq
 echo "Database:"

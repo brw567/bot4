@@ -1,4 +1,4 @@
-# Bot3 Implementation Instructions
+# Bot4 Implementation Instructions
 
 ## Step-by-Step Setup Guide
 
@@ -47,13 +47,13 @@ EOF
    - Restart Claude Desktop
 
 4. **Verify MCP is working**:
-   - Type: "List files in /home/hamster/DEV/bot3"
+   - Type: "List files in /home/hamster/bot4"
    - You should see file listing without using bash commands
 
 ### 2. Set Up Git Hooks
 
 ```bash
-cd /home/hamster/DEV/bot3
+cd /home/hamster/bot4
 
 # Create pre-commit hook
 cat > .git/hooks/pre-commit << 'EOF'
@@ -116,9 +116,9 @@ ssh-copy-id hamster@192.168.100.64
 cat > .env.deploy << 'EOF'
 REMOTE_HOST=192.168.100.64
 REMOTE_USER=hamster
-REMOTE_PATH=/home/hamster/bot3_production
+REMOTE_PATH=/home/hamster/bot4_production
 BACKUP_PATH=/home/hamster/backups
-DOCKER_REGISTRY=hamster/bot3
+DOCKER_REGISTRY=hamster/bot4
 EOF
 
 # Make deployment script executable
@@ -298,7 +298,7 @@ jobs:
         run: |
           echo "$SSH_KEY" > ssh_key
           chmod 600 ssh_key
-          ssh -i ssh_key hamster@$REMOTE_HOST 'cd /home/hamster/bot3_production && git pull && ./scripts/deploy_remote.sh'
+          ssh -i ssh_key hamster@$REMOTE_HOST 'cd /home/hamster/bot4_production && git pull && ./scripts/deploy_remote.sh'
 EOF
 ```
 
@@ -315,7 +315,7 @@ EOF
 ./scripts/deploy/deploy_remote.sh --backup --deploy
 
 # Monitor logs
-ssh hamster@192.168.100.64 'docker logs -f bot3-trading'
+ssh hamster@192.168.100.64 'docker logs -f bot4-trading'
 
 # Quick status
 ./scripts/deploy/deploy_remote.sh --status
@@ -386,7 +386,7 @@ BINANCE_SECRET=your_testnet_secret
 BINANCE_TESTNET=true
 
 # Database
-DATABASE_URL=postgresql://bot3user:bot3pass@localhost:5432/bot3trading
+DATABASE_URL=postgresql://bot4user:bot4pass@localhost:5432/bot4trading
 REDIS_URL=redis://localhost:6379/0
 
 # Trading Configuration
@@ -413,7 +413,7 @@ HEALTH_CHECK_INTERVAL=30
 # Monitoring
 PROMETHEUS_ENABLED=true
 GRAFANA_ENABLED=true
-ALERT_EMAIL=admin@bot3.com
+ALERT_EMAIL=admin@bot4.com
 EOF
 ```
 
@@ -444,7 +444,7 @@ python scripts/validate/check_risk_limits.py
 # Check logs
 ./scripts/deploy/deploy_remote.sh --status
 # If health check failed
-ssh hamster@192.168.100.64 'docker logs bot3-trading'
+ssh hamster@192.168.100.64 'docker logs bot4-trading'
 # Rollback if needed
 ./scripts/deploy/deploy_remote.sh --rollback
 ```
@@ -476,7 +476,7 @@ The system is considered properly configured when:
 
 ## Contact Information
 
-- **Repository**: https://github.com/brw567/bot3
+- **Repository**: https://github.com/brw567/bot4
 - **Remote Host**: hamster@192.168.100.64
 - **Monitoring**: http://192.168.100.64:3001 (Grafana)
 - **API**: http://192.168.100.64:8000/docs

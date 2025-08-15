@@ -1,0 +1,6 @@
+{
+  "allowedTools": [
+    "mcp__github__*",
+    "mcp__filesystem__*"
+  ]
+}

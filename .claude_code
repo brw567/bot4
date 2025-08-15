@@ -1,0 +1,41 @@
+# Claude Code Project Configuration
+project_name: bot3
+primary_language: python
+framework: fastapi
+
+# Key directories
+source_dirs:
+  - src/
+  - strategies/
+  - ml/
+
+test_dirs:
+  - tests/unit/
+  - tests/integration/
+  - tests/backtesting/
+
+# Validation scripts
+validation:
+  pre_commit:
+    - python scripts/validate_no_fakes.py
+    - python scripts/check_risk_limits.py
+  pre_push:
+    - pytest tests/
+    - python scripts/test/test_performance.py
+
+# Remote deployment
+deployment:
+  host: 192.168.100.64
+  user: hamster
+  path: /home/hamster/bot3_production
+
+# Agent responsibilities
+agents:
+  alex: "Architecture & strategy decisions"
+  morgan: "ML & data science validation"
+  sam: "Code quality & fake detection"
+  quinn: "Risk management & limits"
+  jordan: "Performance & deployment"
+  casey: "Frontend & user experience"
+  riley: "Testing & quality assurance"
+  avery: "Security & compliance"

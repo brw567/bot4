@@ -1,4 +1,4 @@
-# Bot3 Agent Decision Log
+# Bot4 Agent Decision Log
 
 ## Purpose
 Track all major decisions made by the agent team, including conflicts, resolutions, and outcomes.

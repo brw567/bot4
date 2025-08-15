@@ -1,0 +1,355 @@
+name: Production Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  RUST_VERSION: 1.75.0
+
+jobs:
+  # Security scanning
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: SAST with Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+
+  # Build and test Rust code
+  build-rust:
+    name: Build Rust Components
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          targets: ${{ matrix.target }}
+          components: rustfmt, clippy
+      
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_core
+      
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+        working-directory: rust_core
+      
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+        working-directory: rust_core
+      
+      - name: Run tests
+        run: cargo test --all-features --workspace
+        working-directory: rust_core
+      
+      - name: Run benchmarks
+        run: cargo bench --no-run
+        working-directory: rust_core
+      
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }}
+        working-directory: rust_core
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-binaries-${{ matrix.target }}
+          path: rust_core/target/${{ matrix.target }}/release/bot3-*
+
+  # Build Docker images
+  build-docker:
+    name: Build Docker Images
+    needs: [security, build-rust]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.rust
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            RUST_VERSION=${{ env.RUST_VERSION }}
+      
+      - name: Sign container image
+        env:
+          COSIGN_EXPERIMENTAL: 1
+        run: |
+          cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+      
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+      
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          format: 'sarif'
+          output: 'docker-scan-results.sarif'
+      
+      - name: Upload scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'docker-scan-results.sarif'
+
+  # Deploy to staging
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build-docker
+    runs-on: ubuntu-latest
+    environment: staging
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.29.0'
+      
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=$PWD/kubeconfig" >> $GITHUB_ENV
+      
+      - name: Deploy to staging
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/configmap-staging.yaml
+          kubectl apply -f k8s/secrets-staging.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/monitoring.yaml
+      
+      - name: Wait for deployment
+        run: kubectl rollout status deployment/bot3-trading-engine -n bot3-trading --timeout=10m
+      
+      - name: Run smoke tests
+        run: |
+          POD=$(kubectl get pod -n bot3-trading -l app=bot3-trading-engine -o jsonpath='{.items[0].metadata.name}')
+          kubectl exec -n bot3-trading $POD -- /usr/local/bin/bot3-health-check
+      
+      - name: Run integration tests
+        run: |
+          npm install -g @bot3/integration-tests
+          bot3-integration-tests --endpoint https://staging.bot3.ai
+
+  # Canary deployment
+  canary-deploy:
+    name: Canary Deployment
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: canary
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flagger
+        run: |
+          kubectl apply -k github.com/fluxcd/flagger//kustomize/kubernetes
+      
+      - name: Create canary
+        run: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: flagger.app/v1beta1
+          kind: Canary
+          metadata:
+            name: bot3-trading-engine
+            namespace: bot3-trading
+          spec:
+            targetRef:
+              apiVersion: apps/v1
+              kind: Deployment
+              name: bot3-trading-engine
+            progressDeadlineSeconds: 600
+            service:
+              port: 8080
+            analysis:
+              interval: 1m
+              threshold: 5
+              maxWeight: 50
+              stepWeight: 10
+              metrics:
+              - name: request-success-rate
+                thresholdRange:
+                  min: 99
+                interval: 1m
+              - name: request-duration
+                thresholdRange:
+                  max: 10
+                interval: 1m
+              - name: profit-loss
+                thresholdRange:
+                  min: 0
+                interval: 5m
+              webhooks:
+              - name: acceptance-test
+                url: https://bot3.ai/api/canary/test
+                timeout: 30s
+              - name: load-test
+                url: https://bot3.ai/api/canary/load
+                timeout: 60s
+          EOF
+      
+      - name: Monitor canary
+        run: |
+          kubectl -n bot3-trading wait canary/bot3-trading-engine --for=condition=Promoted --timeout=30m
+
+  # Production deployment
+  deploy-production:
+    name: Deploy to Production
+    needs: canary-deploy
+    runs-on: ubuntu-latest
+    environment: production
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure kubectl for production
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=$PWD/kubeconfig" >> $GITHUB_ENV
+      
+      - name: Blue-Green Deployment
+        run: |
+          # Create new green deployment
+          kubectl apply -f k8s/deployment-green.yaml
+          
+          # Wait for green deployment to be ready
+          kubectl rollout status deployment/bot3-trading-engine-green -n bot3-trading --timeout=10m
+          
+          # Run production tests on green
+          ./scripts/production-tests.sh green
+          
+          # Switch traffic to green
+          kubectl patch service bot3-trading-engine -n bot3-trading -p '{"spec":{"selector":{"version":"green"}}}'
+          
+          # Monitor for 5 minutes
+          sleep 300
+          
+          # Check metrics
+          if ./scripts/check-production-metrics.sh; then
+            echo "Deployment successful, removing blue"
+            kubectl delete deployment bot3-trading-engine-blue -n bot3-trading
+            kubectl patch deployment bot3-trading-engine-green -n bot3-trading --type='json' -p='[{"op": "replace", "path": "/metadata/name", "value":"bot3-trading-engine-blue"}]'
+          else
+            echo "Deployment failed, rolling back"
+            kubectl patch service bot3-trading-engine -n bot3-trading -p '{"spec":{"selector":{"version":"blue"}}}'
+            kubectl delete deployment bot3-trading-engine-green -n bot3-trading
+            exit 1
+          fi
+      
+      - name: Update monitoring
+        run: |
+          kubectl apply -f k8s/monitoring-production.yaml
+      
+      - name: Notify deployment
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Production deployment completed for version ${{ github.ref }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        if: always()
+
+  # Rollback job
+  rollback:
+    name: Rollback Production
+    runs-on: ubuntu-latest
+    environment: production
+    if: failure() && github.ref == 'refs/heads/main'
+    needs: deploy-production
+    steps:
+      - name: Trigger rollback
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+          
+          # Get previous version
+          PREVIOUS=$(kubectl get deployment bot3-trading-engine -n bot3-trading -o jsonpath='{.metadata.annotations.previous-version}')
+          
+          # Rollback to previous version
+          kubectl set image deployment/bot3-trading-engine bot3-trading-engine=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$PREVIOUS -n bot3-trading
+          
+          # Wait for rollback
+          kubectl rollout status deployment/bot3-trading-engine -n bot3-trading --timeout=10m
+      
+      - name: Notify rollback
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'failure'
+          text: '🔄 Production rolled back to previous version'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}

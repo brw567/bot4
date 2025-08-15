@@ -1,0 +1,80 @@
+2025-08-10 20:16:55,130 - asyncio - DEBUG - [selector_events.py:54] - Using selector: EpollSelector
+2025-08-10 20:16:55,131 - __main__ - INFO - [start_debug.py:345] - ================================================================================
+2025-08-10 20:16:55,131 - __main__ - INFO - [start_debug.py:346] - 🚀 BOT3 DEBUG STARTUP - LIVE TESTING
+2025-08-10 20:16:55,131 - __main__ - INFO - [start_debug.py:347] - ================================================================================
+2025-08-10 20:16:55,131 - __main__ - INFO - [start_debug.py:348] - Start time: 2025-08-10T20:16:55.131386
+2025-08-10 20:16:55,131 - __main__ - INFO - [start_debug.py:349] - Python version: 3.10.12 (main, May 27 2025, 17:12:29) [GCC 11.4.0]
+2025-08-10 20:16:55,131 - __main__ - INFO - [start_debug.py:350] - Working directory: /home/hamster/DEV/bot3
+2025-08-10 20:16:56,136 - __main__ - INFO - [start_debug.py:55] - 📊 System Metrics: {
+  "timestamp": "2025-08-10T20:16:55.131723",
+  "cpu_percent": 0.0,
+  "memory_mb": 19.9296875,
+  "memory_percent": 0.16668795733415578,
+  "threads": 1,
+  "open_files": 1,
+  "connections": 0,
+  "system_cpu": 4.7,
+  "system_memory": 14.6,
+  "disk_usage": 96.0
+}
+2025-08-10 20:16:56,140 - __main__ - DEBUG - [start_debug.py:60] - 🧠 Top Memory Usage:
+2025-08-10 20:16:56,141 - __main__ - DEBUG - [start_debug.py:62] -   /usr/lib/python3.10/linecache.py:137: size=42.0 KiB, count=413, average=104 B
+2025-08-10 20:16:56,141 - __main__ - DEBUG - [start_debug.py:62] -   /usr/lib/python3.10/logging/__init__.py:1201: size=4792 B, count=9, average=532 B
+2025-08-10 20:16:56,141 - __main__ - DEBUG - [start_debug.py:62] -   /usr/lib/python3.10/abc.py:123: size=3944 B, count=39, average=101 B
+2025-08-10 20:16:56,141 - __main__ - DEBUG - [start_debug.py:62] -   /home/hamster/DEV/bot3/venv/lib/python3.10/site-packages/psutil/_pslinux.py:1717: size=3360 B, count=7, average=480 B
+2025-08-10 20:16:56,141 - __main__ - DEBUG - [start_debug.py:62] -   /usr/lib/python3.10/asyncio/selector_events.py:103: size=1928 B, count=3, average=643 B
+2025-08-10 20:16:56,141 - __main__ - INFO - [start_debug.py:359] - 
+📋 Phase 1: Core Components
+2025-08-10 20:16:56,141 - __main__ - INFO - [start_debug.py:68] - ================================================================================
+2025-08-10 20:16:56,141 - __main__ - INFO - [start_debug.py:69] - 🔧 TESTING CORE COMPONENTS
+2025-08-10 20:16:56,141 - __main__ - INFO - [start_debug.py:70] - ================================================================================
+2025-08-10 20:16:56,141 - __main__ - INFO - [start_debug.py:76] - Testing PostgreSQL connection...
+2025-08-10 20:16:56,297 - __main__ - INFO - [start_debug.py:85] - ✅ PostgreSQL: PostgreSQL 15.13 on x86_64-pc-linux-musl, compiled...
+2025-08-10 20:16:56,301 - __main__ - INFO - [start_debug.py:90] - Testing Redis connection...
+2025-08-10 20:16:56,421 - __main__ - INFO - [start_debug.py:94] - ✅ Redis: True
+2025-08-10 20:16:56,421 - __main__ - INFO - [start_debug.py:99] - Testing ML components...
+2025-08-10 20:16:58,905 - matplotlib - DEBUG - [__init__.py:342] - matplotlib data path: /home/hamster/DEV/bot3/venv/lib/python3.10/site-packages/matplotlib/mpl-data
+2025-08-10 20:16:58,922 - matplotlib - DEBUG - [__init__.py:342] - CONFIGDIR=/home/hamster/.config/matplotlib
+2025-08-10 20:16:58,925 - matplotlib - DEBUG - [__init__.py:1560] - interactive is False
+2025-08-10 20:16:58,925 - matplotlib - DEBUG - [__init__.py:1561] - platform is linux
+2025-08-10 20:16:59,453 - __main__ - INFO - [start_debug.py:105] - ✅ ML imports successful
+2025-08-10 20:16:59,453 - __main__ - INFO - [start_debug.py:109] - Testing risk components...
+2025-08-10 20:16:59,469 - __main__ - INFO - [start_debug.py:114] - ✅ Risk imports successful
+2025-08-10 20:17:00,470 - __main__ - INFO - [start_debug.py:364] - 
+📋 Phase 2: ML Pipeline
+2025-08-10 20:17:00,470 - __main__ - INFO - [start_debug.py:126] - ================================================================================
+2025-08-10 20:17:00,471 - __main__ - INFO - [start_debug.py:127] - 🤖 TESTING ML PIPELINE
+2025-08-10 20:17:00,471 - __main__ - INFO - [start_debug.py:128] - ================================================================================
+2025-08-10 20:17:00,489 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:121] - ML Production Pipeline initialized
+2025-08-10 20:17:00,489 - __main__ - INFO - [start_debug.py:155] - Generating test data...
+2025-08-10 20:17:00,492 - __main__ - INFO - [start_debug.py:166] - Test data shape: (200, 6)
+2025-08-10 20:17:00,493 - __main__ - INFO - [start_debug.py:167] - Test data columns: ['price', 'volume', 'rsi', 'macd', 'volatility', 'target']
+2025-08-10 20:17:00,493 - __main__ - INFO - [start_debug.py:170] - Training XGBoost model...
+2025-08-10 20:17:01,497 - __main__ - INFO - [start_debug.py:55] - 📊 System Metrics: {
+  "timestamp": "2025-08-10T20:17:00.493348",
+  "cpu_percent": 0.0,
+  "memory_mb": 244.46484375,
+  "memory_percent": 2.0446555142774345,
+  "threads": 12,
+  "open_files": 2,
+  "connections": 0,
+  "system_cpu": 1.7,
+  "system_memory": 15.8,
+  "disk_usage": 96.0
+}
+2025-08-10 20:17:03,329 - __main__ - DEBUG - [start_debug.py:60] - 🧠 Top Memory Usage:
+2025-08-10 20:17:03,330 - __main__ - DEBUG - [start_debug.py:62] -   <frozen importlib._bootstrap_external>:672: size=37.4 MiB, count=308985, average=127 B
+2025-08-10 20:17:03,330 - __main__ - DEBUG - [start_debug.py:62] -   <frozen importlib._bootstrap>:241: size=9826 KiB, count=68878, average=146 B
+2025-08-10 20:17:03,330 - __main__ - DEBUG - [start_debug.py:62] -   /usr/lib/python3.10/abc.py:106: size=1771 KiB, count=4453, average=407 B
+2025-08-10 20:17:03,330 - __main__ - DEBUG - [start_debug.py:62] -   /home/hamster/DEV/bot3/venv/lib/python3.10/site-packages/scipy/_lib/doccer.py:69: size=727 KiB, count=242, average=3075 B
+2025-08-10 20:17:03,331 - __main__ - DEBUG - [start_debug.py:62] -   /usr/lib/python3.10/linecache.py:137: size=571 KiB, count=5616, average=104 B
+2025-08-10 20:17:03,400 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:143] - Training xgboost model for target
+2025-08-10 20:17:03,416 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:157] - Data split - Train: 139, Val: 41, Test: 20
+2025-08-10 20:17:03,517 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:423] - train metrics: {'mse': 3.211351639349997e-07, 'mae': 0.0004330362784483815, 'r2': 0.9978527771410853, 'rmse': 0.0005666878893491546, 'accuracy': 0.9995669637215516}
+2025-08-10 20:17:03,521 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:423] - validation metrics: {'mse': 0.00013023482063202933, 'mae': 0.00914912486205194, 'r2': -0.1316057402858022, 'rmse': 0.011412047170951815, 'accuracy': 0.990850875137948}
+2025-08-10 20:17:03,525 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:423] - test metrics: {'mse': 0.00019135942418010803, 'mae': 0.012206981867275906, 'r2': -0.05622522636275029, 'rmse': 0.013833272359789206, 'accuracy': 0.9877930181327241}
+2025-08-10 20:17:04,400 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:217] - Cross-validation scores: {'neg_mean_squared_error': {'mean': -0.000183068297391806, 'std': 3.3593041748168875e-05, 'scores': [-0.00021386515896118573, -0.0002065963035874719, -0.0001362413290221655, -0.00021029977939736685, -0.0001483389159908401]}, 'neg_mean_absolute_error': {'mean': -0.011576729258907533, 'std': 0.001001531013945268, 'scores': [-0.012048748860343324, -0.012488795818617749, -0.010061542671241461, -0.012552298672412796, -0.010732260271922341]}, 'r2': {'mean': -0.2749358848642353, 'std': 0.28846974553489046, 'scores': [-0.6058835731816297, -0.412257972353389, 0.1771474129038242, -0.4707788284773615, -0.06290646321262061]}}
+2025-08-10 20:17:04,401 - src.core.ml_production_pipeline - INFO - [ml_production_pipeline.py:502] - Top features: ['rsi', 'volatility', 'macd', 'volume', 'price']
+2025-08-10 20:17:04,410 - src.core.ml_production_pipeline - ERROR - [ml_production_pipeline.py:251] - Error training model: __aenter__
+2025-08-10 20:17:04,410 - __main__ - ERROR - [start_debug.py:211] - ❌ ML Pipeline test failed: __aenter__
+2025-08-10 20:17:04,411 - __main__ - ERROR - [start_debug.py:421] - 💥 Fatal error: name 'traceback' is not defined

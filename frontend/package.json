@@ -13,9 +13,14 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@mui/icons-material": "^5.15.0",
+    "@mui/material": "^5.15.0",
     "@reduxjs/toolkit": "^2.0.1",
+    "@types/node": "^24.2.1",
     "axios": "^1.6.2",
     "chart.js": "^4.5.0",
     "clsx": "^2.0.0",
