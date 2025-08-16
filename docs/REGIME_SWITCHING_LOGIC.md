@@ -288,7 +288,7 @@ REGIME_RISK_MULTIPLIERS = {
         'base_position_size': 0.02,   # Full 2%
         'max_leverage': 3.0,           # Normal leverage
         'stop_loss': 0.05,             # Normal stops
-        'correlation_limit': 0.5       # Normal correlation
+        'correlation_limit': 0.7       # Normal correlation
     },
     'choppy': {
         'base_position_size': 0.015,  # Reduced size
