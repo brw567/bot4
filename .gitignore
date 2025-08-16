@@ -1,1 +1,90 @@
+# Bot4 Trading Platform - Security-First .gitignore
+# CRITICAL: Prevents secrets and artifacts from reaching GitHub
+
+# ============================================
+# SECRETS & CONFIGURATION (NEVER COMMIT)
+# ============================================
+.env
+.env.*
+!.env.example
+*.env
+secrets/
+**/secrets/
+config/*.json
+!config/*.example.json
+config/*.yaml
+!config/*.example.yaml
+config/*.toml
+!config/*.example.toml
+
+# API Keys and Credentials
+*_api_key*
+*_secret*
+*.key
+*.pem
+*.p12
+*.pfx
+*.cert
+*.crt
+credentials/
+tokens/
+
+# Database URLs and passwords
+database.url
+db_config.json
+connection_strings.txt
+
+# ============================================
+# RUST BUILD ARTIFACTS (LARGE FILES)
+# ============================================
+target/
+**/target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Rust build files
+*.rlib
+*.rmeta
+*.d
+*.so
+*.dylib
+*.dll
+*.exe
+
+# ============================================
+# LOGS & RUNTIME DATA
+# ============================================
+logs/
+*.log
+*.log.*
+log-*.txt
+debug.log
+error.log
+access.log
+trading.log
+
+# Monitoring data
+prometheus_data/
+grafana_data/
+loki_data/
+jaeger_data/
+
+# ============================================
+# DOCKER & CONTAINERS
+# ============================================
+postgres_data/
+timescale_data/
+redis_data/
+docker/volumes/
+*.dump
+*.sql.gz
+
+# ============================================
+# ARCHIVED/OLD CODE
+# ============================================
 rust_core_old_epic7/
+rust_core_old*/
+*_archived_*/
+deprecated/
+legacy/

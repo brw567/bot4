@@ -21,11 +21,16 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
 - ❌ **NO hardcoded values**
 - **THIS IS MANDATORY - MUST DO!!!**
 
-### 3. MANDATORY DOCUMENTATION WORKFLOW
-**EVERY TASK - NO EXCEPTIONS:**
-1. **BEFORE starting ANY task**: Read PROJECT_MANAGEMENT_TASK_LIST_V5.md AND ARCHITECTURE.md
-2. **AFTER completing EACH sub-task**: Update BOTH documents IMMEDIATELY
-3. **This refreshes context and maintains documentation - MANDATORY!**
+### 3. MANDATORY GITHUB PR WORKFLOW - EXTERNAL QA REVIEW
+**EVERY SUB-TASK REQUIRES A SEPARATE PR:**
+1. **ONE SUB-TASK = ONE PR** - Granular review by external QA team
+2. **BEFORE starting ANY task**: Read PROJECT_MANAGEMENT_TASK_LIST_V5.md AND ARCHITECTURE.md
+3. **Create feature branch**: `git checkout -b task-X.Y.Z-description`
+4. **Implement with 100% quality** - No shortcuts, no fakes
+5. **Create PR to GitHub** - Detailed description with validation checklist
+6. **EXTERNAL QA REVIEW** - Wait for approval before proceeding
+7. **Update docs IMMEDIATELY**: After QA approval, update V5 and ARCHITECTURE.md
+8. **NO WORK WITHOUT PR APPROVAL** - This is MANDATORY!
 
 ### 4. 100% VALIDATION REQUIREMENTS
 **EACH TASK MUST HAVE:**
@@ -36,6 +41,14 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
 - ✅ **100% tested** - All edge cases covered
 - ✅ **Fully integrated into logic** - Working with all components
 - **THIS IS A MUST!!!!**
+
+### 5. GITHUB REPOSITORY
+**Repository**: git@github.com:brw567/bot4.git
+**Branch Strategy**: 
+- `main` - Production ready code only
+- `develop` - Integration branch
+- `task-*` - Individual sub-task branches
+**External QA**: Every PR reviewed by external quality assurance team
 
 ## 🚨 CRITICAL: Quality Gates & Enforcement
 
