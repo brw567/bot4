@@ -42,7 +42,7 @@ documentation_pages: ~500
   - [ ] 0.1.5 Git hooks and quality gates
 
 - [ ] 0.2 Architecture Finalization
-  - [ ] 0.2.1 Review MASTER_ARCHITECTURE_V2.md
+  - [ ] 0.2.1 Review MASTER_ARCHITECTURE.md
   - [ ] 0.2.2 Create detailed component diagrams
   - [ ] 0.2.3 Define all interfaces
   - [ ] 0.2.4 Document data flows

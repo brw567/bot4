@@ -200,6 +200,529 @@ validation_criteria:
 
 ---
 
+### COMPONENT: RegimeDetectionSystem
+
+```yaml
+component_id: REGIME_001
+component_name: RegimeDetectionSystem
+owner: Morgan
+dependencies: [DATA_001]
+phase: 3.5
+
+contract:
+  inputs:
+    - market_data: MarketData # Current market conditions
+    - sentiment_data: SentimentData # Fear/Greed, social sentiment
+    - onchain_data: OnChainMetrics # Blockchain metrics
+  outputs:
+    - regime: MarketRegime # Detected market regime
+    - confidence: f64 # Detection confidence (0.0-1.0)
+    - transition_signal: Option<TransitionSignal> # Regime change signal
+  errors:
+    - InsufficientData # Not enough data for detection
+    - LowConfidence # Confidence below threshold
+    - ModelFailure # One or more models failed
+
+requirements:
+  functional:
+    - MUST use 5-model consensus (HMM, LSTM, XGBoost, Microstructure, OnChain)
+    - MUST achieve >90% accuracy on historical data
+    - MUST require 3+ models agreement for regime change
+    - MUST detect all 5 regime types (BullEuphoria, BullNormal, Choppy, Bear, BlackSwan)
+    - MUST provide transition signals with lead time
+  performance:
+    - latency: <1 second
+    - accuracy: >90%
+    - false_positive_rate: <5%
+  quality:
+    - test_coverage: >95%
+    - backtested_years: >5
+    - model_validation: cross-validated
+
+implementation_spec:
+  language: Rust
+  patterns: [Strategy, Observer, Consensus]
+  ml_frameworks: [ONNX, Candle]
+  restrictions:
+    - NEVER change regime without consensus
+    - NEVER switch during high volatility
+    - LIMIT switches to 1 per 4 hours
+    - ALWAYS log regime changes
+
+test_spec:
+  unit_tests:
+    - test_hmm_detection: validates HMM model
+    - test_lstm_classifier: validates LSTM accuracy
+    - test_consensus_mechanism: requires 3+ agreement
+    - test_all_regimes: detects each regime type
+  integration_tests:
+    - test_with_historical_data: >90% accuracy on 5 years
+    - test_regime_transitions: smooth transitions
+  benchmarks:
+    - detection_latency: <1 second
+    - accuracy: >90%
+
+example:
+  ```rust
+  pub struct RegimeDetectionSystem {
+      hmm_detector: HiddenMarkovModel,
+      lstm_classifier: LSTMRegimeClassifier,
+      xgboost_detector: XGBoostDetector,
+      microstructure_analyzer: MicrostructureAnalyzer,
+      onchain_analyzer: OnChainAnalyzer,
+      consensus_threshold: f64,  // 0.75
+      min_models_agreement: usize,  // 3
+  }
+  
+  impl RegimeDetectionSystem {
+      pub fn detect_regime(&self, data: &MarketData) -> Result<RegimeDetection> {
+          // Collect predictions from all models
+          let predictions = vec![
+              (self.hmm_detector.predict(data)?, 0.25),
+              (self.lstm_classifier.predict(data)?, 0.30),
+              (self.xgboost_detector.predict(data)?, 0.20),
+              (self.microstructure_analyzer.analyze(data)?, 0.15),
+              (self.onchain_analyzer.analyze(data)?, 0.10),
+          ];
+          
+          // Calculate weighted consensus
+          let consensus = self.calculate_weighted_consensus(&predictions)?;
+          
+          // Validate confidence threshold
+          if consensus.confidence < self.consensus_threshold {
+              return Err(RegimeError::LowConfidence(consensus.confidence));
+          }
+          
+          // Check minimum agreement
+          let agreeing_models = predictions.iter()
+              .filter(|(pred, _)| pred.regime == consensus.regime)
+              .count();
+          
+          if agreeing_models < self.min_models_agreement {
+              return Err(RegimeError::InsufficientConsensus);
+          }
+          
+          Ok(RegimeDetection {
+              regime: consensus.regime,
+              confidence: consensus.confidence,
+              transition_signal: self.check_transition(&consensus.regime)?,
+          })
+      }
+  }
+  ```
+
+validation_criteria:
+  - Consensus from 3+ models
+  - Confidence >75%
+  - Historical accuracy >90%
+  - No rapid switching
+```
+
+---
+
+### COMPONENT: EmotionFreeValidator
+
+```yaml
+component_id: EMOTION_001
+component_name: EmotionFreeValidator
+owner: Quinn
+dependencies: [RISK_001, REGIME_001]
+phase: 3.5
+
+contract:
+  inputs:
+    - signal: TradingSignal # Signal to validate
+    - context: TradingContext # Current market context
+    - statistics: SignalStatistics # Historical performance
+  outputs:
+    - decision: ValidationDecision # Approve/Reject with reasoning
+    - metrics: ValidationMetrics # Statistical measures
+  errors:
+    - EmotionalBiasDetected # Emotional pattern found
+    - StatisticallyInsignificant # p-value > 0.05
+    - NegativeExpectedValue # EV <= 0
+    - InsufficientSharpe # Sharpe < 2.0
+
+requirements:
+  functional:
+    - MUST validate statistical significance (p < 0.05)
+    - MUST calculate expected value (EV > 0)
+    - MUST verify Sharpe ratio (> 2.0)
+    - MUST check confidence level (> 75%)
+    - MUST detect emotional biases
+    - MUST block all non-mathematical decisions
+  performance:
+    - latency: <100ms
+    - validation_rate: 100%
+  quality:
+    - test_coverage: 100% # Critical component
+    - false_negative_rate: 0% # Never allow emotional trades
+
+implementation_spec:
+  language: Rust
+  patterns: [Validator, ChainOfResponsibility]
+  restrictions:
+    - NEVER approve emotional decisions
+    - NEVER skip validation
+    - ALWAYS require mathematical proof
+    - ALWAYS log rejections
+
+test_spec:
+  unit_tests:
+    - test_statistical_significance: rejects p > 0.05
+    - test_expected_value: rejects EV <= 0
+    - test_sharpe_validation: rejects Sharpe < 2.0
+    - test_confidence_check: rejects < 75%
+    - test_bias_detection: catches all bias types
+  integration_tests:
+    - test_with_historical_signals: 0% emotional trades
+    - test_with_regime_context: adapts to regime
+  benchmarks:
+    - validation_latency: <100ms
+    - rejection_accuracy: 100%
+
+example:
+  ```rust
+  pub struct EmotionFreeValidator {
+      significance_threshold: f64,  // 0.05
+      min_expected_value: f64,      // 0.0
+      min_sharpe_ratio: f64,        // 2.0
+      min_confidence: f64,          // 0.75
+      bias_detector: BiasDetector,
+      statistical_validator: StatisticalValidator,
+  }
+  
+  impl EmotionFreeValidator {
+      pub fn validate(&self, signal: &TradingSignal) -> Result<ValidationDecision> {
+          // First check for emotional biases
+          if let Some(bias) = self.bias_detector.detect(signal) {
+              return Ok(ValidationDecision::Reject {
+                  reason: format!("Emotional bias detected: {:?}", bias),
+                  bias_type: Some(bias),
+              });
+          }
+          
+          // Statistical significance test
+          let p_value = self.statistical_validator.calculate_p_value(signal);
+          if p_value > self.significance_threshold {
+              return Ok(ValidationDecision::Reject {
+                  reason: format!("Not statistically significant: p={:.4}", p_value),
+                  bias_type: None,
+              });
+          }
+          
+          // Expected value calculation
+          let expected_value = self.calculate_expected_value(signal);
+          if expected_value <= self.min_expected_value {
+              return Ok(ValidationDecision::Reject {
+                  reason: format!("Negative expected value: {:.4}", expected_value),
+                  bias_type: None,
+              });
+          }
+          
+          // Sharpe ratio validation
+          let sharpe = self.calculate_sharpe_ratio(signal);
+          if sharpe < self.min_sharpe_ratio {
+              return Ok(ValidationDecision::Reject {
+                  reason: format!("Insufficient Sharpe ratio: {:.2}", sharpe),
+                  bias_type: None,
+              });
+          }
+          
+          // Confidence check
+          if signal.confidence < self.min_confidence {
+              return Ok(ValidationDecision::Reject {
+                  reason: format!("Low confidence: {:.2}%", signal.confidence * 100.0),
+                  bias_type: None,
+              });
+          }
+          
+          Ok(ValidationDecision::Approve {
+              signal_id: signal.id,
+              expected_value,
+              sharpe_ratio: sharpe,
+              p_value,
+              reasoning: "All mathematical criteria satisfied".to_string(),
+          })
+      }
+  }
+  ```
+
+validation_criteria:
+  - Zero emotional trades
+  - 100% mathematical validation
+  - All biases blocked
+  - Statistical rigor enforced
+```
+
+---
+
+### COMPONENT: PsychologicalBiasBlocker
+
+```yaml
+component_id: BIAS_001
+component_name: PsychologicalBiasBlocker
+owner: Morgan
+dependencies: [EMOTION_001]
+phase: 3.5
+
+contract:
+  inputs:
+    - context: TradingContext # Current trading state
+    - history: TradingHistory # Recent trading history
+    - market_sentiment: MarketSentiment # Social/fear indicators
+  outputs:
+    - biases: Vec<BiasDetection> # Detected biases
+    - recommendations: Vec<BiasRecommendation> # Corrective actions
+  errors:
+    - AnalysisError # Cannot analyze context
+
+requirements:
+  functional:
+    - MUST detect FOMO (fear of missing out)
+    - MUST detect revenge trading patterns
+    - MUST detect overconfidence after wins
+    - MUST detect loss aversion behavior
+    - MUST detect confirmation bias
+    - MUST provide corrective actions
+  performance:
+    - latency: <50ms
+    - detection_rate: >99%
+  quality:
+    - test_coverage: >95%
+    - false_positive_rate: <1%
+
+implementation_spec:
+  language: Rust
+  patterns: [Strategy, Observer]
+  restrictions:
+    - ALWAYS block detected biases
+    - NEVER allow override
+    - ENFORCE cooldown periods
+    - LOG all detections
+
+test_spec:
+  unit_tests:
+    - test_fomo_detection: catches chase trades
+    - test_revenge_trading: detects immediate re-entry
+    - test_overconfidence: catches position oversizing
+    - test_loss_aversion: detects stop loss avoidance
+    - test_confirmation_bias: requires multiple sources
+  integration_tests:
+    - test_with_trading_history: detects patterns
+    - test_with_market_sentiment: uses fear/greed
+  benchmarks:
+    - detection_latency: <50ms
+    - accuracy: >99%
+
+example:
+  ```rust
+  pub struct PsychologicalBiasBlocker {
+      fomo_detector: FOMODetector,
+      revenge_detector: RevengeTradingDetector,
+      overconfidence_detector: OverconfidenceDetector,
+      loss_aversion_detector: LossAversionDetector,
+      confirmation_bias_detector: ConfirmationBiasDetector,
+  }
+  
+  impl PsychologicalBiasBlocker {
+      pub fn detect_biases(&self, context: &TradingContext) -> Vec<BiasDetection> {
+          let mut biases = Vec::new();
+          
+          // FOMO Detection
+          if self.fomo_detector.detect(context) {
+              biases.push(BiasDetection::FOMO {
+                  trigger: "Rapid price rise with high sentiment".to_string(),
+                  action: BiasAction::BlockTrade,
+                  cooldown: Duration::hours(1),
+              });
+          }
+          
+          // Revenge Trading
+          if self.revenge_detector.detect(context) {
+              biases.push(BiasDetection::RevengeTrade {
+                  trigger: "Recent loss followed by immediate re-entry".to_string(),
+                  action: BiasAction::EnforceCooldown,
+                  cooldown: Duration::hours(4),
+              });
+          }
+          
+          // Overconfidence
+          if self.overconfidence_detector.detect(context) {
+              biases.push(BiasDetection::Overconfidence {
+                  trigger: "Win streak with increasing position sizes".to_string(),
+                  action: BiasAction::CapPositionSize,
+                  max_size: context.portfolio_value * 0.01,  // 1% max
+              });
+          }
+          
+          // Loss Aversion
+          if self.loss_aversion_detector.detect(context) {
+              biases.push(BiasDetection::LossAversion {
+                  trigger: "Holding losing position beyond stop".to_string(),
+                  action: BiasAction::ForceStopLoss,
+              });
+          }
+          
+          // Confirmation Bias
+          if self.confirmation_bias_detector.detect(context) {
+              biases.push(BiasDetection::ConfirmationBias {
+                  trigger: "Single signal source".to_string(),
+                  action: BiasAction::RequireMultipleConfirmations,
+                  min_confirmations: 3,
+              });
+          }
+          
+          biases
+      }
+  }
+  ```
+
+validation_criteria:
+  - All bias types detected
+  - Corrective actions enforced
+  - No override possible
+  - Cooldowns respected
+```
+
+---
+
+### COMPONENT: RegimeStrategyAllocator
+
+```yaml
+component_id: ALLOCATOR_001
+component_name: RegimeStrategyAllocator
+owner: Sam
+dependencies: [REGIME_001, EMOTION_001]
+phase: 3.5
+
+contract:
+  inputs:
+    - regime: MarketRegime # Current market regime
+    - portfolio: Portfolio # Current portfolio state
+    - available_strategies: Vec<Strategy> # Available strategies
+  outputs:
+    - allocation: StrategyAllocation # Weighted strategy mix
+    - target_returns: Range<f64> # Expected returns for regime
+  errors:
+    - InvalidRegime # Unknown regime type
+    - InsufficientStrategies # Not enough strategies available
+
+requirements:
+  functional:
+    - MUST allocate strategies per regime type
+    - MUST achieve regime-specific return targets
+    - MUST adapt to regime transitions
+    - MUST maintain diversification
+    - MUST respect risk limits
+  performance:
+    - allocation_time: <100ms
+    - rebalance_time: <1 second
+  quality:
+    - test_coverage: >95%
+    - backtested_returns: match targets ±10%
+
+implementation_spec:
+  language: Rust
+  patterns: [Strategy, Factory]
+  restrictions:
+    - NEVER exceed regime risk limits
+    - ALWAYS maintain diversification
+    - GRADUALLY transition allocations
+    - LOG all allocation changes
+
+test_spec:
+  unit_tests:
+    - test_bull_euphoria_allocation: 30-50% monthly target
+    - test_bull_normal_allocation: 15-25% monthly target
+    - test_choppy_allocation: 8-15% monthly target
+    - test_bear_allocation: 5-10% monthly target
+    - test_black_swan_allocation: capital preservation
+  integration_tests:
+    - test_regime_transitions: smooth rebalancing
+    - test_with_portfolio: respects constraints
+  benchmarks:
+    - allocation_speed: <100ms
+    - target_accuracy: ±10%
+
+example:
+  ```rust
+  pub struct RegimeStrategyAllocator {
+      regime_allocations: HashMap<MarketRegime, StrategyWeights>,
+      transition_manager: TransitionManager,
+  }
+  
+  impl RegimeStrategyAllocator {
+      pub fn get_allocation(&self, regime: &MarketRegime) -> StrategyAllocation {
+          match regime {
+              MarketRegime::BullEuphoria { .. } => {
+                  StrategyAllocation {
+                      leveraged_momentum: 0.40,
+                      breakout_trading: 0.30,
+                      launchpad_sniping: 0.20,
+                      memecoin_rotation: 0.10,
+                      target_monthly_return: 0.30..0.50,
+                      max_leverage: 5.0,
+                      risk_multiplier: 1.5,
+                  }
+              },
+              MarketRegime::BullNormal { .. } => {
+                  StrategyAllocation {
+                      trend_following: 0.35,
+                      swing_trading: 0.30,
+                      defi_yield: 0.20,
+                      arbitrage: 0.15,
+                      target_monthly_return: 0.15..0.25,
+                      max_leverage: 3.0,
+                      risk_multiplier: 1.0,
+                  }
+              },
+              MarketRegime::Choppy { .. } => {
+                  StrategyAllocation {
+                      market_making: 0.35,
+                      mean_reversion: 0.30,
+                      arbitrage: 0.25,
+                      funding_rates: 0.10,
+                      target_monthly_return: 0.08..0.15,
+                      max_leverage: 2.0,
+                      risk_multiplier: 0.7,
+                  }
+              },
+              MarketRegime::Bear { .. } => {
+                  StrategyAllocation {
+                      short_selling: 0.30,
+                      stable_farming: 0.30,
+                      arbitrage_only: 0.30,
+                      cash_reserve: 0.10,
+                      target_monthly_return: 0.05..0.10,
+                      max_leverage: 1.0,
+                      risk_multiplier: 0.5,
+                  }
+              },
+              MarketRegime::BlackSwan { .. } => {
+                  StrategyAllocation {
+                      emergency_hedge: 0.50,
+                      stable_coins: 0.40,
+                      gold_tokens: 0.10,
+                      target_monthly_return: -0.05..0.00,
+                      max_leverage: 0.0,
+                      risk_multiplier: 0.1,
+                  }
+              },
+          }
+      }
+  }
+  ```
+
+validation_criteria:
+  - Correct allocation per regime
+  - Target returns achievable
+  - Risk limits respected
+  - Smooth transitions
+```
+
+---
+
 ### COMPONENT: FeeManager
 
 ```yaml

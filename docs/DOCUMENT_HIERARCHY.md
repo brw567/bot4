@@ -19,8 +19,8 @@ These provide context, reasoning, and high-level overview for human understandin
 
 | Document | Purpose | Location |
 |----------|---------|----------|
-| **MASTER_ARCHITECTURE_V2.md** | Complete system architecture | `/docs/` |
-| **PROJECT_MANAGEMENT_PLAN_V6.md** | Full project timeline and phases | `/docs/` |
+| **MASTER_ARCHITECTURE.md** | Complete system architecture | `/docs/` |
+| **PROJECT_MANAGEMENT_PLAN.md** | Full project timeline and phases | `/docs/` |
 | **COMPREHENSIVE_GAP_ANALYSIS.md** | All identified gaps and solutions | `/docs/` |
 
 ### 3. OPERATIONAL DOCUMENTS (ACTIVE USE)
@@ -38,7 +38,7 @@ These are kept for reference but should not be used for new work.
 | Document | Purpose | Status |
 |----------|---------|--------|
 | **PROJECT_MANAGEMENT_TASK_LIST_V5.md** | Old task list | Superseded by LLM_TASK_SPECIFICATIONS |
-| **ARCHITECTURE.md** | Original architecture | Superseded by MASTER_ARCHITECTURE_V2 |
+| **ARCHITECTURE.md** | Original architecture | Superseded by MASTER_ARCHITECTURE |
 | **DEVELOPMENT_RULES.md** | Old rules | Integrated into CLAUDE.md |
 
 ---
@@ -87,7 +87,7 @@ graph LR
 ```mermaid
 graph LR
     A[Identify Change] --> B[Update LLM_OPTIMIZED_ARCHITECTURE]
-    B --> C[Update MASTER_ARCHITECTURE_V2]
+    B --> C[Update MASTER_ARCHITECTURE]
     C --> D[Update Dependent Tasks]
     D --> E[Team Review]
     E --> F[Commit]
@@ -147,10 +147,10 @@ graph LR
 → Check `LLM_OPTIMIZED_ARCHITECTURE.md`
 
 ### Need system overview?
-→ Read `MASTER_ARCHITECTURE_V2.md`
+→ Read `MASTER_ARCHITECTURE.md`
 
 ### Need project timeline?
-→ See `PROJECT_MANAGEMENT_PLAN_V6.md`
+→ See `PROJECT_MANAGEMENT_PLAN.md`
 
 ### Need to understand gaps?
 → Review `COMPREHENSIVE_GAP_ANALYSIS.md`

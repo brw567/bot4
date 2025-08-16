@@ -119,8 +119,8 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 **Document Priority:**
 1. **LLM_TASK_SPECIFICATIONS.md** - Primary task reference (USE THIS)
 2. **LLM_OPTIMIZED_ARCHITECTURE.md** - Primary architecture reference (USE THIS)
-3. **MASTER_ARCHITECTURE_V2.md** - Human-readable architecture (reference)
-4. **PROJECT_MANAGEMENT_PLAN_V6.md** - Human-readable project plan (reference)
+3. **MASTER_ARCHITECTURE.md** - Human-readable architecture (reference)
+4. **PROJECT_MANAGEMENT_PLAN.md** - Human-readable project plan (reference)
 
 ### Task Workflow - MANDATORY PROCESS (ENHANCED V2)
 ```bash
