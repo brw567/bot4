@@ -1,12 +1,38 @@
 ## 📋 PR Summary
 
 **Task ID**: <!-- e.g., Task 0.1.2 from PROJECT_MANAGEMENT_TASK_LIST_V5.md -->
-**Task Title**: <!-- Brief description -->
+**Task Title**: <!-- Copy exact title from V5 -->
 **Phase**: <!-- e.g., Phase 0: Foundation Setup -->
+**V5 Reference**: <!-- Line number in PROJECT_MANAGEMENT_TASK_LIST_V5.md -->
 
-## 📝 Description
+## 📝 Task Details (MANDATORY)
 
-<!-- Detailed description of what this PR implements -->
+### Original Task Description from V5:
+<!-- Copy the EXACT task description from PROJECT_MANAGEMENT_TASK_LIST_V5.md -->
+
+### Implementation Explanation:
+<!-- Detailed explanation of:
+- What was implemented
+- How it works technically
+- Why this approach was chosen
+- Key design decisions made
+-->
+
+### Testing Approach:
+<!-- Explain:
+- What tests were written
+- What edge cases are covered
+- How integration was tested
+- Performance validation approach
+-->
+
+### Integration Points:
+<!-- Describe:
+- How this connects to existing components
+- Dependencies on other modules
+- APIs exposed for future use
+- Data flow and interactions
+-->
 
 ## ✅ Implementation Checklist
 

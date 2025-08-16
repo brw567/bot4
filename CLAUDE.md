@@ -22,12 +22,17 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
 - **THIS IS MANDATORY - MUST DO!!!**
 
 ### 3. MANDATORY GITHUB PR WORKFLOW - EXTERNAL QA REVIEW
-**EVERY SUB-TASK REQUIRES A SEPARATE PR:**
+**EVERY SUB-TASK REQUIRES A SEPARATE PR WITH FULL DOCUMENTATION:**
 1. **ONE SUB-TASK = ONE PR** - Granular review by external QA team
 2. **BEFORE starting ANY task**: Read PROJECT_MANAGEMENT_TASK_LIST_V5.md AND ARCHITECTURE.md
 3. **Create feature branch**: `git checkout -b task-X.Y.Z-description`
 4. **Implement with 100% quality** - No shortcuts, no fakes
-5. **Create PR to GitHub** - Detailed description with validation checklist
+5. **Create PR to GitHub** with MANDATORY elements:
+   - **Task/Sub-task ID and full description from V5**
+   - **Implementation explanation** - How it works, why this approach
+   - **Testing approach** - What tests cover, edge cases handled
+   - **Integration points** - How it connects to other components
+   - **Validation checklist** - 100% complete
 6. **EXTERNAL QA REVIEW** - Wait for approval before proceeding
 7. **Update docs IMMEDIATELY**: After QA approval, update V5 and ARCHITECTURE.md
 8. **NO WORK WITHOUT PR APPROVAL** - This is MANDATORY!
