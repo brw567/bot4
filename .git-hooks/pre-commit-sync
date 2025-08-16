@@ -1,0 +1,100 @@
+#!/bin/bash
+# Git pre-commit hook to enforce document synchronization
+# Ensures LLM-optimized documents are updated before commit
+
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo "================================================"
+echo "   PRE-COMMIT: Document Sync Verification"
+echo "================================================"
+
+# Check if sync enforcement script exists
+SYNC_SCRIPT="/home/hamster/bot4/scripts/enforce_document_sync.sh"
+if [ ! -f "$SYNC_SCRIPT" ]; then
+    echo -e "${RED}✗ Document sync script not found!${NC}"
+    exit 1
+fi
+
+# Run sync check
+$SYNC_SCRIPT check
+
+# Check if LLM documents are staged for commit
+TASK_SPEC_STAGED=$(git diff --cached --name-only | grep -c "LLM_TASK_SPECIFICATIONS.md" || true)
+ARCH_SPEC_STAGED=$(git diff --cached --name-only | grep -c "LLM_OPTIMIZED_ARCHITECTURE.md" || true)
+
+# Check if any Rust source files are staged
+RUST_STAGED=$(git diff --cached --name-only | grep -c "\.rs$" || true)
+
+if [ $RUST_STAGED -gt 0 ]; then
+    echo -e "\n${YELLOW}Rust source files detected in commit${NC}"
+    
+    if [ $TASK_SPEC_STAGED -eq 0 ] || [ $ARCH_SPEC_STAGED -eq 0 ]; then
+        echo -e "${RED}✗ ERROR: Rust changes require document updates!${NC}"
+        echo ""
+        echo "You have modified Rust source files but haven't updated:"
+        
+        if [ $TASK_SPEC_STAGED -eq 0 ]; then
+            echo "  - LLM_TASK_SPECIFICATIONS.md (task status)"
+        fi
+        
+        if [ $ARCH_SPEC_STAGED -eq 0 ]; then
+            echo "  - LLM_OPTIMIZED_ARCHITECTURE.md (component metrics)"
+        fi
+        
+        echo ""
+        echo "Please update the documents with:"
+        echo "  1. Task completion status"
+        echo "  2. Actual performance metrics"
+        echo "  3. Any deviations from spec"
+        echo ""
+        echo "Then stage the documents and commit again."
+        exit 1
+    else
+        echo -e "${GREEN}✓ Document updates included in commit${NC}"
+    fi
+fi
+
+# Validate document content if they're being committed
+if [ $TASK_SPEC_STAGED -gt 0 ]; then
+    echo -e "\n${YELLOW}Validating task specification updates...${NC}"
+    
+    # Check for incomplete status markers
+    INCOMPLETE=$(git diff --cached docs/LLM_TASK_SPECIFICATIONS.md | grep -c "^+.*status: in_progress" || true)
+    
+    if [ $INCOMPLETE -gt 0 ]; then
+        echo -e "${YELLOW}⚠ Warning: Committing tasks marked as 'in_progress'${NC}"
+        echo "Are you sure these tasks are still in progress? (y/n)"
+        read -r response
+        if [ "$response" != "y" ]; then
+            echo "Please update task status before committing."
+            exit 1
+        fi
+    fi
+fi
+
+if [ $ARCH_SPEC_STAGED -gt 0 ]; then
+    echo -e "\n${YELLOW}Validating architecture updates...${NC}"
+    
+    # Check for missing metrics
+    MISSING_METRICS=$(git diff --cached docs/LLM_OPTIMIZED_ARCHITECTURE.md | grep -c "^+.*actual_metrics: pending" || true)
+    
+    if [ $MISSING_METRICS -gt 0 ]; then
+        echo -e "${YELLOW}⚠ Warning: Components with pending metrics${NC}"
+        echo "Please add actual performance metrics before committing."
+        echo "Continue anyway? (y/n)"
+        read -r response
+        if [ "$response" != "y" ]; then
+            exit 1
+        fi
+    fi
+fi
+
+echo -e "\n${GREEN}✓ Document synchronization check passed${NC}"
+echo "================================================"
+
+exit 0

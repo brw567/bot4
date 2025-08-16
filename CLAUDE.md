@@ -96,24 +96,71 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 
 ## 📋 Task Management System
 
-### Primary Documents (Read These First)
-1. **PROJECT_MANAGEMENT_TASK_LIST_V5.md** - Master task list with 1,250+ tasks
-2. **ARCHITECTURE.md** - Complete technical specification (2,267 lines)
-3. **DEVELOPMENT_RULES.md** - Mandatory compliance rules
+### Primary Documents (MANDATORY SYNCHRONIZATION)
 
-### Task Workflow - MANDATORY PROCESS
+#### 🔴 CRITICAL: Document Synchronization Protocol
+
+**BEFORE STARTING ANY TASK (MANDATORY):**
+1. **MUST sync with LLM-optimized documents:**
+   - `/home/hamster/bot4/docs/LLM_TASK_SPECIFICATIONS.md` - Task execution specifications
+   - `/home/hamster/bot4/docs/LLM_OPTIMIZED_ARCHITECTURE.md` - Component contracts and specs
+2. **Find your task in LLM_TASK_SPECIFICATIONS.md**
+3. **Get component specs from LLM_OPTIMIZED_ARCHITECTURE.md**
+4. **Verify all dependencies are completed**
+
+**AFTER COMPLETING ANY TASK (MANDATORY):**
+1. **MUST update LLM-optimized documents:**
+   - Update task status in `/home/hamster/bot4/docs/LLM_TASK_SPECIFICATIONS.md`
+   - Update component metrics in `/home/hamster/bot4/docs/LLM_OPTIMIZED_ARCHITECTURE.md`
+2. **Record actual performance metrics**
+3. **Document any deviations from spec**
+4. **Update dependency status for dependent tasks**
+
+**Document Priority:**
+1. **LLM_TASK_SPECIFICATIONS.md** - Primary task reference (USE THIS)
+2. **LLM_OPTIMIZED_ARCHITECTURE.md** - Primary architecture reference (USE THIS)
+3. **MASTER_ARCHITECTURE_V2.md** - Human-readable architecture (reference)
+4. **PROJECT_MANAGEMENT_PLAN_V6.md** - Human-readable project plan (reference)
+
+### Task Workflow - MANDATORY PROCESS (ENHANCED V2)
 ```bash
-# ALEX'S MANDATORY WORKFLOW - EVERY TASK MUST:
-1. READ PROJECT_MANAGEMENT_TASK_LIST_V5.md AND ARCHITECTURE.md FIRST!!!
-2. Reference a task ID from V5 (e.g., "Task 8.3.2")
-3. Start with grooming session if >2 hours work
-4. Implement with 100% functionality - NO SHORTCUTS
-5. Achieve 100% test coverage - NO EXCEPTIONS
-6. Validate 100% integration - MUST WORK WITH SYSTEM
-7. Update PROJECT_MANAGEMENT_TASK_LIST_V5.md IMMEDIATELY after EACH sub-task
-8. Update ARCHITECTURE.md with FULL implementation details
-9. Run ./scripts/verify_completion.sh - MUST PASS 100%
-10. NO TASK IS COMPLETE WITHOUT 100% VALIDATION!!!
+# MANDATORY WORKFLOW - ENHANCED FOR LLM AGENTS:
+
+## PHASE 1: SYNCHRONIZATION (BEFORE STARTING)
+1. SYNC with /home/hamster/bot4/docs/LLM_TASK_SPECIFICATIONS.md - Find your task
+2. SYNC with /home/hamster/bot4/docs/LLM_OPTIMIZED_ARCHITECTURE.md - Get component specs
+3. VERIFY all task dependencies status == 'completed'
+4. LOAD component contracts, performance targets, test specs
+
+## PHASE 2: IMPLEMENTATION
+5. FOLLOW implementation steps EXACTLY as specified
+6. USE provided code examples as templates
+7. MEET all performance requirements (latency, throughput)
+8. IMPLEMENT with 100% functionality - NO SHORTCUTS
+
+## PHASE 3: VALIDATION
+9. RUN all tests specified in validation.tests section
+10. VERIFY performance metrics meet targets
+11. ACHIEVE 100% test coverage - NO EXCEPTIONS
+12. Run ./scripts/verify_completion.sh - MUST PASS 100%
+
+## PHASE 4: DOCUMENTATION UPDATE (MANDATORY)
+13. UPDATE task status in LLM_TASK_SPECIFICATIONS.md:
+    - Set status: 'completed'
+    - Record actual_metrics
+    - Note any deviations
+14. UPDATE component in LLM_OPTIMIZED_ARCHITECTURE.md:
+    - Add actual performance metrics
+    - Update implementation status
+    - Document any architecture changes
+15. CREATE PR with full documentation for external QA
+
+## PHASE 5: CONTINUOUS SYNC
+16. CHECK for updates in dependent components
+17. RE-VALIDATE if dependencies change
+18. MAINTAIN consistency across all documents
+
+# ENFORCEMENT: Script will auto-check document sync on every commit!
 ```
 
 ## 🏗️ Build & Development Commands

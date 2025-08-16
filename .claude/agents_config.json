@@ -1,6 +1,30 @@
 {
-  "version": "2.0",
+  "version": "3.0",
   "interaction_mode": "collaborative_challenge",
+  "mandatory_sync_protocol": {
+    "enabled": true,
+    "before_task": {
+      "required_documents": [
+        "/home/hamster/bot4/docs/LLM_TASK_SPECIFICATIONS.md",
+        "/home/hamster/bot4/docs/LLM_OPTIMIZED_ARCHITECTURE.md"
+      ],
+      "actions": [
+        "find_task_in_specifications",
+        "get_component_contracts",
+        "verify_dependencies_complete",
+        "load_performance_targets"
+      ]
+    },
+    "after_task": {
+      "required_updates": [
+        "update_task_status_in_LLM_TASK_SPECIFICATIONS",
+        "update_metrics_in_LLM_OPTIMIZED_ARCHITECTURE",
+        "record_actual_performance",
+        "document_deviations"
+      ],
+      "validation": "mandatory_before_pr"
+    }
+  },
   "agents": {
     "alex": {
       "name": "Alex",
