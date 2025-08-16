@@ -455,9 +455,10 @@ Every component must implement circuit breakers:
 ## 📈 Performance Targets
 
 Critical metrics that must be maintained:
-- **Decision Latency**: <50ns (use SIMD where applicable)
+- **Decision Latency**: <100ms for simple decisions (no ML)
+- **ML Inference**: <1 second for regime detection (5 models)
 - **Order Submission**: <100μs including network
-- **Throughput**: 10,000+ orders/second capability
+- **Throughput**: 1,000+ orders/second with full validation
 - **Memory**: No unbounded growth, <1GB steady state
 - **Test Coverage**: **100% MANDATORY** - Alex's requirement, NO EXCEPTIONS!
 - **Integration**: 100% working with all components

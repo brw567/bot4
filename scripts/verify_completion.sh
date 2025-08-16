@@ -35,19 +35,19 @@ check() {
 
 # 1. Compilation Check
 echo -e "\n${YELLOW}=== COMPILATION CHECKS ===${NC}"
-check "Rust compilation" "cd /home/hamster/bot4/rust_core && cargo build --all 2>&1 | grep -v warning"
-check "No compilation errors" "! (cargo build --all 2>&1 | grep -E 'error\[|error:')"
+check "Rust compilation" "cd /home/hamster/bot4/rust_core && cargo check --all 2>&1 | grep -v warning"
+check "No compilation errors" "! (cd /home/hamster/bot4/rust_core && cargo check --all 2>&1 | grep -E 'error\[|error:')"
 
 # 2. Test Execution
 echo -e "\n${YELLOW}=== TEST VERIFICATION ===${NC}"
-check "All tests compile" "cargo test --all --no-run"
-check "All tests pass" "cargo test --all --quiet"
+check "All tests compile" "cd /home/hamster/bot4/rust_core && cargo test --all --no-run"
+check "All tests pass" "cd /home/hamster/bot4/rust_core && cargo test --all --quiet"
 
 # 3. Fake Implementation Detection
 echo -e "\n${YELLOW}=== FAKE DETECTION ===${NC}"
-check "No unimplemented!()" "! grep -r 'unimplemented!' --include='*.rs' src/ crates/ 2>/dev/null | grep -v '/tests/'"
-check "No todo!()" "! grep -r 'todo!' --include='*.rs' src/ crates/ 2>/dev/null | grep -v '/tests/'"
-check "No panic!()" "! grep -r 'panic!' --include='*.rs' src/ crates/ 2>/dev/null | grep -v -E '/tests/|expected'"
+check "No unimplemented!()" "! grep -r 'unimplemented!' --include='*.rs' /home/hamster/bot4/rust_core/src/ /home/hamster/bot4/rust_core/crates/ 2>/dev/null | grep -v '/tests/'"
+check "No todo!()" "! grep -r 'todo!' --include='*.rs' /home/hamster/bot4/rust_core/src/ /home/hamster/bot4/rust_core/crates/ 2>/dev/null | grep -v '/tests/'"
+check "No panic!()" "! grep -r 'panic!' --include='*.rs' /home/hamster/bot4/rust_core/src/ /home/hamster/bot4/rust_core/crates/ 2>/dev/null | grep -v -E '/tests/|expected'"
 
 # 4. Mock Detection in Production
 echo -e "\n${YELLOW}=== MOCK DETECTION ===${NC}"

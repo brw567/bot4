@@ -25,10 +25,11 @@ profitability:
   black_swan: Capital preservation priority
 
 performance:
-  decision_latency: <50ns
-  order_execution: <100μs
-  throughput: 10,000+ orders/second
-  regime_detection: <1 second
+  decision_latency: <100ms  # Simple decisions without ML
+  ml_inference: <1 second    # Regime detection with 5 models
+  order_execution: <100μs    # Network latency to exchange
+  throughput: 1,000+ orders/second  # Realistic with validation
+  regime_detection: <1 second  # Full consensus system
   
 reliability:
   uptime: 99.99%

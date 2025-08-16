@@ -139,7 +139,7 @@ position_size = min(
 3. **Level 3**: -10% total → Full stop, manual review
 
 ### Correlation Limits
-- Max correlation between positions: 0.5
+- Max correlation between positions: 0.7
 - Max sector concentration: 40%
 - Max exchange concentration: 60%
 

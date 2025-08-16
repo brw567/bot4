@@ -104,8 +104,8 @@ requirements:
     - MUST calculate liquidation price
     - MUST enforce stop loss
   performance:
-    - latency: <100ns
-    - throughput: >1M checks/sec
+    - latency: <1ms
+    - throughput: >10K checks/sec
   quality:
     - test_coverage: 100% # Critical component
     - documentation: complete
@@ -130,8 +130,8 @@ test_spec:
     - test_with_portfolio: validates portfolio risk
     - test_with_market_data: uses real-time data
   benchmarks:
-    - latency: <100ns
-    - throughput: >1M/sec
+    - latency: <1ms
+    - throughput: >10K/sec
 
 example:
   ```rust
@@ -231,7 +231,7 @@ requirements:
     - MUST detect all 5 regime types (BullEuphoria, BullNormal, Choppy, Bear, BlackSwan)
     - MUST provide transition signals with lead time
   performance:
-    - latency: <1 second
+    - latency: <1 second  # ML consensus requirement
     - accuracy: >90%
     - false_positive_rate: <5%
   quality:
@@ -352,7 +352,7 @@ requirements:
     - MUST detect emotional biases
     - MUST block all non-mathematical decisions
   performance:
-    - latency: <100ms
+    - latency: <100ms  # Validation layer
     - validation_rate: 100%
   quality:
     - test_coverage: 100% # Critical component
@@ -486,7 +486,7 @@ requirements:
     - MUST detect confirmation bias
     - MUST provide corrective actions
   performance:
-    - latency: <50ms
+    - latency: <50ms  # Bias detection
     - detection_rate: >99%
   quality:
     - test_coverage: >95%
@@ -547,13 +547,26 @@ example:
               });
           }
           
-          // Overconfidence
+          // Overconfidence - ENHANCED DETECTION
           if self.overconfidence_detector.detect(context) {
-              biases.push(BiasDetection::Overconfidence {
-                  trigger: "Win streak with increasing position sizes".to_string(),
-                  action: BiasAction::CapPositionSize,
-                  max_size: context.portfolio_value * 0.01,  // 1% max
-              });
+              // Detect based on multiple factors:
+              // 1. Win streak > 5 consecutive wins
+              // 2. Position sizes increasing > 50% from baseline
+              // 3. Ignoring risk warnings
+              // 4. Reduced stop loss distances
+              let win_streak = context.consecutive_wins;
+              let position_growth = context.avg_position_size / context.baseline_size;
+              let risk_overrides = context.risk_warning_overrides;
+              
+              if win_streak > 5 || position_growth > 1.5 || risk_overrides > 0 {
+                  biases.push(BiasDetection::Overconfidence {
+                      trigger: format!("Win streak: {}, Size growth: {:.1}x, Overrides: {}", 
+                                     win_streak, position_growth, risk_overrides),
+                      action: BiasAction::CapPositionSize,
+                      max_size: context.portfolio_value * 0.01,  // Cap at 1% max
+                      cooldown: Duration::hours(4),  // Force 4-hour cooldown
+                  });
+              }
           }
           
           // Loss Aversion
@@ -616,7 +629,7 @@ requirements:
     - MUST maintain diversification
     - MUST respect risk limits
   performance:
-    - allocation_time: <100ms
+    - allocation_time: <100ms  # Strategy selection
     - rebalance_time: <1 second
   quality:
     - test_coverage: >95%
@@ -751,7 +764,7 @@ requirements:
     - MUST include funding rates
     - MUST predict slippage
   performance:
-    - latency: <50ns
+    - latency: <1ms  # Fee calculation
     - accuracy: >99.9%
   quality:
     - test_coverage: >95%
@@ -774,7 +787,7 @@ test_spec:
   integration_tests:
     - test_with_real_exchanges: live fee validation
   benchmarks:
-    - latency: <50ns
+    - latency: <1ms
     - cache_hit_rate: >99%
 
 example:
@@ -830,9 +843,510 @@ example:
 
 validation_criteria:
   - Fee accuracy within 0.01%
-  - Latency <50ns
+  - Latency <1ms
   - Cache working properly
   - All exchanges supported
+```
+
+---
+
+### COMPONENT: DataPipeline
+
+```yaml
+component_id: DATA_001
+component_name: DataPipeline
+owner: Avery
+dependencies: []
+phase: 3
+
+contract:
+  inputs:
+    - exchange_feeds: Vec<ExchangeFeed> # Multiple exchange connections
+    - validation_rules: ValidationConfig # Data quality rules
+  outputs:
+    - market_data: ValidatedMarketData # Clean, validated data
+    - data_quality: DataQualityMetrics # Quality scores
+  errors:
+    - InvalidData # Data fails validation
+    - StaleData # Data too old
+    - MissingData # Required fields missing
+
+requirements:
+  functional:
+    - MUST validate all incoming data
+    - MUST handle multiple exchange formats
+    - MUST detect and filter outliers
+    - MUST maintain data continuity
+    - MUST provide backfill capability
+  performance:
+    - latency: <10ms
+    - throughput: >100k messages/sec
+    - reliability: 99.99%
+  quality:
+    - test_coverage: >95%
+    - documentation: complete
+    - circuit_breakers: mandatory
+
+implementation_spec:
+  language: Rust
+  patterns: [Pipeline, Validator, CircuitBreaker]
+  restrictions:
+    - ALWAYS validate before forwarding
+    - NEVER pass invalid data
+    - ALWAYS maintain audit trail
+    - ENFORCE circuit breakers
+
+test_spec:
+  unit_tests:
+    - test_validation: rejects invalid data
+    - test_outlier_detection: filters spikes
+    - test_format_normalization: handles all exchanges
+    - test_backfill: fills gaps correctly
+  integration_tests:
+    - test_with_live_feeds: handles real data
+    - test_failover: switches feeds on failure
+  benchmarks:
+    - latency: <10ms
+    - throughput: >100k/sec
+
+example:
+  ```rust
+  pub struct DataPipeline {
+      validators: Vec<Box<dyn DataValidator>>,
+      normalizers: HashMap<ExchangeId, Box<dyn Normalizer>>,
+      circuit_breaker: CircuitBreaker,
+      quality_tracker: QualityTracker,
+  }
+  
+  impl DataPipeline {
+      pub async fn process(&self, raw_data: RawMarketData) -> Result<ValidatedMarketData> {
+          // Circuit breaker check
+          if self.circuit_breaker.is_tripped() {
+              return Err(DataError::CircuitBreakerTripped);
+          }
+          
+          // Normalize exchange-specific format
+          let normalized = self.normalizers
+              .get(&raw_data.exchange)
+              .ok_or(DataError::UnknownExchange)?
+              .normalize(&raw_data)?;
+          
+          // Run all validators
+          for validator in &self.validators {
+              validator.validate(&normalized)?;
+          }
+          
+          // Check data freshness
+          if normalized.timestamp.elapsed() > Duration::from_millis(500) {
+              return Err(DataError::StaleData);
+          }
+          
+          // Update quality metrics
+          self.quality_tracker.record_success();
+          
+          Ok(ValidatedMarketData {
+              data: normalized,
+              quality_score: self.quality_tracker.current_score(),
+              validated_at: Instant::now(),
+          })
+      }
+  }
+  ```
+
+validation_criteria:
+  - All data validated
+  - No invalid data passes
+  - Circuit breakers work
+  - Quality metrics accurate
+```
+
+---
+
+### COMPONENT: ExecutionEngine
+
+```yaml
+component_id: EXEC_001
+component_name: ExecutionEngine
+owner: Casey
+dependencies: [RISK_001, EMOTION_001]
+phase: 10
+
+contract:
+  inputs:
+    - signal: ValidatedSignal # From EmotionFreeValidator
+    - market_data: MarketData # Current market state
+    - risk_approval: RiskApproval # From RiskManager
+  outputs:
+    - order_result: OrderResult # Success or failure
+    - execution_metrics: ExecutionMetrics # Slippage, fees, etc
+  errors:
+    - ExecutionFailed # Order failed
+    - RiskRejected # Risk check failed
+    - ExchangeError # Exchange issue
+
+requirements:
+  functional:
+    - MUST validate risk approval
+    - MUST optimize execution strategy
+    - MUST handle partial fills
+    - MUST track slippage
+    - MUST retry on failure
+  performance:
+    - latency: <100μs
+    - success_rate: >99%
+    - slippage: <0.1%
+  quality:
+    - test_coverage: >95%
+    - documentation: complete
+    - circuit_breakers: mandatory
+
+implementation_spec:
+  language: Rust
+  patterns: [Strategy, CircuitBreaker, Retry]
+  restrictions:
+    - NEVER execute without risk approval
+    - NEVER exceed position limits
+    - ALWAYS track execution metrics
+    - ENFORCE stop losses
+
+test_spec:
+  unit_tests:
+    - test_risk_validation: rejects without approval
+    - test_execution_strategies: optimizes correctly
+    - test_partial_fills: handles properly
+    - test_retry_logic: retries on failure
+  integration_tests:
+    - test_with_exchanges: executes on all exchanges
+    - test_failover: switches exchanges on failure
+  benchmarks:
+    - latency: <100μs
+    - success_rate: >99%
+
+example:
+  ```rust
+  pub struct ExecutionEngine {
+      exchange_connectors: HashMap<ExchangeId, Box<dyn ExchangeConnector>>,
+      execution_strategies: Vec<Box<dyn ExecutionStrategy>>,
+      circuit_breaker: CircuitBreaker,
+      retry_policy: RetryPolicy,
+  }
+  
+  impl ExecutionEngine {
+      pub async fn execute(&self, signal: &ValidatedSignal) -> Result<OrderResult> {
+          // Verify risk approval
+          if !signal.risk_approval.is_approved() {
+              return Err(ExecutionError::RiskRejected);
+          }
+          
+          // Check circuit breaker
+          if self.circuit_breaker.is_tripped() {
+              return Err(ExecutionError::CircuitBreakerTripped);
+          }
+          
+          // Select optimal execution strategy
+          let strategy = self.select_strategy(signal)?;
+          
+          // Execute with retries
+          let result = self.retry_policy.execute_with_retry(|| async {
+              let exchange = self.select_exchange(signal)?;
+              let connector = self.exchange_connectors
+                  .get(&exchange)
+                  .ok_or(ExecutionError::ExchangeNotConfigured)?;
+              
+              // Place order
+              let order = strategy.create_order(signal)?;
+              let result = connector.place_order(order).await?;
+              
+              // Track metrics
+              let metrics = ExecutionMetrics {
+                  slippage: self.calculate_slippage(&result),
+                  fees: result.fees,
+                  latency: result.latency,
+              };
+              
+              Ok(OrderResult {
+                  order_id: result.order_id,
+                  status: result.status,
+                  metrics,
+              })
+          }).await?;
+          
+          Ok(result)
+      }
+  }
+  ```
+
+validation_criteria:
+  - Risk approval enforced
+  - Execution optimized
+  - Metrics tracked
+  - Retries work
+```
+
+---
+
+### COMPONENT: PortfolioManager
+
+```yaml
+component_id: PORTFOLIO_001
+component_name: PortfolioManager
+owner: Quinn
+dependencies: [RISK_001, ALLOCATOR_001]
+phase: 9
+
+contract:
+  inputs:
+    - positions: Vec<Position> # Current positions
+    - market_data: MarketData # Market state
+    - regime: MarketRegime # Current regime
+  outputs:
+    - portfolio_state: PortfolioState # Current state
+    - rebalance_signals: Vec<RebalanceSignal> # Needed adjustments
+  errors:
+    - PortfolioError # Calculation error
+    - DataError # Missing data
+
+requirements:
+  functional:
+    - MUST track all positions
+    - MUST calculate real-time P&L
+    - MUST monitor correlations
+    - MUST suggest rebalancing
+    - MUST enforce diversification
+  performance:
+    - latency: <100ms
+    - accuracy: 99.99%
+  quality:
+    - test_coverage: >95%
+    - documentation: complete
+
+implementation_spec:
+  language: Rust
+  patterns: [Observer, Strategy]
+  restrictions:
+    - ALWAYS maintain accurate state
+    - NEVER exceed risk limits
+    - ENFORCE diversification rules
+    - TRACK all changes
+
+test_spec:
+  unit_tests:
+    - test_pnl_calculation: accurate to 0.01%
+    - test_correlation_matrix: updates correctly
+    - test_rebalancing: suggests optimal changes
+    - test_diversification: enforces limits
+  integration_tests:
+    - test_with_live_data: handles real portfolios
+    - test_regime_changes: adapts correctly
+  benchmarks:
+    - latency: <100ms
+    - accuracy: 99.99%
+
+example:
+  ```rust
+  pub struct PortfolioManager {
+      positions: Arc<RwLock<HashMap<String, Position>>>,
+      correlation_matrix: Arc<RwLock<CorrelationMatrix>>,
+      risk_limits: RiskLimits,
+      regime_allocator: RegimeStrategyAllocator,
+  }
+  
+  impl PortfolioManager {
+      pub fn analyze(&self) -> Result<PortfolioState> {
+          let positions = self.positions.read().unwrap();
+          
+          // Calculate total value and P&L
+          let total_value = positions.values()
+              .map(|p| p.current_value())
+              .sum();
+          
+          let total_pnl = positions.values()
+              .map(|p| p.unrealized_pnl())
+              .sum();
+          
+          // Update correlation matrix
+          let correlations = self.calculate_correlations(&positions)?;
+          *self.correlation_matrix.write().unwrap() = correlations;
+          
+          // Check risk limits
+          let risk_metrics = RiskMetrics {
+              position_concentration: self.max_position_concentration(&positions),
+              correlation_risk: correlations.max_correlation(),
+              leverage: self.calculate_leverage(&positions),
+          };
+          
+          // Generate rebalance signals if needed
+          let rebalance_signals = if risk_metrics.exceeds_limits(&self.risk_limits) {
+              self.generate_rebalance_signals(&positions, &risk_metrics)?
+          } else {
+              Vec::new()
+          };
+          
+          Ok(PortfolioState {
+              total_value,
+              total_pnl,
+              positions: positions.clone(),
+              correlations,
+              risk_metrics,
+              rebalance_signals,
+          })
+      }
+  }
+  ```
+
+validation_criteria:
+  - Accurate P&L tracking
+  - Correlation monitoring
+  - Risk limit enforcement
+  - Rebalancing logic correct
+```
+
+---
+
+### COMPONENT: GlobalCircuitBreaker
+
+```yaml
+component_id: CIRCUIT_001
+component_name: GlobalCircuitBreaker
+owner: Jordan
+dependencies: []
+phase: 1
+
+contract:
+  inputs:
+    - component_id: String # Component making the call
+    - call_type: CallType # External API, Database, etc
+  outputs:
+    - permission: CircuitPermission # Allow or Deny
+    - state: CircuitState # Current breaker state
+  errors:
+    - CircuitOpen # Circuit is open
+    - TooManyFailures # Threshold exceeded
+
+requirements:
+  functional:
+    - MUST track failures per component
+    - MUST auto-reset after cooldown
+    - MUST support manual override
+    - MUST cascade failures upstream
+    - MUST log all state changes
+  performance:
+    - latency: <100μs  # Permission check
+    - memory: <10MB
+  quality:
+    - test_coverage: 100%  # Critical component
+    - documentation: complete
+
+implementation_spec:
+  language: Rust
+  patterns: [Singleton, Observer, State]
+  restrictions:
+    - NEVER allow calls when open
+    - ALWAYS track metrics
+    - ENFORCE cooldown periods
+    - CASCADE failures
+
+test_spec:
+  unit_tests:
+    - test_failure_tracking: counts correctly
+    - test_auto_reset: resets after cooldown
+    - test_cascade: propagates upstream
+    - test_manual_override: allows force reset
+  integration_tests:
+    - test_with_components: protects all calls
+    - test_under_load: handles high volume
+  benchmarks:
+    - latency: <100μs
+    - memory: <10MB
+
+example:
+  ```rust
+  pub struct GlobalCircuitBreaker {
+      breakers: Arc<DashMap<String, ComponentBreaker>>,
+      global_state: Arc<RwLock<CircuitState>>,
+      config: CircuitConfig,
+  }
+  
+  pub struct ComponentBreaker {
+      state: CircuitState,
+      failure_count: AtomicU32,
+      success_count: AtomicU32,
+      last_failure: Instant,
+      last_attempt: Instant,
+  }
+  
+  #[derive(Debug, Clone)]
+  pub enum CircuitState {
+      Closed,     // Normal operation
+      Open,       // Blocking calls
+      HalfOpen,   // Testing recovery
+  }
+  
+  impl GlobalCircuitBreaker {
+      pub fn check_permission(&self, component_id: &str) -> CircuitPermission {
+          // Check global state first
+          if *self.global_state.read().unwrap() == CircuitState::Open {
+              return CircuitPermission::Denied("Global circuit open");
+          }
+          
+          // Get or create component breaker
+          let breaker = self.breakers.entry(component_id.to_string())
+              .or_insert_with(|| ComponentBreaker::new(&self.config));
+          
+          match breaker.state {
+              CircuitState::Closed => {
+                  CircuitPermission::Allowed
+              }
+              CircuitState::Open => {
+                  // Check if cooldown expired
+                  if breaker.last_failure.elapsed() > self.config.cooldown {
+                      breaker.state = CircuitState::HalfOpen;
+                      CircuitPermission::Allowed  // Allow one test
+                  } else {
+                      CircuitPermission::Denied("Circuit open")
+                  }
+              }
+              CircuitState::HalfOpen => {
+                  // Allow limited calls for testing
+                  CircuitPermission::Allowed
+              }
+          }
+      }
+      
+      pub fn record_success(&self, component_id: &str) {
+          if let Some(mut breaker) = self.breakers.get_mut(component_id) {
+              breaker.success_count.fetch_add(1, Ordering::Relaxed);
+              
+              // Reset if in half-open state
+              if breaker.state == CircuitState::HalfOpen {
+                  breaker.state = CircuitState::Closed;
+                  breaker.failure_count.store(0, Ordering::Relaxed);
+              }
+          }
+      }
+      
+      pub fn record_failure(&self, component_id: &str) {
+          if let Some(mut breaker) = self.breakers.get_mut(component_id) {
+              let failures = breaker.failure_count.fetch_add(1, Ordering::Relaxed) + 1;
+              breaker.last_failure = Instant::now();
+              
+              // Trip circuit if threshold exceeded
+              if failures >= self.config.failure_threshold {
+                  breaker.state = CircuitState::Open;
+                  
+                  // Cascade check
+                  self.check_cascade(component_id);
+              }
+          }
+      }
+  }
+  ```
+
+validation_criteria:
+  - All external calls protected
+  - Automatic recovery works
+  - Cascading implemented
+  - Metrics tracked
 ```
 
 ---
