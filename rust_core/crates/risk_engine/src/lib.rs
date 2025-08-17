@@ -6,6 +6,7 @@
 pub mod checks;
 pub mod limits;
 pub mod correlation;
+pub mod correlation_simd;  // SIMD-optimized version (3x speedup per Nexus)
 pub mod monitor;
 pub mod emergency;
 
