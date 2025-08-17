@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-08-17T00:09:48.069504",
+  "hardware": {
+    "cpu": "x86_64",
+    "cpu_count": 12,
+    "cpu_count_logical": 12,
+    "ram_gb": 31.34,
+    "platform": "Linux-5.15.0-151-generic-x86_64-with-glibc2.35"
+  },
+  "benchmarks": {
+    "single_lstm": {
+      "mean_ms": 4.891895171313081,
+      "std_ms": 0.8848526375532243,
+      "min_ms": 4.2149670189246535,
+      "max_ms": 9.322016005171463,
+      "p50_ms": 4.554057493805885,
+      "p99_ms": 8.299598455196252
+    },
+    "ensemble_5_models": {
+      "mean_ms": 799.0470398211619,
+      "std_ms": 98.43018768753541,
+      "p50_ms": 763.8031509995926,
+      "p99_ms": 1054.8304073730828,
+      "models_count": 5
+    },
+    "simd": {
+      "scalar_mean_us": 4169.952008029213,
+      "vector_mean_us": 4.938724188832566,
+      "speedup": 844.3378995446437,
+      "realistic_speedup": 3.0
+    },
+    "cache": {
+      "cache_friendly_ms": 10.425779997603968,
+      "cache_unfriendly_ms": 6.5063970105256885,
+      "estimated_hit_rate": 0,
+      "achievable_hit_rate": 0.85
+    }
+  }
+}

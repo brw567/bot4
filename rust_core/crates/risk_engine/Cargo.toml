@@ -1,0 +1,47 @@
+[package]
+name = "risk_engine"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+# Core dependencies
+infrastructure = { path = "../infrastructure" }
+order_management = { path = "../order_management" }
+
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+# Database
+sqlx = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+
+# Utilities
+chrono = { workspace = true }
+uuid = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+
+# Decimal arithmetic
+rust_decimal = "1.33"
+rust_decimal_macros = "1.33"
+
+# Statistics and correlation
+statrs = { workspace = true }
+ndarray = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+proptest = { workspace = true }
+criterion = { workspace = true }

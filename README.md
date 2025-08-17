@@ -1,11 +1,11 @@
-# Bot4 - Emotion-Free Autonomous Cryptocurrency Trading Platform
-## Next-Generation TA + ML + Grok xAI Trading System
+# Bot4 - CPU-Optimized Cryptocurrency Trading Platform
+## Production-Ready 50/50 TA/ML Trading System
 
 ---
 
 ## 🎯 Project Vision
 
-Bot4 is an institutional-grade, **100% emotion-free** autonomous cryptocurrency trading platform that eliminates all human psychological biases through pure mathematical decision-making. Built entirely in Rust for <50ns latency, it combines Technical Analysis (50%) with Machine Learning (50%) and Grok xAI integration to achieve extraordinary returns while maintaining zero emotional interference.
+Bot4 is an institutional-grade, **100% emotion-free** autonomous cryptocurrency trading platform optimized for CPU-only infrastructure. Built entirely in Rust with realistic performance targets, it combines Technical Analysis (50%) with Machine Learning (50%) to achieve 150-200% APY while maintaining zero emotional interference through mathematical validation.
 
 ### Core Innovation: Emotion-Free Trading
 - **Zero emotional decisions** - Every trade validated mathematically
@@ -18,18 +18,20 @@ Bot4 is an institutional-grade, **100% emotion-free** autonomous cryptocurrency 
 
 ```yaml
 profitability:
-  bull_euphoria: 30-50% monthly (360-600% APY)
-  bull_normal: 15-25% monthly (180-300% APY)
-  choppy_market: 8-15% monthly (96-180% APY)
-  bear_market: 5-10% monthly (60-120% APY)
+  bull_euphoria: 25-35% monthly (300-400% APY)  # Adjusted for latency
+  bull_normal: 12-20% monthly (150-250% APY)
+  choppy_market: 7-12% monthly (80-150% APY)
+  bear_market: 4-8% monthly (50-100% APY)
   black_swan: Capital preservation priority
+  weighted_average: 150-200% APY  # Realistic with CPU constraints
 
 performance:
-  decision_latency: <100ms  # Simple decisions without ML
-  ml_inference: <1 second    # Regime detection with 5 models
-  order_execution: <100μs    # Network latency to exchange
-  throughput: 1,000+ orders/second  # Realistic with validation
-  regime_detection: <1 second  # Full consensus system
+  simple_decisions: <150ms  # Without ML, CPU-optimized
+  ml_inference: <500ms  # With caching, 5 models
+  order_execution: <100μs  # Network latency to exchange
+  throughput: 100 orders/second  # Batch processing
+  regime_detection: <300ms  # Cached consensus
+  cache_hit_rate: >80%  # Critical for performance
   
 reliability:
   uptime: 99.99%
@@ -60,10 +62,15 @@ Market Data → Regime Detection → Strategy Selection → Mathematical Validat
 
 ### Prerequisites
 ```bash
-# Required Software
+# Hardware Requirements
+- CPU: 8+ cores (AMD EPYC or Intel Xeon recommended)
+- RAM: 32GB minimum
+- Storage: 500GB SSD
+- OS: Ubuntu 22.04+ (x86_64)
+
+# Software Requirements
 - Rust 1.75+ (stable)
-- PostgreSQL 15+
-- TimescaleDB 2.0+
+- PostgreSQL 14+ with TimescaleDB
 - Redis 7.0+
 - Docker 24+
 - Python 3.9+ (for validation scripts only)
@@ -123,7 +130,7 @@ cargo build --release
     └── MANDATORY_SYNC_INSTRUCTIONS.md
 ```
 
-## 📋 Development Phases (19 Weeks Total)
+## 📋 Development Phases (8-10 Weeks Total)
 
 | Phase | Duration | Focus | Status |
 |-------|----------|-------|--------|

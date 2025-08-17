@@ -1,0 +1,51 @@
+[package]
+name = "websocket"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+# Async runtime
+tokio = { workspace = true }
+tokio-tungstenite = { workspace = true }
+async-trait = { workspace = true }
+
+# Infrastructure
+infrastructure = { path = "../infrastructure" }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+
+# Utilities
+chrono = { workspace = true }
+dashmap = { workspace = true }
+arc-swap = { workspace = true }
+parking_lot = { workspace = true }
+
+# URL handling
+url = "2.5"
+
+# Message handling
+futures = "0.3"
+futures-util = "0.3"
+tokio-stream = "0.1"
+
+# Reconnection and retry
+backoff = { version = "0.4", features = ["tokio"] }
+
+# Random number generation
+rand = "0.8"
+
+[dev-dependencies]
+criterion = { workspace = true }
+proptest = { workspace = true }
+mockito = { workspace = true }
+pretty_assertions = { workspace = true }
