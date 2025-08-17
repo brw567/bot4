@@ -13,6 +13,9 @@ use std::time::Duration;
 
 use crate::domain::entities::{Order, OrderId, OrderStatus, OrderSide, OrderType, TimeInForce};
 use crate::domain::value_objects::{Symbol, Price, Quantity};
+use crate::domain::value_objects::statistical_distributions::{
+    FillDistribution, LatencyDistribution, SlippageDistribution, MarketStatistics
+};
 use crate::ports::outbound::exchange_port::{
     ExchangePort, OrderBook, OrderBookLevel, Trade, Balance, ExchangeCapabilities
 };
@@ -124,6 +127,11 @@ struct SimulatedOrderBook {
 /// - OCO, ReduceOnly, PostOnly order types
 /// - Slippage and market impact modeling
 /// - Idempotency with client_order_id deduplication (CRITICAL)
+/// 
+/// Features (per Nexus's requirements):
+/// - Poisson/Beta fill distributions instead of uniform
+/// - Log-normal latency distribution for realistic network delays
+/// - Market impact with square-root scaling
 pub struct ExchangeSimulator {
     state: Arc<RwLock<SimulatorState>>,
     latency_mode: LatencyMode,
@@ -133,6 +141,9 @@ pub struct ExchangeSimulator {
     
     // Idempotency manager (Sophia's #1 critical requirement)
     idempotency_mgr: Arc<IdempotencyManager>,
+    
+    // Statistical distributions (Nexus's feedback)
+    market_stats: MarketStatistics,
     
     // Configuration
     maker_fee: f64,
@@ -184,6 +195,7 @@ impl ExchangeSimulator {
             rate_limit_config: RateLimitConfig::default(),
             failure_mode: FailureMode::None,
             idempotency_mgr: Arc::new(IdempotencyManager::default()),
+            market_stats: MarketStatistics::default(),
             maker_fee: 0.0002, // 0.02%
             taker_fee: 0.0004, // 0.04%
             min_order_size: 0.00001,
@@ -206,7 +218,17 @@ impl ExchangeSimulator {
         self
     }
     
-    /// Simulate network latency
+    /// Configure market statistics profile (liquid vs illiquid)
+    pub fn with_market_profile(mut self, liquid: bool) -> Self {
+        self.market_stats = if liquid {
+            MarketStatistics::liquid_market()
+        } else {
+            MarketStatistics::illiquid_market()
+        };
+        self
+    }
+    
+    /// Simulate network latency using log-normal distribution (Nexus's feedback)
     async fn simulate_latency(&self) {
         match &self.latency_mode {
             LatencyMode::None => {},
@@ -220,10 +242,11 @@ impl ExchangeSimulator {
                 tokio::time::sleep(Duration::from_millis(delay as u64)).await;
             },
             LatencyMode::Realistic => {
-                // Simulate realistic network latency (5-50ms)
+                // Use log-normal distribution for realistic network latency
+                // This matches real-world network behavior with occasional high-latency events
                 let mut rng = thread_rng();
-                let delay = rng.gen_range(5..=50);
-                tokio::time::sleep(Duration::from_millis(delay)).await;
+                let delay = self.market_stats.latency_dist.generate_latency(&mut rng);
+                tokio::time::sleep(delay).await;
             },
         }
     }
@@ -279,7 +302,7 @@ impl ExchangeSimulator {
         Ok(())
     }
     
-    /// Simulate order fill based on fill mode
+    /// Simulate order fill using Poisson/Beta distributions (Nexus's feedback)
     async fn simulate_fill(&self, order: &SimulatedOrder) -> Result<Vec<(Quantity, Price)>> {
         let mut fills = Vec::new();
         let mut rng = thread_rng();
@@ -301,86 +324,101 @@ impl ExchangeSimulator {
             },
             
             FillMode::Realistic => {
-                // Simulate partial fills
-                let num_fills = rng.gen_range(1..=3);
-                let mut remaining = order.quantity.value();
+                // Use Poisson/Beta distributions for realistic fill patterns
+                // Addresses Nexus's feedback: "Fill distribution uniform: Medium impact—ignores 
+                // clustering; use Poisson for num_fills (λ=2-3) and Beta(α=2,β=5) for ratios"
                 
-                for i in 0..num_fills {
-                    let fill_ratio = if i == num_fills - 1 {
-                        1.0 // Last fill gets everything
-                    } else {
-                        rng.gen_range(0.2..=0.6)
-                    };
-                    
-                    let fill_qty = Quantity::new(remaining * fill_ratio).unwrap();
-                    remaining -= fill_qty.value();
-                    
-                    // Add slippage for market orders
-                    let base_price = order.price.unwrap_or_else(|| {
-                        let state = self.state.clone();
-                        let state = tokio::task::block_in_place(|| {
-                            tokio::runtime::Handle::current().block_on(state.read())
-                        });
-                        state.last_prices.get(&order.symbol)
-                            .cloned()
-                            .unwrap_or_else(|| Price::new(50000.0).unwrap())
+                // Generate fill ratios using statistical distributions
+                let fill_ratios = self.market_stats.fill_dist.generate_fills(&mut rng)?;
+                let total_quantity = order.quantity.value();
+                
+                // Get base price
+                let base_price = order.price.unwrap_or_else(|| {
+                    let state = self.state.clone();
+                    let state = tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current().block_on(state.read())
                     });
+                    state.last_prices.get(&order.symbol)
+                        .cloned()
+                        .unwrap_or_else(|| Price::new(50000.0).unwrap())
+                });
+                
+                // Apply fills with realistic slippage
+                for ratio in fill_ratios {
+                    let fill_qty = Quantity::new(total_quantity * ratio)?;
                     
+                    // Generate slippage using statistical distribution
                     let slippage_bps = if order.order_type == OrderType::Market {
-                        rng.gen_range(-10..=10) // ±0.1% slippage
+                        self.market_stats.slippage_dist.generate_slippage(&mut rng, ratio) as i32
                     } else {
                         0
                     };
                     
-                    let fill_price = base_price.apply_slippage(slippage_bps).unwrap();
+                    let fill_price = base_price.apply_slippage(slippage_bps)?;
                     fills.push((fill_qty, fill_price));
-                    
-                    if remaining <= 0.0 {
-                        break;
-                    }
                 }
             },
             
             FillMode::Aggressive => {
-                // High slippage, many partial fills
-                let num_fills = rng.gen_range(3..=10);
-                let mut remaining = order.quantity.value();
+                // Use aggressive fill distribution (many small fills, high slippage)
+                let aggressive_dist = FillDistribution::aggressive();
+                let fill_ratios = aggressive_dist.generate_fills(&mut rng)?;
+                let total_quantity = order.quantity.value();
                 
-                for _ in 0..num_fills {
-                    if remaining <= 0.0 {
-                        break;
-                    }
-                    
-                    let fill_qty = Quantity::new(
-                        remaining * rng.gen_range(0.05..=0.3)
-                    ).unwrap();
-                    
-                    let base_price = order.price.unwrap_or_else(|| {
-                        Price::new(50000.0).unwrap()
+                let base_price = order.price.unwrap_or_else(|| {
+                    let state = self.state.clone();
+                    let state = tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current().block_on(state.read())
                     });
-                    
-                    // Higher slippage
-                    let slippage_bps = rng.gen_range(-50..=50);
-                    let fill_price = base_price.apply_slippage(slippage_bps).unwrap();
-                    
-                    fills.push((fill_qty.clone(), fill_price));
-                    remaining -= fill_qty.value();
+                    state.last_prices.get(&order.symbol)
+                        .cloned()
+                        .unwrap_or_else(|| Price::new(50000.0).unwrap())
+                });
+                
+                // Higher slippage for aggressive mode
+                let aggressive_slippage = SlippageDistribution {
+                    mean_bps: 5.0,
+                    std_bps: 10.0,
+                    skew: 1.0,
+                };
+                
+                for ratio in fill_ratios {
+                    let fill_qty = Quantity::new(total_quantity * ratio)?;
+                    let slippage_bps = aggressive_slippage.generate_slippage(&mut rng, ratio) as i32;
+                    let fill_price = base_price.apply_slippage(slippage_bps)?;
+                    fills.push((fill_qty, fill_price));
                 }
             },
             
             FillMode::Conservative => {
-                // Better prices but slower fills
-                tokio::time::sleep(Duration::from_millis(100)).await;
+                // Use conservative fill distribution (fewer, more even fills)
+                let conservative_dist = FillDistribution::conservative();
+                let fill_ratios = conservative_dist.generate_fills(&mut rng)?;
+                let total_quantity = order.quantity.value();
                 
-                let fill_price = if let Some(price) = order.price {
-                    // Limit order - might get better price
-                    let improvement_bps = rng.gen_range(0..=5);
-                    price.apply_slippage(-improvement_bps).unwrap()
-                } else {
-                    Price::new(50000.0).unwrap()
-                };
+                // Add delay for conservative mode
+                let conservative_latency = LatencyDistribution::slow();
+                let delay = conservative_latency.generate_latency(&mut rng);
+                tokio::time::sleep(delay).await;
                 
-                fills.push((order.quantity.clone(), fill_price));
+                let base_price = order.price.unwrap_or_else(|| {
+                    let state = self.state.clone();
+                    let state = tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current().block_on(state.read())
+                    });
+                    state.last_prices.get(&order.symbol)
+                        .cloned()
+                        .unwrap_or_else(|| Price::new(50000.0).unwrap())
+                });
+                
+                // Conservative mode may get price improvement
+                for ratio in fill_ratios {
+                    let fill_qty = Quantity::new(total_quantity * ratio)?;
+                    // Potentially better prices (negative slippage = price improvement)
+                    let improvement_bps = rng.gen_range(-5..=2);
+                    let fill_price = base_price.apply_slippage(improvement_bps)?;
+                    fills.push((fill_qty, fill_price));
+                }
             },
         }
         
@@ -1051,5 +1089,91 @@ mod tests {
         // Verify only one order was actually placed
         let state = simulator.state.read().await;
         assert_eq!(state.total_orders_placed, 1);
+    }
+    
+    #[tokio::test]
+    async fn should_use_statistical_distributions_for_fills() {
+        // Test that Poisson/Beta distributions are being used (Nexus's feedback)
+        let simulator = ExchangeSimulator::new()
+            .with_config(
+                LatencyMode::None,
+                FillMode::Realistic,
+                RateLimitConfig::default(),
+                FailureMode::None,
+            )
+            .with_market_profile(true); // Liquid market
+        
+        // Place multiple market orders to observe distribution
+        let mut fill_counts = Vec::new();
+        let mut fill_sizes = Vec::new();
+        
+        for _ in 0..10 {
+            let order = Order::market(
+                Symbol::new("BTC/USDT").unwrap(),
+                OrderSide::Buy,
+                Quantity::new(1.0).unwrap(),
+            );
+            
+            let _ = simulator.place_order(&order).await.unwrap();
+            
+            // Get recent trades to analyze fill pattern
+            let trades = simulator.get_recent_trades(&order.symbol(), 100).await.unwrap();
+            if !trades.is_empty() {
+                fill_counts.push(trades.len());
+                
+                // Collect fill sizes
+                for trade in &trades {
+                    fill_sizes.push(trade.quantity.value());
+                }
+            }
+        }
+        
+        // Verify we have variation in fill counts (Poisson distribution)
+        let unique_counts: std::collections::HashSet<_> = fill_counts.iter().collect();
+        assert!(unique_counts.len() > 1, "Fill counts should vary (Poisson distribution)");
+        
+        // Verify fill sizes are not uniform
+        if fill_sizes.len() > 10 {
+            let mean_size = fill_sizes.iter().sum::<f64>() / fill_sizes.len() as f64;
+            let variance = fill_sizes.iter()
+                .map(|&x| (x - mean_size).powi(2))
+                .sum::<f64>() / fill_sizes.len() as f64;
+            
+            // Beta distribution should produce non-zero variance
+            assert!(variance > 0.01, "Fill sizes should have variance (Beta distribution)");
+        }
+    }
+    
+    #[tokio::test]
+    async fn should_use_log_normal_latency() {
+        use std::time::Instant;
+        
+        let simulator = ExchangeSimulator::new()
+            .with_config(
+                LatencyMode::Realistic,
+                FillMode::Instant,
+                RateLimitConfig::default(),
+                FailureMode::None,
+            );
+        
+        let mut latencies = Vec::new();
+        
+        // Measure latencies for multiple operations
+        for _ in 0..20 {
+            let order = create_test_order();
+            let start = Instant::now();
+            let _ = simulator.place_order(&order).await;
+            let latency = start.elapsed().as_millis();
+            latencies.push(latency);
+        }
+        
+        // Verify we have variation in latencies (log-normal distribution)
+        let unique_latencies: std::collections::HashSet<_> = latencies.iter().collect();
+        assert!(unique_latencies.len() > 5, "Latencies should vary (log-normal distribution)");
+        
+        // Check for occasional high-latency events (characteristic of log-normal)
+        let max_latency = *latencies.iter().max().unwrap();
+        let min_latency = *latencies.iter().min().unwrap();
+        assert!(max_latency > min_latency * 2, "Should have occasional high-latency events");
     }
 }
