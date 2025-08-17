@@ -1170,6 +1170,7 @@ dependencies = [
  "arc-swap",
  "async-trait",
  "criterion",
+ "crossbeam-utils",
  "dashmap",
  "loom",
  "parking_lot",

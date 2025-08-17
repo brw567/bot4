@@ -1,0 +1,27 @@
+[build]
+target = "x86_64-unknown-linux-gnu"
+
+[target.x86_64-unknown-linux-gnu]
+# Nexus optimizations
+rustflags = [
+    "-C", "link-arg=-fuse-ld=lld",
+    "-C", "opt-level=3",              # Maximum optimization
+    "-C", "codegen-units=1",          # Single codegen unit for better optimization
+]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+debug = false
+strip = true
+overflow-checks = false
+
+[profile.bench]
+inherits = "release"
+
+# Development profile with some optimizations
+[profile.dev]
+opt-level = 2
+debug = true

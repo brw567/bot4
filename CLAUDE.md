@@ -340,6 +340,7 @@ fn place_order(order: Order) -> Result<OrderId> {
 
 The project uses 8 virtual agents with specific roles:
 
+### Internal Development Team
 1. **Alex** - Team Lead: Coordinates all work, breaks deadlocks
 2. **Morgan** - ML Specialist: ML models, zero tolerance for overfitting
 3. **Sam** - Code Quality: Rust lead, VETO on fake code
@@ -349,10 +350,24 @@ The project uses 8 virtual agents with specific roles:
 7. **Riley** - Testing: 95%+ coverage requirement
 8. **Avery** - Data Engineer: TimescaleDB optimization
 
+### External Review Team (ChatGPT/Grok)
+9. **Sophia (ChatGPT)** - Senior Trader & Strategy Validator
+   - Reviews trading logic from practitioner perspective
+   - Validates strategy profitability potential
+   - Assesses market microstructure understanding
+   - Evaluates risk/reward ratios
+   
+10. **Nexus (Grok)** - Quantitative Analyst & ML Specialist
+    - Validates mathematical models and algorithms
+    - Reviews ML architecture and training methodology
+    - Assesses statistical validity of strategies
+    - Evaluates performance metrics and benchmarks
+
 ### Conflict Resolution
 - Max 3 debate rounds before Alex decides
 - Quinn has absolute veto on risk matters
 - Sam has absolute veto on fake implementations
+- External reviewers have advisory veto on strategy viability
 - Data-driven decisions when possible
 
 ## 🔍 Quality Enforcement Scripts

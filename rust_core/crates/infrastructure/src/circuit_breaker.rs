@@ -8,6 +8,7 @@ use dashmap::DashMap;
 use arc_swap::ArcSwap;
 use thiserror::Error;
 use serde::{Deserialize, Serialize};
+use crossbeam_utils::CachePadded;  // Sophia's recommendation for cache line isolation
 
 /// Circuit breaker states encoded as u8 for atomic operations
 #[repr(u8)]
@@ -207,25 +208,26 @@ pub enum Permit {
 }
 
 /// Component-level circuit breaker
+/// Sophia Fix #1: Using CachePadded to prevent false sharing on hot atomics
 pub struct ComponentBreaker {
     // State - using atomic for lock-free operation (addresses issue #3)
-    state: AtomicU8,
+    state: CachePadded<AtomicU8>,
     
-    // Metrics - all atomic for lock-free updates
-    total_calls: AtomicU64,
-    error_calls: AtomicU64,
-    consecutive_failures: AtomicU32,
+    // Hot path metrics - CachePadded to prevent false sharing
+    total_calls: CachePadded<AtomicU64>,
+    error_calls: CachePadded<AtomicU64>,
+    consecutive_failures: CachePadded<AtomicU32>,
     
-    // Half-open state
-    half_open_tokens: AtomicU32,
-    half_open_successes: AtomicU32,
-    half_open_failures: AtomicU32,
+    // Half-open state - separate cache line
+    half_open_tokens: CachePadded<AtomicU32>,
+    half_open_successes: CachePadded<AtomicU32>,
+    half_open_failures: CachePadded<AtomicU32>,
     
     // Timing - using AtomicU64 for lock-free operation (Sophia Issue #1 fix)
-    last_failure_time: AtomicU64,  // monotonic nanos for lock-free access
-    last_transition: AtomicU64,  // monotonic nanos since start
+    last_failure_time: CachePadded<AtomicU64>,  // monotonic nanos for lock-free access
+    last_transition: CachePadded<AtomicU64>,  // monotonic nanos since start
     
-    // Shared resources
+    // Shared resources (cold path)
     clock: Arc<dyn Clock>,
     config: Arc<CircuitConfig>,
 }
@@ -233,15 +235,15 @@ pub struct ComponentBreaker {
 impl ComponentBreaker {
     pub fn new(clock: Arc<dyn Clock>, config: Arc<CircuitConfig>) -> Self {
         ComponentBreaker {
-            state: AtomicU8::new(CircuitState::Closed as u8),
-            total_calls: AtomicU64::new(0),
-            error_calls: AtomicU64::new(0),
-            consecutive_failures: AtomicU32::new(0),
-            half_open_tokens: AtomicU32::new(0),
-            half_open_successes: AtomicU32::new(0),
-            half_open_failures: AtomicU32::new(0),
-            last_failure_time: AtomicU64::new(0),
-            last_transition: AtomicU64::new(0),
+            state: CachePadded::new(AtomicU8::new(CircuitState::Closed as u8)),
+            total_calls: CachePadded::new(AtomicU64::new(0)),
+            error_calls: CachePadded::new(AtomicU64::new(0)),
+            consecutive_failures: CachePadded::new(AtomicU32::new(0)),
+            half_open_tokens: CachePadded::new(AtomicU32::new(0)),
+            half_open_successes: CachePadded::new(AtomicU32::new(0)),
+            half_open_failures: CachePadded::new(AtomicU32::new(0)),
+            last_failure_time: CachePadded::new(AtomicU64::new(0)),
+            last_transition: CachePadded::new(AtomicU64::new(0)),
             clock,
             config,
         }
