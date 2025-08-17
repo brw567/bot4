@@ -1,0 +1,16 @@
+# Bot4 Grafana Dashboard Provisioning
+# Day 1 Sprint - Pre-configured Dashboards
+# Owner: Avery
+
+apiVersion: 1
+
+providers:
+  - name: 'Bot4 Dashboards'
+    orgId: 1
+    folder: 'Bot4 Trading'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

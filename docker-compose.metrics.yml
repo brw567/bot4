@@ -1,0 +1,37 @@
+# Bot4 Metrics Application - Proper Docker Integration
+# No hardcoded IPs - uses Docker networking
+version: '3.8'
+
+services:
+  # Bot4 Metrics Application
+  bot4-metrics:
+    build:
+      context: ./rust_core
+      dockerfile: ../Dockerfile.metrics
+    container_name: bot4-metrics
+    environment:
+      - RUST_LOG=debug
+      - METRICS_HOST=0.0.0.0
+      - MAIN_METRICS_PORT=8080
+      - CB_METRICS_PORT=8081
+      - RISK_METRICS_PORT=8082
+      - ORDER_METRICS_PORT=8083
+      - MEMORY_METRICS_PORT=8084
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+      - "8083:8083"
+      - "8084:8084"
+    networks:
+      - bot4-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  bot4-network:
+    external: true

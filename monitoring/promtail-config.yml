@@ -1,0 +1,191 @@
+# Bot4 Promtail Configuration - Log Shipping to Loki
+# Day 1 Sprint - Structured Logging Pipeline
+# Owner: Avery
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    tenant_id: bot4
+
+scrape_configs:
+  # Bot4 Trading Engine Logs
+  - job_name: trading_engine
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: trading_engine
+          service: bot4
+          __path__: /var/log/bot4/trading-engine*.log
+    pipeline_stages:
+      - json:
+          expressions:
+            timestamp: timestamp
+            level: level
+            component: component
+            latency_ns: latency_ns
+            message: message
+      - labels:
+          level:
+          component:
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+      - metrics:
+          decision_latency_ns:
+            type: Histogram
+            description: "Decision latency in nanoseconds"
+            source: latency_ns
+            config:
+              buckets: [100, 500, 1000, 5000, 10000]
+
+  # Circuit Breaker Logs
+  - job_name: circuit_breaker
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: circuit_breaker
+          service: bot4
+          __path__: /var/log/bot4/circuit-breaker*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>[\d-T:.]+Z)\s+\[(?P<level>\w+)\]\s+CB:(?P<breaker_name>\w+)\s+(?P<action>\w+):\s+(?P<message>.*)'
+      - labels:
+          level:
+          breaker_name:
+          action:
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+
+  # Risk Engine Logs
+  - job_name: risk_engine
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: risk_engine
+          service: bot4
+          __path__: /var/log/bot4/risk-engine*.log
+    pipeline_stages:
+      - json:
+          expressions:
+            timestamp: timestamp
+            level: level
+            symbol: symbol
+            risk_score: risk_score
+            position_size: position_size
+            message: message
+      - labels:
+          level:
+          symbol:
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+
+  # Order Pipeline Logs
+  - job_name: order_pipeline
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: order_pipeline
+          service: bot4
+          __path__: /var/log/bot4/order-pipeline*.log
+    pipeline_stages:
+      - json:
+          expressions:
+            timestamp: timestamp
+            level: level
+            order_id: order_id
+            symbol: symbol
+            side: side
+            quantity: quantity
+            price: price
+            status: status
+            latency_us: latency_us
+      - labels:
+          level:
+          symbol:
+          side:
+          status:
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+
+  # Memory Allocator Logs (MiMalloc)
+  - job_name: mimalloc
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: mimalloc
+          service: bot4
+          __path__: /var/log/bot4/mimalloc*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>[\d-T:.]+)\s+alloc:(?P<size>\d+)\s+pool:(?P<pool>\w+)\s+time:(?P<alloc_ns>\d+)ns'
+      - labels:
+          pool:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      - metrics:
+          allocation_time_ns:
+            type: Histogram
+            description: "Allocation time in nanoseconds"
+            source: alloc_ns
+            config:
+              buckets: [5, 10, 20, 50, 100]
+
+  # Docker Container Logs
+  - job_name: containers
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: containers
+          __path__: /var/lib/docker/containers/*/*log
+    pipeline_stages:
+      - docker:
+      - labels:
+          container_name:
+          container_id:
+      - match:
+          selector: '{container_name="bot4-trading-engine"}'
+          stages:
+            - json:
+                expressions:
+                  level: level
+                  component: component
+            - labels:
+                level:
+                component:
+
+  # System Logs
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: system
+          __path__: /var/log/syslog
+    pipeline_stages:
+      - match:
+          selector: '{job="system"}'
+          stages:
+            - regex:
+                expression: '^(?P<timestamp>\w+\s+\d+\s+[\d:]+)\s+(?P<host>\S+)\s+(?P<service>\S+?)(\[(?P<pid>\d+)\])?: (?P<message>.*)'
+            - labels:
+                host:
+                service:
+            - timestamp:
+                source: timestamp
+                format: 'Jan 2 15:04:05'

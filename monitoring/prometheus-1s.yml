@@ -1,0 +1,161 @@
+# Bot4 Prometheus Configuration - 1 Second Scrape Cadence
+# Day 1 Sprint - Observability Stack
+# Owner: Avery
+# Target: Real-time monitoring with <1s latency visibility
+
+global:
+  scrape_interval: 1s      # CRITICAL: 1-second scrape for real-time monitoring
+  evaluation_interval: 1s   # Evaluate rules every second
+  scrape_timeout: 900ms    # Timeout just below interval
+  external_labels:
+    monitor: 'bot4-production'
+    environment: 'development'
+    latency_target: '1us_p99'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+# Scrape configurations with 1s intervals
+scrape_configs:
+  # Bot4 Trading Engine - CRITICAL PATH
+  - job_name: 'bot4-trading-engine'
+    scrape_interval: 1s
+    scrape_timeout: 900ms
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['bot4-metrics:8080']
+        labels:
+          service: 'trading-engine'
+          tier: 'critical'
+          latency_requirement: '1us'
+    metric_relabel_configs:
+      # Keep only critical metrics for 1s scraping
+      - source_labels: [__name__]
+        regex: '(decision_latency_.*|risk_check_latency_.*|order_latency_.*|circuit_breaker_.*|throughput_.*|memory_pool_.*|gc_.*)'
+        action: keep
+
+  # Circuit Breaker Metrics - HIGH PRIORITY
+  - job_name: 'circuit-breakers'
+    scrape_interval: 1s
+    scrape_timeout: 900ms
+    static_configs:
+      - targets: ['bot4-metrics:8081']  # Dedicated CB metrics port
+        labels:
+          service: 'circuit-breaker'
+          tier: 'critical'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'cb_.*'
+        action: keep
+
+  # Risk Engine Metrics - HIGH PRIORITY
+  - job_name: 'risk-engine'
+    scrape_interval: 1s
+    scrape_timeout: 900ms
+    static_configs:
+      - targets: ['bot4-metrics:8082']  # Dedicated risk metrics port
+        labels:
+          service: 'risk-engine'
+          tier: 'critical'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'risk_.*'
+        action: keep
+
+  # Order Pipeline Metrics - HIGH PRIORITY
+  - job_name: 'order-pipeline'
+    scrape_interval: 1s
+    scrape_timeout: 900ms
+    static_configs:
+      - targets: ['bot4-metrics:8083']  # Dedicated order metrics port
+        labels:
+          service: 'order-pipeline'
+          tier: 'critical'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'order_.*'
+        action: keep
+
+  # Memory Allocator Metrics (MiMalloc)
+  - job_name: 'memory-allocator'
+    scrape_interval: 1s
+    scrape_timeout: 900ms
+    static_configs:
+      - targets: ['bot4-metrics:8084']  # MiMalloc stats endpoint
+        labels:
+          service: 'mimalloc'
+          tier: 'performance'
+
+  # Redis Cache - LESS FREQUENT
+  - job_name: 'redis'
+    scrape_interval: 5s  # Less critical, scrape every 5s
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'cache'
+          tier: 'standard'
+
+  # PostgreSQL Database - LESS FREQUENT
+  - job_name: 'postgres'
+    scrape_interval: 5s  # Database metrics every 5s
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'database'
+          tier: 'standard'
+
+  # Node System Metrics - LESS FREQUENT
+  - job_name: 'node'
+    scrape_interval: 5s  # System metrics every 5s
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'system'
+          tier: 'infrastructure'
+
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          tier: 'monitoring'
+
+  # Grafana Monitoring
+  - job_name: 'grafana'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['grafana:3000']
+        labels:
+          service: 'grafana'
+          tier: 'monitoring'
+
+  # Jaeger Tracing Metrics
+  - job_name: 'jaeger'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['jaeger:14269']
+        labels:
+          service: 'tracing'
+          tier: 'monitoring'
+
+  # Loki Metrics
+  - job_name: 'loki'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['loki:3100']
+        labels:
+          service: 'logging'
+          tier: 'monitoring'
+
+# Performance optimizations for 1s scraping are handled via command-line flags
+# in docker-compose.observability.yml

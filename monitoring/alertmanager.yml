@@ -1,0 +1,111 @@
+# Bot4 AlertManager Configuration
+# Day 1 Sprint - Alert Routing and Notification
+# Owner: Avery
+
+global:
+  resolve_timeout: 30s
+  # Slack/Email/PagerDuty configs would go here in production
+  
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 5s        # Wait before sending first alert
+  group_interval: 10s   # Wait before sending batch of new alerts
+  repeat_interval: 1m   # Resend alerts interval
+  receiver: 'bot4-critical'
+  
+  routes:
+    # Critical latency violations - immediate notification
+    - match:
+        severity: critical
+      receiver: 'bot4-critical'
+      group_wait: 1s
+      group_interval: 5s
+      repeat_interval: 30s
+      continue: true
+    
+    # Circuit breaker issues - grouped notifications
+    - match:
+        component: circuit_breaker
+      receiver: 'bot4-circuit-breaker'
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 5m
+    
+    # Memory/Performance warnings
+    - match:
+        severity: warning
+      receiver: 'bot4-warning'
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 15m
+    
+    # System/Infrastructure alerts
+    - match_re:
+        component: (system|infrastructure)
+      receiver: 'bot4-infrastructure'
+      group_wait: 1m
+      group_interval: 10m
+      repeat_interval: 30m
+
+receivers:
+  - name: 'bot4-critical'
+    webhook_configs:
+      - url: 'http://localhost:8085/alerts/critical'
+        send_resolved: true
+        max_alerts: 0  # Send all alerts
+        http_config:
+          follow_redirects: true
+    # In production, add:
+    # pagerduty_configs:
+    #   - service_key: YOUR_PAGERDUTY_KEY
+    #     severity: critical
+    
+  - name: 'bot4-circuit-breaker'
+    webhook_configs:
+      - url: 'http://localhost:8085/alerts/circuit-breaker'
+        send_resolved: true
+    # In production, add:
+    # slack_configs:
+    #   - api_url: YOUR_SLACK_WEBHOOK
+    #     channel: '#bot4-alerts'
+    #     title: 'Circuit Breaker Alert'
+    
+  - name: 'bot4-warning'
+    webhook_configs:
+      - url: 'http://localhost:8085/alerts/warning'
+        send_resolved: true
+    # In production, add:
+    # email_configs:
+    #   - to: 'bot4-team@example.com'
+    #     from: 'alertmanager@bot4.local'
+    #     smarthost: 'smtp.example.com:587'
+    
+  - name: 'bot4-infrastructure'
+    webhook_configs:
+      - url: 'http://localhost:8085/alerts/infrastructure'
+        send_resolved: true
+
+inhibit_rules:
+  # If the entire system is down, suppress component alerts
+  - source_match:
+      alertname: 'SystemDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['cluster', 'service']
+  
+  # If CPU is saturated, suppress latency alerts (they're expected)
+  - source_match:
+      alertname: 'CPUSaturation'
+    target_match:
+      severity: 'warning'
+    equal: ['instance']
+  
+  # If circuit breaker is open, suppress downstream alerts
+  - source_match:
+      alertname: 'CircuitBreakerOpen'
+    target_match_re:
+      component: '(order_pipeline|risk_engine)'
+    equal: ['service']
+
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'

@@ -1,0 +1,30 @@
+# Bot4 Metrics Server Dockerfile
+# Multi-stage build for minimal image size
+
+FROM rust:1.75 as builder
+
+WORKDIR /usr/src/bot4
+
+# Copy workspace files
+COPY rust_core/Cargo.toml rust_core/Cargo.lock ./
+COPY rust_core/bot4-main ./bot4-main
+COPY rust_core/crates ./crates
+
+# Build release binary
+WORKDIR /usr/src/bot4/bot4-main
+RUN cargo build --release
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y \
+    libssl3 \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/src/bot4/target/release/bot4 /usr/local/bin/bot4
+
+EXPOSE 8080 8081 8082 8083 8084
+
+CMD ["bot4"]

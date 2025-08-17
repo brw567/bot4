@@ -1,0 +1,222 @@
+# Bot4 Alert Rules - Critical Performance Monitoring
+# Day 1 Sprint - Must-Fix Gates
+# Owner: Avery
+# Exit Gate: Alerts firing correctly for p99 violations
+
+groups:
+  - name: latency_alerts
+    interval: 1s  # Check every second
+    rules:
+      # CRITICAL: Decision Latency > 1µs p99
+      - alert: DecisionLatencyViolation
+        expr: |
+          histogram_quantile(0.99, 
+            rate(decision_latency_microseconds_bucket[10s])
+          ) > 1
+        for: 5s
+        labels:
+          severity: critical
+          component: trading_engine
+          sla: "1us_p99"
+        annotations:
+          summary: "Decision latency p99 exceeded 1µs target"
+          description: "Decision latency p99 is {{ $value }}µs (target: ≤1µs)"
+          runbook: "Check for CPU contention, memory allocation, or lock contention"
+
+      # CRITICAL: Risk Check Latency > 10µs p99
+      - alert: RiskCheckLatencyViolation
+        expr: |
+          histogram_quantile(0.99,
+            rate(risk_check_latency_microseconds_bucket[10s])
+          ) > 10
+        for: 5s
+        labels:
+          severity: critical
+          component: risk_engine
+          sla: "10us_p99"
+        annotations:
+          summary: "Risk check latency p99 exceeded 10µs target"
+          description: "Risk check latency p99 is {{ $value }}µs (target: ≤10µs)"
+          runbook: "Review risk calculation complexity, check database queries"
+
+      # CRITICAL: Order Internal Latency > 100µs p99
+      - alert: OrderInternalLatencyViolation
+        expr: |
+          histogram_quantile(0.99,
+            rate(order_internal_latency_microseconds_bucket[10s])
+          ) > 100
+        for: 5s
+        labels:
+          severity: critical
+          component: order_pipeline
+          sla: "100us_p99"
+        annotations:
+          summary: "Order internal latency p99 exceeded 100µs target"
+          description: "Order internal latency p99 is {{ $value }}µs (target: ≤100µs)"
+          runbook: "Check order validation, serialization, and queue depths"
+
+  - name: circuit_breaker_alerts
+    interval: 1s
+    rules:
+      # Circuit Breaker Flood Detection
+      - alert: CircuitBreakerFlood
+        expr: |
+          rate(cb_trip_total[1m]) > 10
+        for: 10s
+        labels:
+          severity: critical
+          component: circuit_breaker
+        annotations:
+          summary: "Circuit breaker tripping frequently (>10/min)"
+          description: "Circuit breaker {{ $labels.breaker_name }} tripping {{ $value }}/min"
+          runbook: "Investigate downstream service health, check error rates"
+
+      # Circuit Breaker Stuck Open
+      - alert: CircuitBreakerStuckOpen
+        expr: |
+          cb_state == 2 and
+          time() - cb_last_state_change_timestamp > 300
+        for: 1m
+        labels:
+          severity: warning
+          component: circuit_breaker
+        annotations:
+          summary: "Circuit breaker stuck open for >5 minutes"
+          description: "Circuit breaker {{ $labels.breaker_name }} stuck open"
+          runbook: "Manual intervention may be required, check recovery conditions"
+
+  - name: throughput_alerts
+    interval: 1s
+    rules:
+      # Throughput Below Target
+      - alert: ThroughputBelowTarget
+        expr: |
+          rate(operations_total[1m]) < 450000
+        for: 30s
+        labels:
+          severity: warning
+          component: trading_engine
+          sla: "500k_ops_sec"
+        annotations:
+          summary: "Throughput below 500k ops/sec target"
+          description: "Current throughput: {{ $value }} ops/sec (target: 500k+)"
+          runbook: "Check for blocking operations, review concurrency settings"
+
+      # Order Processing Rate Drop
+      - alert: OrderProcessingRateDrop
+        expr: |
+          rate(orders_processed_total[1m]) < 4500 and
+          rate(orders_received_total[1m]) > 5000
+        for: 30s
+        labels:
+          severity: warning
+          component: order_pipeline
+        annotations:
+          summary: "Order processing falling behind"
+          description: "Processing {{ $value }} orders/sec, backlog building"
+          runbook: "Check order queue depth, scale workers if needed"
+
+  - name: memory_alerts
+    interval: 5s
+    rules:
+      # Memory Pool Exhaustion
+      - alert: MemoryPoolExhaustion
+        expr: |
+          memory_pool_available / memory_pool_total < 0.1
+        for: 10s
+        labels:
+          severity: critical
+          component: memory_management
+        annotations:
+          summary: "Memory pool nearly exhausted (<10% available)"
+          description: "Pool {{ $labels.pool_name }} has {{ $value }}% available"
+          runbook: "Possible memory leak, check object lifecycle and pool sizing"
+
+      # Allocation Latency Violation
+      - alert: AllocationLatencyViolation
+        expr: |
+          histogram_quantile(0.99,
+            rate(allocation_latency_nanoseconds_bucket[10s])
+          ) > 10
+        for: 10s
+        labels:
+          severity: warning
+          component: mimalloc
+          sla: "10ns_allocation"
+        annotations:
+          summary: "Memory allocation exceeding 10ns target"
+          description: "Allocation p99 is {{ $value }}ns (target: <10ns)"
+          runbook: "Check MiMalloc stats, review TLS cache hit rates"
+
+      # Garbage Collection Pressure
+      - alert: GCPressure
+        expr: |
+          rate(gc_pause_milliseconds_sum[1m]) > 10
+        for: 30s
+        labels:
+          severity: warning
+          component: memory_management
+        annotations:
+          summary: "High GC pause time (>10ms/min)"
+          description: "GC consuming {{ $value }}ms/min"
+          runbook: "Review object allocation patterns, increase pool sizes"
+
+  - name: system_alerts
+    interval: 5s
+    rules:
+      # CPU Saturation
+      - alert: CPUSaturation
+        expr: |
+          (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[1m]))) > 0.95
+        for: 30s
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CPU utilization >95%"
+          description: "CPU at {{ $value | humanizePercentage }} utilization"
+          runbook: "System overloaded, scale horizontally or optimize hot paths"
+
+      # Network Latency Spike
+      - alert: NetworkLatencySpike
+        expr: |
+          histogram_quantile(0.99,
+            rate(exchange_api_latency_milliseconds_bucket[1m])
+          ) > 100
+        for: 30s
+        labels:
+          severity: warning
+          component: network
+        annotations:
+          summary: "Exchange API latency spike (>100ms p99)"
+          description: "Exchange {{ $labels.exchange }} p99 latency: {{ $value }}ms"
+          runbook: "Check network conditions, consider failover to backup exchange"
+
+  - name: data_quality_alerts
+    interval: 5s
+    rules:
+      # Stale Market Data
+      - alert: StaleMarketData
+        expr: |
+          time() - market_data_last_update_timestamp > 5
+        for: 10s
+        labels:
+          severity: critical
+          component: market_data
+        annotations:
+          summary: "Market data stale (>5s since update)"
+          description: "{{ $labels.symbol }} last updated {{ $value }}s ago"
+          runbook: "Check WebSocket connections, verify exchange connectivity"
+
+      # Order Book Depth Warning
+      - alert: ThinOrderBook
+        expr: |
+          order_book_depth_total < 100
+        for: 30s
+        labels:
+          severity: warning
+          component: market_data
+        annotations:
+          summary: "Thin order book detected"
+          description: "{{ $labels.symbol }} order book depth: {{ $value }} levels"
+          runbook: "Reduce position sizes, widen spreads for market making"

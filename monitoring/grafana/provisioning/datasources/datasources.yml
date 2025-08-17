@@ -1,0 +1,66 @@
+# Bot4 Grafana Datasources Configuration
+# Day 1 Sprint - Dashboard Setup
+# Owner: Avery
+
+apiVersion: 1
+
+datasources:
+  # Prometheus for metrics
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      timeInterval: "1s"  # Match Prometheus scrape interval
+      queryTimeout: "30s"
+      httpMethod: POST
+    editable: false
+
+  # Loki for logs
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - datasourceName: Jaeger
+          matcherRegex: "trace_id=(\\w+)"
+          name: TraceID
+          url: "$${__value.raw}"
+    editable: false
+
+  # Jaeger for traces
+  - name: Jaeger
+    type: jaeger
+    access: proxy
+    url: http://jaeger:16686
+    editable: false
+
+  # PostgreSQL for business metrics
+  - name: PostgreSQL
+    type: postgres
+    url: postgres:5432
+    database: bot3trading
+    user: bot3user
+    jsonData:
+      sslmode: 'disable'
+      maxOpenConns: 10
+      maxIdleConns: 10
+      connMaxLifetime: 14400
+      postgresVersion: 1500
+      timescaledb: true
+    secureJsonData:
+      password: bot3pass
+    editable: false
+
+  # Redis for cache metrics
+  - name: Redis
+    type: redis-datasource
+    access: proxy
+    url: redis://redis:6379
+    jsonData:
+      poolSize: 10
+      timeout: 10
+    editable: false
