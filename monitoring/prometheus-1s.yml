@@ -42,12 +42,26 @@ scrape_configs:
         regex: '(decision_latency_.*|risk_check_latency_.*|order_latency_.*|circuit_breaker_.*|throughput_.*|memory_pool_.*|gc_.*)'
         action: keep
 
+  # Memory Metrics - Day 2 Sprint (HIGH PRIORITY)
+  - job_name: 'memory-management'
+    scrape_interval: 1s
+    scrape_timeout: 900ms
+    static_configs:
+      - targets: ['bot4-metrics:8081']  # Memory metrics port
+        labels:
+          service: 'memory-manager'
+          tier: 'critical'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(bot4_memory_.*|bot4_pool_.*|bot4_tls_.*|bot4_ring_.*)'
+        action: keep
+
   # Circuit Breaker Metrics - HIGH PRIORITY
   - job_name: 'circuit-breakers'
     scrape_interval: 1s
     scrape_timeout: 900ms
     static_configs:
-      - targets: ['bot4-metrics:8081']  # Dedicated CB metrics port
+      - targets: ['bot4-metrics:8085']  # Moved to port 8085
         labels:
           service: 'circuit-breaker'
           tier: 'critical'

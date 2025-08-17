@@ -31,6 +31,9 @@ inherits = "release"
 
 # Shared dependencies
 [workspace.dependencies]
+# Memory management - CRITICAL (Day 2 Sprint)
+mimalloc = { version = "0.1", default-features = false }
+
 # Async runtime
 tokio = { version = "1.35", features = ["full"] }
 async-trait = "0.1"

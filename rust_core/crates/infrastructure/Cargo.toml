@@ -5,6 +5,14 @@ edition.workspace = true
 authors.workspace = true
 
 [dependencies]
+# Memory management - Day 2 Sprint (Critical)
+mimalloc = { workspace = true }
+crossbeam = "0.8"
+crossbeam-utils = "0.8"  # For CachePadded as recommended by Sophia
+thread_local = "1.1"
+lazy_static = "1.4"
+
+# Workspace dependencies
 tokio = { workspace = true }
 async-trait = { workspace = true }
 serde = { workspace = true }
@@ -13,7 +21,6 @@ tracing = { workspace = true }
 dashmap = { workspace = true }
 arc-swap = { workspace = true }
 parking_lot = { workspace = true }
-crossbeam-utils = "0.8"  # For CachePadded as recommended by Sophia
 
 [dev-dependencies]
 criterion = { workspace = true }
