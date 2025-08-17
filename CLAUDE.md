@@ -24,17 +24,17 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
 ### 3. MANDATORY GITHUB PR WORKFLOW - EXTERNAL QA REVIEW
 **EVERY SUB-TASK REQUIRES A SEPARATE PR WITH FULL DOCUMENTATION:**
 1. **ONE SUB-TASK = ONE PR** - Granular review by external QA team
-2. **BEFORE starting ANY task**: Read PROJECT_MANAGEMENT_TASK_LIST_V5.md AND ARCHITECTURE.md
+2. **BEFORE starting ANY task**: Read PROJECT_MANAGEMENT_MASTER.md AND ARCHITECTURE.md
 3. **Create feature branch**: `git checkout -b task-X.Y.Z-description`
 4. **Implement with 100% quality** - No shortcuts, no fakes
 5. **Create PR to GitHub** with MANDATORY elements:
-   - **Task/Sub-task ID and full description from V5**
+   - **Task/Sub-task ID and full description from PROJECT_MANAGEMENT_MASTER.md**
    - **Implementation explanation** - How it works, why this approach
    - **Testing approach** - What tests cover, edge cases handled
    - **Integration points** - How it connects to other components
    - **Validation checklist** - 100% complete
 6. **EXTERNAL QA REVIEW** - Wait for approval before proceeding
-7. **Update docs IMMEDIATELY**: After QA approval, update V5 and ARCHITECTURE.md
+7. **Update docs IMMEDIATELY**: After QA approval, update PROJECT_MANAGEMENT_MASTER.md and ARCHITECTURE.md
 8. **NO WORK WITHOUT PR APPROVAL** - This is MANDATORY!
 
 ### 4. 100% VALIDATION REQUIREMENTS
@@ -96,6 +96,20 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 
 ## 📋 Task Management System
 
+### 🔴 NEW ORGANIZATIONAL RULES (MANDATORY)
+
+#### Review Document Organization
+**ALL review requests and responses MUST be stored in:**
+- `/home/hamster/bot4/chatgpt_reviews/` - For Sophia (ChatGPT) reviews
+- `/home/hamster/bot4/grok_reviews/` - For Nexus (Grok) reviews
+- **NO review documents in root folder - KEEP IT CLEAN!**
+
+#### Single Source of Truth
+**PROJECT_MANAGEMENT_MASTER.md is the ONLY project management document**
+- All task tracking in PROJECT_MANAGEMENT_MASTER.md
+- PROJECT_MANAGEMENT_TASK_LIST_V5.md is DEPRECATED and REMOVED
+- Never create duplicate project management files
+
 ### Primary Documents (MANDATORY SYNCHRONIZATION)
 
 #### 🔴 CRITICAL: Document Synchronization Protocol
@@ -116,11 +130,17 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 3. **Document any deviations from spec**
 4. **Update dependency status for dependent tasks**
 
-**Document Priority:**
-1. **LLM_TASK_SPECIFICATIONS.md** - Primary task reference (USE THIS)
-2. **LLM_OPTIMIZED_ARCHITECTURE.md** - Primary architecture reference (USE THIS)
-3. **MASTER_ARCHITECTURE.md** - Human-readable architecture (reference)
-4. **PROJECT_MANAGEMENT_PLAN.md** - Human-readable project plan (reference)
+**SUPER CRITICAL DOCUMENTS - MUST BE SYNCHRONIZED AFTER EVERY SUB-TASK:**
+1. **PROJECT_MANAGEMENT_MASTER.md** - Single source of project truth (PRIMARY)
+2. **LLM_OPTIMIZED_ARCHITECTURE.md** - Architecture specifications (PRIMARY)
+3. **LLM_TASK_SPECIFICATIONS.md** - Task specifications (PRIMARY)
+
+**These three documents MUST be updated IMMEDIATELY after EVERY sub-task completion!**
+**NO SLACKING - This is MANDATORY!**
+
+**Supporting Documents:**
+4. **ARCHITECTURE.md** - Detailed technical architecture
+5. **DEVELOPMENT_RULES.md** - Development standards
 
 ### Task Workflow - MANDATORY PROCESS (ENHANCED V2)
 ```bash
@@ -144,16 +164,22 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 11. ACHIEVE 100% test coverage - NO EXCEPTIONS
 12. Run ./scripts/verify_completion.sh - MUST PASS 100%
 
-## PHASE 4: DOCUMENTATION UPDATE (MANDATORY)
-13. UPDATE task status in LLM_TASK_SPECIFICATIONS.md:
+## PHASE 4: DOCUMENTATION UPDATE (MANDATORY - ALL THREE DOCUMENTS)
+13. UPDATE PROJECT_MANAGEMENT_MASTER.md:
+    - Mark task/sub-task as complete
+    - Update percentage complete
+    - Record completion date
+14. UPDATE LLM_TASK_SPECIFICATIONS.md:
     - Set status: 'completed'
     - Record actual_metrics
     - Note any deviations
-14. UPDATE component in LLM_OPTIMIZED_ARCHITECTURE.md:
+15. UPDATE LLM_OPTIMIZED_ARCHITECTURE.md:
     - Add actual performance metrics
     - Update implementation status
     - Document any architecture changes
-15. CREATE PR with full documentation for external QA
+16. CREATE PR with full documentation for external QA
+
+**REMEMBER: ALL THREE DOCUMENTS MUST BE UPDATED - NO EXCEPTIONS!**
 
 ## PHASE 5: CONTINUOUS SYNC
 16. CHECK for updates in dependent components
