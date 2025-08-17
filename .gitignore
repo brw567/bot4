@@ -39,11 +39,15 @@ connection_strings.txt
 # ============================================
 target/
 **/target/
+rust_core/target/
+rust_core/target/debug/
+rust_core/target/release/
+rust_core/target/x86_64-unknown-linux-gnu/
 Cargo.lock
 **/*.rs.bk
 *.pdb
 
-# Rust build files
+# Rust build files (60+ MB files identified)
 *.rlib
 *.rmeta
 *.d
@@ -51,6 +55,21 @@ Cargo.lock
 *.dylib
 *.dll
 *.exe
+
+# Incremental compilation
+**/incremental/
+**/deps/
+**/*.bin
+
+# Benchmark and test artifacts
+**/criterion/
+**/tarpaulin/
+**/*.profraw
+**/*.profdata
+
+# Build cache
+**/.fingerprint/
+**/build/
 
 # ============================================
 # LOGS & RUNTIME DATA
