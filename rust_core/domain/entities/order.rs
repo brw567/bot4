@@ -91,6 +91,7 @@ pub struct Order {
     order_type: OrderType,
     side: OrderSide,
     price: Option<Price>,      // None for market orders
+    stop_price: Option<Price>, // Stop trigger price (for stop orders)
     quantity: Quantity,
     time_in_force: TimeInForce,
     
@@ -125,6 +126,7 @@ impl Order {
             order_type: OrderType::Market,
             side,
             price: None,
+            stop_price: None,
             quantity,
             time_in_force: TimeInForce::IOC, // Market orders are IOC by default
             status: OrderStatus::Draft,
@@ -157,6 +159,7 @@ impl Order {
             order_type: OrderType::Limit,
             side,
             price: Some(price),
+            stop_price: None,
             quantity,
             time_in_force,
             status: OrderStatus::Draft,
@@ -172,12 +175,111 @@ impl Order {
         }
     }
     
+    /// Create a new stop market order
+    pub fn stop_market(
+        symbol: Symbol,
+        side: OrderSide,
+        stop_price: Price,
+        quantity: Quantity,
+    ) -> Self {
+        let now = Utc::now();
+        let id = OrderId::new();
+        
+        Order {
+            id,
+            symbol,
+            order_type: OrderType::StopMarket,
+            side,
+            price: None,
+            stop_price: Some(stop_price),
+            quantity,
+            time_in_force: TimeInForce::GTC,
+            status: OrderStatus::Draft,
+            filled_quantity: Quantity::zero(),
+            average_fill_price: None,
+            created_at: now,
+            updated_at: now,
+            stop_loss: None,
+            take_profit: None,
+            max_slippage_bps: Some(100), // 1% default for stop orders
+            exchange_order_id: None,
+            client_order_id: format!("bot4_{}", id),
+        }
+    }
+    
+    /// Create a new stop limit order
+    pub fn stop_limit(
+        symbol: Symbol,
+        side: OrderSide,
+        stop_price: Price,
+        limit_price: Price,
+        quantity: Quantity,
+        time_in_force: TimeInForce,
+    ) -> Self {
+        let now = Utc::now();
+        let id = OrderId::new();
+        
+        Order {
+            id,
+            symbol,
+            order_type: OrderType::StopLimit,
+            side,
+            price: Some(limit_price),
+            stop_price: Some(stop_price),
+            quantity,
+            time_in_force,
+            status: OrderStatus::Draft,
+            filled_quantity: Quantity::zero(),
+            average_fill_price: None,
+            created_at: now,
+            updated_at: now,
+            stop_loss: None,
+            take_profit: None,
+            max_slippage_bps: None,
+            exchange_order_id: None,
+            client_order_id: format!("bot4_{}", id),
+        }
+    }
+    
+    // Builder methods for modifying orders
+    
+    /// Set the price (for amending orders)
+    pub fn with_price(mut self, price: Price) -> Result<Self> {
+        if !self.can_modify() {
+            bail!("Cannot modify order in status: {:?}", self.status);
+        }
+        self.price = Some(price);
+        self.updated_at = Utc::now();
+        Ok(self)
+    }
+    
+    /// Set the stop price (for amending stop orders)
+    pub fn with_stop_price(mut self, stop_price: Price) -> Result<Self> {
+        if !self.can_modify() {
+            bail!("Cannot modify order in status: {:?}", self.status);
+        }
+        self.stop_price = Some(stop_price);
+        self.updated_at = Utc::now();
+        Ok(self)
+    }
+    
+    /// Set the quantity (for amending orders)
+    pub fn with_quantity(mut self, quantity: Quantity) -> Result<Self> {
+        if !self.can_modify() {
+            bail!("Cannot modify order in status: {:?}", self.status);
+        }
+        self.quantity = quantity;
+        self.updated_at = Utc::now();
+        Ok(self)
+    }
+    
     // Getters (immutable access)
     pub fn id(&self) -> &OrderId { &self.id }
     pub fn symbol(&self) -> &Symbol { &self.symbol }
     pub fn order_type(&self) -> OrderType { self.order_type }
     pub fn side(&self) -> OrderSide { self.side }
     pub fn price(&self) -> Option<&Price> { self.price.as_ref() }
+    pub fn stop_price(&self) -> Option<&Price> { self.stop_price.as_ref() }
     pub fn quantity(&self) -> &Quantity { &self.quantity }
     pub fn status(&self) -> OrderStatus { self.status }
     pub fn filled_quantity(&self) -> &Quantity { &self.filled_quantity }

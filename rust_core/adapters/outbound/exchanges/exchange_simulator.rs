@@ -17,6 +17,9 @@ use crate::ports::outbound::exchange_port::{
     ExchangePort, OrderBook, OrderBookLevel, Trade, Balance, ExchangeCapabilities
 };
 
+mod idempotency_manager;
+use idempotency_manager::{IdempotencyManager, hash_order_request};
+
 /// Latency simulation modes
 #[derive(Debug, Clone)]
 pub enum LatencyMode {
@@ -120,12 +123,16 @@ struct SimulatedOrderBook {
 /// - Network jitter and failures
 /// - OCO, ReduceOnly, PostOnly order types
 /// - Slippage and market impact modeling
+/// - Idempotency with client_order_id deduplication (CRITICAL)
 pub struct ExchangeSimulator {
     state: Arc<RwLock<SimulatorState>>,
     latency_mode: LatencyMode,
     fill_mode: FillMode,
     rate_limit_config: RateLimitConfig,
     failure_mode: FailureMode,
+    
+    // Idempotency manager (Sophia's #1 critical requirement)
+    idempotency_mgr: Arc<IdempotencyManager>,
     
     // Configuration
     maker_fee: f64,
@@ -176,6 +183,7 @@ impl ExchangeSimulator {
             fill_mode: FillMode::Realistic,
             rate_limit_config: RateLimitConfig::default(),
             failure_mode: FailureMode::None,
+            idempotency_mgr: Arc::new(IdempotencyManager::default()),
             maker_fee: 0.0002, // 0.02%
             taker_fee: 0.0004, // 0.04%
             min_order_size: 0.00001,
@@ -379,42 +387,46 @@ impl ExchangeSimulator {
         Ok(fills)
     }
     
-    /// Generate a unique exchange order ID
-    fn generate_order_id(&self) -> String {
-        format!("SIM_{}", uuid::Uuid::new_v4())
-    }
-    
-    /// Validate order parameters
-    fn validate_order(&self, order: &Order) -> Result<()> {
-        // Check minimum order size
-        if order.quantity().value() < self.min_order_size {
-            bail!("Order quantity {} below minimum {}", 
-                  order.quantity().value(), self.min_order_size);
-        }
+    /// Place order with idempotency support (Sophia's #1 critical requirement)
+    /// Returns existing exchange_order_id if client_order_id already exists
+    pub async fn place_order_idempotent(
+        &self,
+        order: &Order,
+        client_order_id: String,
+    ) -> Result<String> {
+        // Calculate request hash for validation
+        let request_hash = hash_order_request(
+            &order.symbol().to_string(),
+            &format!("{:?}", order.side()),
+            &format!("{:?}", order.order_type()),
+            order.quantity().value(),
+            order.price().map(|p| p.value()),
+        );
         
-        // Check price tick size for limit orders
-        if let Some(price) = order.price() {
-            let price_val = price.value();
-            let remainder = (price_val / self.tick_size) % 1.0;
-            if remainder > 0.0001 {
-                bail!("Price {} doesn't match tick size {}", 
-                      price_val, self.tick_size);
+        // Check if this client_order_id already exists
+        if let Some(existing_exchange_id) = self.idempotency_mgr.get(&client_order_id).await {
+            // Validate that it's the same request
+            if self.idempotency_mgr.validate_retry(&client_order_id, request_hash).await? {
+                // Return existing order ID (idempotent response)
+                return Ok(existing_exchange_id);
             }
         }
         
-        // Check time in force validity
-        if order.order_type() == OrderType::Market && 
-           order.time_in_force != TimeInForce::IOC {
-            bail!("Market orders must use IOC time in force");
-        }
+        // Place the order normally
+        let exchange_order_id = self.place_order_internal(order).await?;
         
-        Ok(())
+        // Store in idempotency cache
+        self.idempotency_mgr.insert(
+            client_order_id,
+            exchange_order_id.clone(),
+            request_hash
+        ).await?;
+        
+        Ok(exchange_order_id)
     }
-}
-
-#[async_trait]
-impl ExchangePort for ExchangeSimulator {
-    async fn place_order(&self, order: &Order) -> Result<String> {
+    
+    /// Internal order placement (without idempotency)
+    async fn place_order_internal(&self, order: &Order) -> Result<String> {
         // Simulate network operations
         self.simulate_latency().await;
         self.simulate_failure().await?;
@@ -500,6 +512,48 @@ impl ExchangePort for ExchangeSimulator {
         }
         
         Ok(exchange_order_id)
+    }
+    
+    /// Generate a unique exchange order ID
+    fn generate_order_id(&self) -> String {
+        format!("SIM_{}", uuid::Uuid::new_v4())
+    }
+    
+    /// Validate order parameters
+    fn validate_order(&self, order: &Order) -> Result<()> {
+        // Check minimum order size
+        if order.quantity().value() < self.min_order_size {
+            bail!("Order quantity {} below minimum {}", 
+                  order.quantity().value(), self.min_order_size);
+        }
+        
+        // Check price tick size for limit orders
+        if let Some(price) = order.price() {
+            let price_val = price.value();
+            let remainder = (price_val / self.tick_size) % 1.0;
+            if remainder > 0.0001 {
+                bail!("Price {} doesn't match tick size {}", 
+                      price_val, self.tick_size);
+            }
+        }
+        
+        // Check time in force validity
+        if order.order_type() == OrderType::Market && 
+           order.time_in_force != TimeInForce::IOC {
+            bail!("Market orders must use IOC time in force");
+        }
+        
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl ExchangePort for ExchangeSimulator {
+    async fn place_order(&self, order: &Order) -> Result<String> {
+        // Use the order's ID as client_order_id for idempotency
+        // In production, this would be passed separately
+        let client_order_id = format!("CLIENT_{}", order.id());
+        self.place_order_idempotent(order, client_order_id).await
     }
     
     async fn cancel_order(&self, order_id: &OrderId) -> Result<()> {
@@ -893,5 +947,109 @@ mod tests {
         let result = simulator.place_order(&order).await;
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("below minimum"));
+    }
+    
+    #[tokio::test]
+    async fn should_handle_idempotent_orders() {
+        // CRITICAL TEST: Sophia's #1 requirement - prevent double orders
+        let simulator = ExchangeSimulator::new()
+            .with_config(
+                LatencyMode::None,
+                FillMode::Instant,
+                RateLimitConfig::default(),
+                FailureMode::None,
+            );
+        
+        let order = create_test_order();
+        let client_order_id = "TEST_CLIENT_ORDER_123".to_string();
+        
+        // First submission
+        let result1 = simulator.place_order_idempotent(&order, client_order_id.clone()).await;
+        assert!(result1.is_ok());
+        let exchange_id1 = result1.unwrap();
+        
+        // Second submission with same client_order_id (simulating retry)
+        let result2 = simulator.place_order_idempotent(&order, client_order_id.clone()).await;
+        assert!(result2.is_ok());
+        let exchange_id2 = result2.unwrap();
+        
+        // Should return the same exchange order ID
+        assert_eq!(exchange_id1, exchange_id2);
+        
+        // Verify only one order was actually placed
+        let state = simulator.state.read().await;
+        assert_eq!(state.total_orders_placed, 1);
+    }
+    
+    #[tokio::test]
+    async fn should_reject_different_order_with_same_client_id() {
+        let simulator = ExchangeSimulator::new();
+        
+        let order1 = Order::limit(
+            Symbol::new("BTC/USDT").unwrap(),
+            OrderSide::Buy,
+            Price::new(50000.0).unwrap(),
+            Quantity::new(1.0).unwrap(),
+            TimeInForce::GTC,
+        );
+        
+        let order2 = Order::limit(
+            Symbol::new("BTC/USDT").unwrap(),
+            OrderSide::Buy,
+            Price::new(50000.0).unwrap(),
+            Quantity::new(2.0).unwrap(), // Different quantity
+            TimeInForce::GTC,
+        );
+        
+        let client_order_id = "TEST_CLIENT_ORDER_456".to_string();
+        
+        // Place first order
+        let result1 = simulator.place_order_idempotent(&order1, client_order_id.clone()).await;
+        assert!(result1.is_ok());
+        
+        // Try to place different order with same client_order_id
+        let result2 = simulator.place_order_idempotent(&order2, client_order_id.clone()).await;
+        assert!(result2.is_err());
+        assert!(result2.unwrap_err().to_string().contains("Request mismatch"));
+    }
+    
+    #[tokio::test]
+    async fn should_handle_concurrent_idempotent_orders() {
+        use std::sync::Arc;
+        use tokio::task::JoinSet;
+        
+        let simulator = Arc::new(ExchangeSimulator::new());
+        let order = create_test_order();
+        let client_order_id = "CONCURRENT_ORDER_789".to_string();
+        
+        // Spawn 10 concurrent tasks trying to place the same order
+        let mut tasks = JoinSet::new();
+        
+        for _ in 0..10 {
+            let sim_clone = simulator.clone();
+            let order_clone = order.clone();
+            let client_id_clone = client_order_id.clone();
+            
+            tasks.spawn(async move {
+                sim_clone.place_order_idempotent(&order_clone, client_id_clone).await
+            });
+        }
+        
+        // Collect all results
+        let mut results = Vec::new();
+        while let Some(result) = tasks.join_next().await {
+            results.push(result.unwrap());
+        }
+        
+        // All should succeed and return the same exchange_order_id
+        let first_exchange_id = results[0].as_ref().unwrap();
+        for result in &results {
+            assert!(result.is_ok());
+            assert_eq!(result.as_ref().unwrap(), first_exchange_id);
+        }
+        
+        // Verify only one order was actually placed
+        let state = simulator.state.read().await;
+        assert_eq!(state.total_orders_placed, 1);
     }
 }
