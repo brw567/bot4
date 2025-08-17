@@ -1,0 +1,288 @@
+name: Quality Gates CI/CD Pipeline
+# Riley: Implementing mandatory quality gates per external review requirements
+# Deadline: 48 hours from Phase 0 completion
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+  MIN_COVERAGE_LINE: 95
+  MIN_COVERAGE_BRANCH: 90
+
+jobs:
+  # Job 1: Code Coverage Enforcement
+  coverage:
+    name: Coverage Check (≥95% line, ≥90% branch)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: llvm-tools-preview
+      
+      - name: Install cargo-llvm-cov
+        run: |
+          cargo install cargo-llvm-cov
+          
+      - name: Run tests with coverage
+        run: |
+          cd rust_core
+          cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+          
+      - name: Check coverage thresholds
+        run: |
+          cd rust_core
+          # Parse coverage and enforce minimums
+          cargo llvm-cov report --json --output-path coverage.json
+          
+          LINE_COV=$(jq '.data[0].totals.lines.percent' coverage.json)
+          BRANCH_COV=$(jq '.data[0].totals.branches.percent' coverage.json)
+          
+          echo "Line coverage: ${LINE_COV}%"
+          echo "Branch coverage: ${BRANCH_COV}%"
+          
+          if (( $(echo "$LINE_COV < $MIN_COVERAGE_LINE" | bc -l) )); then
+            echo "❌ Line coverage ${LINE_COV}% is below minimum ${MIN_COVERAGE_LINE}%"
+            exit 1
+          fi
+          
+          if (( $(echo "$BRANCH_COV < $MIN_COVERAGE_BRANCH" | bc -l) )); then
+            echo "❌ Branch coverage ${BRANCH_COV}% is below minimum ${MIN_COVERAGE_BRANCH}%"
+            exit 1
+          fi
+          
+          echo "✅ Coverage requirements met!"
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./rust_core/lcov.info
+          fail_ci_if_error: true
+
+  # Job 2: Benchmark Regression Detection
+  benchmarks:
+    name: Performance Regression Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      
+      - name: Cache benchmark results
+        uses: actions/cache@v3
+        with:
+          path: ./target/criterion
+          key: ${{ runner.os }}-benchmark-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-benchmark-
+      
+      - name: Run benchmarks
+        run: |
+          cd rust_core
+          cargo bench --all-features -- --save-baseline current
+          
+      - name: Check for regressions
+        run: |
+          cd rust_core
+          # Compare against baseline if it exists
+          if [ -d "target/criterion/baseline" ]; then
+            cargo bench --all-features -- --baseline baseline
+            
+            # Parse results and check for regressions
+            python3 ../scripts/check_benchmark_regression.py
+          else
+            echo "No baseline found, saving current as baseline"
+            cargo bench --all-features -- --save-baseline baseline
+          fi
+      
+      - name: Store benchmark results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'cargo'
+          output-file-path: rust_core/target/criterion/output.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: '110%'
+          comment-on-alert: true
+          fail-on-alert: true
+
+  # Job 3: Documentation Alignment Checker
+  doc-alignment:
+    name: Documentation Alignment Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Python dependencies
+        run: |
+          pip install pyyaml toml
+          
+      - name: Check documentation alignment
+        run: |
+          python3 scripts/check_doc_alignment.py
+          
+      - name: Verify critical docs are updated
+        run: |
+          # Check if critical docs were modified in this commit
+          CHANGED_FILES=$(git diff --name-only HEAD~1)
+          
+          # If any Rust files changed, docs must be updated
+          if echo "$CHANGED_FILES" | grep -q "\.rs$"; then
+            echo "Rust files changed, checking if docs are updated..."
+            
+            DOCS_UPDATED=false
+            for doc in PROJECT_MANAGEMENT_MASTER.md docs/LLM_OPTIMIZED_ARCHITECTURE.md docs/LLM_TASK_SPECIFICATIONS.md; do
+              if echo "$CHANGED_FILES" | grep -q "$doc"; then
+                DOCS_UPDATED=true
+                break
+              fi
+            done
+            
+            if [ "$DOCS_UPDATED" = false ]; then
+              echo "❌ Critical documentation not updated with code changes!"
+              echo "The following docs must be kept in sync:"
+              echo "  - PROJECT_MANAGEMENT_MASTER.md"
+              echo "  - docs/LLM_OPTIMIZED_ARCHITECTURE.md" 
+              echo "  - docs/LLM_TASK_SPECIFICATIONS.md"
+              exit 1
+            fi
+            
+            echo "✅ Documentation properly updated"
+          fi
+
+  # Job 4: Mathematical Validation Tests
+  math-validation:
+    name: Mathematical Validation Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          
+      - name: Run statistical tests
+        run: |
+          cd rust_core
+          cargo test -p analysis statistical_tests -- --nocapture
+          cargo test -p analysis dcc_garch -- --nocapture
+          
+      - name: Validate mathematical correctness
+        run: |
+          cd rust_core
+          # Run specific mathematical validation suite
+          cargo test -p analysis math_validation -- --nocapture
+
+  # Job 5: No Fake Implementations Check
+  no-fakes:
+    name: No Fake Implementations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for fake implementations
+        run: |
+          python3 scripts/validate_no_fakes.py
+          python3 scripts/validate_no_fakes_rust.py
+
+  # Job 6: Security Audit
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          
+      - name: Run cargo audit
+        run: |
+          cargo install cargo-audit
+          cd rust_core
+          cargo audit
+
+  # Job 7: Integration Test Suite
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: timescale/timescaledb:latest-pg15
+        env:
+          POSTGRES_USER: bot3user
+          POSTGRES_PASSWORD: bot3pass
+          POSTGRES_DB: bot3trading
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+          
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          
+      - name: Setup database
+        run: |
+          PGPASSWORD=bot3pass psql -U bot3user -h localhost -d bot3trading -f sql/001_core_schema.sql
+          
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql://bot3user:bot3pass@localhost:5432/bot3trading
+          REDIS_URL: redis://localhost:6379
+        run: |
+          cd rust_core
+          cargo test --all-features --test '*' -- --nocapture
+
+  # Final Gate: All Checks Must Pass
+  quality-gate:
+    name: Quality Gate Decision
+    needs: [coverage, benchmarks, doc-alignment, math-validation, no-fakes, security, integration]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Quality Gate Passed
+        run: |
+          echo "✅ All quality gates passed!"
+          echo "Coverage: ✓"
+          echo "Benchmarks: ✓"
+          echo "Documentation: ✓"
+          echo "Mathematical Validation: ✓"
+          echo "No Fakes: ✓"
+          echo "Security: ✓"
+          echo "Integration: ✓"
+          echo ""
+          echo "Ready for merge!"

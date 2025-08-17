@@ -6,6 +6,7 @@ members = [
     "crates/risk_engine", 
     "crates/websocket", 
     "crates/order_management",
+    "crates/analysis",
 ]
 resolver = "2"
 
@@ -71,6 +72,7 @@ dotenv = "0.15"
 # Math and statistics
 ndarray = "0.15"
 statrs = "0.16"
+nalgebra = "0.32"
 
 # Configuration
 config = "0.13"

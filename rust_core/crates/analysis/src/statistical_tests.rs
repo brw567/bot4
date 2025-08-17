@@ -6,6 +6,7 @@
 use ndarray::{Array1, Array2};
 use statrs::distribution::{ChiSquared, ContinuousCDF, Normal};
 use std::collections::VecDeque;
+use std::f64::consts::PI;
 
 /// Augmented Dickey-Fuller test for stationarity
 /// Required by Nexus for price series validation
