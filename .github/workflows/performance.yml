@@ -1,0 +1,133 @@
+name: Performance Gates
+
+on:
+  push:
+    branches: [ main, 'feature/*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-C target-cpu=native"
+
+jobs:
+  benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+        components: rustfmt, clippy
+    
+    - name: Cache cargo registry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo index
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache target
+      uses: actions/cache@v3
+      with:
+        path: target
+        key: ${{ runner.os }}-target-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Run benchmarks
+      run: |
+        cd rust_core
+        cargo bench --all --no-fail-fast | tee bench_results.txt
+    
+    - name: Check performance gates
+      run: |
+        python3 scripts/check_performance_gates.py bench_results.txt
+    
+    - name: Generate criterion report
+      run: |
+        cd rust_core/target/criterion
+        find . -name "*.html" -exec cp {} ../../.. \;
+    
+    - name: Upload benchmark artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results
+        path: |
+          bench_results.txt
+          *.html
+          rust_core/target/criterion/**/*.svg
+    
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const results = fs.readFileSync('bench_results.txt', 'utf8');
+          
+          // Extract key metrics
+          const riskLatency = results.match(/risk_check.*?(\d+\.?\d*)\s*µs/);
+          const orderLatency = results.match(/order_internal.*?(\d+\.?\d*)\s*µs/);
+          const throughput = results.match(/throughput.*?(\d+\.?\d*k?)\s*ops/);
+          
+          const comment = `## 📊 Performance Results
+          
+          | Metric | Result | Target | Status |
+          |--------|--------|--------|--------|
+          | Risk Check p99 | ${riskLatency ? riskLatency[1] : 'N/A'} µs | ≤10 µs | ${riskLatency && parseFloat(riskLatency[1]) <= 10 ? '✅' : '❌'} |
+          | Order Internal p99 | ${orderLatency ? orderLatency[1] : 'N/A'} µs | ≤100 µs | ${orderLatency && parseFloat(orderLatency[1]) <= 100 ? '✅' : '❌'} |
+          | Throughput | ${throughput ? throughput[1] : 'N/A'} ops/s | ≥500k | ${throughput ? '✅' : '❌'} |
+          
+          [View full report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+    
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Check documentation alignment
+      run: |
+        python3 scripts/check_doc_alignment.py
+    
+    - name: Check for fake implementations
+      run: |
+        python3 scripts/validate_no_fakes_rust.py
+    
+    - name: Verify completion status
+      run: |
+        ./scripts/verify_completion.sh
+    
+    - name: Check coverage
+      run: |
+        cd rust_core
+        cargo tarpaulin --out Xml --all --release
+        
+        # Parse coverage and fail if below threshold
+        coverage=$(grep -oP 'line-rate="\K[^"]+' cobertura.xml | head -1)
+        coverage_pct=$(echo "$coverage * 100" | bc)
+        echo "Coverage: ${coverage_pct}%"
+        
+        if (( $(echo "$coverage_pct < 95" | bc -l) )); then
+          echo "❌ Coverage ${coverage_pct}% is below 95% threshold"
+          exit 1
+        fi
+        
+        echo "✅ Coverage ${coverage_pct}% meets requirements"
