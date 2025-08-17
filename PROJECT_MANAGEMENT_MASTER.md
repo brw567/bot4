@@ -196,10 +196,11 @@ current_status: Phase 0 (60%), Phase 1 (35%)
   - [x] Tokio tuning (workers=11, blocking=512) ✅
   - [x] Zero allocations in hot path ✅
 
-### Phase 2: Trading Engine - 60% COMPLETE
+### Phase 2: Trading Engine - 75% COMPLETE
 **Duration**: 4 weeks | **Owner**: Casey (Exchange Sim) & Sam (Engine)
-**Status**: Exchange Simulator COMPLETE (Sophia's #1 priority delivered)
+**Status**: Core Components COMPLETE, Integration Pending
 **Architecture**: Hexagonal Architecture with 100% separation ✅
+**External Review**: Sophia 93/100, Nexus 85% confidence
 
 #### 🔴 MANDATORY REQUIREMENTS (FULLY IMPLEMENTED):
 1. **Hexagonal Architecture** ✅ Complete separation achieved
@@ -211,28 +212,48 @@ current_status: Phase 0 (60%), Phase 1 (35%)
 #### Week 1 Achievements ✅:
 - [x] Created hexagonal structure (domain/ports/adapters/dto)
 - [x] Implemented exchange port interface (ExchangePort trait)
-- [x] Built exchange simulator (1000+ lines, production-grade)
+- [x] Built exchange simulator (1872+ lines, production-grade)
 - [x] Separated DTOs from domain models (complete isolation)
 - [x] Repository pattern implemented (OrderRepository + UnitOfWork)
 - [x] Command pattern implemented (Place, Cancel, Batch)
 - [x] P99.9 simulation capabilities added
 - [x] Clean architecture validated (zero coupling)
 
-#### Exchange Simulator Features (Sophia's Requirements) ✅:
+#### Critical Feedback Addressed (NEW) ✅:
+**Sophia's Requirements (3/7 Complete)**:
+- [x] **Idempotency**: Client order ID deduplication prevents double orders
+- [x] **OCO Orders**: Complete edge case handling with state machine
+- [x] **Fee Model**: Maker/taker rates with volume tiers and rebates
+- [ ] Timestamp validation (in progress)
+- [ ] Validation filters (pending)
+- [ ] Per-symbol actors (pending)
+- [ ] Property tests (pending)
+
+**Nexus's Requirements (Priority 1 & 2)**:
+- [x] **MiMalloc/Pools**: Already complete from Phase 1
+- [x] **Rayon Parallelization**: 11 workers configured
+- [x] **Square-root Impact**: γ√(V/ADV) model implemented
+- [ ] Poisson/Beta distributions (in progress)
+- [ ] Log-normal latency (pending)
+
+#### Exchange Simulator Features ✅:
 - [x] Partial fills with realistic distributions
 - [x] Rate limiting (429 responses, token bucket)
 - [x] Network failure simulation (drops, outages, latency)
 - [x] OCO, ReduceOnly, PostOnly order types
-- [x] Slippage and market impact modeling
-- [x] Order book generation
+- [x] Market impact modeling (Linear + Square-root + Almgren-Chriss)
+- [x] Order book generation and walking
 - [x] Chaos testing modes
+- [x] Idempotency manager (24-hour TTL)
+- [x] Fee calculation with tiers
 
-#### Week 2 Priorities (In Progress):
-- [ ] Application services layer
+#### Week 2 Priorities (Remaining):
+- [ ] Statistical distributions (Poisson/Beta/LogNormal)
+- [ ] Timestamp validation
+- [ ] Validation filters
 - [ ] PostgreSQL repository implementation
 - [ ] REST API controllers
 - [ ] Integration tests
-- [ ] Performance benchmarks
 
 ### Phase 3: Risk Management - PARTIAL
 **Duration**: 5 days | **Owner**: Quinn
