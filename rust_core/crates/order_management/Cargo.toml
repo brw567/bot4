@@ -1,0 +1,46 @@
+[package]
+name = "order_management"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+# Core dependencies
+infrastructure = { path = "../infrastructure" }
+
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+# Database
+sqlx = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+
+# Utilities
+chrono = { workspace = true }
+uuid = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+
+# Decimal arithmetic for precise financial calculations
+rust_decimal = "1.33"
+rust_decimal_macros = "1.33"
+
+# State machine
+strum = { version = "0.25", features = ["derive"] }
+strum_macros = "0.25"
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+proptest = { workspace = true }
+criterion = { workspace = true }

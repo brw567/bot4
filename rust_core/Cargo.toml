@@ -1,5 +1,12 @@
-[package]
-name = "bot4-trading"
+[workspace]
+members = [
+    "crates/infrastructure",
+    "crates/trading_engine",
+    "crates/risk_engine", "crates/websocket", "crates/order_management",
+]
+resolver = "2"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
 authors = ["Bot4 Team"]
@@ -19,8 +26,8 @@ opt-level = 1
 [profile.bench]
 inherits = "release"
 
-# Core dependencies for Phase 0
-[dependencies]
+# Shared dependencies
+[workspace.dependencies]
 # Async runtime
 tokio = { version = "1.35", features = ["full"] }
 async-trait = "0.1"
@@ -55,25 +62,20 @@ chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.6", features = ["v4", "serde"] }
 dotenv = "0.15"
 
-# Math and statistics (will be needed soon)
+# Math and statistics
 ndarray = "0.15"
 statrs = "0.16"
 
 # Configuration
 config = "0.13"
 
-[dev-dependencies]
+# Circuit breaker dependencies
+dashmap = "5.5"
+arc-swap = "1.6"
+parking_lot = "0.12"
+
+# Testing
 criterion = "0.5"
 proptest = "1.4"
 mockito = "1.2"
 pretty_assertions = "1.4"
-
-# Benchmarks will be added later
-# [[bench]]
-# name = "trading_bench"
-# harness = false
-
-# Workspace configuration (for future multi-crate structure)
-[workspace]
-members = ["."]
-resolver = "2"

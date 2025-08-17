@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database with TimescaleDB
   postgres:
-    image: postgres:15-alpine
+    image: timescale/timescaledb:latest-pg15
     container_name: bot3-postgres
     environment:
       POSTGRES_DB: bot3trading
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: bot3pass
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./sql/001_core_schema.sql:/docker-entrypoint-initdb.d/001_core_schema.sql
     ports:
       - "5432:5432"
     healthcheck:
