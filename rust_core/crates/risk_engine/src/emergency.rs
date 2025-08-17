@@ -6,7 +6,7 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::time::{Duration, Instant};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tracing::{error, warn, info};
 
 /// Trip conditions that trigger emergency stop
@@ -40,8 +40,9 @@ pub enum TripCondition {
 /// Kill switch - the big red button
 pub struct KillSwitch {
     is_active: Arc<AtomicBool>,
-    triggered_at: Arc<RwLock<Option<Instant>>>,
-    trigger_reason: Arc<RwLock<Option<TripCondition>>>,
+    // Using AtomicU64 for lock-free operation (Sophia Issue #1 fix)
+    triggered_at_nanos: Arc<AtomicU64>,  // 0 means not triggered
+    trigger_reason: Arc<RwLock<Option<TripCondition>>>,  // Kept as RwLock for complex type
     auto_reset_after: Option<Duration>,
     trigger_count: Arc<AtomicU64>,
 }
@@ -50,7 +51,7 @@ impl KillSwitch {
     pub fn new(auto_reset_after: Option<Duration>) -> Self {
         Self {
             is_active: Arc::new(AtomicBool::new(false)),
-            triggered_at: Arc::new(RwLock::new(None)),
+            triggered_at_nanos: Arc::new(AtomicU64::new(0)),
             trigger_reason: Arc::new(RwLock::new(None)),
             auto_reset_after,
             trigger_count: Arc::new(AtomicU64::new(0)),
@@ -62,7 +63,14 @@ impl KillSwitch {
         error!("🚨 KILL SWITCH ACTIVATED: {:?}", reason);
         
         self.is_active.store(true, Ordering::SeqCst);
-        *self.triggered_at.write() = Some(Instant::now());
+        
+        // Store monotonic nanos for lock-free operation
+        let nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos() as u64;
+        self.triggered_at_nanos.store(nanos, Ordering::Release);
+        
         *self.trigger_reason.write() = Some(reason);
         self.trigger_count.fetch_add(1, Ordering::Relaxed);
         
@@ -83,7 +91,7 @@ impl KillSwitch {
         
         info!("Kill switch deactivated by {}", authorized_by);
         self.is_active.store(false, Ordering::SeqCst);
-        *self.triggered_at.write() = None;
+        self.triggered_at_nanos.store(0, Ordering::Release);  // 0 means not triggered
         *self.trigger_reason.write() = None;
         
         Ok(())
@@ -95,10 +103,20 @@ impl KillSwitch {
         
         // Check auto-reset
         if active && self.auto_reset_after.is_some() {
-            if let Some(triggered) = *self.triggered_at.read() {
-                if triggered.elapsed() > self.auto_reset_after.unwrap() {
+            let triggered_nanos = self.triggered_at_nanos.load(Ordering::Acquire);
+            if triggered_nanos > 0 {
+                let now_nanos = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_nanos() as u64;
+                
+                let elapsed_nanos = now_nanos.saturating_sub(triggered_nanos);
+                let reset_nanos = self.auto_reset_after.unwrap().as_nanos() as u64;
+                
+                if elapsed_nanos > reset_nanos {
                     info!("Kill switch auto-reset after timeout");
                     self.is_active.store(false, Ordering::SeqCst);
+                    self.triggered_at_nanos.store(0, Ordering::Release);
                     return false;
                 }
             }
@@ -122,7 +140,8 @@ impl KillSwitch {
 pub struct EmergencyStop {
     kill_switch: Arc<KillSwitch>,
     conditions: Arc<RwLock<Vec<EmergencyCondition>>>,
-    last_check: Arc<RwLock<Instant>>,
+    // Using AtomicU64 for lock-free operation (Sophia Issue #1 fix)  
+    last_check_nanos: Arc<AtomicU64>,
     check_interval: Duration,
 }
 
@@ -134,10 +153,15 @@ struct EmergencyCondition {
 
 impl EmergencyStop {
     pub fn new(kill_switch: Arc<KillSwitch>) -> Self {
+        let now_nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos() as u64;
+            
         Self {
             kill_switch,
             conditions: Arc::new(RwLock::new(Vec::new())),
-            last_check: Arc::new(RwLock::new(Instant::now())),
+            last_check_nanos: Arc::new(AtomicU64::new(now_nanos)),
             check_interval: Duration::from_millis(100), // Check every 100ms
         }
     }
@@ -156,12 +180,27 @@ impl EmergencyStop {
     
     /// Check all conditions
     pub fn check_conditions(&self) {
-        // Rate limit checks
-        let mut last_check = self.last_check.write();
-        if last_check.elapsed() < self.check_interval {
+        // Rate limit checks using atomic operations
+        let now_nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos() as u64;
+            
+        let last_check_nanos = self.last_check_nanos.load(Ordering::Acquire);
+        let elapsed_nanos = now_nanos.saturating_sub(last_check_nanos);
+        let interval_nanos = self.check_interval.as_nanos() as u64;
+        
+        if elapsed_nanos < interval_nanos {
             return;
         }
-        *last_check = Instant::now();
+        
+        // Try to update last check time atomically
+        let _ = self.last_check_nanos.compare_exchange(
+            last_check_nanos,
+            now_nanos,
+            Ordering::Release,
+            Ordering::Relaxed,
+        );
         
         // Don't check if already triggered
         if self.kill_switch.is_active() {
@@ -237,7 +276,7 @@ impl EmergencyStop {
             trigger_reason: self.kill_switch.get_trigger_reason(),
             trigger_count: self.kill_switch.get_trigger_count(),
             conditions_count: self.conditions.read().len(),
-            last_check: *self.last_check.read(),
+            last_check_nanos: self.last_check_nanos.load(Ordering::Acquire),
         }
     }
 }
@@ -249,7 +288,7 @@ pub struct EmergencyStatus {
     pub trigger_reason: Option<TripCondition>,
     pub trigger_count: u64,
     pub conditions_count: usize,
-    pub last_check: Instant,
+    pub last_check_nanos: u64,  // Monotonic nanos for lock-free access
 }
 
 /// Emergency recovery plan

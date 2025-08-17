@@ -76,10 +76,20 @@ impl Default for CircuitConfig {
 }
 
 /// Clock abstraction for testability (addresses issue #5)
+/// Explicit Send + Sync bounds for thread safety (Sophia Issue #2)
 pub trait Clock: Send + Sync {
     fn now(&self) -> Instant;
     fn elapsed(&self, since: Instant) -> Duration {
         self.now().duration_since(since)
+    }
+    
+    /// Get monotonic nanos since some epoch (for atomic storage)
+    fn monotonic_nanos(&self) -> u64 {
+        // Using elapsed from a fixed point to get monotonic time
+        std::time::SystemTime::now()
+            .duration_since(std::time::SystemTime::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos() as u64
     }
 }
 
@@ -151,15 +161,18 @@ pub struct CallGuard {
     component: String,
     start: Instant,
     completed: bool,
+    is_half_open: bool,  // Track if this was a half-open call (Sophia Issue #4)
 }
 
 impl CallGuard {
     fn new(breaker: Arc<ComponentBreaker>, component: String, start: Instant) -> Self {
+        let is_half_open = breaker.current_state() == CircuitState::HalfOpen;
         CallGuard {
             breaker,
             component,
             start,
             completed: false,
+            is_half_open,
         }
     }
     
@@ -175,6 +188,11 @@ impl Drop for CallGuard {
         if !self.completed {
             // Auto-record as failure if guard dropped without explicit record
             self.breaker.record_outcome(Outcome::Failure);
+        }
+        
+        // Release half-open token if this was a half-open call (Sophia Issue #4)
+        if self.is_half_open {
+            self.breaker.release_half_open_token();
         }
     }
 }
@@ -200,8 +218,9 @@ pub struct ComponentBreaker {
     half_open_successes: AtomicU32,
     half_open_failures: AtomicU32,
     
-    // Timing
-    last_transition: AtomicU64,  // nanos since epoch
+    // Timing - using AtomicU64 for lock-free operation (Sophia Issue #1 fix)
+    last_failure_time: AtomicU64,  // monotonic nanos for lock-free access
+    last_transition: AtomicU64,  // monotonic nanos since start
     
     // Shared resources
     clock: Arc<dyn Clock>,
@@ -218,6 +237,7 @@ impl ComponentBreaker {
             half_open_tokens: AtomicU32::new(0),
             half_open_successes: AtomicU32::new(0),
             half_open_failures: AtomicU32::new(0),
+            last_failure_time: AtomicU64::new(0),
             last_transition: AtomicU64::new(0),
             clock,
             config,
@@ -273,13 +293,44 @@ impl ComponentBreaker {
     }
     
     fn try_acquire_half_open(&self) -> Result<(), CircuitError> {
-        let current = self.half_open_tokens.fetch_add(1, Ordering::AcqRel);
-        
-        if current < self.config.half_open_max_concurrent {
-            Ok(())
-        } else {
-            self.half_open_tokens.fetch_sub(1, Ordering::AcqRel);
-            Err(CircuitError::HalfOpenExhausted)
+        // Sophia Issue #4: Proper token limiting with CAS to prevent races
+        loop {
+            let current = self.half_open_tokens.load(Ordering::Acquire);
+            
+            if current >= self.config.half_open_max_concurrent {
+                return Err(CircuitError::HalfOpenExhausted);
+            }
+            
+            // Try to acquire token atomically
+            match self.half_open_tokens.compare_exchange(
+                current,
+                current + 1,
+                Ordering::Release,
+                Ordering::Acquire,
+            ) {
+                Ok(_) => return Ok(()),
+                Err(_) => continue,  // Retry on race
+            }
+        }
+    }
+    
+    fn release_half_open_token(&self) {
+        // Safely decrement token count, ensuring we don't underflow
+        loop {
+            let current = self.half_open_tokens.load(Ordering::Acquire);
+            if current == 0 {
+                break;  // Already at zero, nothing to release
+            }
+            
+            match self.half_open_tokens.compare_exchange(
+                current,
+                current - 1,
+                Ordering::Release,
+                Ordering::Acquire,
+            ) {
+                Ok(_) => break,
+                Err(_) => continue,  // Retry on race
+            }
         }
     }
     
@@ -303,8 +354,15 @@ impl ComponentBreaker {
     }
     
     fn record_transition(&self) {
+        // Store monotonic nanos for lock-free access
         let nanos = self.clock.now().elapsed().as_nanos() as u64;
         self.last_transition.store(nanos, Ordering::Release);
+    }
+    
+    fn record_failure(&self) {
+        // Store failure time as monotonic nanos (Sophia Issue #1 fix)
+        let nanos = self.clock.now().elapsed().as_nanos() as u64;
+        self.last_failure_time.store(nanos, Ordering::Release);
     }
     
     pub fn record_outcome(&self, outcome: Outcome) {
@@ -326,6 +384,7 @@ impl ComponentBreaker {
             Outcome::Failure => {
                 self.error_calls.fetch_add(1, Ordering::Relaxed);
                 self.consecutive_failures.fetch_add(1, Ordering::Relaxed);
+                self.record_failure();  // Record failure time atomically
                 
                 match self.current_state() {
                     CircuitState::Closed => {
@@ -355,6 +414,10 @@ pub struct GlobalCircuitBreaker {
     config: ArcSwap<CircuitConfig>,  // Hot-reloadable config (addresses issue #6)
     clock: Arc<dyn Clock>,
     
+    // Global state derived from components (Sophia Issue #3)
+    global_state: AtomicU8,  // CircuitState encoded as u8
+    global_trip_time: AtomicU64,  // Monotonic nanos when globally tripped
+    
     // Event callback for telemetry (addresses issue #7)
     on_event: Option<Arc<dyn Fn(CircuitEvent) + Send + Sync>>,
 }
@@ -373,6 +436,8 @@ impl GlobalCircuitBreaker {
             breakers: Arc::new(DashMap::new()),
             config: ArcSwap::from_pointee(CircuitConfig::default()),
             clock,
+            global_state: AtomicU8::new(CircuitState::Closed as u8),
+            global_trip_time: AtomicU64::new(0),
             on_event: None,
         }
     }
@@ -416,9 +481,28 @@ impl GlobalCircuitBreaker {
     
     /// Acquire permission to make a call
     pub fn acquire(&self, component: &str) -> Permit {
-        // Check global state first (derived from components)
-        if self.is_globally_tripped() {
-            return Permit::Rejected(CircuitError::GlobalOpen);
+        // Update global state based on components (Sophia Issue #3)
+        self.update_global_state();
+        
+        // Check global state first
+        let global_state = self.global_state.load(Ordering::Acquire);
+        if global_state == CircuitState::Open as u8 {
+            // Check if global cooldown expired
+            let config = self.config.load();
+            let trip_time = self.global_trip_time.load(Ordering::Acquire);
+            
+            if trip_time > 0 {
+                let now_nanos = self.clock.monotonic_nanos();
+                let elapsed_nanos = now_nanos.saturating_sub(trip_time);
+                let cooldown_nanos = config.open_cooldown.as_nanos() as u64;
+                
+                if elapsed_nanos < cooldown_nanos {
+                    return Permit::Rejected(CircuitError::GlobalOpen);
+                } else {
+                    // Transition to half-open for recovery attempt
+                    self.global_state.store(CircuitState::HalfOpen as u8, Ordering::Release);
+                }
+            }
         }
         
         // Get or create component breaker
@@ -454,20 +538,72 @@ impl GlobalCircuitBreaker {
         }
     }
     
-    /// Check if globally tripped based on component states
-    fn is_globally_tripped(&self) -> bool {
+    /// Update global state based on component states (Sophia Issue #3)
+    fn update_global_state(&self) {
         let config = self.config.load();
         
+        // Skip if not enough components
         if self.breakers.len() < config.global_trip_conditions.min_components as usize {
-            return false;
+            return;
         }
         
-        let open_count = self.breakers.iter()
-            .filter(|entry| entry.value().current_state() == CircuitState::Open)
-            .count();
+        // Count component states
+        let mut open_count = 0;
+        let mut half_open_count = 0;
+        let total_count = self.breakers.len();
         
-        let ratio = open_count as f32 / self.breakers.len() as f32;
-        ratio >= config.global_trip_conditions.component_open_ratio
+        for entry in self.breakers.iter() {
+            match entry.value().current_state() {
+                CircuitState::Open => open_count += 1,
+                CircuitState::HalfOpen => half_open_count += 1,
+                _ => {}
+            }
+        }
+        
+        let open_ratio = open_count as f32 / total_count as f32;
+        let current_global = self.global_state.load(Ordering::Acquire);
+        
+        // Determine new global state
+        let new_global_state = if open_ratio >= config.global_trip_conditions.component_open_ratio {
+            // Trip globally if too many components are open
+            if current_global != CircuitState::Open as u8 {
+                // Record trip time
+                let nanos = self.clock.monotonic_nanos();
+                self.global_trip_time.store(nanos, Ordering::Release);
+                
+                // Emit event
+                if let Some(handler) = &self.on_event {
+                    handler(CircuitEvent::StateChange {
+                        component: "GLOBAL".to_string(),
+                        from: CircuitState::from(current_global),
+                        to: CircuitState::Open,
+                    });
+                }
+            }
+            CircuitState::Open as u8
+        } else if open_count == 0 && half_open_count == 0 {
+            // All components healthy
+            if current_global != CircuitState::Closed as u8 {
+                // Emit recovery event
+                if let Some(handler) = &self.on_event {
+                    handler(CircuitEvent::StateChange {
+                        component: "GLOBAL".to_string(),
+                        from: CircuitState::from(current_global),
+                        to: CircuitState::Closed,
+                    });
+                }
+            }
+            CircuitState::Closed as u8
+        } else if half_open_count > 0 && open_count == 0 {
+            // Some components recovering
+            CircuitState::HalfOpen as u8
+        } else {
+            // Keep current state
+            current_global
+        };
+        
+        // Update global state atomically
+        self.global_state.store(new_global_state, Ordering::Release);
     }
     
     /// Get current state of a component
