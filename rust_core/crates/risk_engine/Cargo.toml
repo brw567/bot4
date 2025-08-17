@@ -41,6 +41,10 @@ rust_decimal_macros = "1.33"
 statrs = { workspace = true }
 ndarray = { workspace = true }
 
+# SIMD optimization - commented out due to compatibility issues
+# Will use std::simd when stable or custom implementation
+# packed_simd2 = { version = "0.3", package = "packed_simd_2" }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }
 proptest = { workspace = true }
