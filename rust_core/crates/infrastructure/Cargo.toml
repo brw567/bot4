@@ -12,6 +12,15 @@ crossbeam-utils = "0.8"  # For CachePadded as recommended by Sophia
 thread_local = "1.1"
 lazy_static = "1.4"
 
+# Phase 1: Parallelization (Nexus requirement)
+rayon = "1.8"
+num_cpus = "1.16"
+libc = "0.2"  # For CPU affinity on Linux
+
+# Core dependencies
+anyhow = { workspace = true }
+log = "0.4"
+
 # Workspace dependencies
 tokio = { workspace = true }
 async-trait = { workspace = true }
