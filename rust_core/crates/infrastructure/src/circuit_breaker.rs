@@ -146,6 +146,9 @@ pub enum CircuitError {
     
     #[error("Configuration invalid: {0}")]
     ConfigInvalid(String),
+    
+    #[error("Minimum calls not met for statistical confidence")]
+    MinCallsNotMet,  // Sophia's minor nit #3
 }
 
 /// Call outcome for recording results
