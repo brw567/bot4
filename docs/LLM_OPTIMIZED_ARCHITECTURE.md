@@ -1,7 +1,8 @@
 # Bot4 LLM-Optimized Architecture Document
-## Version 2.0 - Complete 14-Phase Architecture
+## Version 3.0 FINAL - Post External Review
 ## Format: Structured for Claude, ChatGPT, Grok, and other LLMs
-## Updated: 2025-08-17 - Aligned with PROJECT_MANAGEMENT_TASK_LIST_V5.md
+## Updated: 2025-08-17 - Incorporates Sophia (Trading) & Nexus (Quant) Feedback
+## Performance Targets: REVISED TO REALISTIC ACHIEVABLE LEVELS
 
 ---
 
@@ -92,7 +93,7 @@ completed_components:
       - Sliding window mechanics
       - Panic-safe event callbacks
     performance:
-      - latency: <1μs overhead
+      - latency: ≤1μs p99 (revised from 50ns)
       - state_transitions: atomic
     
   - component_id: DB_001
