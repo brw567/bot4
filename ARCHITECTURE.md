@@ -46,29 +46,31 @@ Bot4 is a fully autonomous, high-frequency cryptocurrency trading platform built
 9. **NO INCOMPLETE FEATURES** - Fully implement or don't merge
 10. **NO UNDOCUMENTED CODE** - Every function must have docs
 
-### Key Performance Targets
+### Key Performance Targets (VALIDATED BY EXTERNAL REVIEW)
 ```yaml
 latency:
-  decision_making: ≤1μs      # Revised from 50ns per external review
-  risk_checking: ≤10μs       # Added per Sophia's requirement
-  order_submission: ≤100μs   # Internal latency target
-  data_processing: <1ms
+  hot_path_achieved: 149-156ns  # Sophia: "in the right ballpark"
+  decision_making: ≤1μs         # Revised from unrealistic 50ns
+  risk_checking: ≤10μs          # Sophia requirement
+  order_submission: ≤100μs      # Internal latency target
+  p99_9_target: ≤3x_p99         # Tail latency bound (Sophia)
   
 throughput:
-  orders_per_second: 10,000+
-  market_data_events: 1,000,000+
-  strategies_evaluated: 100+/second
+  current_capability: 2.7M ops/sec  # Measured
+  production_target: 500k ops/sec   # Conservative
+  path_to_1M: Achievable           # Nexus validated
   
 profitability:
-  bull_market_apy: 200-300%
-  bear_market_apy: 60-80%
+  conservative_apy: 50-100%     # Nexus: 90% confidence
+  optimistic_apy: 200-300%      # Requires Phase 6 ML
   max_drawdown: <15%
-  sharpe_ratio: >3.0
+  sharpe_ratio: 2.0-2.5         # Nexus validated range
   
 reliability:
   uptime: 99.99%
   data_accuracy: 100%
   order_success_rate: >99.9%
+  recovery_time: <5s            # Sophia requirement
 ```
 
 ---
@@ -303,7 +305,98 @@ supported_exchanges:
 
 ---
 
-## 5. Component Architecture
+## 5. Architectural Patterns (UPDATED)
+
+### Current Architecture: Layered Monolith
+**Status**: NEEDS REFACTORING to Hexagonal Architecture
+
+### Target Architecture: Hexagonal (Ports & Adapters)
+```
+domain/
+├── core/                    # Business logic (no dependencies)
+│   ├── entities/           # Order, Position, Signal
+│   ├── value_objects/      # Price, Quantity, Symbol
+│   └── services/           # TradingService, RiskService
+├── ports/                  # Interfaces (traits)
+│   ├── inbound/           # REST, WebSocket, gRPC
+│   └── outbound/          # Exchange, Database, Cache
+└── adapters/              # Implementations
+    ├── inbound/           # API handlers
+    └── outbound/          # Binance, PostgreSQL, Redis
+```
+
+### Domain-Driven Design Implementation
+```rust
+// Aggregate Root
+pub struct TradingSession {
+    id: SessionId,
+    orders: Vec<Order>,
+    positions: Vec<Position>,
+    invariants: SessionInvariants,
+}
+
+// Value Object (immutable)
+#[derive(Clone, Copy, PartialEq)]
+pub struct Price(f64);
+
+// Entity (mutable with identity)
+pub struct Order {
+    id: OrderId,
+    price: Price,
+    status: OrderStatus,
+}
+
+// Domain Service
+pub trait RiskChecker {
+    fn validate(&self, order: &Order) -> Result<()>;
+}
+```
+
+### Design Patterns To Implement
+
+#### 1. Repository Pattern (Priority 1)
+```rust
+#[async_trait]
+pub trait OrderRepository {
+    async fn save(&self, order: Order) -> Result<()>;
+    async fn find_by_id(&self, id: OrderId) -> Result<Option<Order>>;
+    async fn find_active(&self) -> Result<Vec<Order>>;
+}
+
+pub struct PostgresOrderRepository {
+    pool: PgPool,
+}
+
+#[async_trait]
+impl OrderRepository for PostgresOrderRepository {
+    // Implementation
+}
+```
+
+#### 2. Command Pattern (Priority 2)
+```rust
+#[async_trait]
+pub trait Command {
+    type Output;
+    async fn execute(&self) -> Result<Self::Output>;
+    async fn undo(&self) -> Result<()>;
+}
+
+pub struct PlaceOrderCommand {
+    order: Order,
+    exchange: Box<dyn ExchangeAdapter>,
+}
+```
+
+#### 3. Strategy Pattern (Existing, needs refinement)
+```rust
+pub trait TradingStrategy: Send + Sync {
+    fn evaluate(&self, market: &MarketData) -> Signal;
+    fn risk_params(&self) -> RiskParameters;
+}
+```
+
+## 6. Component Architecture
 
 ### 5.1 Crate Structure
 ```

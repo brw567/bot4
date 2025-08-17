@@ -682,6 +682,7 @@ mod tests {
         let clock = Arc::new(FakeClock::new());
         let config = Arc::new(CircuitConfig {
             consecutive_failures_threshold: 3,
+            min_calls: 1,  // Allow tripping after just 1 call for testing
             ..Default::default()
         });
         
@@ -691,11 +692,14 @@ mod tests {
         assert_eq!(breaker.current_state(), CircuitState::Closed);
         
         // Record failures to trip the breaker
-        for _ in 0..3 {
+        for i in 0..3 {
             breaker.record_outcome(Outcome::Failure);
+            println!("After failure {}: state = {:?}", i+1, breaker.current_state());
         }
         
-        assert_eq!(breaker.current_state(), CircuitState::Open);
+        // Check if breaker is now open
+        let state = breaker.current_state();
+        assert_eq!(state, CircuitState::Open, "Expected Open state after 3 failures, got {:?}", state);
     }
     
     // More tests to be added...

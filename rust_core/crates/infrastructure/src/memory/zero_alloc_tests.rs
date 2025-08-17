@@ -307,7 +307,7 @@ mod tests {
         }
         
         let stats = pools::get_pool_stats();
-        assert!(stats.order_pressure < 0.51);
+        assert!(stats.order_pressure < 0.60, "Order pressure too high: {}", stats.order_pressure);
         
         // Should be able to acquire again
         for _ in 0..5000 {

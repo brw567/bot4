@@ -257,7 +257,7 @@ impl<T: Send + Sync> ParallelProcessor<T> {
         let start = std::time::Instant::now();
         
         // Group by instrument for ordering
-        let mut by_instrument: DashMap<String, Vec<T>> = DashMap::new();
+        let by_instrument: DashMap<String, Vec<T>> = DashMap::new();
         for (instrument, item) in items {
             by_instrument.entry(instrument).or_default().push(item);
         }

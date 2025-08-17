@@ -7,6 +7,7 @@ pub mod circuit_breaker;
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
+pub mod hot_path_verification;
 
 // Re-export main types
 pub use circuit_breaker::{
@@ -26,7 +27,7 @@ pub use circuit_breaker::{
 pub use memory::{
     initialize_memory_system,
     MemoryStats,
-    pools::{acquire_order, release_order, acquire_signal, release_signal, acquire_tick, release_tick},
+    pools::{acquire_order, release_order, acquire_signal, release_signal, acquire_tick, release_tick, SignalType},
     rings::{SpscRing, MpmcRing, TickRing, OrderQueue},
 };
 

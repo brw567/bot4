@@ -63,7 +63,7 @@ pub struct Signal {
     pub timestamp: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum SignalType {
     Buy,
     Sell,
