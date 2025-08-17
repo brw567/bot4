@@ -7,6 +7,7 @@ pub mod checks;
 pub mod limits;
 pub mod correlation;
 pub mod correlation_simd;  // SIMD-optimized version (3x speedup per Nexus)
+pub mod correlation_portable;  // Sophia Fix #6: Runtime SIMD detection with scalar fallback
 pub mod monitor;
 pub mod emergency;
 
