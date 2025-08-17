@@ -37,14 +37,52 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
 7. **Update docs IMMEDIATELY**: After QA approval, update PROJECT_MANAGEMENT_MASTER.md and ARCHITECTURE.md
 8. **NO WORK WITHOUT PR APPROVAL** - This is MANDATORY!
 
-### 4. 100% VALIDATION REQUIREMENTS
+### 4. MANDATORY SOFTWARE DEVELOPMENT BEST PRACTICES
+**CRITICAL INSTRUCTION FROM ALEX - ABSOLUTE REQUIREMENT:**
+All future development MUST follow these practices WITHOUT EXCEPTION:
+
+#### A. ARCHITECTURE PATTERNS (MANDATORY)
+- **Hexagonal Architecture** - Ports & Adapters pattern REQUIRED
+- **Domain-Driven Design** - Clear bounded contexts REQUIRED
+- **Repository Pattern** - For ALL data access
+- **Command Pattern** - For ALL operations
+- **SOLID Principles** - 100% compliance REQUIRED
+
+#### B. CLASS AND TYPE SEPARATION (MANDATORY)
+```rust
+// MANDATORY STRUCTURE FOR ALL NEW CODE:
+// 1. Domain Models (core business logic)
+domain/
+├── entities/          // Mutable with identity
+├── value_objects/     // Immutable, no identity
+└── services/          // Domain logic
+
+// 2. DTOs (data transfer)
+dto/
+├── request/          // API input
+├── response/         // API output
+└── database/         // DB models
+
+// 3. Ports (interfaces)
+ports/
+├── inbound/          // Use case interfaces
+└── outbound/         // External service interfaces
+
+// 4. Adapters (implementations)
+adapters/
+├── inbound/          // Controllers, handlers
+└── outbound/         // Exchange, DB, cache implementations
+```
+
+#### C. VALIDATION REQUIREMENTS
 **EACH TASK MUST HAVE:**
 - ✅ **100% test coverage** - FULL coverage, no exceptions
 - ✅ **100% implemented** - Complete functionality
 - ✅ **100% integrated** - Fully connected to system
 - ✅ **ZERO shortcuts** - No compromises
 - ✅ **100% tested** - All edge cases covered
-- ✅ **Fully integrated into logic** - Working with all components
+- ✅ **Proper separation** - DTOs, Domain, Ports, Adapters
+- ✅ **Design patterns applied** - Repository, Command, Strategy
 - **THIS IS A MUST!!!!**
 
 ### 5. GITHUB REPOSITORY

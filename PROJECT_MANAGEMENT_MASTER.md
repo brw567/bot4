@@ -196,22 +196,37 @@ current_status: Phase 0 (60%), Phase 1 (35%)
   - [x] Tokio tuning (workers=11, blocking=512) ✅
   - [x] Zero allocations in hot path ✅
 
-### Phase 2: Trading Engine - IN PLANNING
+### Phase 2: Trading Engine - STARTING NOW
 **Duration**: 4 weeks | **Owner**: Casey (Exchange Sim) & Sam (Engine)
-**External Requirements**: Exchange simulator is TOP PRIORITY (Sophia)
-**Action Plan**: PHASE2_UNIFIED_ACTION_PLAN.md created
+**CRITICAL UPDATE**: ALL CODE MUST FOLLOW SOFTWARE BEST PRACTICES (Alex's directive)
+**Architecture**: MANDATORY Hexagonal Architecture with proper separation
 
-#### Week 1 Priorities:
-- [ ] Exchange simulator with OCO, Reduce-Only, Post-Only orders
-- [ ] ADF auto-lag selection with AIC (Nexus requirement)
-- [ ] P99.9 latency gates (≤3x P99)
-- [ ] Correlation threshold reduction to 0.6
+#### 🔴 NEW MANDATORY REQUIREMENTS (Alex's Directive):
+1. **Hexagonal Architecture** - ALL new code MUST use ports & adapters
+2. **Class/Type Separation** - DTOs, Domain Models, Ports, Adapters MUST be separate
+3. **SOLID Principles** - 100% compliance REQUIRED
+4. **Design Patterns** - Repository, Command, Factory patterns REQUIRED
+5. **See CODING_STANDARDS.md** for full requirements
 
-#### Architecture Improvements Required:
-- [ ] Implement hexagonal architecture (ports & adapters)
-- [ ] Separate DTOs from domain models
-- [ ] Extract repository pattern for data access
-- [ ] Add command pattern for operations
+#### Week 1 Priorities (WITH PROPER ARCHITECTURE):
+- [ ] Create hexagonal structure for exchange simulator
+- [ ] Implement exchange port interface (trait)
+- [ ] Build exchange simulator as adapter implementation
+- [ ] Separate OrderDto from Order domain model
+- [ ] Repository pattern for order persistence
+- [ ] Command pattern for order operations
+- [ ] ADF auto-lag with proper separation of concerns
+- [ ] P99.9 latency gates with clean architecture
+
+#### Architecture Implementation:
+```
+rust_core/
+├── domain/           # Pure business logic
+├── application/      # Use cases
+├── ports/           # Interfaces
+├── adapters/        # Implementations
+└── dto/             # Data transfer objects
+```
 
 ### Phase 3: Risk Management - PARTIAL
 **Duration**: 5 days | **Owner**: Quinn

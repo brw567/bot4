@@ -1,0 +1,10 @@
+// Domain Value Objects Module
+// Immutable objects without identity
+
+mod price;
+mod quantity;
+mod symbol;
+
+pub use price::Price;
+pub use quantity::Quantity;
+pub use symbol::Symbol;
