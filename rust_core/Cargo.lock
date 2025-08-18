@@ -1362,11 +1362,14 @@ dependencies = [
  "parking_lot",
  "proptest",
  "rayon",
+ "redis",
  "serde",
+ "serde_json",
  "thiserror 1.0.69",
  "thread_local",
  "tokio",
  "tracing",
+ "uuid",
 ]
 
 [[package]]

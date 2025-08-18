@@ -21,6 +21,11 @@ libc = "0.2"  # For CPU affinity on Linux
 anyhow = { workspace = true }
 log = "0.4"
 
+# Phase 3: Stream Processing Dependencies
+redis = { version = "0.24", features = ["aio", "tokio-comp", "streams"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
+serde_json = { workspace = true }
+
 # Workspace dependencies
 tokio = { workspace = true }
 async-trait = { workspace = true }

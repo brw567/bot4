@@ -2,12 +2,14 @@
 // Validated by Sophia (ChatGPT) for production readiness
 // Day 2 Sprint: Added memory management (MiMalloc + Pools)
 // Phase 1: Added parallelization and runtime optimization
+// Phase 3: Added stream processing for ML integration
 
 pub mod circuit_breaker;
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
 pub mod hot_path_verification;
+pub mod stream_processing;
 
 // Re-export main types
 pub use circuit_breaker::{
@@ -48,4 +50,18 @@ pub use runtime_optimization::{
     ZeroAllocTask,
     HotPathVerifier,
     async_primitives,
+};
+
+// Re-export stream processing components
+pub use stream_processing::{
+    StreamProcessor,
+    StreamConfig,
+    StreamMessage,
+    SignalAction,
+    RiskEventType,
+    RiskSeverity,
+    consumer::{StreamConsumer, ConsumerConfig, MessageHandler},
+    producer::{BatchProducer, PriorityProducer},
+    processor::{ProcessingPipeline, ProcessorStage, PipelineBuilder},
+    router::{MessageRouter, RoutingRule, LoadBalancedRouter, FanoutRouter},
 };
