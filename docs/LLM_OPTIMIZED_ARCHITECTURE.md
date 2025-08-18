@@ -1,9 +1,9 @@
 # Bot4 LLM-Optimized Architecture Document
-## Version 4.0 - Complete Data Intelligence Integration
+## Version 5.0 - AUTO-ADAPTIVE GROK 3 MINI ARCHITECTURE
 ## Format: Structured for Claude, ChatGPT, Grok, and other LLMs
-## Updated: 2025-08-18 - Full Data Sources & Cost Optimization
-## Performance Targets: REVISED TO REALISTIC ACHIEVABLE LEVELS
-## Cost Structure: $1,032/month minimum viable, $2,282/month with premium data
+## Updated: 2025-01-18 - Revolutionary Cost Reduction & Auto-Adaptation
+## Performance Targets: CAPITAL-ADAPTIVE (25-150% APY)
+## Cost Structure: $0.20-100/month (99% REDUCTION) + $0 Infrastructure
 
 ---
 
@@ -112,6 +112,81 @@ completed_components:
       - allocation: 7ns p99
       - pool_ops: 15-65ns
       - concurrent: 2.7M ops/sec
+
+### Phase 0.5: AUTO-ADAPTIVE SYSTEM (NEW - GROK 3 MINI)
+
+```yaml
+auto_adaptive_components:
+  - component_id: GROK_001
+    name: GrokMiniIntegration
+    status: PLANNED
+    owner: Casey + Avery
+    phase: 3.4
+    contract:
+      inputs:
+        - text: String # Tweet/news content
+        - context: MarketContext # Current market state
+      outputs:
+        - sentiment: SentimentScore # -1.0 to 1.0
+        - confidence: f64 # 0.0 to 1.0
+      costs:
+        - per_request: $0.00025 # At $20/month = 80,000 requests
+    requirements:
+      functional:
+        - Multi-tier caching (L1: 60s, L2: 1hr, L3: 24hr)
+        - Exponential backoff retry
+        - Cost tracking per capital tier
+      performance:
+        - latency: <500ms including API call
+        - cache_hit_rate: >75%
+        
+  - component_id: ADAPT_001
+    name: CapitalAdaptiveSystem
+    status: PLANNED
+    owner: Morgan + Quinn
+    phase: 3.4
+    tiers:
+      survival:
+        range: $2,000 - $5,000
+        apy_target: 25-30%
+        grok_budget: 10 requests/day
+        features: [basic_ta, single_exchange, no_leverage]
+      growth:
+        range: $5,000 - $20,000
+        apy_target: 30-50%
+        grok_budget: 100 requests/day
+        features: [advanced_ta, arima, 2_exchanges, 2x_leverage]
+      acceleration:
+        range: $20,000 - $100,000
+        apy_target: 50-80%
+        grok_budget: 500 requests/day
+        features: [ml_ensemble, 3_exchanges, 3x_leverage]
+      institutional:
+        range: $100,000 - $1,000,000
+        apy_target: 80-120%
+        grok_budget: 2000 requests/day
+        features: [regime_detection, arbitrage, 5x_leverage]
+      whale:
+        range: $1,000,000 - $10,000,000
+        apy_target: 100-150%
+        grok_budget: 10000 requests/day
+        features: [market_making, custom_ml, 10x_leverage]
+        
+  - component_id: EMOTION_001
+    name: EmotionlessControl
+    status: PLANNED
+    owner: Sam + Riley
+    phase: 3.4
+    features:
+      - no_manual_controls: Remove ALL UI buttons
+      - encrypted_config: 24-hour change cooldown
+      - delayed_reporting: P&L after market close only
+      - auto_tuning: Bayesian optimization every 4 hours
+    requirements:
+      - zero_human_intervention: No manual trades ever
+      - emergency_only: Full liquidation only option
+      - no_real_time_display: Hide all live positions
+```
 
 ### Phase 1: Core Infrastructure ✅ COMPLETE (2025-08-17)
 
