@@ -34,8 +34,13 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
    - **Integration points** - How it connects to other components
    - **Validation checklist** - 100% complete
 6. **EXTERNAL QA REVIEW** - Wait for approval before proceeding
-7. **Update docs IMMEDIATELY**: After QA approval, update PROJECT_MANAGEMENT_MASTER.md and ARCHITECTURE.md
-8. **NO WORK WITHOUT PR APPROVAL** - This is MANDATORY!
+7. **360-DEGREE TEAM REVIEW** - All 8 team members must review and approve
+8. **Update docs IMMEDIATELY**: After approval, update ALL documentation:
+   - PROJECT_MANAGEMENT_MASTER.md
+   - ARCHITECTURE.md  
+   - Phase reports
+   - Review logs in 360_DEGREE_REVIEW_PROCESS.md
+9. **NO WORK WITHOUT CONSENSUS** - This is MANDATORY!
 
 ### 4. MANDATORY SOFTWARE DEVELOPMENT BEST PRACTICES
 **CRITICAL INSTRUCTION FROM ALEX - ABSOLUTE REQUIREMENT:**

@@ -1,0 +1,116 @@
+name: P99.9 Performance Gates
+# Owner: Jordan | Pre-Production Requirement #6 from Sophia
+# Target: Catch performance regressions before production
+
+on:
+  pull_request:
+    paths:
+      - 'rust_core/**'
+      - 'Cargo.toml'
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  RUSTFLAGS: "-C target-cpu=native -C opt-level=3"
+
+jobs:
+  performance-gates:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+        components: rustfmt, clippy
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y linux-tools-common linux-tools-generic linux-tools-$(uname -r)
+        cargo install cargo-criterion
+        cargo install flamegraph
+    
+    - name: Cache cargo
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-perf-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Run latency benchmarks
+      run: |
+        cd rust_core
+        cargo criterion --message-format=json > ../latency_results.json
+    
+    - name: Parse P99.9 latencies
+      id: latency_check
+      run: |
+        python3 scripts/check_p99_9_gates.py latency_results.json
+    
+    - name: Run contention tests
+      run: |
+        cd rust_core
+        cargo test --release --features contention_tests -- --test-threads=1 --nocapture > ../contention_results.txt
+    
+    - name: Generate flame graphs
+      run: |
+        cd rust_core
+        cargo flamegraph --bin bot4-trading -- --bench > ../flamegraph.svg
+      continue-on-error: true
+    
+    - name: Upload performance artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-artifacts
+        path: |
+          latency_results.json
+          contention_results.txt
+          flamegraph.svg
+    
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const results = JSON.parse(fs.readFileSync('latency_results.json', 'utf8'));
+          
+          const comment = `## 🚀 Performance Gate Results
+          
+          ### P99.9 Latencies
+          | Component | Target | Actual | Status |
+          |-----------|--------|--------|--------|
+          | Feature Vector | <15μs | ${results.feature_vector_p99_9}μs | ${results.feature_vector_pass ? '✅' : '❌'} |
+          | Order Submission | <300μs | ${results.order_p99_9}μs | ${results.order_pass ? '✅' : '❌'} |
+          | Risk Check | <30μs | ${results.risk_p99_9}μs | ${results.risk_pass ? '✅' : '❌'} |
+          
+          ### Contention Tests (256 threads)
+          - Throughput: ${results.contention_throughput} ops/sec
+          - P99.9 under contention: ${results.contention_p99_9}μs
+          - Fairness ratio: ${results.fairness_ratio}x
+          
+          ${results.all_pass ? '✅ All performance gates passed!' : '❌ Performance regression detected!'}`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.name,
+            body: comment
+          });
+    
+    - name: Fail if gates not met
+      if: steps.latency_check.outputs.gates_passed != 'true'
+      run: |
+        echo "❌ Performance gates failed!"
+        echo "See artifacts for detailed results"
+        exit 1
