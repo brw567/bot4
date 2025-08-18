@@ -169,6 +169,11 @@ timeline: Week 2 of Phase 3.5
 ## 📋 REVISED PHASE TIMELINE
 
 ```yaml
+phase_2_trading_engine: # COMPLETE ✅
+  status: 100% COMPLETE (January 18, 2025)
+  deliverables: ALL 17 pre-production requirements
+  external_scores: [sophia: 97/100, nexus: 95%]
+  
 phase_3_3_safety:      # NEW - BLOCKS ALL
   duration: 1 week
   priority: HIGHEST
@@ -177,7 +182,7 @@ phase_3_3_safety:      # NEW - BLOCKS ALL
 phase_3_4_performance: # CRITICAL
   duration: 1 week
   priority: HIGH
-  deliverables: [mimalloc, object_pools, rayon, arc_cache]
+  deliverables: [mimalloc, object_pools_1M+, rayon, arc_cache]
   
 phase_3_5_models_risk: # EXPANDED
   duration: 2 weeks
@@ -261,6 +266,30 @@ tier_2_enrichment: # NICE TO HAVE
   cost: $20-100/month
 ```
 
+## ⚠️ MOCK IMPLEMENTATIONS TRACKING
+
+```yaml
+status: 7 MOCKS EXIST - MUST REPLACE BEFORE PRODUCTION
+tracking_document: CRITICAL_MOCK_IMPLEMENTATIONS_TRACKER.md
+detection_script: scripts/detect_mocks.sh
+ci_cd_gate: Will BLOCK merges to main
+
+critical_mocks: # NO TRADING WITHOUT THESE
+  p8-exchange-3: Order placement (returns fake IDs)
+  p8-exchange-5: Balance retrieval (returns 10k USDT, 1 BTC)
+  p8-exchange-4: Order cancellation (does nothing)
+  
+high_priority_mocks:
+  p8-exchange-2: WebSocket subscription (no real data)
+  p8-exchange-1: Symbol fetching (only 3 symbols)
+  
+medium_priority:
+  p3-api-1: Order conversion (basic only)
+  
+replacement_phase: Phase 8 (Exchange Integration)
+detection_command: ./scripts/detect_mocks.sh
+```
+
 ## ✅ INTEGRATION CHECKLIST FOR LLMs
 
 When implementing any component, verify:
@@ -280,9 +309,10 @@ When implementing any component, verify:
 
 ```yaml
 never_do:
+  - Deploy with mock implementations (7 exist, 5 critical)
   - Put LLM/Grok in hot path
   - Use historical VaR alone (needs GARCH)
-  - Start with less than $10k capital
+  - Start with less than $10k capital (now $1k with Grok Mini)
   - Skip safety controls
   - Use train_test_split for time series
   - Ignore partial fills
