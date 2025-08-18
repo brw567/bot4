@@ -1,0 +1,49 @@
+name: Mock Implementation Detection
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  detect-mocks:
+    name: Detect Mock Implementations
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run Mock Detection
+      id: mock_check
+      run: |
+        chmod +x scripts/detect_mocks.sh
+        ./scripts/detect_mocks.sh || echo "MOCKS_FOUND=true" >> $GITHUB_ENV
+    
+    - name: Comment on PR if mocks found
+      if: github.event_name == 'pull_request' && env.MOCKS_FOUND == 'true'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '⚠️ **WARNING: Mock implementations detected!**\n\nThis PR contains mock implementations that MUST be replaced before production deployment.\n\nRun `./scripts/detect_mocks.sh` locally for details.\n\nSee `CRITICAL_MOCK_IMPLEMENTATIONS_TRACKER.md` for the full list of mocks that need replacement.'
+          })
+    
+    - name: Fail if targeting main with critical mocks
+      if: github.base_ref == 'main' && env.MOCKS_FOUND == 'true'
+      run: |
+        echo "❌ CRITICAL: Cannot merge to main with mock implementations!"
+        echo "Replace all mocks before merging to main branch."
+        exit 1
+    
+    - name: Upload mock detection report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: mock-detection-report
+        path: |
+          CRITICAL_MOCK_IMPLEMENTATIONS_TRACKER.md
+          scripts/detect_mocks.sh
