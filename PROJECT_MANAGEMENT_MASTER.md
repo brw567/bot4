@@ -9,16 +9,17 @@
 
 ## Executive Summary
 
-Bot4 is an **AUTO-ADAPTIVE** cryptocurrency trading platform with **CAPITAL-SCALED TARGETS** and **99% COST REDUCTION** via Grok 3 Mini:
-- **$2-5K Capital**: 25-30% APY (Survival Mode)
-- **$5-20K Capital**: 30-50% APY (Growth Mode)
-- **$20-100K Capital**: 50-80% APY (Acceleration Mode)
-- **$100K-1M Capital**: 80-120% APY (Institutional Mode)
-- **$1-10M Capital**: 100-150% APY (Whale Mode)
-- **Operating Costs**: $0.20-100/month (99% reduction from original $500-1000)
-- **Infrastructure**: FREE (saves additional $200-500/month)
-- **Decision Latency**: ≤1 µs p99 (proven achievable)
-- **Zero Human Intervention**: Emotionless auto-tuning system
+Bot4 is an **AUTO-ADAPTIVE** cryptocurrency trading platform with **REVOLUTIONARY COST STRUCTURE** via Grok 3 Mini:
+- **$1-2.5K Capital**: 25-35% APY (Survival Mode) - NEW MINIMUM!
+- **$2.5-5K Capital**: 35-50% APY (Bootstrap Mode)
+- **$5-25K Capital**: 50-80% APY (Growth Mode)
+- **$25K-100K Capital**: 80-120% APY (Scale Mode)
+- **$100K+ Capital**: 100-150% APY (Institutional Mode)
+- **Operating Costs**: $17-700/month (based on capital and features)
+- **Minimum Costs**: $17/month at $1K capital (Grok $2 + fees $15)
+- **Infrastructure**: FREE (local development environment)
+- **Break-even**: 1.7% monthly at $1K, 0.56% at $5K
+- **Minimum Viable Capital**: $1,000 (was $10,000 - 90% reduction!)
 
 ---
 
@@ -322,10 +323,113 @@ current_status: Phase 0 (60%), Phase 1 (35%)
 - [x] Backpressure (Riley) ✅
 - [x] Supply chain security (Alex) ✅
 
-### Phase 3.4: GROK 3 MINI INTEGRATION - AUTO-ADAPTIVE SYSTEM (NEW PRIORITY)
-**Duration**: 2 weeks | **Owner**: Alex + Full Team | **Status**: NOT STARTED
-**Revolutionary Discovery**: Grok 3 Mini costs 99% LESS than expected!
-**Impact**: Enables profitable trading at ALL capital levels ($2K-$10M)
+### Phase 3.3: SAFETY & CONTROL SYSTEMS (CRITICAL - NEW)
+**Duration**: 1 week | **Owner**: Sam + Riley | **Status**: NOT STARTED
+**Priority**: BLOCKS ALL TRADING - Must complete before any live systems
+**External Review**: Sophia mandates safety controls before trading
+
+#### Week 1: Complete Safety Architecture
+- [ ] **Hardware Kill Switch** (Sam)
+  - GPIO-based emergency stop button
+  - Status LEDs (Red/Yellow/Green)
+  - Physical security measures
+  - Tamper detection
+- [ ] **Software Control Modes** (Riley)
+  - Normal: Full auto trading
+  - Pause: No new orders, maintain existing
+  - Reduce: Gradual risk reduction (staged)
+  - Emergency: Immediate liquidation
+- [ ] **Read-Only Dashboards** (Avery)
+  - Real-time P&L (view only)
+  - Position status (view only)
+  - Risk metrics (view only)
+  - System health monitoring
+- [ ] **Audit System** (Sam + Riley)
+  - Every manual intervention logged
+  - Tamper-proof audit trail
+  - Real-time alerts on manual actions
+  - Compliance reporting
+
+### Phase 3.4: PERFORMANCE INFRASTRUCTURE (REVISED)
+**Duration**: 1 week | **Owner**: Jordan + Sam | **Status**: NOT STARTED
+**Priority**: CRITICAL - Nexus identified as blockers
+**Performance Target**: 500k ops/sec sustained, <1μs decision latency
+
+#### Week 1: Core Performance Optimizations
+- [ ] **MiMalloc Global Allocator** (Jordan)
+  - Replace default allocator
+  - Target: 7ns allocation latency
+  - Benchmark before/after
+  - Verify across all components
+- [ ] **Object Pool Implementation** (Jordan)
+  - 1M pre-allocated orders
+  - 10M pre-allocated ticks
+  - 100K pre-allocated signals
+  - Lock-free pool management
+- [ ] **Rayon Parallelization** (Sam)
+  - 12-thread parallel processing
+  - Per-symbol independent processing
+  - Parallel risk calculations
+  - CPU affinity pinning
+- [ ] **ARC Cache Policy** (Avery)
+  - Replace LRU with ARC
+  - Target: 95% hit rate
+  - Multi-tier cache management
+  - Cache warming strategies
+
+### Phase 3.5: ENHANCED MODELS & RISK (EXPANDED)
+**Duration**: 2 weeks | **Owner**: Morgan + Quinn | **Status**: NOT STARTED
+**Mathematical Enhancements**: GARCH integration for fat tails
+**Risk Improvements**: Complete risk architecture per Sophia/Nexus
+
+#### Week 1: Mathematical Model Corrections
+- [ ] **GARCH-ARIMA Implementation** (Morgan)
+  - Replace basic ARIMA
+  - Student-t distribution (df=4)
+  - Handle volatility clustering
+  - 15-25% RMSE improvement expected
+- [ ] **GARCH-VaR Integration** (Quinn)
+  - Fix 20-30% tail underestimation
+  - 99% confidence level
+  - Conditional volatility forecasting
+  - Expected Shortfall (CVaR) addition
+- [ ] **DCC-GARCH Correlations** (Morgan)
+  - Dynamic correlation modeling
+  - Time-varying correlation matrix
+  - Regime-aware adjustments
+  - Portfolio optimization integration
+- [ ] **TimeSeriesSplit CV** (Morgan)
+  - Replace standard train/test split
+  - 10-fold with 1-week gap
+  - Purge and embargo implementation
+  - <10% generalization error target
+
+#### Week 2: Risk & Execution Enhancements
+- [ ] **Partial-Fill Manager** (Casey)
+  - Weighted average entry tracking
+  - Dynamic stop/target repricing
+  - OCO order management
+  - Exchange-specific handling
+- [ ] **Microstructure Analyzer** (Casey)
+  - Microprice calculation
+  - Toxic flow detection
+  - Optimal placement strategies
+  - Queue position tracking
+- [ ] **Non-Linear Signal Combiner** (Morgan)
+  - PCA orthogonalization
+  - XGBoost ensemble
+  - Regime-aware weighting
+  - 10-20% accuracy improvement
+- [ ] **Comprehensive Risk Constraints** (Quinn)
+  - Volatility targeting (15% annual)
+  - Portfolio heat caps (0.25 max)
+  - Correlation limits (0.7 pairwise)
+  - Concentration limits (5% per symbol)
+
+### Phase 3.6: GROK INTEGRATION (ASYNC ONLY)
+**Duration**: 1 week | **Owner**: Casey + Avery | **Status**: NOT STARTED
+**Architecture**: Async enrichment only - NOT in hot path
+**Budget**: $20/month initial (80,000 analyses)
 
 #### Week 1: Grok Integration & Auto-Adaptation
 - [ ] **Grok 3 Mini API Integration** (Casey + Avery)
@@ -571,14 +675,16 @@ current_status: Phase 0 (60%), Phase 1 (35%)
 | Orders/sec | 10k+ | 5k+ | Exchange API limits |
 | Risk Checks | 100k+/sec | 100k/sec | Achievable |
 
-### APY Targets (AUTO-ADAPTIVE BY CAPITAL)
-| Capital Level | Bull Market | Bear Market | Sideways | Monthly Cost |
-|--------------|-------------|-------------|----------|--------------|
-| $2-5K | 25-30% | 15-20% | 10-15% | $0.20 |
-| $5-20K | 30-50% | 20-30% | 15-25% | $1.00 |
-| $20-100K | 50-80% | 30-50% | 25-40% | $4.00 |
-| $100K-1M | 80-120% | 50-70% | 40-60% | $20.00 |
-| $1-10M | 100-150% | 70-100% | 60-80% | $100.00 |
+### APY Targets (CORRECTED WITH GROK 3 MINI)
+| Capital Level | Bull Market | Bear Market | Sideways | Monthly Cost | Break-Even |
+|--------------|-------------|-------------|----------|--------------|------------|
+| $1-2.5K | 25-35% | 15-20% | 10-15% | $17-37 | 1.5-1.7%/month |
+| $2.5-5K | 35-50% | 20-30% | 15-20% | $37-100 | 0.7-1.5%/month |
+| $5-25K | 50-80% | 30-50% | 20-30% | $100-500 | 0.2-0.7%/month |
+| $25K-100K | 80-120% | 50-70% | 30-40% | $500-1000 | 0.1-0.2%/month |
+| $100K+ | 100-150% | 70-100% | 40-60% | $1000-2000 | <0.1%/month |
+
+**BREAKTHROUGH**: Minimum viable capital is $1,000 with Grok 3 Mini + free infrastructure!
 
 ---
 

@@ -113,7 +113,42 @@ completed_components:
       - pool_ops: 15-65ns
       - concurrent: 2.7M ops/sec
 
-### Phase 0.5: AUTO-ADAPTIVE SYSTEM (NEW - GROK 3 MINI)
+### Phase 0.4: CRITICAL SAFETY SYSTEMS (HIGHEST PRIORITY - BLOCKS ALL)
+
+```yaml
+safety_components:
+  - component_id: SAFETY_001
+    name: SafetyControlSystem
+    status: REQUIRED_BEFORE_TRADING
+    owner: Sam + Riley
+    phase: 3.3
+    priority: BLOCKS_ALL_TRADING
+    external_mandate: Sophia requires before any live system
+    
+    contract:
+      hardware_controls:
+        kill_switch: GPIO BCM_17 interrupt
+        status_leds: [green_BCM_22, yellow_BCM_23, red_BCM_24]
+        tamper_detection: enabled
+      
+      software_modes:
+        - Normal: Full autonomous trading
+        - Paused: No new orders, maintain existing
+        - Reduced: Gradual risk reduction
+        - Emergency: Immediate liquidation
+      
+      audit_requirements:
+        - Every manual intervention logged
+        - Tamper-proof audit trail
+        - Real-time alerts
+        - Compliance reporting
+        
+    performance:
+      mode_switch: <1ms
+      audit_write: <10ms
+      dashboard_update: <100ms
+
+### Phase 0.5: AUTO-ADAPTIVE SYSTEM (REVISED - ASYNC ONLY)
 
 ```yaml
 auto_adaptive_components:
@@ -121,7 +156,8 @@ auto_adaptive_components:
     name: GrokMiniIntegration
     status: PLANNED
     owner: Casey + Avery
-    phase: 3.4
+    phase: 3.6
+    architecture: ASYNC_ENRICHMENT_ONLY
     contract:
       inputs:
         - text: String # Tweet/news content

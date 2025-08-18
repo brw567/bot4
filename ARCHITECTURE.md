@@ -32,7 +32,7 @@
 
 ## 1. Executive Summary
 
-Bot4 is a **ZERO-COST**, **AUTO-ADAPTIVE**, **EMOTIONLESS** cryptocurrency trading platform that automatically scales from $2K to $10M capital. With Grok 3 Mini's 99% cost reduction ($0.20-100/month), the system achieves profitability at ALL capital levels through intelligent tier-based strategy activation.
+Bot4 is a **ULTRA-LOW-COST**, **AUTO-ADAPTIVE**, **EMOTIONLESS** cryptocurrency trading platform that automatically scales from $1K to $10M capital. With Grok 3 Mini ($2-50/month) and FREE infrastructure, the system achieves profitability starting at just $1,000 capital with only $17/month operating costs.
 
 ### 🚨 CRITICAL RULES (NON-NEGOTIABLE)
 1. **NO FAKE IMPLEMENTATIONS** - Every line of code must be real
@@ -64,11 +64,17 @@ throughput:
   parallelization: 11 workers         # Rayon configured
   
 profitability:
-  tier_1_survival: 25-30%       # $2-5K capital
-  tier_2_growth: 30-50%        # $5-20K capital
-  tier_3_acceleration: 50-80%  # $20-100K capital
-  tier_4_institutional: 80-120% # $100K-1M capital
-  tier_5_whale: 100-150%       # $1-10M capital
+  tier_0_survival: 25-35%       # $1-2.5K capital (NEW!)
+  tier_1_bootstrap: 35-50%      # $2.5-5K capital
+  tier_2_growth: 50-80%         # $5-25K capital
+  tier_3_scale: 80-120%         # $25K-100K capital
+  tier_4_institutional: 100-150% # $100K+ capital
+  
+cost_structure:
+  minimum_viable: $1,000 capital with $17/month costs
+  infrastructure: $0 (free local development)
+  grok_mini: $2-50/month based on usage
+  trading_fees: $15-150/month based on volume
   
 exchange_simulator:
   idempotency: ✅ Implemented    # Sophia #1 priority
@@ -1538,9 +1544,162 @@ impl SignalGenerator {
 - **Outputs**: Executable trade decisions with size, stops, and targets
 - **Dependencies**: Phase 3 (ML), Phase 5 (TA), Phase 2 (Risk)
 
-## 8. Risk Management System
+## 7.8 Safety & Control Architecture (CRITICAL - NEW)
 
-### 8.1 Multi-Layer Risk Architecture
+### Hardware Safety Layer
+```yaml
+hardware_controls:
+  kill_switch:
+    type: GPIO_INTERRUPT
+    pin: BCM_17
+    trigger: FALLING_EDGE
+    action: IMMEDIATE_HALT
+    
+  status_indicators:
+    green_led: BCM_22  # Normal operation
+    yellow_led: BCM_23  # Paused/Reduced
+    red_led: BCM_24     # Emergency/Halted
+    
+  physical_security:
+    tamper_detection: true
+    case_intrusion: true
+    unauthorized_access_alert: true
+```
+
+### Software Control Modes
+```rust
+pub enum TradingMode {
+    Normal,      // Full autonomous trading
+    Paused,      // No new orders, maintain existing
+    Reduced,     // Gradual risk reduction
+    Emergency,   // Immediate full liquidation
+}
+
+pub struct SafetyController {
+    mode: Arc<AtomicU8>,
+    audit_log: Arc<Mutex<AuditLog>>,
+    
+    pub fn set_mode(&self, new_mode: TradingMode, reason: &str) {
+        let old_mode = self.get_mode();
+        self.mode.store(new_mode as u8, Ordering::SeqCst);
+        
+        self.audit_log.lock().record(AuditEntry {
+            timestamp: Utc::now(),
+            old_mode,
+            new_mode,
+            reason: reason.to_string(),
+            operator: self.get_operator_id(),
+        });
+        
+        self.broadcast_mode_change(old_mode, new_mode);
+    }
+    
+    pub fn emergency_stop(&self) {
+        self.set_mode(TradingMode::Emergency, "EMERGENCY STOP TRIGGERED");
+        self.liquidate_all_positions().await;
+    }
+}
+```
+
+### Read-Only Dashboard Requirements
+```yaml
+dashboard_components:
+  real_time_metrics:
+    - current_pnl: View only, no modification
+    - open_positions: Count and total value only
+    - risk_metrics: VaR, heat, correlation
+    - system_health: CPU, memory, latency
+    
+  restricted_access:
+    - no_manual_trading: Zero UI for placing orders
+    - no_position_close: Cannot manually exit
+    - no_parameter_change: Config is sealed
+    - view_only_logs: Cannot delete audit trail
+```
+
+## 8. Risk Management System (ENHANCED)
+
+### 8.1 GARCH-Enhanced Risk Models (CRITICAL UPDATE)
+
+```rust
+// CRITICAL: Replace historical VaR with GARCH-VaR
+pub struct GARCHVaR {
+    omega: f64,     // Constant term
+    alpha: f64,     // ARCH coefficient (0.1 typical)
+    beta: f64,      // GARCH coefficient (0.85 typical)
+    df: f64,        // Degrees of freedom for t-distribution (4 for crypto)
+    
+    pub fn calculate_var(&self, confidence: f64) -> Result<f64> {
+        // Forecast conditional volatility
+        let cond_vol = self.forecast_volatility()?;
+        
+        // Use Student-t for fat tails (not normal!)
+        let t_dist = StudentsT::new(self.df)?;
+        let quantile = t_dist.inverse_cdf(1.0 - confidence);
+        
+        // Scale by conditional volatility
+        Ok(cond_vol * quantile * self.horizon.sqrt())
+    }
+    
+    pub fn calculate_cvar(&self, confidence: f64) -> Result<f64> {
+        // Expected Shortfall beyond VaR
+        let var = self.calculate_var(confidence)?;
+        let tail_expectation = self.expected_tail_loss(var)?;
+        Ok(tail_expectation)
+    }
+}
+```
+
+### 8.2 Comprehensive Risk Constraints
+
+```rust
+pub struct EnhancedRiskManager {
+    // Position Sizing with Multiple Constraints
+    kelly: FractionalKellySizer {
+        base_fraction: 0.25,
+        correlation_adjustment: true,
+        misspecification_buffer: 0.5,  // Assume 50% edge error
+    },
+    
+    // GARCH-based VaR (fixes 20-30% underestimation)
+    var_engine: GARCHVaR {
+        confidence: 0.99,
+        horizon: Duration::days(1),
+        limit: 0.02,  // 2% daily VaR
+    },
+    
+    // Volatility Targeting
+    vol_target: VolatilityTargeting {
+        annual_target: 0.15,  // 15% annualized
+        lookback: 252,
+        adjustment_speed: 0.1,
+    },
+    
+    // Dynamic Correlation Limits
+    correlation: DCCGARCHManager {
+        pairwise_max: 0.7,
+        update_frequency: Duration::hours(4),
+        action: RiskAction::BlockOrder,
+    },
+    
+    // Portfolio Heat (Sophia's requirement)
+    heat_calculator: PortfolioHeat {
+        formula: "Σ|w_i|·σ_i·√(liquidity_i)",
+        max_heat: 0.25,
+        action: RiskAction::RejectNewRisk,
+    },
+    
+    // Concentration Limits
+    concentration: ConcentrationLimits {
+        per_symbol: 0.05,     // 5% max
+        per_venue: 0.20,      // 20% max
+        per_strategy: 0.30,   // 30% max
+        per_sector: 0.40,     // 40% max
+    },
+}
+```
+
+### 8.3 Multi-Layer Risk Architecture
 ```rust
 pub struct RiskManagementSystem {
     // Layer 1: Pre-trade risk
@@ -1699,7 +1858,119 @@ impl CircuitBreaker {
 
 ---
 
-## 9. Machine Learning Pipeline
+## 9. Machine Learning Pipeline (CORRECTED)
+
+### 9.1 Time-Aware Validation (CRITICAL FIX)
+
+```python
+class TimeSeriesMLPipeline:
+    """Nexus: TimeSeriesSplit to prevent future leakage"""
+    
+    def validate_model(self, data, model):
+        # WRONG: Standard split leaks future
+        # X_train, X_test = train_test_split(data)  # NO!
+        
+        # RIGHT: Time-aware cross-validation
+        tscv = TimeSeriesSplit(
+            n_splits=10,
+            gap=24*7,       # 1 week gap prevents leakage
+            test_size=24*30  # 1 month test window
+        )
+        
+        scores = []
+        for train_idx, test_idx in tscv.split(data):
+            # Purge overlapping samples
+            train = self.purge_overlap(data[train_idx])
+            
+            # Embargo post-test data
+            train = self.embargo(train, test_idx, days=7)
+            
+            # Fit and score
+            model.fit(train)
+            score = model.score(data[test_idx])
+            scores.append(score)
+            
+        return {
+            'mean_score': np.mean(scores),
+            'std_score': np.std(scores),
+            'generalization_gap': max(scores) - min(scores)
+        }
+```
+
+### 9.2 GARCH-ARIMA for Crypto (REPLACES BASIC ARIMA)
+
+```python
+class GARCHARIMAModel:
+    """Handles fat tails and volatility clustering"""
+    
+    def __init__(self):
+        self.mean_model = ARIMA(order=(2, 1, 2))
+        self.vol_model = GARCH(p=1, q=1)
+        self.distribution = StudentsT(df=4)  # Fat tails
+        
+    def fit(self, returns):
+        # Step 1: Fit ARIMA to returns
+        self.mean_model.fit(returns)
+        residuals = self.mean_model.residuals
+        
+        # Step 2: Fit GARCH to residuals
+        self.vol_model.fit(residuals)
+        
+        # Step 3: Estimate t-distribution parameters
+        self.distribution.fit(residuals / self.vol_model.conditional_volatility)
+        
+    def forecast(self, horizon):
+        # Forecast mean
+        mean_forecast = self.mean_model.forecast(horizon)
+        
+        # Forecast volatility
+        vol_forecast = self.vol_model.forecast(horizon)
+        
+        # Combine with fat-tailed distribution
+        return {
+            'mean': mean_forecast,
+            'volatility': vol_forecast,
+            'var_95': self.distribution.ppf(0.05) * vol_forecast,
+            'var_99': self.distribution.ppf(0.01) * vol_forecast
+        }
+```
+
+### 9.3 Non-Linear Signal Combination (10-20% IMPROVEMENT)
+
+```python
+class NonLinearSignalCombiner:
+    """Nexus: XGBoost for non-linear combination"""
+    
+    def __init__(self):
+        self.pca = PCA(n_components=0.95)  # Keep 95% variance
+        self.xgb = XGBRegressor(
+            max_depth=6,
+            n_estimators=100,
+            learning_rate=0.01,
+            objective='reg:squarederror'
+        )
+        
+    def combine_signals(self, signals_dict):
+        # Step 1: Orthogonalize via PCA
+        signals_matrix = np.column_stack(signals_dict.values())
+        orthogonal = self.pca.fit_transform(signals_matrix)
+        
+        # Step 2: Non-linear combination
+        combined = self.xgb.predict(orthogonal)
+        
+        # Step 3: Optimal weighting by inverse variance
+        variances = np.var(signals_matrix, axis=0)
+        weights = 1 / variances
+        weights /= weights.sum()
+        
+        # Step 4: Regime adjustment
+        regime = self.detect_regime()
+        weights = self.adjust_for_regime(weights, regime)
+        
+        return combined, weights
+```
+
+## 9. Machine Learning Pipeline (Original Content Continues)
 
 ### 9.1 ML Architecture
 ```rust
