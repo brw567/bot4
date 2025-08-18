@@ -7,6 +7,7 @@ use rust_decimal::Decimal;
 use rust_decimal::prelude::*;
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div, Neg};
+use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 
 /// Money type using decimal arithmetic for perfect precision
