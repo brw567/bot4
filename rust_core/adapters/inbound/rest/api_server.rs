@@ -312,7 +312,12 @@ impl PlaceOrderRequest {
     }
     
     fn to_domain_order(&self) -> Result<Order> {
-        // Convert to domain model
+        // TODO: [PHASE 3 - TASK p3-api-1] Enhance with full validation and business rules
+        // IMPORTANT: Current implementation is basic - needs enhancement for production
+        // Owner: Sam | Priority: MEDIUM | Target: Phase 3 API Enhancement
+        // Required: Add time-in-force, stop price, iceberg params, etc.
+        
+        // Basic conversion - sufficient for Phase 2, needs enhancement
         use crate::domain::types::{OrderSide, OrderType, OrderStatus};
         
         let side = match self.side.as_str() {

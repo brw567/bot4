@@ -171,8 +171,13 @@ impl ExchangeAdapter for BinanceAdapter {
     }
     
     async fn get_supported_symbols(&self) -> Result<Vec<Symbol>> {
-        // Return mock symbols for testing
-        // In production, would fetch from exchange info endpoint
+        // TODO: [PHASE 8 - TASK p8-exchange-1] Replace with real Binance API call
+        // CRITICAL: This MUST be replaced before production deployment
+        // Real implementation: GET /api/v3/exchangeInfo
+        // Owner: Casey | Priority: HIGH | Target: Phase 8 Exchange Integration
+        
+        // TEMPORARY MOCK - DO NOT SHIP TO PRODUCTION
+        tracing::warn!("Using MOCK symbol fetching - replace for production!");
         Ok(vec![
             Symbol::new("BTC/USDT"),
             Symbol::new("ETH/USDT"),
@@ -206,9 +211,15 @@ impl ExchangeAdapter for BinanceAdapter {
     }
     
     async fn subscribe_market_data(&self, symbols: Vec<Symbol>) -> Result<()> {
-        // Mock subscription - would connect to real WebSocket in production
+        // TODO: [PHASE 8 - TASK p8-exchange-2] Replace with real WebSocket connection
+        // CRITICAL: This MUST be replaced before production deployment
+        // Real implementation: wss://stream.binance.com:9443/ws
+        // Owner: Casey | Priority: HIGH | Target: Phase 8 Exchange Integration
+        
+        // TEMPORARY MOCK - DO NOT SHIP TO PRODUCTION
+        tracing::warn!("Using MOCK WebSocket subscription - replace for production!");
         for symbol in symbols {
-            tracing::info!("Subscribed to market data for {}", symbol.value());
+            tracing::info!("MOCK: Subscribed to market data for {}", symbol.value());
         }
         Ok(())
     }
@@ -222,8 +233,13 @@ impl ExchangeAdapter for BinanceAdapter {
     }
     
     async fn get_limits(&self, symbol: &Symbol) -> Result<ExchangeLimits> {
-        // Return mock limits for testing
-        // In production, would fetch from exchange info
+        // TODO: [PHASE 8 - TASK p8-exchange-1] Part of exchange info endpoint
+        // CRITICAL: This MUST be replaced before production deployment
+        // Real implementation: GET /api/v3/exchangeInfo (parse filters)
+        // Owner: Casey | Priority: HIGH | Target: Phase 8 Exchange Integration
+        
+        // TEMPORARY MOCK - DO NOT SHIP TO PRODUCTION
+        tracing::warn!("Using MOCK limits for {} - replace for production!", symbol.value());
         Ok(ExchangeLimits {
             min_price: Price::new(0.01),
             max_price: Price::new(1000000.0),
@@ -277,15 +293,28 @@ impl ExchangePort for BinanceAdapter {
             anyhow::bail!("Order validation failed: {:?}", validation.errors);
         }
         
-        // Mock order placement - would call real API in production
-        let exchange_id = format!("BINANCE_{}", uuid::Uuid::new_v4());
-        tracing::info!("Placed order {} with exchange ID {}", order.id().value(), exchange_id);
+        // TODO: [PHASE 8 - TASK p8-exchange-3] Replace with real Binance order placement
+        // CRITICAL: This MUST be replaced before production deployment
+        // Real implementation: POST /api/v3/order
+        // Owner: Casey | Priority: CRITICAL | Target: Phase 8 Exchange Integration
+        // Required: API key, signature, proper error handling
+        
+        // TEMPORARY MOCK - DO NOT SHIP TO PRODUCTION
+        tracing::error!("USING MOCK ORDER PLACEMENT - THIS WILL NOT EXECUTE REAL TRADES!");
+        let exchange_id = format!("MOCK_BINANCE_{}", uuid::Uuid::new_v4());
+        tracing::warn!("MOCK: Placed order {} with fake ID {}", order.id().value(), exchange_id);
         Ok(exchange_id)
     }
     
     async fn cancel_order(&self, order_id: &OrderId) -> Result<()> {
-        // Mock order cancellation
-        tracing::info!("Cancelled order {}", order_id.value());
+        // TODO: [PHASE 8 - TASK p8-exchange-4] Replace with real order cancellation
+        // CRITICAL: This MUST be replaced before production deployment
+        // Real implementation: DELETE /api/v3/order
+        // Owner: Casey | Priority: CRITICAL | Target: Phase 8 Exchange Integration
+        
+        // TEMPORARY MOCK - DO NOT SHIP TO PRODUCTION
+        tracing::error!("USING MOCK ORDER CANCELLATION - THIS WILL NOT CANCEL REAL ORDERS!");
+        tracing::warn!("MOCK: Cancelled order {}", order_id.value());
         Ok(())
     }
     
@@ -296,7 +325,14 @@ impl ExchangePort for BinanceAdapter {
     }
     
     async fn get_balances(&self) -> Result<HashMap<String, Balance>> {
-        // Return mock balances for testing
+        // TODO: [PHASE 8 - TASK p8-exchange-5] Replace with real balance retrieval
+        // CRITICAL: This MUST be replaced before production deployment
+        // Real implementation: GET /api/v3/account
+        // Owner: Casey | Priority: CRITICAL | Target: Phase 8 Exchange Integration
+        // Required: API key, signature
+        
+        // TEMPORARY MOCK - DO NOT SHIP TO PRODUCTION
+        tracing::error!("USING MOCK BALANCES - THESE ARE NOT REAL ACCOUNT BALANCES!");
         let mut balances = HashMap::new();
         balances.insert("USDT".to_string(), Balance {
             free: rust_decimal::Decimal::from(10000),
@@ -308,6 +344,7 @@ impl ExchangePort for BinanceAdapter {
             locked: rust_decimal::Decimal::from(0),
             total: rust_decimal::Decimal::from(1),
         });
+        tracing::warn!("MOCK: Returning fake balances for testing only");
         Ok(balances)
     }
 }
