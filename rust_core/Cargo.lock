@@ -1373,6 +1373,8 @@ dependencies = [
  "async-trait",
  "criterion",
  "crossbeam",
+ "crossbeam-epoch",
+ "crossbeam-queue",
  "crossbeam-utils",
  "dashmap",
  "lazy_static",
