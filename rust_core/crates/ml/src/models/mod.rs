@@ -59,3 +59,12 @@ pub use xgboost_optimized::{
     OptimizedXGBoost, XGBoostParams, TrainingMetrics,
     ValidationMetrics, XGBoostError
 };
+
+// Phase 3+ additions
+pub mod garch;
+pub mod attention_lstm;
+pub mod stacking_ensemble;
+
+pub use garch::{GARCHModel, GARCHError};
+pub use attention_lstm::AttentionLSTM;
+pub use stacking_ensemble::{StackingEnsemble, BaseModel, EnsembleConfig, BlendMode};
