@@ -20,6 +20,7 @@ pub mod optimization;  // Optimization utilities
 pub mod features;  // Microstructure features
 pub mod validation;  // Purged CV and leakage prevention
 pub mod calibration;  // Isotonic probability calibration
+pub mod garch;  // GARCH volatility modeling - Nexus Priority 2
 
 // Re-export main types
 pub use feature_engine::{
@@ -84,4 +85,10 @@ pub use features::{
     SpreadComponents,
     KyleLambda,
     VPIN,
+};
+
+pub use garch::{
+    GARCH,
+    ljung_box_test,
+    arch_test,
 };

@@ -40,12 +40,12 @@ dotenv = "0.15"
 # Time
 chrono = { version = "0.4", features = ["serde"] }
 
-# Performance
-mimalloc = { version = "0.1", optional = true }
+# Performance - CRITICAL (Nexus Priority 1)
+mimalloc = { version = "0.1", default-features = false }
 
 [features]
-default = []
-mimalloc = ["dep:mimalloc"]
+default = ["mimalloc"]
+mimalloc = []
 
 [[bin]]
 name = "bot4"

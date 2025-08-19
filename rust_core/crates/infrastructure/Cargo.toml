@@ -22,6 +22,8 @@ libc = "0.2"  # For CPU affinity on Linux
 # Core dependencies
 anyhow = { workspace = true }
 log = "0.4"
+rust_decimal = "1.33"
+chrono = { workspace = true }
 
 # Phase 3: Stream Processing Dependencies
 redis = { version = "0.24", features = ["aio", "tokio-comp", "streams", "connection-manager"] }
