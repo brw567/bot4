@@ -7,6 +7,7 @@ members = [
     "crates/websocket", 
     "crates/order_management",
     "crates/analysis",
+    "crates/ml",
 ]
 resolver = "2"
 
