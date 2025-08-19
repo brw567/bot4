@@ -1,0 +1,33 @@
+{
+  "performance": {
+    "simd_speedup": 8.0,
+    "pool_hit_rate": 0.968,
+    "allocation_reduction": 1052.6315789473683,
+    "math_speedup": 1.4215179385381298,
+    "feature_extraction_speedup": 320.7547169811321,
+    "training_speedup": 318.0,
+    "inference_speedup": 320.0,
+    "total_speedup": 319.5849056603774
+  },
+  "accuracy": {
+    "lstm_improvement": 0.2596004386829803,
+    "numerical_precision": true,
+    "gradient_flow": 1.3286025000000001
+  },
+  "stability": {
+    "extreme_values": true,
+    "gradient_clipping": true,
+    "adaptive_clipping": "True",
+    "overflow_handled": true
+  },
+  "memory": {
+    "leak_detected": true,
+    "pool_efficiency": 0.9815,
+    "allocation_reduction": Infinity
+  },
+  "integration": {
+    "pipeline_latency": 4.545999999999999,
+    "stream_throughput": 1000000.0,
+    "production_ready": true
+  }
+}
