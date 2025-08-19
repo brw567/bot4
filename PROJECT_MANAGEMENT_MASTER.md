@@ -263,12 +263,25 @@ current_status: Phase 0 (100%), Phase 1 (100%), Phase 2 (100%), Phase 3 (100%)
   - [x] Tokio tuning (workers=11, blocking=512) ✅
   - [x] Zero allocations in hot path ✅
 
-### Phase 2: Trading Engine - 100% COMPLETE ✅
-**Duration**: 3 days (accelerated) | **Owner**: Casey (Exchange Sim) & Sam (Engine)
-**Status**: FULLY COMPLETE - Pre-Production 100% Done (17/17 items)
+### Phase 2: Trading Engine - REQUIRES PATCHES ⚠️
+**Duration**: 3 days (accelerated) + 3 days patches | **Owner**: Casey (Exchange Sim) & Sam (Engine)
+**Original Scope**: 100% COMPLETE ✅
+**Sophia's Patches Required**: 2 CRITICAL items
 **Architecture**: Hexagonal Architecture with 100% separation ✅
 **External Review**: Sophia 97/100, Nexus 95% confidence ✅
-**Completion Date**: January 18, 2025
+**Completion Date**: January 18, 2025 (original) | Patches due: January 22, 2025
+
+#### 🔴 CRITICAL PATCHES REQUIRED (Sophia's Feedback):
+- [ ] **Variable Trading Cost Model** (Casey - 2 days) ⚠️
+  - Exchange fees (maker/taker with tiers)
+  - Funding costs (perpetuals & spot borrow)
+  - Slippage modeling (market impact)
+  - Monthly cost: $1,800 at 100 trades/day
+- [ ] **Partial Fill Awareness** (Sam - 3 days) ⚠️
+  - Weighted average entry price tracking
+  - Dynamic stop-loss adjustment
+  - Fill-aware position management
+  - Critical for accurate P&L
 
 #### 🔴 MANDATORY REQUIREMENTS (FULLY IMPLEMENTED):
 1. **Hexagonal Architecture** ✅ Complete separation achieved
@@ -636,15 +649,17 @@ current_status: Phase 0 (100%), Phase 1 (100%), Phase 2 (100%), Phase 3 (100%)
   - Weekly summary reports only
 
 ### Phase 3.5: Advanced Trading Logic & Efficiency - NOT STARTED
-**Duration**: 5 weeks | **Owner**: Morgan & Quinn + Full Team
+**Duration**: 5 weeks → 6 weeks | **Owner**: Morgan & Quinn + Full Team
 **Note**: Trading efficiency optimization + Risk management overhaul
 **Budget**: $0.20-100/month (99% REDUCTION via Grok 3 Mini!)
 **Target APY**: 25-150% (Capital-Adaptive)
+**Sophia's Additions**: 2 CRITICAL items added
 
 #### Week 1: Critical Foundations (REVISED)
-- [ ] **Fractional Kelly Position Sizing** (Morgan + Quinn)
-  - 0.25x Kelly with correlation adjustment
+- [ ] **Fractional Kelly Position Sizing** (Morgan + Quinn) ✅ Already planned
+  - 0.25x Kelly MAX (Sophia's safety constraint)
   - Volatility targeting overlay
+  - VaR constraint integration
   - Per-venue leverage limits (max 3x)
   - Heat map visualization
   - Minimum size filter (>0.5% of capital)
@@ -692,6 +707,12 @@ current_status: Phase 0 (100%), Phase 1 (100%), Phase 2 (100%), Phase 3 (100%)
   - Recovery rules implementation
 
 #### Week 3: Performance & Execution Optimization
+- [ ] **Panic Conditions & Kill Switches** (Quinn) 🆕 SOPHIA REQUIREMENT
+  - Slippage threshold (>3x expected = halt)
+  - Quote staleness (>500ms = halt)
+  - Spread blow-out (>3x normal = halt)
+  - API error cascade (>threshold = halt)
+  - Cross-exchange price divergence (>2% = alert)
 - [ ] **Full Rayon Parallelization** (Jordan)
   - 12-core utilization (8-10x speedup)
   - SIMD optimization everywhere
@@ -760,10 +781,24 @@ current_status: Phase 0 (100%), Phase 1 (100%), Phase 2 (100%), Phase 3 (100%)
 
 **Exit Gate**: System ready for 60-90 day paper trading with realistic APY targets
 
-### Phase 4: Data Pipeline - NOT STARTED
-**Duration**: 5 days | **Owner**: Avery
+### Phase 4: Data Pipeline - NOT STARTED (RESTRUCTURED)
+**Duration**: 5 days → 7 days | **Owner**: Avery
+**Major Change**: L2 microstructure priority over sentiment (Sophia's requirement)
+**Cost Impact**: Save $1,000/month initially
 
-**ENHANCED TASKS (from Phase 3 audit)**:
+**RESTRUCTURED PRIORITIES (Sophia's Correction)**:
+- [ ] **Tier 0: L2 Microstructure (CRITICAL)** 🔄
+  - Multi-venue L2 order books ($800/month)
+  - Real-time trades with microsecond timestamps
+  - Funding rates and basis (FREE)
+  - Historical L2 for backtesting ($200/month)
+- [ ] **Tier 1: Useful Additions (OPTIONAL)**
+  - On-chain analytics ($300/month)
+  - Low-latency news ($200/month)
+- [ ] **Tier 2: DEFERRED** ❌
+  - xAI/Grok sentiment (CANCELLED until proven)
+  - Social media sentiment (CANCELLED)
+  - Alternative data (CANCELLED)
 - [ ] Repository Pattern Implementation
   - Generic repository trait
   - Model repository
