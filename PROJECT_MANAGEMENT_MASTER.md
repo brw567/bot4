@@ -365,6 +365,79 @@ current_status: Phase 0 (100%), Phase 1 (100%), Phase 2 (100%), Phase 3 (100%)
   - 320x performance verified
   - Production ready
 
+### Phase 3+ CRITICAL ENHANCEMENTS (From Sophia & Nexus Reviews)
+**Duration**: 3 weeks | **Owner**: FULL TEAM | **Status**: IN PROGRESS
+**Priority**: MUST COMPLETE before paper trading
+**External Review**: Addressing Sophia (9 fixes) + Nexus (4 enhancements)
+
+#### Week 1: Critical Trading Requirements (Sophia's HIGH Priority)
+- [ ] **Performance Manifest & Metrics Consistency** (Jordan + Riley)
+  - Machine-generated perf manifest per build
+  - Report p50/p95/p99/p99.9 for all stages
+  - Fix "1920%" to "95% hardware efficiency"
+  - CI gates on metric consistency
+- [ ] **Leakage Protection & Purged CV** (Morgan + Avery)
+  - López de Prado's purged/embargoed walk-forward
+  - As-of temporal joins for all features
+  - Leakage sentinel tests (Sharpe < 0.1 on shuffled)
+  - CI gate on sentinel pass
+- [ ] **GARCH Volatility Modeling** (Morgan + Quinn) - NEXUS REQUIREMENT
+  - GARCH(1,1) for heteroskedasticity (p=0.03)
+  - AVX-512 optimized implementation
+  - Integration with risk calculations
+  - 15-25% forecast improvement expected
+- [ ] **Probability Calibration** (Morgan + Quinn)
+  - Isotonic/Platt calibration per regime
+  - Track Brier score < 0.2
+  - Calibrated probability for Kelly sizing
+- [ ] **Comprehensive Risk Clamps** (Quinn + Sam)
+  - Volatility targeting with GARCH
+  - VaR/ES limits enforcement
+  - Portfolio heat cap
+  - Per-venue leverage caps
+  - Crisis mode (50% reduction)
+
+#### Week 2: Advanced Features & Safety
+- [ ] **Microstructure Feature Additions** (Avery + Casey)
+  - Multi-level OFI (5 levels)
+  - Queue-ahead/queue-age metrics
+  - Cancel burst detection (AVX-512)
+  - Microprice momentum
+  - TOB survival times
+  - VPIN/toxicity measures
+- [ ] **Partial-Fill Aware OCO** (Casey + Sam)
+  - Track fill-weighted average entry
+  - Dynamic stop/target repricing
+  - Property tests for all sequences
+  - Venue-OCO prioritization
+- [ ] **Attention LSTM Enhancement** (Morgan + Jordan) - NEXUS REQUIREMENT
+  - Multi-head self-attention layers
+  - AVX-512 optimized attention
+  - 10-20% accuracy improvement expected
+- [ ] **Stacking Ensemble** (Morgan + Sam) - NEXUS REQUIREMENT
+  - Replace voting with meta-learner
+  - 5-fold CV for base predictions
+  - 5-10% accuracy improvement expected
+- [ ] **Model Registry & Rollback** (Sam + Riley)
+  - Immutable model storage with SHA256
+  - Canary deployment at 1% capital
+  - Auto-rollback on SLO breach
+  - One-click fallback mechanism
+
+#### Week 3: Integration & Testing
+- [ ] **Full Integration Testing** (Riley + FULL TEAM)
+  - All components working together
+  - End-to-end latency < 10ms verified
+  - 147+ tests all passing
+- [ ] **Paper Trading Environment** (Casey + FULL TEAM)
+  - 24-hour shadow mode first
+  - 1% capital canary deployment
+  - Full monitoring and alerting
+- [ ] **Documentation Updates** (Alex + FULL TEAM)
+  - Update all architecture docs
+  - Update LLM-optimized docs
+  - Create runbooks for operations
+
 ### Phase 3.3: SAFETY & CONTROL SYSTEMS (CRITICAL - NEW)
 **Duration**: 1 week | **Owner**: Sam + Riley | **Status**: NOT STARTED
 **Priority**: BLOCKS ALL TRADING - Must complete before any live systems
