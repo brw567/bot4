@@ -44,7 +44,7 @@ pub use gru::TrainingResult as GRUTrainingResult;
 // Deep LSTM exports (5-layer with full optimizations)
 pub use deep_lstm::{
     DeepLSTM, LSTMLayer, ResidualConnection, LayerNorm,
-    GradientClipper, AdamW, ModelMetrics
+    GradientClipper, AdamW, ModelMetrics as DeepLSTMMetrics
 };
 
 // Optimized Ensemble exports (5 diverse models)
@@ -67,4 +67,4 @@ pub mod stacking_ensemble;
 
 pub use garch::{GARCHModel, GARCHError};
 pub use attention_lstm::AttentionLSTM;
-pub use stacking_ensemble::{StackingEnsemble, BaseModel, EnsembleConfig, BlendMode};
+pub use stacking_ensemble::{StackingEnsemble, BaseModel, EnsembleConfig as StackingConfig, BlendMode};

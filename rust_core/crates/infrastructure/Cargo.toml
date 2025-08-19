@@ -24,7 +24,7 @@ anyhow = { workspace = true }
 log = "0.4"
 
 # Phase 3: Stream Processing Dependencies
-redis = { version = "0.24", features = ["aio", "tokio-comp", "streams"] }
+redis = { version = "0.24", features = ["aio", "tokio-comp", "streams", "connection-manager"] }
 uuid = { version = "1.6", features = ["v4", "serde"] }
 serde_json = { workspace = true }
 

@@ -32,6 +32,7 @@ use parking_lot::RwLock;
 // ============================================================================
 
 /// Thread-safe object pool with zero allocations after initialization
+#[derive(Debug)]
 pub struct ObjectPool<T: Default + Send> {
     pool: Arc<ArrayQueue<Box<T>>>,
     capacity: usize,
@@ -208,6 +209,7 @@ impl Drop for Arena {
 // ============================================================================
 
 /// Lock-free metrics collection
+#[derive(Debug, Clone)]
 pub struct LockFreeMetrics {
     metrics: Arc<DashMap<String, AtomicU64>>,
     counters: Arc<DashMap<String, AtomicU64>>,
@@ -264,7 +266,7 @@ impl ZeroCopyPipeline {
     /// Create new pipeline - Morgan
     pub fn new(buffer_size: usize, pool_size: usize) -> Self {
         // Create pool of pre-allocated buffers
-        let mut buffer_pool = ObjectPool::new(pool_size);
+        let mut buffer_pool = ObjectPool::<Vec<f64>>::new(pool_size);
         
         // Initialize buffers to correct size
         for _ in 0..pool_size {
@@ -503,6 +505,7 @@ impl ZeroCopyMatrix {
 // ============================================================================
 
 /// Centralized memory pool manager
+#[derive(Debug)]
 pub struct MemoryPoolManager {
     matrix_pool: ObjectPool<Vec<f64>>,
     vector_pool: ObjectPool<Vec<f64>>,
@@ -515,7 +518,7 @@ impl MemoryPoolManager {
     pub fn new() -> Self {
         // Pre-allocate pools - Avery's sizing
         let matrix_pool = {
-            let pool = ObjectPool::new(1000);
+            let pool = ObjectPool::<Vec<f64>>::new(1000);
             // Initialize matrices
             for _ in 0..1000 {
                 let mut mat = pool.acquire();
@@ -525,7 +528,7 @@ impl MemoryPoolManager {
         };
         
         let vector_pool = {
-            let pool = ObjectPool::new(10000);
+            let pool = ObjectPool::<Vec<f64>>::new(10000);
             // Initialize vectors
             for _ in 0..10000 {
                 let mut vec = pool.acquire();
@@ -535,7 +538,7 @@ impl MemoryPoolManager {
         };
         
         let batch_pool = {
-            let pool = ObjectPool::new(100);
+            let pool = ObjectPool::<Vec<Vec<f64>>>::new(100);
             // Initialize batches
             for _ in 0..100 {
                 let mut batch = pool.acquire();

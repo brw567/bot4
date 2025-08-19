@@ -80,6 +80,38 @@ impl<T: Default + Clone> AlignedVec<T> {
         }
         self.len += 1;
     }
+    
+    /// Clear the vector
+    pub fn clear(&mut self) {
+        self.len = 0;
+    }
+    
+    /// Resize the vector
+    pub fn resize(&mut self, new_len: usize, value: T) {
+        assert!(new_len <= self.capacity, "Cannot resize beyond capacity");
+        
+        // If shrinking, just update length
+        if new_len < self.len {
+            self.len = new_len;
+        } else {
+            // If growing, fill with value
+            while self.len < new_len {
+                self.push(value.clone());
+            }
+        }
+    }
+    
+    /// Convert to Vec
+    pub fn to_vec(&self) -> Vec<T> {
+        self.as_slice().to_vec()
+    }
+    
+    /// Extend from iterator
+    pub fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
+        for item in iter {
+            self.push(item);
+        }
+    }
 }
 
 impl<T> Drop for AlignedVec<T> {
@@ -97,6 +129,37 @@ impl<T> Drop for AlignedVec<T> {
             
             dealloc(self.ptr as *mut u8, layout);
         }
+    }
+}
+
+// Default implementation for AlignedVec
+impl<T: Default + Clone> Default for AlignedVec<T> {
+    fn default() -> Self {
+        Self::new(0)
+    }
+}
+
+// SAFETY: AlignedVec can be sent between threads if T is Send
+unsafe impl<T: Send> Send for AlignedVec<T> {}
+
+// SAFETY: AlignedVec can be shared between threads if T is Sync
+unsafe impl<T: Sync> Sync for AlignedVec<T> {}
+
+// Index implementation
+impl<T> std::ops::Index<usize> for AlignedVec<T> {
+    type Output = T;
+    
+    fn index(&self, index: usize) -> &Self::Output {
+        assert!(index < self.len, "Index out of bounds");
+        unsafe { &*self.ptr.add(index) }
+    }
+}
+
+// IndexMut implementation
+impl<T> std::ops::IndexMut<usize> for AlignedVec<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        assert!(index < self.len, "Index out of bounds");
+        unsafe { &mut *self.ptr.add(index) }
     }
 }
 

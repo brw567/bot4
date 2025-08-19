@@ -80,21 +80,21 @@ impl Optimizer for AdamOptimizer {
         let v = self.v.as_mut().unwrap();
         
         // Update biased moments
-        *m = &*m * self.beta1 + gradients * (1.0 - self.beta1);
-        *v = &*v * self.beta2 + gradients.mapv(|g| g * g) * (1.0 - self.beta2);
+        *m = m.clone() * self.beta1 + gradients * (1.0 - self.beta1);
+        *v = v.clone() * self.beta2 + gradients.mapv(|g| g * g) * (1.0 - self.beta2);
         
         // Compute bias-corrected moments
         let t = iteration as f64 + 1.0;
-        let m_hat = m / (1.0 - self.beta1.powf(t));
-        let v_hat = v / (1.0 - self.beta2.powf(t));
+        let m_hat = m.clone() / (1.0 - self.beta1.powf(t));
+        let v_hat = v.clone() / (1.0 - self.beta2.powf(t));
         
         // Apply weight decay if specified (AdamW variant)
         if self.weight_decay > 0.0 {
-            *params = &*params * (1.0 - self.learning_rate * self.weight_decay);
+            *params = params.clone() * (1.0 - self.learning_rate * self.weight_decay);
         }
         
         // Update parameters
-        *params = &*params - self.learning_rate * m_hat / (v_hat.mapv(f64::sqrt) + self.epsilon);
+        *params = params.clone() - self.learning_rate * &m_hat / (v_hat.mapv(f64::sqrt) + self.epsilon);
         
         Ok(())
     }
@@ -153,12 +153,12 @@ impl Optimizer for SGDOptimizer {
         if self.nesterov {
             // Nesterov accelerated gradient
             let prev_velocity = velocity.clone();
-            *velocity = &*velocity * self.momentum - gradients * self.learning_rate;
-            *params = &*params + &*velocity * (1.0 + self.momentum) - prev_velocity * self.momentum;
+            *velocity = velocity.clone() * self.momentum - gradients * self.learning_rate;
+            *params = params.clone() + velocity.clone() * (1.0 + self.momentum) - &prev_velocity * self.momentum;
         } else {
             // Standard momentum
-            *velocity = &*velocity * self.momentum - gradients * self.learning_rate;
-            *params = &*params + velocity;
+            *velocity = velocity.clone() * self.momentum - gradients * self.learning_rate;
+            *params = params.clone() + &*velocity;
         }
         
         Ok(())
@@ -219,7 +219,7 @@ impl Optimizer for RMSpropOptimizer {
         let cache = self.cache.as_mut().unwrap();
         
         // Update cache with exponential moving average
-        *cache = &*cache * self.decay_rate + gradients.mapv(|g| g * g) * (1.0 - self.decay_rate);
+        *cache = cache.clone() * self.decay_rate + gradients.mapv(|g| g * g) * (1.0 - self.decay_rate);
         
         // Compute update
         let update = gradients / (cache.mapv(f64::sqrt) + self.epsilon) * self.learning_rate;
@@ -230,10 +230,10 @@ impl Optimizer for RMSpropOptimizer {
                 self.velocity = Some(Array1::zeros(params.len()));
             }
             let velocity = self.velocity.as_mut().unwrap();
-            *velocity = &*velocity * self.momentum + update * (1.0 - self.momentum);
-            *params = &*params - velocity;
+            *velocity = velocity.clone() * self.momentum + update.clone() * (1.0 - self.momentum);
+            *params = params.clone() - &*velocity;
         } else {
-            *params = &*params - update;
+            *params = params.clone() - &update;
         }
         
         Ok(())

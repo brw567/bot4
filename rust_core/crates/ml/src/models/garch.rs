@@ -186,7 +186,8 @@ impl GARCHModel {
         returns: &[f32],
         sigma2: &mut [f32]
     ) -> Result<(f32, f32, f32), GARCHError> {
-        use optimization::lbfgs::*;
+        // TODO: Use L-BFGS optimization when available
+        // For now, use simple gradient descent
         
         let n = returns.len();
         
@@ -232,12 +233,38 @@ impl GARCHModel {
             -(log_lik - reg_penalty)  // Minimize negative log-likelihood
         };
         
-        // L-BFGS optimization
-        let mut lbfgs = Lbfgs::new();
-        lbfgs.max_iterations(MAX_ITERATIONS);
-        lbfgs.tolerance(CONVERGENCE_TOL);
+        // Gradient descent optimization (replacing L-BFGS)
+        // Morgan: Using simple gradient descent for GARCH parameter estimation
+        let learning_rate = 0.01;
+        let mut prev_loss = f64::MAX;
         
-        let result = lbfgs.minimize(&objective, &mut params)?;
+        for iteration in 0..MAX_ITERATIONS {
+            // Calculate gradient numerically
+            let epsilon = 1e-6;
+            let mut gradient = vec![0.0; params.len()];
+            
+            for i in 0..params.len() {
+                let mut params_plus = params.clone();
+                params_plus[i] += epsilon;
+                
+                let loss = objective(&params);
+                let loss_plus = objective(&params_plus);
+                
+                gradient[i] = (loss_plus - loss) / epsilon;
+            }
+            
+            // Update parameters
+            for i in 0..params.len() {
+                params[i] -= learning_rate * gradient[i];
+            }
+            
+            // Check convergence
+            let current_loss = objective(&params);
+            if (prev_loss - current_loss).abs() < CONVERGENCE_TOL {
+                break;
+            }
+            prev_loss = current_loss;
+        }
         
         // Transform back to constrained space
         let omega = params[0].exp() as f32;
@@ -390,10 +417,39 @@ impl GARCHModel {
         let vol_forecast = self.forecast(1)[0];
         
         // Use Student's t distribution for fat tails
+        // Note: inverse_cdf not available, using approximation
+        // For t-distribution with df degrees of freedom, we can approximate
+        // the quantile using the normal approximation for large df
+        use statrs::distribution::ContinuousCDF;
         let t_dist = StudentsT::new(0.0, 1.0, self.degrees_of_freedom as f64).unwrap();
-        let quantile = t_dist.inverse_cdf(1.0 - confidence as f64) as f32;
+        // Use inverse via search (binary search for the quantile)
+        let target = 1.0 - confidence as f64;
+        let quantile = self.find_quantile(&t_dist, target) as f32;
         
         position * vol_forecast * quantile
+    }
+    
+    /// Find quantile using binary search
+    fn find_quantile(&self, dist: &StudentsT, target: f64) -> f64 {
+        use statrs::distribution::ContinuousCDF;
+        
+        // Binary search for the quantile
+        let mut left = -10.0;
+        let mut right = 10.0;
+        let tolerance = 1e-6;
+        
+        while right - left > tolerance {
+            let mid = (left + right) / 2.0;
+            let cdf_val = dist.cdf(mid);
+            
+            if cdf_val < target {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        
+        (left + right) / 2.0
     }
     
     /// Expected Shortfall (CVaR) calculation

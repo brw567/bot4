@@ -14,6 +14,7 @@ pub mod simd;  // AVX-512 SIMD optimizations - FULL TEAM implementation
 pub mod training;  // Model training pipeline - FULL TEAM implementation
 pub mod math_opt;  // Mathematical optimizations - Day 3 Sprint
 pub mod integrated_optimization;  // INTEGRATED 320x optimization - Day 4 Sprint
+pub mod optimization;  // Optimization utilities
 
 // Phase 3+ Additions
 pub mod features;  // Microstructure features
@@ -22,8 +23,8 @@ pub mod calibration;  // Isotonic probability calibration
 
 // Re-export main types
 pub use feature_engine::{
-    indicators::{IndicatorEngine, IndicatorConfig},
-    indicators_extended::ExtendedIndicators,
+    IndicatorEngine, IndicatorConfig,
+    ExtendedIndicators,
 };
 
 pub use simd::{
@@ -48,7 +49,7 @@ pub use models::{
     // Phase 3+ models
     GARCHModel, GARCHError,
     AttentionLSTM,
-    StackingEnsemble, BaseModel, EnsembleConfig, BlendMode,
+    StackingEnsemble, BaseModel, StackingConfig, BlendMode,
 };
 
 pub use math_opt::{
@@ -67,18 +68,18 @@ pub use integrated_optimization::{
 };
 
 // Phase 3+ exports
-pub use validation::purged_cv::{
+pub use validation::{
     PurgedWalkForwardCV,
     CVSplit,
     LeakageTest,
 };
 
-pub use calibration::isotonic::{
+pub use calibration::{
     IsotonicCalibrator,
     CalibrationMetrics,
 };
 
-pub use features::microstructure::{
+pub use features::{
     MicrostructureFeatures,
     SpreadComponents,
     KyleLambda,

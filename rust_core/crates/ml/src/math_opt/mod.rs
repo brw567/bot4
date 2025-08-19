@@ -31,6 +31,7 @@ use crate::simd::{dot_product_avx512, gemm_avx512};
 // ============================================================================
 
 /// Strassen's matrix multiplication - Morgan & Jordan
+#[derive(Debug, Clone)]
 pub struct StrassenMultiplier {
     threshold: usize,  // Switch to conventional below this size
     use_simd: bool,
@@ -93,7 +94,7 @@ impl StrassenMultiplier {
         
         // Compute 7 products (instead of 8) - Strassen's trick
         // Using parallel computation - Jordan's optimization
-        let (m1, m2, m3, m4, m5, m6, m7) = rayon::join(
+        let (left_results, right_results) = rayon::join(
             || rayon::join(
                 || rayon::join(
                     || self.strassen_recursive(&(&a11 + &a22).to_owned(), &(&b11 + &b22).to_owned()),
@@ -113,8 +114,8 @@ impl StrassenMultiplier {
             ),
         );
         
-        let ((m1, m2), (m3, m4)) = (m1, m2);
-        let ((m5, m6), m7) = (m5, m7);
+        let ((m1, m2), (m3, m4)) = left_results;
+        let ((m5, m6), m7) = right_results;
         
         // Combine results to form output matrix
         let mut c = Array2::zeros((n, n));

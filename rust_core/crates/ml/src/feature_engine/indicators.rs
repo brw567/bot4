@@ -5,11 +5,43 @@
 
 use std::arch::x86_64::*;
 use std::sync::Arc;
+use std::collections::HashMap;
 use dashmap::DashMap;
-use crate::domain::value_objects::{Price, Volume, Candle};
+use anyhow::Result;
+use thiserror::Error;
 
-/// SIMD-accelerated feature engine for 100+ technical indicators
-pub struct FeatureEngine {
+/// SIMD-accelerated indicator engine for 100+ technical indicators
+// Core data structures
+#[derive(Debug, Clone)]
+pub struct Candle {
+    pub timestamp: i64,
+    pub open: f64,
+    pub high: f64,
+    pub low: f64,
+    pub close: f64,
+    pub volume: f64,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct IndicatorParams {
+    pub period: Option<usize>,
+    pub smoothing: Option<f64>,
+}
+
+#[derive(Debug, Clone)]
+pub struct FeatureVector {
+    pub values: Vec<f64>,
+    pub timestamp: i64,
+    pub computation_time: std::time::Duration,
+}
+
+#[derive(Debug, Clone, Default, Hash, Eq, PartialEq)]
+pub struct FeatureKey {
+    pub timestamp: i64,
+    pub price_hash: u64,
+}
+
+pub struct IndicatorEngine {
     // Indicator implementations
     indicators: HashMap<String, Box<dyn Indicator>>,
     
@@ -28,24 +60,68 @@ pub struct FeatureEngine {
 
 /// Trait for all technical indicators
 pub trait Indicator: Send + Sync {
-    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64>;
+    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64, IndicatorError>;
     fn name(&self) -> &str;
     fn requires_volume(&self) -> bool { false }
     fn lookback_period(&self) -> usize;
 }
 
+#[derive(Debug, Error)]
+pub enum IndicatorError {
+    #[error("Insufficient data")]
+    InsufficientData,
+    #[error("Invalid parameter")]
+    InvalidParameter,
+    #[error("Calculation error: {0}")]
+    CalculationError(String),
+}
+
+#[derive(Debug, Error)]
+pub enum FeatureError {
+    #[error("Out of bounds: {feature} = {value}, expected [{min}, {max}]")]
+    OutOfBounds {
+        feature: String,
+        value: f64,
+        min: f64,
+        max: f64,
+    },
+    #[error("Invalid value for {0}")]
+    InvalidValue(String),
+    #[error("Anomaly detected: {feature} has z-score {z_score}")]
+    Anomaly {
+        feature: String,
+        z_score: f64,
+    },
+}
+
+// Aligned buffer for SIMD operations
+pub struct AlignedBuffer<T> {
+    data: Vec<T>,
+    capacity: usize,
+}
+
+impl<T: Default + Clone> AlignedBuffer<T> {
+    pub fn new(capacity: usize) -> Self {
+        Self {
+            data: vec![T::default(); capacity],
+            capacity,
+        }
+    }
+}
+
 /// SIMD accelerator for vectorized operations
 pub struct SimdAccelerator {
     // Pre-allocated aligned buffers for SIMD operations
-    workspace: AlignedBuffer<f32, 64>,  // 64-byte cache line aligned
-    
-    // Function pointers to SIMD implementations
-    sma_simd: unsafe fn(&[f32], usize) -> f32,
-    ema_simd: unsafe fn(&[f32], f32, f32) -> f32,
-    rsi_simd: unsafe fn(&[f32], usize) -> f32,
+    workspace: Vec<f32>,  // Will be aligned naturally by Vec
 }
 
 impl SimdAccelerator {
+    pub fn new() -> Self {
+        Self {
+            workspace: Vec::with_capacity(1024),
+        }
+    }
+
     /// Simple Moving Average with AVX2 - Achieved: 45ns for SMA(20)
     #[inline(always)]
     pub unsafe fn compute_sma_avx2(&self, data: &[f32], period: usize) -> f32 {
@@ -125,6 +201,34 @@ impl SimdAccelerator {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct FeatureStats {
+    pub mean: f64,
+    pub std_dev: f64,
+    pub min: f64,
+    pub max: f64,
+}
+
+// Simple circuit breaker
+pub struct CircuitBreaker {
+    tripped: std::sync::atomic::AtomicBool,
+    trip_count: std::sync::atomic::AtomicU32,
+}
+
+impl CircuitBreaker {
+    pub fn new() -> Self {
+        Self {
+            tripped: std::sync::atomic::AtomicBool::new(false),
+            trip_count: std::sync::atomic::AtomicU32::new(0),
+        }
+    }
+    
+    pub fn trip(&self) {
+        self.tripped.store(true, std::sync::atomic::Ordering::SeqCst);
+        self.trip_count.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+
 /// Feature bounds for anomaly detection (Quinn's requirement)
 pub struct FeatureBounds {
     // Per-feature historical bounds
@@ -141,7 +245,20 @@ pub struct FeatureBounds {
 }
 
 impl FeatureBounds {
-    pub fn validate(&self, feature: &str, value: f64) -> Result<f64> {
+    pub fn new() -> Self {
+        let mut bounds = HashMap::new();
+        // RSI bounds [0, 100]
+        bounds.insert("RSI_14".to_string(), (0.0, 100.0));
+        
+        Self {
+            bounds,
+            z_score_threshold: 3.0,
+            divergence_breaker: CircuitBreaker::new(),
+            stats: HashMap::new(),
+        }
+    }
+    
+    pub fn validate(&self, feature: &str, value: f64) -> Result<f64, FeatureError> {
         // Check absolute bounds
         if let Some((min, max)) = self.bounds.get(feature) {
             if value < *min || value > *max {
@@ -184,8 +301,15 @@ pub struct SMA {
     period: usize,
 }
 
+impl SMA {
+    /// Create new SMA indicator - Sam's constructor
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for SMA {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -212,8 +336,15 @@ pub struct EMA {
     smoothing: f32,
 }
 
+impl EMA {
+    /// Create new EMA indicator - Morgan's constructor
+    pub fn new(period: usize, smoothing: f32) -> Self {
+        Self { period, smoothing }
+    }
+}
+
 impl Indicator for EMA {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -237,8 +368,15 @@ pub struct WMA {
     period: usize,
 }
 
+impl WMA {
+    /// Create new WMA indicator - Casey's constructor
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for WMA {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -265,8 +403,15 @@ pub struct VWMA {
     period: usize,
 }
 
+impl VWMA {
+    /// Create new VWMA indicator - Avery's constructor
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for VWMA {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -302,6 +447,10 @@ pub struct RSI {
 }
 
 impl RSI {
+    /// Create new RSI indicator - Quinn's constructor
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
     /// SIMD-accelerated RSI calculation - Achieved: 180ns for RSI(14)
     unsafe fn calculate_rsi_simd(&self, data: &[f32]) -> f32 {
         if data.len() < self.period + 1 {
@@ -315,8 +464,8 @@ impl RSI {
         // Calculate price changes and separate gains/losses
         for i in 1..=self.period {
             if i + 8 <= data.len() {
-                let curr = _mm256_loadu_ps(&data[i..].as_ptr());
-                let prev = _mm256_loadu_ps(&data[i-1..].as_ptr());
+                let curr = _mm256_loadu_ps(data[i..].as_ptr());
+                let prev = _mm256_loadu_ps(data[i-1..].as_ptr());
                 let change = _mm256_sub_ps(curr, prev);
                 
                 // Separate gains and losses using max/min
@@ -353,7 +502,7 @@ impl RSI {
 }
 
 impl Indicator for RSI {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         let prices: Vec<f32> = data.iter()
             .map(|c| c.close as f32)
             .collect();
@@ -374,22 +523,27 @@ pub struct MACD {
     signal_period: usize,
 }
 
+impl MACD {
+    /// Create new MACD indicator - Jordan's constructor
+    pub fn new(fast_period: usize, slow_period: usize, signal_period: usize) -> Self {
+        Self {
+            fast_period,
+            slow_period,
+            signal_period,
+        }
+    }
+}
+
 impl Indicator for MACD {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.slow_period {
             return Err(IndicatorError::InsufficientData);
         }
         
         // Calculate fast and slow EMAs
-        let fast_ema = EMA { 
-            period: self.fast_period, 
-            smoothing: 2.0 
-        }.calculate(data, _params)?;
+        let fast_ema = EMA::new(self.fast_period, 2.0).calculate(data, _params)?;
         
-        let slow_ema = EMA { 
-            period: self.slow_period, 
-            smoothing: 2.0 
-        }.calculate(data, _params)?;
+        let slow_ema = EMA::new(self.slow_period, 2.0).calculate(data, _params)?;
         
         // MACD line
         let macd = fast_ema - slow_ema;
@@ -410,8 +564,15 @@ pub struct ATR {
     period: usize,
 }
 
+impl ATR {
+    /// Create new ATR indicator - Riley's constructor
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for ATR {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period + 1 {
             return Err(IndicatorError::InsufficientData);
         }
@@ -444,14 +605,21 @@ pub struct BollingerBands {
     std_dev: f64,
 }
 
+impl BollingerBands {
+    /// Create new BollingerBands indicator - Alex's constructor
+    pub fn new(period: usize, std_dev: f64) -> Self {
+        Self { period, std_dev }
+    }
+}
+
 impl Indicator for BollingerBands {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
         
         // Calculate SMA
-        let sma = SMA { period: self.period }.calculate(data, _params)?;
+        let sma = SMA::new(self.period).calculate(data, _params)?;
         
         // Calculate standard deviation
         let slice = &data[data.len() - self.period..];
@@ -480,7 +648,7 @@ impl Indicator for BollingerBands {
 pub struct OBV;
 
 impl Indicator for OBV {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < 2 {
             return Err(IndicatorError::InsufficientData);
         }
@@ -508,35 +676,28 @@ impl Indicator for OBV {
 // FEATURE ENGINE IMPLEMENTATION
 // ============================================================================
 
-impl FeatureEngine {
+impl IndicatorEngine {
     pub fn new() -> Self {
         let mut indicators: HashMap<String, Box<dyn Indicator>> = HashMap::new();
         
         // Register all indicators (25 implemented, 75 more to add)
         
         // Trend indicators
-        indicators.insert("SMA_20".to_string(), Box::new(SMA { period: 20 }));
-        indicators.insert("SMA_50".to_string(), Box::new(SMA { period: 50 }));
-        indicators.insert("SMA_200".to_string(), Box::new(SMA { period: 200 }));
-        indicators.insert("EMA_12".to_string(), Box::new(EMA { period: 12, smoothing: 2.0 }));
-        indicators.insert("EMA_26".to_string(), Box::new(EMA { period: 26, smoothing: 2.0 }));
-        indicators.insert("WMA_10".to_string(), Box::new(WMA { period: 10 }));
-        indicators.insert("VWMA_20".to_string(), Box::new(VWMA { period: 20 }));
+        indicators.insert("SMA_20".to_string(), Box::new(SMA::new(20)));
+        indicators.insert("SMA_50".to_string(), Box::new(SMA::new(50)));
+        indicators.insert("SMA_200".to_string(), Box::new(SMA::new(200)));
+        indicators.insert("EMA_12".to_string(), Box::new(EMA::new(12, 2.0)));
+        indicators.insert("EMA_26".to_string(), Box::new(EMA::new(26, 2.0)));
+        indicators.insert("WMA_10".to_string(), Box::new(WMA::new(10)));
+        indicators.insert("VWMA_20".to_string(), Box::new(VWMA::new(20)));
         
         // Momentum indicators
-        indicators.insert("RSI_14".to_string(), Box::new(RSI { period: 14 }));
-        indicators.insert("MACD".to_string(), Box::new(MACD { 
-            fast_period: 12, 
-            slow_period: 26, 
-            signal_period: 9 
-        }));
+        indicators.insert("RSI_14".to_string(), Box::new(RSI::new(14)));
+        indicators.insert("MACD".to_string(), Box::new(MACD::new(12, 26, 9)));
         
         // Volatility indicators
-        indicators.insert("ATR_14".to_string(), Box::new(ATR { period: 14 }));
-        indicators.insert("BB_20".to_string(), Box::new(BollingerBands { 
-            period: 20, 
-            std_dev: 2.0 
-        }));
+        indicators.insert("ATR_14".to_string(), Box::new(ATR::new(14)));
+        indicators.insert("BB_20".to_string(), Box::new(BollingerBands::new(20, 2.0)));
         
         // Volume indicators
         indicators.insert("OBV".to_string(), Box::new(OBV));
@@ -624,7 +785,7 @@ mod tests {
     #[test]
     fn test_sma_accuracy() {
         let golden: GoldenData = serde_json::from_str(GOLDEN_DATA).unwrap();
-        let sma = SMA { period: 20 };
+        let sma = SMA::new(20);
         
         for case in golden.sma_cases {
             let result = sma.calculate(&case.candles, &IndicatorParams::default()).unwrap();
@@ -635,7 +796,7 @@ mod tests {
     #[test]
     fn test_simd_performance() {
         let candles = generate_test_candles(1000);
-        let engine = FeatureEngine::new();
+        let engine = IndicatorEngine::new();
         
         let start = std::time::Instant::now();
         for _ in 0..1000 {
@@ -661,7 +822,7 @@ mod tests {
                 }
             }).collect();
             
-            let sma = SMA { period: 20 };
+            let sma = SMA::new(20);
             if let Ok(result) = sma.calculate(&candles, &IndicatorParams::default()) {
                 // Property: SMA is within data bounds
                 let min = candles.iter().map(|c| c.close).min_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();

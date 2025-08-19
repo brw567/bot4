@@ -3,7 +3,7 @@
 // CRITICAL: Prevents temporal leakage (Sophia #2)
 // Reference: "Advances in Financial Machine Learning" - López de Prado
 
-use ndarray::{Array1, Array2, Axis};
+use ndarray::{Array1, Array2, Axis, s};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use statrs::distribution::{ContinuousCDF, Normal};
@@ -78,7 +78,7 @@ impl PurgedWalkForwardCV {
             // Validate split sizes
             if train_indices.len() >= self.min_train_size && 
                test_indices.len() >= self.min_test_size {
-                splits.push((train_indices, test_indices));
+                splits.push((train_indices.clone(), test_indices.clone()));
                 
                 info!(
                     "Split {}: train={} samples, test={} samples, purge={}, embargo={}",
@@ -135,7 +135,7 @@ impl PurgedWalkForwardCV {
             
             if train_indices.len() >= self.min_train_size && 
                test_indices.len() >= self.min_test_size {
-                splits.push((train_indices, test_indices));
+                splits.push((train_indices.clone(), test_indices.clone()));
             }
         }
         
@@ -279,7 +279,7 @@ impl LeakageSentinel {
     
     /// Calculate correlation
     fn calculate_correlation(&self, predictions: &Array1<f32>, labels: &Array1<f32>) -> f64 {
-        self.calculate_correlation_arrays(predictions, labels)
+        self.calculate_correlation_arrays(&predictions.view(), &labels.view())
     }
     
     fn calculate_correlation_arrays(&self, a: &ArrayView1<f32>, b: &ArrayView1<f32>) -> f64 {
@@ -349,7 +349,7 @@ pub trait MLModel: Send + Sync {
     fn predict(&self, features: &Array2<f32>) -> Result<Array1<f32>, String>;
 }
 
-use ndarray::{s, ArrayView1};
+use ndarray::ArrayView1;
 
 /// Sample Weights for Time Decay
 /// More recent samples get higher weight

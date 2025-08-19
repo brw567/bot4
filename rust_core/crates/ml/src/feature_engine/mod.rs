@@ -218,8 +218,15 @@ impl FeatureStats {
 }
 
 // Re-export commonly used types
-pub use indicators::{TechnicalIndicators, IndicatorConfig};
-pub use indicators_extended::{ExtendedIndicators, AdvancedIndicatorConfig};
+pub use indicators::{IndicatorEngine, IndicatorParams as IndicatorConfig};
+pub use indicators_extended::register_all_indicators;
+
+// Type aliases for backward compatibility
+pub type TechnicalIndicators = IndicatorEngine;
+pub type ExtendedIndicators = IndicatorEngine;
+pub type AdvancedIndicatorConfig = IndicatorConfig;
+pub type FeatureExtractor = IndicatorEngine;
+pub type AdvancedFeatureEngine = IndicatorEngine;
 
 #[cfg(test)]
 mod tests {

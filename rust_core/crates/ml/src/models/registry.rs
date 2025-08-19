@@ -698,8 +698,8 @@ impl ModelRegistry {
         Ok(ComparisonResult {
             model1_id: id1,
             model2_id: id2,
-            model1_metrics: avg1,
-            model2_metrics: avg2,
+            model1_metrics: avg1.clone(),
+            model2_metrics: avg2.clone(),
             winner: if avg1.profit_factor > avg2.profit_factor { id1 } else { id2 },
             confidence: 0.95, // Would use statistical test in production
         })

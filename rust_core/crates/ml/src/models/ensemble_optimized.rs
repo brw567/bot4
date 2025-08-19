@@ -436,7 +436,7 @@ impl OptimizedEnsemble {
     }
     
     /// Dynamic weighted majority - Sam
-    fn dynamic_weighted(&mut self, predictions: &Array2<f64>, weights: &Array1<f64>) -> Array1<f64> {
+    fn dynamic_weighted(&self, predictions: &Array2<f64>, weights: &Array1<f64>) -> Array1<f64> {
         // Get weighted prediction
         let result = self.weighted_average(predictions, weights);
         
@@ -466,11 +466,13 @@ impl OptimizedEnsemble {
             // Apply meta-learner
             let result = meta_features.dot(&meta.weights) + &meta.bias;
             
-            // Apply activation (e.g., sigmoid for probability)
-            result.mapv(|x| 1.0 / (1.0 + (-x).exp()))
+            // Apply activation (e.g., sigmoid for probability) and flatten to Array1
+            let activated = result.mapv(|x| 1.0 / (1.0 + (-x).exp()));
+            // If result is 2D, take mean across output dimension for ensemble prediction
+            return activated.mean_axis(Axis(1)).unwrap();
         } else {
             // Fallback to weighted average
-            self.simple_average(predictions)
+            return self.simple_average(predictions);
         }
     }
     
@@ -485,10 +487,10 @@ impl OptimizedEnsemble {
                     
                     // Penalize poor performers
                     if error > self.metrics.ensemble_accuracy {
-                        weights[i] *= penalty_factor;
+                        weights[i] = weights[i] * *penalty_factor;
                     } else {
                         // Reward good performers
-                        weights[i] *= 1.0 + learning_rate;
+                        weights[i] = weights[i] * (1.0 + *learning_rate);
                     }
                 }
                 

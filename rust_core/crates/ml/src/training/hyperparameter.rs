@@ -88,7 +88,7 @@ impl SearchSpace {
             let value = match param_type {
                 ParameterType::Continuous { min, max, log_scale } => {
                     if *log_scale {
-                        10_f64.powf(rng.gen_range(min.log10()..*max.log10()))
+                        10_f64.powf(rng.gen_range(min.log10()..max.log10()))
                     } else {
                         rng.gen_range(*min..*max)
                     }

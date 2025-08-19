@@ -78,6 +78,7 @@ pub enum CrossValidationStrategy {
 }
 
 #[derive(Debug, Default)]
+#[derive(Clone)]
 struct EnsembleMetrics {
     train_score: f64,
     val_score: f64,
@@ -286,12 +287,12 @@ impl StackingEnsemble {
             let score = self.calculate_rmse(&preds, &y_val.to_owned());
             
             // Convert error to weight (lower error = higher weight)
-            weights.push(1.0 / (score + 1e-6));
+            weights.push((1.0 / (score + 1e-6)) as f32);
         }
         
         // Normalize weights
         let total: f32 = weights.iter().sum();
-        let normalized = weights.iter().map(|w| w / total).collect();
+        let normalized: Vec<f32> = weights.iter().map(|w| w / total).collect();
         self.blending_weights = Some(Array1::from(normalized));
         
         // Retrain on full data
@@ -633,22 +634,32 @@ impl StackingEnsemble {
     
     /// Aggregate feature importance from base models
     fn aggregate_feature_importance(&mut self) {
-        let mut importance_sum = None;
+        let mut importance_sum: Option<Vec<f32>> = None;
         let mut count = 0;
         
         for model in &self.base_models {
             if let Some(imp) = model.read().feature_importance() {
                 if let Some(ref mut sum) = importance_sum {
-                    *sum = sum.clone() + imp;
+                    // Convert Array1<f32> to Vec<f32> for addition
+                    let imp_vec = imp.to_vec();
+                    for (i, val) in imp_vec.iter().enumerate() {
+                        if i < sum.len() {
+                            sum[i] += val;
+                        }
+                    }
                 } else {
-                    importance_sum = Some(imp);
+                    importance_sum = Some(imp.to_vec());
                 }
                 count += 1;
             }
         }
         
-        if let Some(sum) = importance_sum {
-            self.aggregated_importance = Some(sum / count as f32);
+        if let Some(mut sum) = importance_sum {
+            // Divide each element by count
+            for val in sum.iter_mut() {
+                *val /= count as f32;
+            }
+            self.aggregated_importance = Some(Array1::from(sum));
         }
     }
     

@@ -132,7 +132,7 @@ impl LSTMCell {
         let mut rng = rand::thread_rng();
         
         // Initialize weights with Xavier/He initialization
-        let init_weight = |rows, cols| {
+        let mut init_weight = |rows, cols| {
             Array2::from_shape_fn((rows, cols), |_| dist.sample(&mut rng))
         };
         
@@ -289,14 +289,18 @@ impl LSTMModel {
             |_| rand::random::<f32>() * 0.1 - 0.05
         );
         
+        // Store sizes we need before moving config
+        let output_size = config.output_size;
+        let input_size = config.input_size;
+        
         Ok(Self {
             config,
             layers,
             output_layer,
-            output_bias: Array1::zeros(config.output_size),
+            output_bias: Array1::zeros(output_size),
             is_trained: Arc::new(RwLock::new(false)),
-            input_mean: Arc::new(RwLock::new(Array1::zeros(config.input_size))),
-            input_std: Arc::new(RwLock::new(Array1::ones(config.input_size))),
+            input_mean: Arc::new(RwLock::new(Array1::zeros(input_size))),
+            input_std: Arc::new(RwLock::new(Array1::ones(input_size))),
             training_loss: Arc::new(RwLock::new(Vec::new())),
             validation_accuracy: Arc::new(RwLock::new(0.0)),
         })

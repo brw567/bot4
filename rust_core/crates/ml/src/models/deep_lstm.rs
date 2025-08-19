@@ -208,17 +208,21 @@ impl DeepLSTM {
         let seq_len = input.ncols() / self.layers[0].w_ii.ncols();
         
         // Sam: Get buffers from pool
-        let mut layer_outputs = self.memory_pool.acquire_matrix_batch(5);
-        let mut hidden_states = self.memory_pool.acquire_matrix_batch(5);
+        // Note: acquire_matrix_batch doesn't exist, using Vec instead
+        let mut layer_outputs: Vec<Array2<f32>> = Vec::with_capacity(5);
+        let mut hidden_states: Vec<Array2<f32>> = Vec::with_capacity(5);
         
         // Initial input
         let mut current_input = input.clone();
+        
+        // Extract dropout rate before the loop to avoid borrow conflicts
+        let dropout_rate = self.dropout_rate;
         
         // Process through each layer
         for (layer_idx, layer) in self.layers.iter_mut().enumerate() {
             // Forward through LSTM layer
             let output = if self.use_avx512 {
-                layer.forward_avx512(&current_input, batch_size)
+                unsafe { layer.forward_avx512(&current_input, batch_size) }
             } else {
                 layer.forward_standard(&current_input, batch_size)
             };
@@ -228,20 +232,27 @@ impl DeepLSTM {
             
             // Apply dropout if training
             let output_with_dropout = if training {
-                self.apply_dropout(&normalized)
+                Self::apply_dropout_static(&normalized, dropout_rate)
             } else {
                 normalized
             };
             
-            // Store for residual connections
-            layer_outputs[layer_idx] = output_with_dropout.clone();
+            // Store for residual connections (convert f64 to f32)
+            let output_f32 = output_with_dropout.mapv(|x| x as f32);
+            if layer_idx < layer_outputs.len() {
+                layer_outputs[layer_idx] = output_f32;
+            } else {
+                layer_outputs.push(output_f32);
+            }
             
             // Apply residual connections
             let mut with_residual = output_with_dropout;
             for residual in &self.residual_connections {
                 if residual.to_layer == layer_idx {
                     let residual_input = &layer_outputs[residual.from_layer];
-                    with_residual = with_residual + residual_input * residual.scale_factor;
+                    // Convert f32 to f64 for addition
+                    let residual_f64 = residual_input.mapv(|x| x as f64);
+                    with_residual = with_residual + &residual_f64 * residual.scale_factor;
                 }
             }
             
@@ -251,7 +262,7 @@ impl DeepLSTM {
         // Track metrics
         if training {
             self.metrics.layer_activations.push(
-                layer_outputs.iter().map(|o| o.mean().unwrap()).collect()
+                layer_outputs.iter().map(|o| o.mean().unwrap() as f64).collect()
             );
         }
         
@@ -265,18 +276,19 @@ impl DeepLSTM {
         
         // Backpropagate through layers (reverse order)
         let mut current_grad = clipped_grad;
+        let num_layers = self.layers.len();
         
         for (idx, layer) in self.layers.iter_mut().rev().enumerate() {
             // Apply residual gradient flow
             for residual in &self.residual_connections {
-                if residual.from_layer == self.layers.len() - 1 - idx {
+                if residual.from_layer == num_layers - 1 - idx {
                     // Add gradient from skip connection
                     current_grad = current_grad * (1.0 + residual.scale_factor);
                 }
             }
             
             // Backprop through layer norm
-            current_grad = self.layer_norms[self.layers.len() - 1 - idx]
+            current_grad = self.layer_norms[num_layers - 1 - idx]
                 .backward(&current_grad);
             
             // Backprop through LSTM
@@ -296,12 +308,12 @@ impl DeepLSTM {
         self.metrics.learning_rates.push(self.optimizer.get_current_lr());
     }
     
-    /// Apply dropout - Riley's implementation
-    fn apply_dropout(&self, input: &Array2<f64>) -> Array2<f64> {
+    /// Apply dropout - Riley's implementation (static to avoid borrow conflicts)
+    fn apply_dropout_static(input: &Array2<f64>, dropout_rate: f64) -> Array2<f64> {
         let mut rng = thread_rng();
         let mask = Array2::from_shape_fn(input.dim(), |_| {
-            if rng.gen::<f64>() > self.dropout_rate {
-                1.0 / (1.0 - self.dropout_rate)
+            if rng.gen::<f64>() > dropout_rate {
+                1.0 / (1.0 - dropout_rate)
             } else {
                 0.0
             }
@@ -382,7 +394,7 @@ impl LSTMLayer {
         let mut rng = thread_rng();
         
         // Initialize weight matrices with Xavier/He initialization
-        let init_matrix = |rows, cols| {
+        let mut init_matrix = |rows, cols| {
             Array2::from_shape_fn((rows, cols), |_| dist.sample(&mut rng))
         };
         
@@ -433,10 +445,10 @@ impl LSTMLayer {
             let x_t = input.slice(s![.., t*self.hidden_size..(t+1)*self.hidden_size]);
             
             // Compute gates using AVX-512 GEMM
-            let mut i_gate = Array2::zeros((batch_size, self.hidden_size));
-            let mut f_gate = Array2::zeros((batch_size, self.hidden_size));
-            let mut g_gate = Array2::zeros((batch_size, self.hidden_size));
-            let mut o_gate = Array2::zeros((batch_size, self.hidden_size));
+            let mut i_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
+            let mut f_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
+            let mut g_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
+            let mut o_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
             
             // Input gate
             gemm_avx512(
@@ -467,7 +479,7 @@ impl LSTMLayer {
             c = &f_gate * &c + &i_gate * &g_gate;
             
             // Update hidden state
-            h = &o_gate * c.mapv(|x| x.tanh());
+            h = &o_gate * c.mapv(|x: f64| x.tanh());
             
             // Store output
             for b in 0..batch_size {

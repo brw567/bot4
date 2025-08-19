@@ -108,6 +108,7 @@ struct GRUCell {
     forward_cache: Arc<RwLock<ForwardCache>>,
 }
 
+#[derive(Clone)]
 struct LayerNorm {
     gamma: Array1<f32>,
     beta: Array1<f32>,
@@ -142,19 +143,21 @@ impl GRUCell {
         let scale = (2.0 / (input_size + hidden_size) as f32).sqrt();
         let dist = Uniform::new(-scale, scale);
         let mut rng = rand::thread_rng();
+        let mut rng2 = rand::thread_rng(); // Separate RNG for second closure
         
-        let init_weight = |rows, cols| {
+        let mut init_weight = |rows, cols| {
             Array2::from_shape_fn((rows, cols), |_| dist.sample(&mut rng))
         };
         
         // Morgan: Orthogonal initialization for recurrent weights
-        let init_recurrent = |size| {
-            let mut w = Array2::from_shape_fn((size, size), |_| dist.sample(&mut rng));
+        let mut init_recurrent = |size| {
+            let mut w = Array2::from_shape_fn((size, size), |_| dist.sample(&mut rng2));
             // Simple orthogonalization (full QR in production)
             for i in 0..size {
                 for j in 0..i {
                     let dot = w.row(i).dot(&w.row(j));
-                    w.row_mut(i).scaled_add(-dot, &w.row(j).to_owned());
+                    let row_j = w.row(j).to_owned();
+                    w.row_mut(i).scaled_add(-dot, &row_j);
                 }
                 let norm = w.row(i).dot(&w.row(i)).sqrt();
                 if norm > 0.0 {
@@ -352,11 +355,14 @@ impl GRUModel {
             |_| rand::random::<f32>() * 0.1 - 0.05
         );
         
+        // Store output_size before moving config
+        let output_size = config.output_size;
+        
         Ok(Self {
             config,
             layers,
             output_layer,
-            output_bias: Array1::zeros(config.output_size),
+            output_bias: Array1::zeros(output_size),
             dropout_masks: Arc::new(RwLock::new(Vec::new())),
             is_trained: Arc::new(RwLock::new(false)),
             input_scaler: Arc::new(RwLock::new(DataScaler::default())),

@@ -6,5 +6,8 @@ pub mod isotonic;
 
 pub use isotonic::{
     IsotonicCalibrator,
-    CalibrationMetrics,
+    ReliabilityDiagram,
 };
+
+// Type alias for backward compatibility
+pub type CalibrationMetrics = ReliabilityDiagram;

@@ -6,6 +6,10 @@ pub mod purged_cv;
 
 pub use purged_cv::{
     PurgedWalkForwardCV,
-    CVSplit,
-    LeakageTest,
+    LeakageSentinel,
+    LeakageTestResult,
 };
+
+// Type aliases for backward compatibility
+pub type CVSplit = (Vec<usize>, Vec<usize>);
+pub type LeakageTest = LeakageTestResult;

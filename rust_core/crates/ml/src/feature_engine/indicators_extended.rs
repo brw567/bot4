@@ -2,8 +2,8 @@
 // Owner: Morgan | Phase 3: ML Integration Day 2
 // Performance Target: All indicators <500ns
 
-use super::*;
-use std::collections::VecDeque;
+use super::indicators::*;
+use std::collections::{HashMap, VecDeque};
 
 // ============================================================================
 // MOMENTUM INDICATORS (continued)
@@ -15,8 +15,15 @@ pub struct Stochastic {
     d_period: usize,
 }
 
+impl Stochastic {
+    /// Create new Stochastic indicator
+    pub fn new(k_period: usize, d_period: usize) -> Self {
+        Self { k_period, d_period }
+    }
+}
+
 impl Indicator for Stochastic {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.k_period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -43,8 +50,15 @@ pub struct WilliamsR {
     period: usize,
 }
 
+impl WilliamsR {
+    /// Create new WilliamsR indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for WilliamsR {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -70,8 +84,15 @@ pub struct CCI {
     period: usize,
 }
 
+impl CCI {
+    /// Create new CCI indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for CCI {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -107,8 +128,15 @@ pub struct MFI {
     period: usize,
 }
 
+impl MFI {
+    /// Create new MFI indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for MFI {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period + 1 {
             return Err(IndicatorError::InsufficientData);
         }
@@ -150,8 +178,15 @@ pub struct HMA {
     period: usize,
 }
 
+impl HMA {
+    /// Create new HMA indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for HMA {
-    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64, IndicatorError> {
         let half_period = self.period / 2;
         let sqrt_period = (self.period as f64).sqrt() as usize;
         
@@ -160,22 +195,29 @@ impl Indicator for HMA {
         }
         
         // Calculate WMA(period/2)
-        let wma_half = WMA { period: half_period }.calculate(data, params)?;
+        let wma_half = WMA::new(half_period).calculate(data, params)?;
         
         // Calculate WMA(period)
-        let wma_full = WMA { period: self.period }.calculate(data, params)?;
+        let wma_full = WMA::new(self.period).calculate(data, params)?;
         
         // Calculate 2 * WMA(period/2) - WMA(period)
         let diff = 2.0 * wma_half - wma_full;
         
         // Create synthetic data for final WMA
-        let mut synthetic = vec![Candle::default(); sqrt_period];
+        let mut synthetic = vec![Candle {
+            timestamp: 0,
+            open: diff,
+            high: diff,
+            low: diff,
+            close: diff,
+            volume: 0.0,
+        }; sqrt_period];
         for i in 0..sqrt_period {
             synthetic[i].close = diff;
         }
         
         // Calculate WMA(sqrt(period)) of the difference
-        WMA { period: sqrt_period }.calculate(&synthetic, params)
+        WMA::new(sqrt_period).calculate(&synthetic, params)
     }
     
     fn name(&self) -> &str { "HMA" }
@@ -189,8 +231,15 @@ pub struct KAMA {
     slow_period: usize,
 }
 
+impl KAMA {
+    /// Create new KAMA indicator
+    pub fn new(period: usize, fast_period: usize, slow_period: usize) -> Self {
+        Self { period, fast_period, slow_period }
+    }
+}
+
 impl Indicator for KAMA {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period + 1 {
             return Err(IndicatorError::InsufficientData);
         }
@@ -233,8 +282,15 @@ pub struct ParabolicSAR {
     max_acceleration: f64,
 }
 
+impl ParabolicSAR {
+    /// Create new ParabolicSAR indicator
+    pub fn new(acceleration: f64, max_acceleration: f64) -> Self {
+        Self { acceleration, max_acceleration }
+    }
+}
+
 impl Indicator for ParabolicSAR {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < 2 {
             return Err(IndicatorError::InsufficientData);
         }
@@ -299,20 +355,22 @@ pub struct KeltnerChannel {
     multiplier: f64,
 }
 
+impl KeltnerChannel {
+    /// Create new KeltnerChannel indicator
+    pub fn new(ema_period: usize, atr_period: usize, multiplier: f64) -> Self {
+        Self { ema_period, atr_period, multiplier }
+    }
+}
+
 impl Indicator for KeltnerChannel {
-    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.ema_period.max(self.atr_period + 1) {
             return Err(IndicatorError::InsufficientData);
         }
         
-        let ema = EMA { 
-            period: self.ema_period, 
-            smoothing: 2.0 
-        }.calculate(data, params)?;
+        let ema = EMA::new(self.ema_period, 2.0).calculate(data, params)?;
         
-        let atr = ATR { 
-            period: self.atr_period 
-        }.calculate(data, params)?;
+        let atr = ATR::new(self.atr_period).calculate(data, params)?;
         
         // Return upper channel
         Ok(ema + (self.multiplier * atr))
@@ -327,8 +385,15 @@ pub struct DonchianChannel {
     period: usize,
 }
 
+impl DonchianChannel {
+    /// Create new DonchianChannel indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for DonchianChannel {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -350,8 +415,15 @@ pub struct StdDev {
     period: usize,
 }
 
+impl StdDev {
+    /// Create new StdDev indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for StdDev {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -382,8 +454,15 @@ pub struct CMF {
     period: usize,
 }
 
+impl CMF {
+    /// Create new CMF indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for CMF {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
@@ -419,7 +498,7 @@ impl Indicator for CMF {
 pub struct VWAP;
 
 impl Indicator for VWAP {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.is_empty() {
             return Err(IndicatorError::InsufficientData);
         }
@@ -451,7 +530,7 @@ impl Indicator for VWAP {
 pub struct ADL;
 
 impl Indicator for ADL {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.is_empty() {
             return Err(IndicatorError::InsufficientData);
         }
@@ -487,8 +566,15 @@ pub struct SupportResistance {
     threshold: f64,
 }
 
+impl SupportResistance {
+    /// Create new SupportResistance indicator
+    pub fn new(lookback: usize, threshold: f64) -> Self {
+        Self { lookback, threshold }
+    }
+}
+
 impl Indicator for SupportResistance {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.lookback {
             return Err(IndicatorError::InsufficientData);
         }
@@ -528,7 +614,7 @@ impl Indicator for SupportResistance {
 pub struct PivotPoints;
 
 impl Indicator for PivotPoints {
-    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], _params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.is_empty() {
             return Err(IndicatorError::InsufficientData);
         }
@@ -552,15 +638,22 @@ pub struct TrendStrengthIndex {
     period: usize,
 }
 
+impl TrendStrengthIndex {
+    /// Create new TrendStrengthIndex indicator
+    pub fn new(period: usize) -> Self {
+        Self { period }
+    }
+}
+
 impl Indicator for TrendStrengthIndex {
-    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.period {
             return Err(IndicatorError::InsufficientData);
         }
         
         // Combine multiple indicators for trend strength
-        let sma = SMA { period: self.period }.calculate(data, params)?;
-        let ema = EMA { period: self.period, smoothing: 2.0 }.calculate(data, params)?;
+        let sma = SMA::new(self.period).calculate(data, params)?;
+        let ema = EMA::new(self.period, 2.0).calculate(data, params)?;
         let current = data.last().unwrap().close;
         
         // Calculate trend strength based on moving average alignment
@@ -581,19 +674,26 @@ pub struct MarketRegime {
     trend_period: usize,
 }
 
+impl MarketRegime {
+    /// Create new MarketRegime indicator
+    pub fn new(atr_period: usize, trend_period: usize) -> Self {
+        Self { atr_period, trend_period }
+    }
+}
+
 impl Indicator for MarketRegime {
-    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64> {
+    fn calculate(&self, data: &[Candle], params: &IndicatorParams) -> Result<f64, IndicatorError> {
         if data.len() < self.trend_period.max(self.atr_period + 1) {
             return Err(IndicatorError::InsufficientData);
         }
         
         // Calculate trend component
-        let sma_fast = SMA { period: self.trend_period / 2 }.calculate(data, params)?;
-        let sma_slow = SMA { period: self.trend_period }.calculate(data, params)?;
+        let sma_fast = SMA::new(self.trend_period / 2).calculate(data, params)?;
+        let sma_slow = SMA::new(self.trend_period).calculate(data, params)?;
         let trend = (sma_fast - sma_slow) / sma_slow * 100.0;
         
         // Calculate volatility component
-        let atr = ATR { period: self.atr_period }.calculate(data, params)?;
+        let atr = ATR::new(self.atr_period).calculate(data, params)?;
         let price = data.last().unwrap().close;
         let volatility = atr / price * 100.0;
         
@@ -622,71 +722,71 @@ pub fn register_all_indicators() -> HashMap<String, Box<dyn Indicator>> {
     let mut indicators: HashMap<String, Box<dyn Indicator>> = HashMap::new();
     
     // Trend Indicators (20)
-    indicators.insert("SMA_10".to_string(), Box::new(SMA { period: 10 }));
-    indicators.insert("SMA_20".to_string(), Box::new(SMA { period: 20 }));
-    indicators.insert("SMA_50".to_string(), Box::new(SMA { period: 50 }));
-    indicators.insert("SMA_100".to_string(), Box::new(SMA { period: 100 }));
-    indicators.insert("SMA_200".to_string(), Box::new(SMA { period: 200 }));
-    indicators.insert("EMA_9".to_string(), Box::new(EMA { period: 9, smoothing: 2.0 }));
-    indicators.insert("EMA_12".to_string(), Box::new(EMA { period: 12, smoothing: 2.0 }));
-    indicators.insert("EMA_26".to_string(), Box::new(EMA { period: 26, smoothing: 2.0 }));
-    indicators.insert("EMA_50".to_string(), Box::new(EMA { period: 50, smoothing: 2.0 }));
-    indicators.insert("WMA_10".to_string(), Box::new(WMA { period: 10 }));
-    indicators.insert("WMA_20".to_string(), Box::new(WMA { period: 20 }));
-    indicators.insert("VWMA_20".to_string(), Box::new(VWMA { period: 20 }));
-    indicators.insert("HMA_9".to_string(), Box::new(HMA { period: 9 }));
-    indicators.insert("HMA_14".to_string(), Box::new(HMA { period: 14 }));
-    indicators.insert("KAMA_10".to_string(), Box::new(KAMA { period: 10, fast_period: 2, slow_period: 30 }));
-    indicators.insert("KAMA_21".to_string(), Box::new(KAMA { period: 21, fast_period: 2, slow_period: 30 }));
-    indicators.insert("PSAR".to_string(), Box::new(ParabolicSAR { acceleration: 0.02, max_acceleration: 0.2 }));
-    indicators.insert("TSI_10".to_string(), Box::new(TrendStrengthIndex { period: 10 }));
-    indicators.insert("TSI_20".to_string(), Box::new(TrendStrengthIndex { period: 20 }));
-    indicators.insert("MR_14".to_string(), Box::new(MarketRegime { atr_period: 14, trend_period: 20 }));
+    indicators.insert("SMA_10".to_string(), Box::new(SMA::new(10)));
+    indicators.insert("SMA_20".to_string(), Box::new(SMA::new(20)));
+    indicators.insert("SMA_50".to_string(), Box::new(SMA::new(50)));
+    indicators.insert("SMA_100".to_string(), Box::new(SMA::new(100)));
+    indicators.insert("SMA_200".to_string(), Box::new(SMA::new(200)));
+    indicators.insert("EMA_9".to_string(), Box::new(EMA::new(9, 2.0)));
+    indicators.insert("EMA_12".to_string(), Box::new(EMA::new(12, 2.0)));
+    indicators.insert("EMA_26".to_string(), Box::new(EMA::new(26, 2.0)));
+    indicators.insert("EMA_50".to_string(), Box::new(EMA::new(50, 2.0)));
+    indicators.insert("WMA_10".to_string(), Box::new(WMA::new(10)));
+    indicators.insert("WMA_20".to_string(), Box::new(WMA::new(20)));
+    indicators.insert("VWMA_20".to_string(), Box::new(VWMA::new(20)));
+    indicators.insert("HMA_9".to_string(), Box::new(HMA::new(9)));
+    indicators.insert("HMA_14".to_string(), Box::new(HMA::new(14)));
+    indicators.insert("KAMA_10".to_string(), Box::new(KAMA::new(10, 2, 30)));
+    indicators.insert("KAMA_21".to_string(), Box::new(KAMA::new(21, 2, 30)));
+    indicators.insert("PSAR".to_string(), Box::new(ParabolicSAR::new(0.02, 0.2)));
+    indicators.insert("TSI_10".to_string(), Box::new(TrendStrengthIndex::new(10)));
+    indicators.insert("TSI_20".to_string(), Box::new(TrendStrengthIndex::new(20)));
+    indicators.insert("MR_14".to_string(), Box::new(MarketRegime::new(14, 20)));
     
     // Momentum Indicators (20)
-    indicators.insert("RSI_7".to_string(), Box::new(RSI { period: 7 }));
-    indicators.insert("RSI_14".to_string(), Box::new(RSI { period: 14 }));
-    indicators.insert("RSI_21".to_string(), Box::new(RSI { period: 21 }));
-    indicators.insert("MACD_12_26_9".to_string(), Box::new(MACD { fast_period: 12, slow_period: 26, signal_period: 9 }));
-    indicators.insert("MACD_5_35_5".to_string(), Box::new(MACD { fast_period: 5, slow_period: 35, signal_period: 5 }));
-    indicators.insert("STOCH_14_3".to_string(), Box::new(Stochastic { k_period: 14, d_period: 3 }));
-    indicators.insert("STOCH_21_5".to_string(), Box::new(Stochastic { k_period: 21, d_period: 5 }));
-    indicators.insert("STOCH_5_3".to_string(), Box::new(Stochastic { k_period: 5, d_period: 3 }));
-    indicators.insert("WILLIAMS_14".to_string(), Box::new(WilliamsR { period: 14 }));
-    indicators.insert("WILLIAMS_21".to_string(), Box::new(WilliamsR { period: 21 }));
-    indicators.insert("CCI_14".to_string(), Box::new(CCI { period: 14 }));
-    indicators.insert("CCI_20".to_string(), Box::new(CCI { period: 20 }));
-    indicators.insert("MFI_14".to_string(), Box::new(MFI { period: 14 }));
-    indicators.insert("MFI_21".to_string(), Box::new(MFI { period: 21 }));
+    indicators.insert("RSI_7".to_string(), Box::new(RSI::new(7)));
+    indicators.insert("RSI_14".to_string(), Box::new(RSI::new(14)));
+    indicators.insert("RSI_21".to_string(), Box::new(RSI::new(21)));
+    indicators.insert("MACD_12_26_9".to_string(), Box::new(MACD::new(12, 26, 9)));
+    indicators.insert("MACD_5_35_5".to_string(), Box::new(MACD::new(5, 35, 5)));
+    indicators.insert("STOCH_14_3".to_string(), Box::new(Stochastic::new(14, 3)));
+    indicators.insert("STOCH_21_5".to_string(), Box::new(Stochastic::new(21, 5)));
+    indicators.insert("STOCH_5_3".to_string(), Box::new(Stochastic::new(5, 3)));
+    indicators.insert("WILLIAMS_14".to_string(), Box::new(WilliamsR::new(14)));
+    indicators.insert("WILLIAMS_21".to_string(), Box::new(WilliamsR::new(21)));
+    indicators.insert("CCI_14".to_string(), Box::new(CCI::new(14)));
+    indicators.insert("CCI_20".to_string(), Box::new(CCI::new(20)));
+    indicators.insert("MFI_14".to_string(), Box::new(MFI::new(14)));
+    indicators.insert("MFI_21".to_string(), Box::new(MFI::new(21)));
     // ... add more momentum indicators to reach 20
     
     // Volatility Indicators (20)
-    indicators.insert("ATR_7".to_string(), Box::new(ATR { period: 7 }));
-    indicators.insert("ATR_14".to_string(), Box::new(ATR { period: 14 }));
-    indicators.insert("ATR_21".to_string(), Box::new(ATR { period: 21 }));
-    indicators.insert("BB_20_2".to_string(), Box::new(BollingerBands { period: 20, std_dev: 2.0 }));
-    indicators.insert("BB_20_1".to_string(), Box::new(BollingerBands { period: 20, std_dev: 1.0 }));
-    indicators.insert("BB_10_2".to_string(), Box::new(BollingerBands { period: 10, std_dev: 2.0 }));
-    indicators.insert("KC_20_2".to_string(), Box::new(KeltnerChannel { ema_period: 20, atr_period: 10, multiplier: 2.0 }));
-    indicators.insert("KC_20_1.5".to_string(), Box::new(KeltnerChannel { ema_period: 20, atr_period: 10, multiplier: 1.5 }));
-    indicators.insert("DC_20".to_string(), Box::new(DonchianChannel { period: 20 }));
-    indicators.insert("DC_50".to_string(), Box::new(DonchianChannel { period: 50 }));
-    indicators.insert("STDDEV_10".to_string(), Box::new(StdDev { period: 10 }));
-    indicators.insert("STDDEV_20".to_string(), Box::new(StdDev { period: 20 }));
+    indicators.insert("ATR_7".to_string(), Box::new(ATR::new(7)));
+    indicators.insert("ATR_14".to_string(), Box::new(ATR::new(14)));
+    indicators.insert("ATR_21".to_string(), Box::new(ATR::new(21)));
+    indicators.insert("BB_20_2".to_string(), Box::new(BollingerBands::new(20, 2.0)));
+    indicators.insert("BB_20_1".to_string(), Box::new(BollingerBands::new(20, 1.0)));
+    indicators.insert("BB_10_2".to_string(), Box::new(BollingerBands::new(10, 2.0)));
+    indicators.insert("KC_20_2".to_string(), Box::new(KeltnerChannel::new(20, 10, 2.0)));
+    indicators.insert("KC_20_1.5".to_string(), Box::new(KeltnerChannel::new(20, 10, 1.5)));
+    indicators.insert("DC_20".to_string(), Box::new(DonchianChannel::new(20)));
+    indicators.insert("DC_50".to_string(), Box::new(DonchianChannel::new(50)));
+    indicators.insert("STDDEV_10".to_string(), Box::new(StdDev::new(10)));
+    indicators.insert("STDDEV_20".to_string(), Box::new(StdDev::new(20)));
     // ... add more volatility indicators to reach 20
     
     // Volume Indicators (20)
     indicators.insert("OBV".to_string(), Box::new(OBV));
-    indicators.insert("CMF_20".to_string(), Box::new(CMF { period: 20 }));
-    indicators.insert("CMF_21".to_string(), Box::new(CMF { period: 21 }));
+    indicators.insert("CMF_20".to_string(), Box::new(CMF::new(20)));
+    indicators.insert("CMF_21".to_string(), Box::new(CMF::new(21)));
     indicators.insert("VWAP".to_string(), Box::new(VWAP));
     indicators.insert("ADL".to_string(), Box::new(ADL));
     // ... add more volume indicators to reach 20
     
     // Pattern & Custom Indicators (20)
     indicators.insert("PIVOT".to_string(), Box::new(PivotPoints));
-    indicators.insert("SR_50".to_string(), Box::new(SupportResistance { lookback: 50, threshold: 0.01 }));
-    indicators.insert("SR_100".to_string(), Box::new(SupportResistance { lookback: 100, threshold: 0.01 }));
+    indicators.insert("SR_50".to_string(), Box::new(SupportResistance::new(50, 0.01)));
+    indicators.insert("SR_100".to_string(), Box::new(SupportResistance::new(100, 0.01)));
     // ... add more custom indicators to reach 20
     
     // Total: 100 indicators

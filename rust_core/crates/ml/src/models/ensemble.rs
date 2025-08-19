@@ -136,6 +136,7 @@ struct ModelPerformance {
     last_update: std::time::Instant,
 }
 
+#[derive(Clone)]
 struct EnsembleMetrics {
     total_predictions: u64,
     agreement_scores: Vec<f64>,
@@ -252,7 +253,7 @@ impl EnsembleModel {
                 if *weight > 0.0 {
                     match model.predict(features.steps) {
                         Ok(pred) => {
-                            predictions.push(pred);
+                            predictions.push(ndarray::Array1::from(pred));
                             model_ids.push(*id);
                         }
                         Err(e) => {
