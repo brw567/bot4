@@ -5,6 +5,11 @@
 pub mod clamps;
 pub mod kelly_sizing;
 pub mod kelly_validation;
+pub mod garch;
+pub mod isotonic;
+
+#[cfg(test)]
+mod comprehensive_tests;
 
 pub use clamps::{RiskClampSystem, ClampConfig, ClampMetrics};
 pub use kelly_sizing::{
@@ -15,6 +20,8 @@ pub use kelly_sizing::{
     TradeOutcome,
     RiskAdjustments,
 };
+pub use garch::GARCHModel;
+pub use isotonic::{IsotonicCalibrator, MarketRegime};
 
 // Re-export for convenience
 pub fn create_risk_system() -> (RiskClampSystem, KellySizer) {
