@@ -19,8 +19,6 @@ mod comprehensive_tests;
 mod auto_tuning_test;
 #[cfg(test)]
 mod deep_dive_tests; // DEEP DIVE tests - NO SIMPLIFICATIONS!
-#[cfg(test)]
-mod test_simple; // Simple test for debugging
 
 pub use clamps::{RiskClampSystem, ClampConfig, ClampMetrics};
 pub use kelly_sizing::{
