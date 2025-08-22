@@ -420,6 +420,11 @@ impl KellySizer {
         self.adjustments.liquidity_factor = liquidity_score.min(dec!(1));
     }
     
+    /// Get current statistics (for testing/debugging)
+    pub fn get_stats(&self) -> &KellyStatistics {
+        &self.stats
+    }
+    
     /// Get current Kelly recommendation with reasoning
     pub fn get_recommendation(&self) -> KellyRecommendation {
         let kelly_pct = self.calculate_position_size(

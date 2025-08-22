@@ -135,6 +135,67 @@ impl Segment {
         })
     }
     
+    /// Open existing segment for recovery
+    fn open_for_recovery(path: &Path) -> Result<Self> {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)  // Need write for mmap_mut
+            .open(path)?;
+        
+        let metadata = file.metadata()?;
+        let file_size = metadata.len();
+        
+        // Memory map the file read-only
+        let mmap = unsafe { MmapOptions::new().map_mut(&file)? };
+        
+        // Scan to find the actual write position
+        let mut position = 0u64;
+        let mut last_valid_position = 0u64;
+        
+        while position < file_size {
+            // Try to read header at current position
+            if position + EntryHeader::SIZE as u64 > file_size {
+                break;
+            }
+            
+            let header_bytes = &mmap[position as usize..position as usize + EntryHeader::SIZE];
+            match EntryHeader::from_bytes(header_bytes) {
+                Ok(header) => {
+                    // Validate we have enough space for payload
+                    let total_size = EntryHeader::SIZE as u64 + header.payload_len as u64;
+                    if position + total_size > file_size {
+                        break;
+                    }
+                    
+                    // Verify checksum
+                    let payload_start = position as usize + EntryHeader::SIZE;
+                    let payload_end = payload_start + header.payload_len as usize;
+                    let payload = &mmap[payload_start..payload_end];
+                    
+                    let mut hasher = Hasher::new();
+                    hasher.update(payload);
+                    if hasher.finalize() != header.checksum {
+                        break; // Corrupted entry, stop here
+                    }
+                    
+                    // Valid entry, continue
+                    position += total_size;
+                    last_valid_position = position;
+                }
+                Err(_) => break, // Invalid header, stop scanning
+            }
+        }
+        
+        Ok(Self {
+            file,
+            mmap,
+            position: AtomicU64::new(last_valid_position),
+            id: 0,
+            max_size: file_size,
+            sealed: AtomicBool::new(true), // Recovery segments are sealed
+        })
+    }
+    
     /// Append entry to segment (lock-free)
     fn append(&mut self, header: &EntryHeader, payload: &[u8]) -> Result<u64> {
         let total_size = EntryHeader::SIZE + payload.len();
@@ -213,12 +274,12 @@ pub struct WriteAheadLog {
 }
 
 #[derive(Debug, Default)]
-struct WalMetrics {
-    total_writes: AtomicU64,
-    total_bytes: AtomicU64,
-    sync_count: AtomicU64,
-    segment_switches: AtomicU64,
-    average_latency_ns: AtomicU64,
+pub struct WalMetrics {
+    pub total_writes: AtomicU64,
+    pub total_bytes: AtomicU64,
+    pub sync_count: AtomicU64,
+    pub segment_switches: AtomicU64,
+    pub average_latency_ns: AtomicU64,
 }
 
 impl WriteAheadLog {
@@ -308,11 +369,14 @@ impl WriteAheadLog {
         header.checksum = checksum;
         
         // Try direct write if segment has space
-        {
+        let needs_switch = {
             let mut segment = self.active_segment.write();
             
             match segment.append(&header, &payload) {
                 Ok(_) => {
+                    // Sync to ensure durability (critical for trading!)
+                    segment.sync()?;
+                    
                     // Update metrics
                     self.metrics.total_writes.fetch_add(1, Ordering::Relaxed);
                     self.metrics.total_bytes.fetch_add(
@@ -325,15 +389,27 @@ impl WriteAheadLog {
                     
                     return Ok(());
                 }
-                Err(_) => {
-                    // Need to switch segments
-                    self.switch_segment().await?;
-                    
-                    // Retry with new segment
-                    let mut segment = self.active_segment.write();
-                    segment.append(&header, &payload)?;
-                }
+                Err(_) => true, // Need to switch segments
             }
+        }; // Lock released here
+        
+        if needs_switch {
+            // Switch segments without holding lock
+            self.switch_segment().await?;
+            
+            // Retry with new segment
+            let mut segment = self.active_segment.write();
+            segment.append(&header, &payload)?;
+            
+            // Sync to ensure durability
+            segment.sync()?;
+            
+            // Update metrics
+            self.metrics.total_writes.fetch_add(1, Ordering::Relaxed);
+            self.metrics.total_bytes.fetch_add(
+                (EntryHeader::SIZE + payload.len()) as u64,
+                Ordering::Relaxed
+            );
         }
         
         Ok(())
@@ -378,10 +454,13 @@ impl WriteAheadLog {
             .collect::<Vec<_>>();
         
         for segment_path in segment_files {
-            let segment = Segment::create(&segment_path, 0, Segment::DEFAULT_SIZE)?;
+            // Open segment for recovery (will scan for actual position)
+            let segment = Segment::open_for_recovery(&segment_path)?;
             
             let mut position = 0u64;
-            while position < segment.position.load(Ordering::Acquire) {
+            let max_position = segment.position.load(Ordering::Acquire);
+            
+            while position < max_position {
                 match segment.read_at(position) {
                     Ok((header, payload)) => {
                         entries.push(payload);

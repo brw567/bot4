@@ -21,13 +21,14 @@ pub mod saga;
 pub mod compensator;
 pub mod retry;
 
+// tests module is in tests.rs file
 #[cfg(test)]
 mod tests;
 
 pub use wal::WriteAheadLog;
 pub use saga::{Saga, SagaStep, SagaState};
 pub use compensator::CompensatingTransaction;
-pub use retry::RetryPolicy;
+pub use retry::{RetryPolicy, RetryManager, CircuitBreaker, CircuitBreakerConfig};
 
 /// Transaction types in our trading system
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -232,12 +233,24 @@ impl TransactionManager {
             while let Some(event) = event_rx.recv().await {
                 let mut m = metrics_clone.write();
                 match event {
-                    TransactionEvent::Committed(_) => m.successful_transactions += 1,
-                    TransactionEvent::Failed(_, _) => m.failed_transactions += 1,
-                    TransactionEvent::Compensated(_) => m.compensated_transactions += 1,
-                    _ => {}
+                    TransactionEvent::Started(_) => {
+                        // Game Theory: Track all transaction attempts for audit
+                        // Trading: Essential for order flow analysis
+                        m.total_transactions += 1;
+                    }
+                    TransactionEvent::Committed(_) => {
+                        m.successful_transactions += 1;
+                    }
+                    TransactionEvent::Failed(_, _) => {
+                        m.failed_transactions += 1;
+                    }
+                    TransactionEvent::Compensated(_) => {
+                        m.compensated_transactions += 1;
+                    }
+                    TransactionEvent::Compensating(_) => {
+                        // Track compensation attempts separately
+                    }
                 }
-                m.total_transactions += 1;
             }
         });
         
@@ -451,7 +464,7 @@ impl TransactionManager {
 }
 
 #[cfg(test)]
-mod tests {
+mod transaction_tests {
     use super::*;
     
     #[tokio::test]

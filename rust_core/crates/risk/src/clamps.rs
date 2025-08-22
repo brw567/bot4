@@ -9,6 +9,9 @@ use serde::{Serialize, Deserialize};
 use log::info;
 use crate::garch::GARCHModel;
 use crate::isotonic::{IsotonicCalibrator, MarketRegime};
+use crate::kelly_sizing::{KellySizer, KellyConfig, TradeOutcome};
+use rust_decimal::Decimal;
+use std::str::FromStr;
 
 const MIN_TRADE_SIZE: f32 = 0.001;  // Minimum BTC trade size
 const CRISIS_REDUCTION: f32 = 0.3;  // Reduce to 30% in crisis
@@ -25,6 +28,7 @@ pub struct RiskClampSystem {
     // REAL Models - NO PLACEHOLDERS
     garch: Arc<RwLock<GARCHModel>>,
     calibrator: Arc<RwLock<IsotonicCalibrator>>,
+    kelly: Arc<RwLock<KellySizer>>,
     
     // State tracking
     current_var: f32,
@@ -104,11 +108,13 @@ impl RiskClampSystem {
         // Initialize REAL models
         let garch = Arc::new(RwLock::new(GARCHModel::new()));
         let calibrator = Arc::new(RwLock::new(IsotonicCalibrator::new()));
+        let kelly = Arc::new(RwLock::new(KellySizer::new(KellyConfig::default())));
         
         Self {
             config,
             garch,
             calibrator,
+            kelly,
             current_var: 0.0,
             current_es: 0.0,
             portfolio_positions: Vec::new(),
@@ -127,27 +133,31 @@ impl RiskClampSystem {
         correlation: f32,
         account_equity: f32,
     ) -> f32 {
-        info!("=== Risk Clamp System: Starting 8-Layer Analysis ===");
+        println!("=== Risk Clamp System: Starting 8-Layer Analysis ===");
         
         // Layer 0: Isotonic calibration - REAL IMPLEMENTATION
         let regime = self.detect_regime();
         let calibrated = self.calibrator.read()
             .transform(ml_confidence as f64, regime) as f32;
         
-        info!("Layer 0 - Calibration: raw={:.3} -> calibrated={:.3} (regime: {:?})", 
-              ml_confidence, calibrated, regime);
+        println!("Layer 0 - Calibration: raw={:.3} -> calibrated={:.3} (regime: {:?})", 
+                ml_confidence, calibrated, regime);
         
         // Convert to directional signal [-1, 1]
         let base_signal = (2.0 * calibrated - 1.0).clamp(-1.0, 1.0);
+        println!("  Base signal after calibration: {:.4}", base_signal);
         
         // Layer 1: GARCH volatility targeting - REAL IMPLEMENTATION
         let garch_vol = self.garch.read().current_volatility() as f32;
         let vol_ratio = (self.config.vol_target / garch_vol.max(0.01)).min(1.5);
         let vol_adjusted = base_signal * vol_ratio;
         
+        println!("Layer 1 - Vol Target: garch_vol={:.4}, ratio={:.3}, adjusted={:.4}", 
+                garch_vol, vol_ratio, vol_adjusted);
+        
         if vol_ratio < 1.0 {
             self.clamp_triggers.write().vol_clamps += 1;
-            info!("Layer 1 - Vol Target TRIGGERED: ratio={:.3}", vol_ratio);
+            println!("  TRIGGERED: Volatility reduction");
         }
         
         // Layer 2: Value at Risk (VaR) constraint - USING GARCH
@@ -155,10 +165,12 @@ impl RiskClampSystem {
         let var_ratio = (1.0 - (self.current_var / self.config.var_limit)).max(0.0);
         let var_adjusted = vol_adjusted * var_ratio;
         
+        println!("Layer 2 - VaR: current={:.4}, limit={:.4}, ratio={:.3}, adjusted={:.4}",
+                self.current_var, self.config.var_limit, var_ratio, var_adjusted);
+        
         if var_ratio < 1.0 {
             self.clamp_triggers.write().var_clamps += 1;
-            info!("Layer 2 - VaR Limit TRIGGERED: VaR={:.3}%, limit={:.3}%, ratio={:.3}", 
-                  self.current_var * 100.0, self.config.var_limit * 100.0, var_ratio);
+            println!("  TRIGGERED: VaR constraint");
         }
         
         // Layer 3: Expected Shortfall (CVaR) constraint - USING GARCH
@@ -213,16 +225,20 @@ impl RiskClampSystem {
         
         // Layer 8: Minimum trade size filter
         let position_value = crisis_adjusted.abs() * account_equity;
+        println!("Layer 8 - Min Size: crisis_adjusted={:.6}, account_equity={:.2}, position_value=${:.2}", 
+                crisis_adjusted, account_equity, position_value);
+        
         let final_size = if position_value < MIN_TRADE_SIZE * 50000.0 {  // Assume BTC ~$50k
             self.clamp_triggers.write().min_size_filters += 1;
-            info!("Layer 8 - MIN SIZE: Position too small, zeroing");
+            println!("  TRIGGERED: Position too small (${:.2} < $50), zeroing", position_value);
             0.0
         } else {
+            println!("  PASSED: Position size adequate");
             crisis_adjusted
         };
         
-        info!("=== Final Position Size: {:.3} ({:.1}% of max) ===", 
-              final_size, final_size.abs() * 100.0);
+        println!("=== Final Position Size: {:.6} ({:.1}% of equity) ===", 
+                final_size, final_size.abs() * 100.0);
         
         final_size
     }
@@ -309,6 +325,20 @@ impl RiskClampSystem {
         self.crisis_indicators.vix_spike ||
         self.crisis_indicators.correlation_breakdown ||
         self.crisis_indicators.bid_ask_spread_widening > 0.005
+    }
+    
+    /// Add trade outcome for Kelly calculation
+    pub fn add_trade_outcome(&mut self, return_pct: f64, is_win: bool) {
+        let outcome = TradeOutcome {
+            timestamp: chrono::Utc::now().timestamp(),
+            symbol: "PORTFOLIO".to_string(),
+            profit_loss: Decimal::from_str(&return_pct.to_string()).unwrap_or(Decimal::ZERO),
+            return_pct: Decimal::from_str(&(return_pct * 100.0).to_string()).unwrap_or(Decimal::ZERO),
+            win: is_win,
+            risk_taken: Decimal::ONE,
+            trade_costs: Decimal::from_str("0.002").unwrap(), // 20bps default
+        };
+        self.kelly.write().add_trade(outcome);
     }
     
     /// Update crisis indicators

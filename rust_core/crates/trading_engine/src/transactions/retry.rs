@@ -597,7 +597,7 @@ mod tests {
         let manager = RetryManager::new();
         
         let operation = || {
-            Err(anyhow::anyhow!("InsufficientFunds: Not enough balance"))
+            Err::<String, _>(anyhow::anyhow!("InsufficientFunds: Not enough balance"))
         };
         
         let result = manager.execute_with_retry(operation).await;
