@@ -3686,6 +3686,7 @@ dependencies = [
  "memmap2",
  "parking_lot",
  "rand 0.8.5",
+ "risk",
  "rust_decimal",
  "serde",
  "serde_json",
