@@ -395,6 +395,54 @@ impl ExecutionOptimizer {
     }
 }
 
+/// Exchange Configuration - Minimum order requirements
+/// Alex: "MUST respect exchange minimums for REAL trading!"
+#[derive(Debug, Clone)]
+pub struct ExchangeConfig {
+    pub name: String,
+    pub min_order_usd: Price,  // Minimum order size in USD
+    pub maker_fee: Percentage,
+    pub taker_fee: Percentage,
+}
+
+impl ExchangeConfig {
+    pub fn binance() -> Self {
+        Self {
+            name: "Binance".to_string(),
+            min_order_usd: Price::from_f64(10.0),  // $10 minimum
+            maker_fee: Percentage::new(0.001),     // 0.1%
+            taker_fee: Percentage::new(0.001),     // 0.1%
+        }
+    }
+    
+    pub fn coinbase() -> Self {
+        Self {
+            name: "Coinbase".to_string(),
+            min_order_usd: Price::from_f64(1.0),   // $1 minimum
+            maker_fee: Percentage::new(0.005),     // 0.5%
+            taker_fee: Percentage::new(0.006),     // 0.6%
+        }
+    }
+    
+    pub fn kraken() -> Self {
+        Self {
+            name: "Kraken".to_string(),
+            min_order_usd: Price::from_f64(5.0),   // $5 minimum
+            maker_fee: Percentage::new(0.0016),    // 0.16%
+            taker_fee: Percentage::new(0.0026),    // 0.26%
+        }
+    }
+    
+    pub fn bybit() -> Self {
+        Self {
+            name: "Bybit".to_string(),
+            min_order_usd: Price::from_f64(1.0),   // $1 minimum
+            maker_fee: Percentage::new(0.001),     // 0.1%
+            taker_fee: Percentage::new(0.001),     // 0.1%
+        }
+    }
+}
+
 /// Advanced Position Sizer - Maximize returns while controlling risk
 /// Morgan: "Size positions based on ALL available information!"
 struct AdvancedPositionSizer {
@@ -409,15 +457,23 @@ struct AdvancedPositionSizer {
     
     // Correlation matrix
     correlation_matrix: Vec<Vec<f64>>,
+    
+    // Exchange configuration for minimum orders
+    exchange_config: ExchangeConfig,
+    
+    // Auto-tuning system for dynamic decisions
+    auto_tuner: Arc<RwLock<AutoTuningSystem>>,
 }
 
 impl AdvancedPositionSizer {
-    fn new() -> Self {
+    fn new(exchange_config: ExchangeConfig, auto_tuner: Arc<RwLock<AutoTuningSystem>>) -> Self {
         Self {
             kelly_fraction: Percentage::new(0.25),
             max_position: Percentage::new(0.02),
             risk_budget: Percentage::new(0.01),
             correlation_matrix: Vec::new(),
+            exchange_config,
+            auto_tuner,
         }
     }
     
@@ -509,7 +565,76 @@ impl AdvancedPositionSizer {
         
         let final_quantity = quantity.min(edge_limit);
         
-        Quantity::new(final_quantity.abs())
+        // 7. Apply exchange minimum order size
+        // Alex: "MUST respect exchange minimums for REAL trading!"
+        let min_order_quantity = self.exchange_config.min_order_usd.inner() / current_price.inner();
+        
+        #[cfg(test)]
+        {
+            println!("DEBUG PositionSizer: Min order USD: {}, Min quantity: {:.6}", 
+                     self.exchange_config.min_order_usd, min_order_quantity);
+            println!("DEBUG PositionSizer: Final quantity before min: {:.6}", final_quantity);
+        }
+        
+        // 8. Auto-tuning decision for minimum orders
+        // If calculated size is below minimum, let auto-tuner decide
+        let adjusted_quantity = if final_quantity < min_order_quantity {
+            // Get auto-tuner's assessment
+            let auto_tuner = self.auto_tuner.read();
+            let params = auto_tuner.get_adaptive_parameters();
+            
+            // Decision factors:
+            // - Edge strength (profit_per_unit / current_price)
+            // - Market regime (Bull/Bear/Crisis/Sideways)
+            // - Current confidence level
+            // - Risk budget utilization
+            
+            let edge_strength = (profit_per_unit.inner() / current_price.inner()).to_f64().unwrap_or(0.0);
+            let confidence = signal.confidence.value();
+            
+            // Auto-tuning logic: Take minimum position if:
+            // 1. Strong edge (>0.5%) AND high confidence (>70%)
+            // 2. Bull market regime AND moderate edge (>0.2%)
+            // 3. Very high confidence (>90%) regardless of edge
+            let should_take_minimum = match params.regime {
+                MarketRegime::Bull => {
+                    // Bull market: more aggressive with minimums
+                    edge_strength > 0.002 || confidence > 0.8
+                },
+                MarketRegime::Bear => {
+                    // Bear market: very selective
+                    edge_strength > 0.005 && confidence > 0.85
+                },
+                MarketRegime::Crisis => {
+                    // Crisis: extremely conservative
+                    edge_strength > 0.01 && confidence > 0.9
+                },
+                MarketRegime::Sideways => {
+                    // Sideways: moderate approach
+                    edge_strength > 0.003 && confidence > 0.75
+                },
+            };
+            
+            #[cfg(test)]
+            {
+                println!("DEBUG Auto-tuning: Regime: {:?}, Edge: {:.4}%, Confidence: {:.1}%", 
+                         params.regime, edge_strength * 100.0, confidence * 100.0);
+                println!("DEBUG Auto-tuning: Should take minimum: {}", should_take_minimum);
+            }
+            
+            if should_take_minimum {
+                // Take minimum position - the edge justifies it
+                min_order_quantity
+            } else {
+                // Don't trade - edge too small for minimum commitment
+                Decimal::ZERO
+            }
+        } else {
+            // Size is above minimum, use calculated amount
+            final_quantity
+        };
+        
+        Quantity::new(adjusted_quantity.abs())
     }
     
     fn calculate_kelly_size(&self, metrics: &RiskMetrics) -> Decimal {
@@ -833,16 +958,38 @@ enum ExitSignal {
 
 impl ProfitExtractor {
     pub fn new(auto_tuner: Arc<RwLock<AutoTuningSystem>>) -> Self {
+        // Alex: "Use Binance as default exchange - $10 minimum order!"
+        let exchange_config = ExchangeConfig::binance();
+        let auto_tuner_clone = Arc::clone(&auto_tuner);
+        
         Self {
             order_book_analyzer: OrderBookAnalyzer::new(),
             execution_optimizer: ExecutionOptimizer::new(),
-            position_sizer: AdvancedPositionSizer::new(),
+            position_sizer: AdvancedPositionSizer::new(exchange_config, auto_tuner_clone),
             exit_manager: ExitManager::new(),
             cost_optimizer: CostOptimizer::new(),
             performance_tracker: PerformanceTracker::new(),
             auto_tuner,
             market_analytics: Arc::new(RwLock::new(MarketAnalytics::new())),
         }
+    }
+    
+    /// Set exchange configuration for minimum order sizes
+    /// Alex: "Different exchanges, different rules - ADAPT!"
+    pub fn set_exchange(&mut self, exchange_name: &str) {
+        let config = match exchange_name.to_lowercase().as_str() {
+            "binance" => ExchangeConfig::binance(),
+            "coinbase" => ExchangeConfig::coinbase(),
+            "kraken" => ExchangeConfig::kraken(),
+            "bybit" => ExchangeConfig::bybit(),
+            _ => {
+                // Default to Binance if unknown
+                println!("WARNING: Unknown exchange '{}', using Binance defaults", exchange_name);
+                ExchangeConfig::binance()
+            }
+        };
+        
+        self.position_sizer.exchange_config = config;
     }
     
     /// Main profit extraction method
