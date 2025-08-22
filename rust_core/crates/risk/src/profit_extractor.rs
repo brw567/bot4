@@ -125,7 +125,7 @@ impl OrderBookAnalyzer {
         ProfitOpportunity {
             action,
             confidence: self.calculate_confidence(imbalance, whale_presence, spoof_risk),
-            expected_profit: self.estimate_profit(spread, imbalance),
+            expected_profit: self.estimate_profit_per_unit(spread, imbalance),
             risk_level: self.assess_risk(spoof_risk, whale_presence),
             optimal_size: self.calculate_optimal_size(total_bid_vol, total_ask_vol),
             entry_price: self.calculate_entry_price(bids, asks, action),
@@ -165,10 +165,17 @@ impl OrderBookAnalyzer {
         Percentage::new((base_conf + whale_boost - spoof_penalty).clamp(0.0, 1.0))
     }
     
-    fn estimate_profit(&self, spread: Price, imbalance: Decimal) -> Price {
-        // Expected profit = spread capture * probability of fill
+    fn estimate_profit_per_unit(&self, spread: Price, imbalance: Decimal) -> Price {
+        // Expected profit PER UNIT = spread capture * probability of fill
+        // Alex: "This is PER UNIT profit, not total!"
         let capture_ratio = imbalance.abs() * Decimal::from_f64(0.5).unwrap();
         Price::new(spread.inner() * capture_ratio)
+    }
+    
+    fn estimate_total_profit(&self, profit_per_unit: Price, quantity: Quantity) -> Price {
+        // TOTAL expected profit = profit per unit * quantity
+        // NO SIMPLIFICATION - calculate actual total profit!
+        Price::new(profit_per_unit.inner() * quantity.inner())
     }
     
     fn assess_risk(&self, spoof: f64, whale: bool) -> Percentage {
@@ -415,42 +422,98 @@ impl AdvancedPositionSizer {
     }
     
     /// Calculate optimal position size for maximum profit
+    /// Alex: "Size appropriately for the edge - don't overleverage!"
     pub fn calculate_optimal_size(&mut self,
                                  signal: &TradingSignal,
                                  portfolio_value: Price,
-                                 existing_positions: &[Position]) -> Quantity {
+                                 existing_positions: &[Position],
+                                 profit_per_unit: Price,
+                                 current_price: Price) -> Quantity {
         
-        // 1. Base Kelly size
-        let kelly_size = self.calculate_kelly_size(&signal.risk_metrics);
+        // 1. Base Kelly size - adjusted for actual edge
+        let kelly_size = self.calculate_kelly_size_with_edge(
+            &signal.risk_metrics,
+            profit_per_unit,
+            current_price
+        );
+        
+        #[cfg(test)]
+        {
+            println!("DEBUG PositionSizer: Kelly size: {:.6}", kelly_size);
+        }
         
         // 2. Adjust for correlation with existing positions
         let correlation_adj = self.adjust_for_correlation(kelly_size, existing_positions);
         
+        #[cfg(test)]
+        {
+            println!("DEBUG PositionSizer: After correlation adj: {:.6}", correlation_adj);
+        }
+        
         // 3. Apply risk budget constraint
         let risk_constrained = self.apply_risk_budget(correlation_adj, &signal.risk_metrics);
+        
+        #[cfg(test)]
+        {
+            println!("DEBUG PositionSizer: After risk budget: {:.6}", risk_constrained);
+        }
         
         // 4. Market regime adjustment
         let regime_adjusted = self.adjust_for_regime(risk_constrained, &signal.risk_metrics);
         
-        // 5. Convert to actual quantity
-        // CRITICAL FIX: Must divide by asset price, not expected return!
-        // Using portfolio value as a proxy for now - should be actual asset price
-        // TODO: Pass current_price as parameter to this function
-        let asset_price = if portfolio_value.inner() > Decimal::from(10000) {
-            // Estimate based on typical crypto prices relative to portfolio
-            portfolio_value.inner() / Decimal::from(2)  // Rough estimate
-        } else {
-            Decimal::from(1)  // Fallback
-        };
-        let position_value = portfolio_value.inner() * regime_adjusted;
-        let quantity = position_value / asset_price;
+        #[cfg(test)]
+        {
+            println!("DEBUG PositionSizer: After regime adj: {:.6}", regime_adjusted);
+        }
         
-        Quantity::new(quantity.abs())
+        // 5. Convert to actual quantity
+        // Use ACTUAL current price passed in
+        let position_value = portfolio_value.inner() * regime_adjusted;
+        let quantity = position_value / current_price.inner();
+        
+        // 6. Apply edge-based position limit
+        // If edge is small, position should be small
+        let edge_ratio = profit_per_unit.inner() / current_price.inner();
+        
+        #[cfg(test)]
+        {
+            println!("DEBUG PositionSizer: Profit/unit: {}, Price: {}, Edge ratio: {:.6}", 
+                     profit_per_unit, current_price, edge_ratio);
+            println!("DEBUG PositionSizer: Initial quantity: {:.2}, Regime adjusted: {:.4}", 
+                     quantity, regime_adjusted);
+        }
+        // Edge limits are for FINAL position sizing, not intermediate
+        // Apply after converting fractional size to quantity
+        let edge_limit = if edge_ratio < Decimal::from_f64(0.00001).unwrap() {
+            // Extremely small edge (<0.001%), minimal size
+            portfolio_value.inner() * Decimal::from_f64(0.0001).unwrap() / current_price.inner()
+        } else if edge_ratio < Decimal::from_f64(0.0001).unwrap() {
+            // Very small edge (<0.01%), limit to 0.1% of portfolio
+            portfolio_value.inner() * Decimal::from_f64(0.001).unwrap() / current_price.inner()
+        } else if edge_ratio < Decimal::from_f64(0.001).unwrap() {
+            // Small edge (<0.1%), limit to 0.5% of portfolio  
+            portfolio_value.inner() * Decimal::from_f64(0.005).unwrap() / current_price.inner()
+        } else if edge_ratio < Decimal::from_f64(0.01).unwrap() {
+            // Moderate edge (<1%), limit to 1% of portfolio
+            portfolio_value.inner() * Decimal::from_f64(0.01).unwrap() / current_price.inner()
+        } else {
+            // Good edge, use calculated size (still capped by Kelly)
+            quantity
+        };
+        
+        #[cfg(test)]
+        {
+            println!("DEBUG PositionSizer: Quantity: {:.6}, Edge limit: {:.6}", 
+                     quantity, edge_limit);
+        }
+        
+        let final_quantity = quantity.min(edge_limit);
+        
+        Quantity::new(final_quantity.abs())
     }
     
     fn calculate_kelly_size(&self, metrics: &RiskMetrics) -> Decimal {
-        // Kelly formula: f = (p*b - q) / b
-        // where p = win probability, b = win/loss ratio, q = 1-p
+        // OLD METHOD - keeping for compatibility
         let p = metrics.confidence.value();
         let b = metrics.expected_return.value() / metrics.volatility.value().max(0.01);
         let q = 1.0 - p;
@@ -459,6 +522,57 @@ impl AdvancedPositionSizer {
         
         // Apply fractional Kelly for safety
         Decimal::from_f64(full_kelly * self.kelly_fraction.value()).unwrap_or(Decimal::ZERO)
+    }
+    
+    fn calculate_kelly_size_with_edge(&self, metrics: &RiskMetrics, 
+                                      profit_per_unit: Price,
+                                      current_price: Price) -> Decimal {
+        // Alex: "For small edges, we need a different approach!"
+        // Standard Kelly doesn't work well with small edges
+        
+        // Calculate edge ratio
+        let edge_ratio = profit_per_unit.inner() / current_price.inner();
+        
+        // For very small edges, use a simple proportional sizing
+        // This avoids the Kelly formula going negative or zero
+        if edge_ratio < Decimal::from_f64(0.001).unwrap() {
+            // Small edge: use confidence-based sizing
+            // Size = confidence * edge_scaling_factor * max_position
+            let confidence_factor = Decimal::from_f64(metrics.confidence.value()).unwrap();
+            let edge_scale = edge_ratio * Decimal::from(1000); // Scale up small edges
+            let base_size = confidence_factor * edge_scale * Decimal::from_f64(0.01).unwrap();
+            
+            #[cfg(test)]
+            {
+                println!("DEBUG Kelly: Small edge mode - confidence: {:.3}, edge_scale: {:.3}, base_size: {:.6}", 
+                         metrics.confidence.value(), edge_scale, base_size);
+            }
+            
+            return base_size.min(Decimal::from_f64(0.005).unwrap()); // Cap at 0.5% for small edges
+        }
+        
+        // For larger edges, use traditional Kelly
+        let p = metrics.confidence.value();
+        let potential_loss = current_price.inner() * Decimal::from_f64(0.002).unwrap();
+        let b = (profit_per_unit.inner() / potential_loss).to_f64().unwrap_or(0.1);
+        let q = 1.0 - p;
+        
+        #[cfg(test)]
+        {
+            println!("DEBUG Kelly: Standard mode - p={:.3}, b={:.3}, edge_ratio={:.6}", p, b, edge_ratio);
+        }
+        
+        let full_kelly = if b > 0.0 && p > q/b {
+            // Only use Kelly if we have positive expectation
+            ((p * b - q) / b).max(0.0)
+        } else {
+            // Fall back to minimal size
+            0.001
+        };
+        
+        // Apply fractional Kelly (25%) for safety
+        let fractional = full_kelly * self.kelly_fraction.value();
+        Decimal::from_f64(fractional.min(0.02)).unwrap_or(Decimal::from_f64(0.001).unwrap())
     }
     
     fn adjust_for_correlation(&self, size: Decimal, positions: &[Position]) -> Decimal {
@@ -757,11 +871,14 @@ impl ProfitExtractor {
         }
         
         // 3. Calculate optimal position size
+        // NO SIMPLIFICATION - pass all required parameters!
         let risk_metrics = self.create_risk_metrics(&opportunity, market);
         let optimal_size = self.position_sizer.calculate_optimal_size(
             &self.create_temp_signal(&opportunity, &risk_metrics),
             portfolio_value,
-            existing_positions
+            existing_positions,
+            opportunity.expected_profit,  // This is profit per unit
+            market.last  // Current price
         );
         
         #[cfg(test)]
@@ -781,28 +898,30 @@ impl ProfitExtractor {
             86400 // Assume 1 day hold
         );
         
-        // 6. Verify profitability
-        // TODO: This check is incorrect - expected_profit is per unit, not total
-        // Should be: expected_profit_total = expected_profit * optimal_size
-        // For now, skip this check to allow testing to continue
+        // 6. Verify profitability - NO SIMPLIFICATION!
+        // Alex: "Calculate TOTAL profit properly - no shortcuts!"
+        let expected_profit_total = self.order_book_analyzer.estimate_total_profit(
+            opportunity.expected_profit,  // This is per unit
+            optimal_size
+        );
+        
         #[cfg(test)]
         {
-            let expected_profit_total = opportunity.expected_profit.inner() * optimal_size.inner();
             println!("DEBUG: Expected profit per unit: {}, Total expected profit: {}, Total cost: {}", 
                      opportunity.expected_profit, expected_profit_total, total_cost);
-            // Only reject if total profit is less than costs
-            if expected_profit_total < total_cost.inner() {
-                println!("DEBUG: Not profitable after costs - returning HOLD");
-                return self.create_hold_signal(market);
-            }
         }
         
-        #[cfg(not(test))]
-        {
-            // In production, use a more sophisticated profitability check
-            if opportunity.expected_profit < total_cost {
-                return self.create_hold_signal(market);
+        // Check if total profit exceeds total costs
+        // Include a minimum profit threshold for safety
+        let min_profit_threshold = Price::new(total_cost.inner() * Decimal::from_f64(1.5).unwrap()); // 50% margin
+        
+        if expected_profit_total < min_profit_threshold {
+            #[cfg(test)]
+            {
+                println!("DEBUG: Not profitable enough after costs (need 50% margin) - returning HOLD");
+                println!("       Required profit: {}, Expected: {}", min_profit_threshold, expected_profit_total);
             }
+            return self.create_hold_signal(market);
         }
         
         // 7. Create final signal

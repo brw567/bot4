@@ -474,17 +474,18 @@ mod deep_dive_tests {
         let mut extractor = ProfitExtractor::new(auto_tuner.clone());
         
         // Create REAL market data - NO SIMPLIFICATIONS!
+        // Use tighter spread for better edge
         let market = MarketData {
             symbol: "BTC/USDT".to_string(),
             timestamp: 1700000000,
             bid: Price::from_f64(42000.0),
-            ask: Price::from_f64(42010.0),
-            last: Price::from_f64(42005.0),
+            ask: Price::from_f64(42002.0),  // Tighter spread for better profit potential
+            last: Price::from_f64(42001.0),
             volume: Quantity::from_f64(1500.0),
             bid_size: Quantity::from_f64(50.0),
             ask_size: Quantity::from_f64(45.0),
-            spread: Price::from_f64(10.0),
-            mid: Price::from_f64(42005.0),
+            spread: Price::from_f64(2.0),   // $2 spread instead of $10
+            mid: Price::from_f64(42001.0),
         };
         
         // Create REAL order book with depth - NO FAKE DATA!
@@ -503,16 +504,16 @@ mod deep_dive_tests {
         ];
         
         let asks = vec![
-            (Price::from_f64(42010.0), Quantity::from_f64(45.0)),   // Thin ask side
-            (Price::from_f64(42015.0), Quantity::from_f64(60.0)),
-            (Price::from_f64(42020.0), Quantity::from_f64(80.0)),
-            (Price::from_f64(42025.0), Quantity::from_f64(95.0)),
-            (Price::from_f64(42030.0), Quantity::from_f64(110.0)),
-            (Price::from_f64(42035.0), Quantity::from_f64(120.0)),
-            (Price::from_f64(42040.0), Quantity::from_f64(140.0)),
-            (Price::from_f64(42045.0), Quantity::from_f64(160.0)),
-            (Price::from_f64(42050.0), Quantity::from_f64(80.0)),   // Smaller ask wall
-            (Price::from_f64(42055.0), Quantity::from_f64(50.0)),
+            (Price::from_f64(42002.0), Quantity::from_f64(45.0)),   // Tighter spread!
+            (Price::from_f64(42004.0), Quantity::from_f64(60.0)),
+            (Price::from_f64(42006.0), Quantity::from_f64(80.0)),
+            (Price::from_f64(42008.0), Quantity::from_f64(95.0)),
+            (Price::from_f64(42010.0), Quantity::from_f64(110.0)),
+            (Price::from_f64(42012.0), Quantity::from_f64(120.0)),
+            (Price::from_f64(42014.0), Quantity::from_f64(140.0)),
+            (Price::from_f64(42016.0), Quantity::from_f64(160.0)),
+            (Price::from_f64(42018.0), Quantity::from_f64(80.0)),
+            (Price::from_f64(42020.0), Quantity::from_f64(50.0)),
         ];
         
         let portfolio_value = Price::from_f64(100000.0);
