@@ -10,6 +10,7 @@ use log::info;
 use crate::garch::GARCHModel;
 use crate::isotonic::{IsotonicCalibrator, MarketRegime};
 use crate::kelly_sizing::{KellySizer, KellyConfig, TradeOutcome};
+use crate::auto_tuning::{AutoTuningSystem, AdaptiveParameters};
 use rust_decimal::Decimal;
 use std::str::FromStr;
 
@@ -29,6 +30,9 @@ pub struct RiskClampSystem {
     garch: Arc<RwLock<GARCHModel>>,
     calibrator: Arc<RwLock<IsotonicCalibrator>>,
     kelly: Arc<RwLock<KellySizer>>,
+    
+    // AUTO-TUNING SYSTEM - CRITICAL ADDITION!
+    auto_tuner: Arc<RwLock<AutoTuningSystem>>,
     
     // State tracking
     current_var: f32,
@@ -109,12 +113,14 @@ impl RiskClampSystem {
         let garch = Arc::new(RwLock::new(GARCHModel::new()));
         let calibrator = Arc::new(RwLock::new(IsotonicCalibrator::new()));
         let kelly = Arc::new(RwLock::new(KellySizer::new(KellyConfig::default())));
+        let auto_tuner = Arc::new(RwLock::new(AutoTuningSystem::new()));
         
         Self {
             config,
             garch,
             calibrator,
             kelly,
+            auto_tuner,
             current_var: 0.0,
             current_es: 0.0,
             portfolio_positions: Vec::new(),
@@ -160,13 +166,18 @@ impl RiskClampSystem {
             println!("  TRIGGERED: Volatility reduction");
         }
         
-        // Layer 2: Value at Risk (VaR) constraint - USING GARCH
+        // Layer 2: Value at Risk (VaR) constraint - USING GARCH WITH AUTO-TUNING!
         self.current_var = self.garch.read().calculate_var(0.95, 1) as f32;
-        let var_ratio = (1.0 - (self.current_var / self.config.var_limit)).max(0.0);
+        
+        // Get ADAPTIVE VaR limit instead of using hardcoded config!
+        let adaptive_params = self.auto_tuner.read().get_adaptive_parameters();
+        let adaptive_var_limit = adaptive_params.var_limit as f32;
+        
+        let var_ratio = (1.0 - (self.current_var / adaptive_var_limit)).max(0.0);
         let var_adjusted = vol_adjusted * var_ratio;
         
-        println!("Layer 2 - VaR: current={:.4}, limit={:.4}, ratio={:.3}, adjusted={:.4}",
-                self.current_var, self.config.var_limit, var_ratio, var_adjusted);
+        println!("Layer 2 - VaR: current={:.4}, limit={:.4} (adaptive!), ratio={:.3}, adjusted={:.4}",
+                self.current_var, adaptive_var_limit, var_ratio, var_adjusted);
         
         if var_ratio < 1.0 {
             self.clamp_triggers.write().var_clamps += 1;
@@ -363,6 +374,43 @@ impl RiskClampSystem {
     /// Reset metrics
     pub fn reset_metrics(&mut self) {
         *self.clamp_triggers.write() = ClampMetrics::default();
+    }
+    
+    /// Trigger auto-tuning based on recent performance
+    /// Alex: "THIS is the game-changer - real adaptation!"
+    pub fn auto_tune(&mut self, recent_returns: &[f64]) {
+        // Feed returns to GARCH for volatility updates
+        for &ret in recent_returns {
+            self.update_garch(ret);
+        }
+        
+        // Let auto-tuner adapt all parameters
+        let mut tuner = self.auto_tuner.write();
+        
+        // Convert returns to performance records (simplified for now)
+        let records: Vec<_> = recent_returns.iter().enumerate().map(|(i, &ret)| {
+            crate::auto_tuning::PerformanceRecord {
+                timestamp: i as u64,
+                regime: crate::auto_tuning::MarketRegime::Sideways,
+                position_size: 0.01,
+                outcome: ret,
+                var_limit: 0.02,
+                vol_target: 0.15,
+                kelly_fraction: 0.25,
+            }
+        }).collect();
+        
+        tuner.auto_tune_parameters(&records);
+        
+        // Get new adaptive parameters
+        let params = tuner.get_adaptive_parameters();
+        
+        println!("🚀 AUTO-TUNING COMPLETE:");
+        println!("   Regime: {:?} (confidence: {:.1}%)", params.regime, params.regime_confidence * 100.0);
+        println!("   VaR Limit: {:.4} (was {:.4})", params.var_limit, self.config.var_limit);
+        println!("   Vol Target: {:.4} (was {:.4})", params.vol_target, self.config.vol_target);
+        println!("   Kelly Fraction: {:.3}", params.kelly_fraction);
+        println!("   Leverage Cap: {:.1}x", params.leverage_cap);
     }
 }
 

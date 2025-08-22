@@ -7,9 +7,12 @@ pub mod kelly_sizing;
 pub mod kelly_validation;
 pub mod garch;
 pub mod isotonic;
+pub mod auto_tuning;  // NEW: Auto-adaptation system
 
 #[cfg(test)]
 mod comprehensive_tests;
+#[cfg(test)]
+mod auto_tuning_test;
 
 pub use clamps::{RiskClampSystem, ClampConfig, ClampMetrics};
 pub use kelly_sizing::{
