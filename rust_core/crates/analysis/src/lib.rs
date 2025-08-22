@@ -25,7 +25,7 @@ pub use dcc_garch::{DccGarch, GarchParams};
 /// Comprehensive mathematical validation suite
 /// Returns true if all tests pass required thresholds
 pub fn validate_trading_data(returns: &[f64], _max_correlation: f64) -> Result<bool, anyhow::Error> {
-    use anyhow::Context;
+    
     use ndarray::Array1;
     
     let returns_array = Array1::from_vec(returns.to_vec());

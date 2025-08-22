@@ -10,7 +10,6 @@
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use anyhow::Result;
-use tracing_subscriber;
 
 mod observability;
 

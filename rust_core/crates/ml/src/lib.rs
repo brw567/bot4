@@ -15,6 +15,7 @@ pub mod training;  // Model training pipeline - FULL TEAM implementation
 pub mod math_opt;  // Mathematical optimizations - Day 3 Sprint
 pub mod integrated_optimization;  // INTEGRATED 320x optimization - Day 4 Sprint
 pub mod optimization;  // Optimization utilities
+pub mod inference;  // Inference engine for real-time predictions
 
 // Phase 3+ Additions
 pub mod features;  // Microstructure features

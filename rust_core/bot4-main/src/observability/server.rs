@@ -4,7 +4,6 @@
 // Exit Gate: Metrics accessible at :8080-8084/metrics
 
 use axum::{
-    extract::State,
     http::StatusCode,
     response::IntoResponse,
     routing::get,
@@ -192,7 +191,7 @@ async fn memory_metrics_handler() -> impl IntoResponse {
     // Add MiMalloc stats if available
     #[cfg(feature = "mimalloc")]
     {
-        use mimalloc::MiMalloc;
+        
         let stats = format!(
             "# HELP mimalloc_allocated_bytes Total allocated bytes\n\
              # TYPE mimalloc_allocated_bytes gauge\n\

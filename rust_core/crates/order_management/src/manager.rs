@@ -4,17 +4,15 @@
 
 use std::sync::Arc;
 use std::time::Instant;
-use async_trait::async_trait;
 use dashmap::DashMap;
 use parking_lot::RwLock;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, postgres::PgRow, Row};
+use sqlx::PgPool;
 use thiserror::Error;
-use tracing::{debug, info, warn, error};
-use uuid::Uuid;
+use tracing::{info, error, debug, warn};
 
-use crate::order::{Order, OrderId, OrderUpdate, OrderFill, OrderValidationError};
+use crate::order::{Order, OrderId, OrderFill, OrderValidationError};
 use crate::state_machine::{OrderStateMachine, OrderState, OrderEvent, StateTransitionError};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -60,26 +58,41 @@ impl OrderManager {
     }
     
     /// Create and validate a new order
-    pub async fn create_order(&self, mut order: Order) -> Result<OrderId, OrderManagerError> {
+    pub async fn create_order(&self, order: Order) -> Result<OrderId, OrderManagerError> {
         let start = Instant::now();
+        
+        // COMPREHENSIVE LOGGING: Order creation entry
+        debug!("Creating new order: symbol={}, side={:?}, type={:?}, quantity={}",
+               order.symbol, order.side, order.order_type, order.quantity);
         
         // Validate order parameters
         order.validate()
-            .map_err(OrderManagerError::ValidationError)?;
+            .map_err(|e| {
+                warn!("Order validation failed: {}", e);
+                OrderManagerError::ValidationError(e)
+            })?;
+        
+        debug!("Order validation passed for {}", order.client_order_id);
         
         // Check duplicate if enabled
         if self.config.enable_duplicate_checks {
+            debug!("Checking for duplicate order: {}", order.client_order_id);
             if self.check_duplicate(&order).await? {
+                warn!("Duplicate order detected: {}", order.client_order_id);
                 return Err(OrderManagerError::DuplicateOrder(order.client_order_id));
             }
         }
         
         // Check order limits
+        debug!("Checking order limits for {}", order.symbol);
         self.check_order_limits(&order)?;
+        debug!("Order limits check passed");
         
         // Risk checks if enabled
         if self.config.enable_risk_checks {
+            debug!("Performing risk checks for order {}", order.id);
             self.perform_risk_checks(&order)?;
+            debug!("Risk checks passed for order {}", order.id);
         }
         
         let order_id = order.id;
@@ -87,23 +100,34 @@ impl OrderManager {
         // Create state machine
         let state_machine = Arc::new(OrderStateMachine::new(order_id));
         
-        // Store order and state machine
-        self.orders.insert(order_id, Arc::new(RwLock::new(order.clone())));
-        self.state_machines.insert(order_id, state_machine.clone());
+        // ZERO-COPY: Extract values needed for logging before moving order
+        let symbol = order.symbol.clone(); // Single clone for symbol tracking
+        let side = order.side;
+        let quantity = order.quantity;
+        let price = order.price;
         
-        // Track by symbol
-        self.symbol_orders
-            .entry(order.symbol.clone())
-            .or_insert_with(Vec::new)
-            .push(order_id);
-        
-        // Transition to validated state
-        state_machine.process_event(OrderEvent::Validate)?;
-        
-        // Persist to database if available
+        // Persist to database if available (before moving order)
         if let Some(pool) = &self.db_pool {
             self.persist_order(pool, &order).await?;
         }
+        
+        // Store order and state machine - MOVE order, no clone!
+        self.orders.insert(order_id, Arc::new(RwLock::new(order)));
+        self.state_machines.insert(order_id, state_machine.clone());
+        
+        // Track by symbol (using pre-cloned symbol)
+        self.symbol_orders
+            .entry(symbol.clone())
+            .or_default()
+            .push(order_id);
+        
+        // Transition to validated state
+        state_machine.process_event(OrderEvent::Validate)
+            .map_err(|e| {
+                error!("Failed to transition order {} to validated state: {}", order_id, e);
+                e
+            })?;
+        debug!("Order {} transitioned to validated state", order_id);
         
         // Update metrics
         self.metrics.orders_created.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -113,15 +137,23 @@ impl OrderManager {
         );
         
         info!(
-            "Order created: {} for {} {} {} @ {:?}",
-            order_id, order.side, order.quantity, order.symbol, order.price
+            "Order created: {} for {} {} {} @ {:?} (latency: {}μs)",
+            order_id, side, quantity, symbol, price,
+            start.elapsed().as_micros()
         );
+        
+        // COMPREHENSIVE LOGGING: Performance tracking
+        if start.elapsed().as_micros() > 100 {
+            warn!("Slow order creation: {}μs for order {}", 
+                  start.elapsed().as_micros(), order_id);
+        }
         
         Ok(order_id)
     }
     
     /// Submit order to exchange
     pub async fn submit_order(&self, order_id: OrderId) -> Result<(), OrderManagerError> {
+        debug!("Submitting order {} to exchange", order_id);
         let state_machine = self.get_state_machine(order_id)?;
         
         // Transition to submitted state
@@ -136,7 +168,8 @@ impl OrderManager {
         
         self.metrics.orders_submitted.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         
-        info!("Order submitted: {}", order_id);
+        info!("Order submitted: {} (active orders: {})", 
+              order_id, self.get_active_orders().len());
         Ok(())
     }
     
@@ -146,6 +179,8 @@ impl OrderManager {
         order_id: OrderId,
         fill: OrderFill,
     ) -> Result<(), OrderManagerError> {
+        debug!("Processing fill for order {}: quantity={}, price={}",
+               order_id, fill.quantity, fill.price);
         let state_machine = self.get_state_machine(order_id)?;
         
         // Update order with fill details
@@ -187,19 +222,33 @@ impl OrderManager {
         }
         
         info!(
-            "Order {} fill processed: {} @ {} (complete: {})",
-            order_id, fill.quantity, fill.price, is_complete
+            "Order {} fill processed: {} @ {} (complete: {}, total_filled: {})",
+            order_id, fill.quantity, fill.price, is_complete,
+            if let Some(order_ref) = self.orders.get(&order_id) {
+                order_ref.read().filled_quantity
+            } else {
+                Decimal::ZERO
+            }
         );
+        
+        // COMPREHENSIVE LOGGING: Fill metrics
+        if is_complete {
+            debug!("Order {} fully filled, removing from active orders", order_id);
+        } else {
+            debug!("Order {} partially filled, remaining in active orders", order_id);
+        }
         
         Ok(())
     }
     
     /// Cancel order
     pub async fn cancel_order(&self, order_id: OrderId) -> Result<(), OrderManagerError> {
+        debug!("Attempting to cancel order {}", order_id);
         let state_machine = self.get_state_machine(order_id)?;
         
         // Check if order can be cancelled
         if state_machine.is_terminal() {
+            warn!("Cannot cancel order {} - already in terminal state", order_id);
             return Err(OrderManagerError::InvalidState(
                 format!("Order {} is already in terminal state", order_id)
             ));
@@ -217,7 +266,11 @@ impl OrderManager {
         
         self.metrics.orders_cancelled.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         
-        info!("Order cancelled: {}", order_id);
+        info!("Order cancelled: {} (reason: user_requested)", order_id);
+        
+        // COMPREHENSIVE LOGGING: Cancellation metrics
+        debug!("Total cancelled orders: {}", 
+               self.metrics.orders_cancelled.load(std::sync::atomic::Ordering::Relaxed));
         Ok(())
     }
     
@@ -285,6 +338,7 @@ impl OrderManager {
     fn check_order_limits(&self, order: &Order) -> Result<(), OrderManagerError> {
         // Check total open orders
         let active_count = self.get_active_orders().len();
+        debug!("Active orders: {}/{}", active_count, self.config.max_open_orders);
         if active_count >= self.config.max_open_orders {
             return Err(OrderManagerError::TooManyOrders(
                 format!("Maximum {} open orders reached", self.config.max_open_orders)
@@ -303,16 +357,24 @@ impl OrderManager {
             .count();
             
         if active_symbol_orders >= self.config.max_orders_per_symbol {
+            warn!("Symbol {} has reached max orders limit: {}/{}",
+                  order.symbol, active_symbol_orders, self.config.max_orders_per_symbol);
             return Err(OrderManagerError::TooManyOrders(
                 format!("Maximum {} orders per symbol reached for {}", 
                     self.config.max_orders_per_symbol, order.symbol)
             ));
         }
         
+        debug!("Symbol {} has {}/{} active orders",
+               order.symbol, active_symbol_orders, self.config.max_orders_per_symbol);
+        
         Ok(())
     }
     
     fn perform_risk_checks(&self, order: &Order) -> Result<(), OrderManagerError> {
+        debug!("Performing risk checks: position_size={}%, stop_loss={:?}",
+               order.position_size_pct * Decimal::from(100), order.stop_loss_price);
+        
         // Check position size (Quinn's 2% rule)
         if order.position_size_pct > Decimal::from_str_exact("0.02").unwrap() {
             return Err(OrderManagerError::RiskCheckFailed(
@@ -322,10 +384,14 @@ impl OrderManager {
         
         // Check stop loss is set
         if order.stop_loss_price.is_none() {
+            error!("Risk check failed: Stop loss not set for order {}", order.id);
             return Err(OrderManagerError::RiskCheckFailed(
                 "Stop loss is required for all orders".to_string()
             ));
         }
+        
+        debug!("Risk checks passed: position_size={}%, stop_loss={:?}",
+               order.position_size_pct * Decimal::from(100), order.stop_loss_price);
         
         Ok(())
     }
@@ -337,7 +403,6 @@ impl OrderManager {
     }
 }
 
-use rust_decimal::prelude::FromStr;
 use std::sync::atomic::AtomicU64;
 
 /// Order management metrics
@@ -439,16 +504,17 @@ mod tests {
         .with_stop_loss(dec!(49000))
         .with_risk_params(dec!(0.01), dec!(100));
         
+        let order2 = order1.clone();
+        let order3 = order1.clone();
+        
         let id1 = manager.create_order(order1).await.unwrap();
         manager.submit_order(id1).await.unwrap();
         
         // Create second order
-        let order2 = order1.clone();
         let id2 = manager.create_order(order2).await.unwrap();
         manager.submit_order(id2).await.unwrap();
         
         // Third order should fail
-        let order3 = order1.clone();
         let result = manager.create_order(order3).await;
         assert!(result.is_err());
     }

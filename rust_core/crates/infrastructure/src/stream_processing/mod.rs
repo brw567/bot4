@@ -411,33 +411,30 @@ impl StreamProcessor {
             
             while let Some(msg) = rx.recv().await {
                 // Process market data into features
-                match msg {
-                    StreamMessage::MarketTick { timestamp, symbol, bid, ask, volume } => {
-                        // Calculate features - Morgan's implementation
-                        let spread = ask - bid;
-                        let mid_price = (bid + ask) / 2.0;
-                        let spread_pct = spread / mid_price;
-                        
-                        // Create feature message
-                        let feature_msg = StreamMessage::Features {
-                            timestamp,
-                            symbol,
-                            feature_vector: vec![bid, ask, spread, mid_price, spread_pct, volume],
-                            feature_names: vec![
-                                "bid".to_string(),
-                                "ask".to_string(),
-                                "spread".to_string(),
-                                "mid_price".to_string(),
-                                "spread_pct".to_string(),
-                                "volume".to_string(),
-                            ],
-                        };
-                        
-                        let _ = tx.send(feature_msg).await;
-                        
-                        metrics.messages_processed.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                    }
-                    _ => {}
+                if let StreamMessage::MarketTick { timestamp, symbol, bid, ask, volume } = msg {
+                    // Calculate features - Morgan's implementation
+                    let spread = ask - bid;
+                    let mid_price = (bid + ask) / 2.0;
+                    let spread_pct = spread / mid_price;
+                    
+                    // Create feature message
+                    let feature_msg = StreamMessage::Features {
+                        timestamp,
+                        symbol,
+                        feature_vector: vec![bid, ask, spread, mid_price, spread_pct, volume],
+                        feature_names: vec![
+                            "bid".to_string(),
+                            "ask".to_string(),
+                            "spread".to_string(),
+                            "mid_price".to_string(),
+                            "spread_pct".to_string(),
+                            "volume".to_string(),
+                        ],
+                    };
+                    
+                    let _ = tx.send(feature_msg).await;
+                    
+                    metrics.messages_processed.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                 }
             }
         })
@@ -462,30 +459,27 @@ impl StreamProcessor {
                 }
                 
                 // Process features into signals
-                match msg {
-                    StreamMessage::Features { timestamp, symbol, feature_vector, .. } => {
-                        // Simple signal generation - will be enhanced with ML
-                        let spread_pct = feature_vector.get(4).unwrap_or(&0.0);
-                        
-                        let (action, confidence) = if *spread_pct > 0.001 {
-                            (SignalAction::Sell, 0.7)
-                        } else if *spread_pct < -0.001 {
-                            (SignalAction::Buy, 0.7)
-                        } else {
-                            (SignalAction::Hold, 0.5)
-                        };
-                        
-                        let signal_msg = StreamMessage::Signal {
-                            timestamp,
-                            signal_id: uuid::Uuid::new_v4().to_string(),
-                            symbol,
-                            action,
-                            confidence,
-                        };
-                        
-                        let _ = tx.send(signal_msg);
-                    }
-                    _ => {}
+                if let StreamMessage::Features { timestamp, symbol, feature_vector, .. } = msg {
+                    // Simple signal generation - will be enhanced with ML
+                    let spread_pct = feature_vector.get(4).unwrap_or(&0.0);
+                    
+                    let (action, confidence) = if *spread_pct > 0.001 {
+                        (SignalAction::Sell, 0.7)
+                    } else if *spread_pct < -0.001 {
+                        (SignalAction::Buy, 0.7)
+                    } else {
+                        (SignalAction::Hold, 0.5)
+                    };
+                    
+                    let signal_msg = StreamMessage::Signal {
+                        timestamp,
+                        signal_id: uuid::Uuid::new_v4().to_string(),
+                        symbol,
+                        action,
+                        confidence,
+                    };
+                    
+                    let _ = tx.send(signal_msg);
                 }
             }
         })
@@ -494,7 +488,7 @@ impl StreamProcessor {
     /// Spawn risk monitor - Quinn's implementation
     fn spawn_risk_monitor(&self) -> JoinHandle<()> {
         let mut rx = self.signal_tx.subscribe();
-        let metrics = Arc::clone(&self.metrics);
+        let _metrics = Arc::clone(&self.metrics);  // Reserved for future metrics tracking
         let circuit_breaker = Arc::clone(&self.circuit_breaker);
         
         tokio::spawn(async move {
@@ -505,31 +499,31 @@ impl StreamProcessor {
             let mut sell_count = 0u64;
             
             while let Ok(msg) = rx.recv().await {
-                match msg {
-                    StreamMessage::Signal { action, confidence, .. } => {
-                        signal_count += 1;
-                        
-                        match action {
-                            SignalAction::Buy => buy_count += 1,
-                            SignalAction::Sell => sell_count += 1,
-                            _ => {}
-                        }
-                        
-                        // Risk checks - Quinn
-                        if confidence < 0.3 {
-                            warn!("Low confidence signal detected: {}", confidence);
-                        }
-                        
-                        // Check for excessive one-sided signals
-                        if signal_count > 100 {
-                            let buy_ratio = buy_count as f64 / signal_count as f64;
-                            if buy_ratio > 0.7 || buy_ratio < 0.3 {
-                                error!("Excessive one-sided signals detected");
-                                circuit_breaker.record_error();
-                            }
+                if let StreamMessage::Signal { action, confidence, .. } = msg {
+                    signal_count += 1;
+                    
+                    match action {
+                        SignalAction::Buy => buy_count += 1,
+                        SignalAction::Sell => sell_count += 1,
+                        _ => {}
+                    }
+                    
+                    // Risk checks - Quinn
+                    if confidence < 0.3 {
+                        warn!("Low confidence signal detected: {}", confidence);
+                    }
+                    
+                    // Check for excessive one-sided signals
+                    if signal_count > 100 {
+                        let buy_ratio = buy_count as f64 / signal_count as f64;
+                        let sell_ratio = sell_count as f64 / signal_count as f64;
+                        // CRITICAL: Check BOTH buy and sell ratios for balance
+                        if !(0.3..=0.7).contains(&buy_ratio) || !(0.3..=0.7).contains(&sell_ratio) {
+                            error!("Excessive one-sided signals detected: buy_ratio={:.2}, sell_ratio={:.2}, counts: buy={}, sell={}, total={}", 
+                                   buy_ratio, sell_ratio, buy_count, sell_count, signal_count);
+                            circuit_breaker.record_error();
                         }
                     }
-                    _ => {}
                 }
             }
         })

@@ -4,10 +4,10 @@
 // CRITICAL: Sophia Requirement #7 - Liquidity, spread, order flow features
 
 use std::arch::x86_64::*;
-use ndarray::{Array1, Array2, Axis};
+use ndarray::Array1;
 use std::collections::VecDeque;
 use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, Duration};
+use chrono::{DateTime, Utc};
 
 /// Tick data for microstructure calculations
 #[derive(Debug, Clone)]
@@ -362,7 +362,7 @@ impl MicrostructureFeatures {
     
     /// Price Impact - Permanent component
     fn calculate_price_impact(&self) -> f64 {
-        let effective = self.calculate_effective_spread(&self.tick_buffer.back().unwrap());
+        let effective = self.calculate_effective_spread(self.tick_buffer.back().unwrap());
         let realized = self.calculate_realized_spread();
         effective - realized  // Permanent impact
     }
@@ -543,7 +543,7 @@ impl MicrostructureFeatures {
         // Simplified: ratio of permanent to total price variance
         let price_impact = self.calculate_price_impact();
         let effective_spread = self.calculate_effective_spread(
-            &self.tick_buffer.back().unwrap()
+            self.tick_buffer.back().unwrap()
         );
         
         if effective_spread > 0.0 {

@@ -24,6 +24,12 @@ pub struct WebSocketManager {
 
 use std::sync::atomic::AtomicBool;
 
+impl Default for WebSocketManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl WebSocketManager {
     pub fn new() -> Self {
         Self {
@@ -170,7 +176,7 @@ impl MessageRouter {
     ) {
         self.handlers
             .entry(msg_type)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(handler);
     }
     

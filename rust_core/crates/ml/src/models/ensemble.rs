@@ -9,10 +9,10 @@ use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 
 use super::{
-    ARIMAModel, ARIMAConfig,
-    LSTMModel, LSTMConfig,
-    GRUModel, GRUConfig,
-    ModelId, ModelRegistry,
+    ARIMAModel,
+    LSTMModel,
+    GRUModel,
+    ModelId,
 };
 
 // ============================================================================

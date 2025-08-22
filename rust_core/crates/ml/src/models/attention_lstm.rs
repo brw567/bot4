@@ -6,7 +6,6 @@
 use std::arch::x86_64::*;
 use ndarray::{Array1, Array2, Array3, Axis, s};
 use std::collections::VecDeque;
-use serde::{Serialize, Deserialize};
 use rand::prelude::*;
 use rand_distr::{Normal, Distribution};
 

@@ -3,7 +3,7 @@
 // CRITICAL: Sophia Requirement #3 - Calibrates raw ML outputs
 // References: Zadrozny & Elkan (2002), Platt (1999), Niculescu-Mizil & Caruana (2005)
 
-use ndarray::{Array1, Array2, Axis};
+use ndarray::Array1;
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 
@@ -35,6 +35,12 @@ pub struct IsotonicCalibrator {
     /// Performance metrics
     brier_scores: HashMap<MarketRegime, f32>,
     calibration_errors: HashMap<MarketRegime, f32>,
+}
+
+impl Default for IsotonicCalibrator {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl IsotonicCalibrator {
@@ -266,7 +272,7 @@ impl IsotonicRegression {
         while i < n - 1 {
             if isotonic_y[i] > isotonic_y[i + 1] {
                 // Violates monotonicity, pool values
-                let mut pool_start = i;
+                let pool_start = i;
                 let mut pool_end = i + 1;
                 let mut pool_sum = isotonic_y[i] + isotonic_y[i + 1];
                 

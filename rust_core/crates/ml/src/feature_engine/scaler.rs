@@ -4,7 +4,6 @@
 // Target: <10μs scaling, numerical stability
 
 use anyhow::Result;
-use std::collections::HashMap;
 
 // ============================================================================
 // SCALING METHODS - Team Consensus

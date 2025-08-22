@@ -9,7 +9,7 @@ use super::circuit_wrapper::StreamCircuitBreaker;
 use anyhow::Result;
 use async_trait::async_trait;
 use std::sync::Arc;
-use tokio::sync::{mpsc, RwLock};
+use tokio::sync::RwLock;
 
 // ============================================================================
 // PROCESSING PIPELINE - Morgan's ML Integration
@@ -41,8 +41,14 @@ pub trait ProcessorStage: Send + Sync {
     async fn process(&self, message: StreamMessage) -> Result<StreamMessage>;
     
     /// Can this stage handle this message type?
-    fn can_handle(&self, message: &StreamMessage) -> bool {
+    fn can_handle(&self, _message: &StreamMessage) -> bool {
         true // Default: handle all messages
+    }
+}
+
+impl Default for ProcessingPipeline {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -125,6 +131,12 @@ impl ProcessingPipeline {
 
 pub struct FeatureExtractionStage {
     // Feature extraction logic
+}
+
+impl Default for FeatureExtractionStage {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl FeatureExtractionStage {
@@ -331,6 +343,12 @@ pub struct PersistenceStage {
     // Database connection would go here
 }
 
+impl Default for PersistenceStage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PersistenceStage {
     pub fn new() -> Self {
         Self {}
@@ -368,6 +386,12 @@ impl ProcessorStage for PersistenceStage {
 
 pub struct PipelineBuilder {
     pipeline: ProcessingPipeline,
+}
+
+impl Default for PipelineBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl PipelineBuilder {

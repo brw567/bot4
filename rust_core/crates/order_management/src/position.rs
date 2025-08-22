@@ -8,7 +8,7 @@ use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use tracing::{debug, info, warn};
+use tracing::{info, warn};
 use uuid::Uuid;
 
 use crate::order::{Order, OrderId, OrderSide};
@@ -16,6 +16,12 @@ use crate::order::{Order, OrderId, OrderSide};
 /// Position identifier
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PositionId(pub Uuid);
+
+impl Default for PositionId {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl PositionId {
     pub fn new() -> Self {
@@ -176,6 +182,12 @@ pub struct PositionManager {
     pnl_calculator: Arc<PnLCalculator>,
 }
 
+impl Default for PositionManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PositionManager {
     pub fn new() -> Self {
         Self {
@@ -208,7 +220,7 @@ impl PositionManager {
         // Track by symbol
         self.symbol_positions
             .entry(order.symbol.clone())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(position_id);
         
         info!(
@@ -364,6 +376,12 @@ pub struct PnLCalculator {
     commission_rate: Decimal,
 }
 
+impl Default for PnLCalculator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PnLCalculator {
     pub fn new() -> Self {
         Self {
@@ -397,7 +415,11 @@ impl PnLCalculator {
         entry_price: Decimal,
         quantity: Decimal,
     ) -> Decimal {
-        let commission_adjustment = entry_price * self.commission_rate * dec!(2);
+        // BUGFIX: Commission should consider quantity for accurate break-even
+        // Commission = price * quantity * rate (paid on both entry and exit)
+        let total_value = entry_price * quantity;
+        let commission_per_unit = (total_value * self.commission_rate * dec!(2)) / quantity;
+        let commission_adjustment = commission_per_unit;
         
         match side {
             OrderSide::Buy => entry_price + commission_adjustment,

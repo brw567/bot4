@@ -9,6 +9,7 @@ use serde::{Serialize, Deserialize};
 use std::sync::Arc;
 use parking_lot::RwLock;
 use async_trait::async_trait;
+use tracing::{info, error};
 
 /// Base model trait for ensemble members
 #[async_trait]
@@ -147,9 +148,9 @@ impl StackingEnsemble {
         self.metrics.inference_time_ms = start.elapsed().as_millis() as f64;
         
         info!(
-            "Ensemble trained: diversity={:.3}, time={:.1}ms",
-            self.metrics.diversity_score,
-            self.metrics.inference_time_ms
+            diversity = self.metrics.diversity_score,
+            time_ms = self.metrics.inference_time_ms,
+            "Ensemble trained"
         );
         
         Ok(())
@@ -168,7 +169,7 @@ impl StackingEnsemble {
         
         // For each fold
         for (fold_idx, (train_idx, val_idx)) in splits.iter().enumerate() {
-            info!("Processing fold {}/{}", fold_idx + 1, splits.len());
+            info!(fold = fold_idx + 1, total = splits.len(), "Processing fold");
             
             // Split data
             let x_train = x.select(Axis(0), train_idx);

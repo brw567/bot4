@@ -25,15 +25,15 @@
 
 use std::sync::Arc;
 use std::collections::HashMap;
-use ndarray::{Array1, Array2, Array3, Axis};
+use ndarray::{Array1, Array2, Axis};
 use rand::prelude::*;
 use serde::{Serialize, Deserialize};
 
 // Import our models and optimizations
-use crate::models::{DeepLSTM, ARIMAModel, GRUModel};
+use crate::models::DeepLSTM;
 use crate::simd::{dot_product_avx512, has_avx512};
 use crate::math_opt::KahanSum;
-use infrastructure::zero_copy::{ObjectPool, MemoryPoolManager};
+use infrastructure::zero_copy::MemoryPoolManager;
 
 // ============================================================================
 // ENSEMBLE ARCHITECTURE - Morgan's Design with Team Enhancements
@@ -438,18 +438,18 @@ impl OptimizedEnsemble {
     /// Dynamic weighted majority - Sam
     fn dynamic_weighted(&self, predictions: &Array2<f64>, weights: &Array1<f64>) -> Array1<f64> {
         // Get weighted prediction
-        let result = self.weighted_average(predictions, weights);
+        
         
         // Will update weights based on performance (in online learning)
         
-        result
+        self.weighted_average(predictions, weights)
     }
     
     /// Stacking ensemble - Avery
     fn stacking_ensemble(&self, predictions: &Array2<f64>, features: &Array2<f64>) -> Array1<f64> {
         if let Some(ref meta) = self.meta_learner {
             // Create meta-features
-            let mut meta_features = predictions.t().to_owned();
+            let meta_features = predictions.t().to_owned();
             
             if meta.use_model_confidence {
                 // Add confidence scores
@@ -469,36 +469,33 @@ impl OptimizedEnsemble {
             // Apply activation (e.g., sigmoid for probability) and flatten to Array1
             let activated = result.mapv(|x| 1.0 / (1.0 + (-x).exp()));
             // If result is 2D, take mean across output dimension for ensemble prediction
-            return activated.mean_axis(Axis(1)).unwrap();
+            activated.mean_axis(Axis(1)).unwrap()
         } else {
             // Fallback to weighted average
-            return self.simple_average(predictions);
+            self.simple_average(predictions)
         }
     }
     
     /// Update ensemble weights online - Casey
     pub fn update_weights_online(&mut self, predictions: &Array2<f64>, actual: &Array1<f64>) {
-        match &mut self.voting_strategy {
-            VotingStrategy::DynamicWeighted { weights, learning_rate, penalty_factor } => {
-                // Update weights based on individual model performance
-                for i in 0..predictions.nrows() {
-                    let model_pred = predictions.row(i);
-                    let error = (&model_pred - actual).mapv(|x| x.abs()).mean().unwrap();
-                    
-                    // Penalize poor performers
-                    if error > self.metrics.ensemble_accuracy {
-                        weights[i] = weights[i] * *penalty_factor;
-                    } else {
-                        // Reward good performers
-                        weights[i] = weights[i] * (1.0 + *learning_rate);
-                    }
-                }
+        if let VotingStrategy::DynamicWeighted { weights, learning_rate, penalty_factor } = &mut self.voting_strategy {
+            // Update weights based on individual model performance
+            for i in 0..predictions.nrows() {
+                let model_pred = predictions.row(i);
+                let error = (&model_pred - actual).mapv(|x| x.abs()).mean().unwrap();
                 
-                // Renormalize weights
-                let sum = weights.sum();
-                *weights /= sum;
-            },
-            _ => {}
+                // Penalize poor performers
+                if error > self.metrics.ensemble_accuracy {
+                    weights[i] *= *penalty_factor;
+                } else {
+                    // Reward good performers
+                    weights[i] *= 1.0 + *learning_rate;
+                }
+            }
+            
+            // Renormalize weights
+            let sum = weights.sum();
+            *weights /= sum;
         }
         
         // Check for concept drift
@@ -620,7 +617,7 @@ impl OptimizedEnsemble {
     /// Update individual model performance - Riley
     fn update_model_performance(&mut self) {
         // Simplified - would evaluate each model
-        let model_names = vec!["DeepLSTM", "Transformer", "TemporalCNN", "GRU", "GradientBoost"];
+        let model_names = ["DeepLSTM", "Transformer", "TemporalCNN", "GRU", "GradientBoost"];
         
         for (i, name) in model_names.iter().enumerate() {
             let perf = ModelPerformance {

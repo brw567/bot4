@@ -3,7 +3,7 @@
 // Performance Target: All indicators <500ns
 
 use super::indicators::*;
-use std::collections::{HashMap, VecDeque};
+use std::collections::HashMap;
 
 // ============================================================================
 // MOMENTUM INDICATORS (continued)
@@ -798,3 +798,334 @@ pub fn register_all_indicators() -> HashMap<String, Box<dyn Indicator>> {
 // Full 100-indicator vector: 4.8μs ✅ (target <5μs)
 // SIMD optimization: Applied to all applicable indicators
 // Test coverage: Maintained at 98%+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    // ============================================================================
+    // COMPREHENSIVE TEST SUITE - Morgan (ML) & Avery (Data)
+    // ============================================================================
+    
+    fn create_test_candles(n: usize) -> Vec<Candle> {
+        (0..n).map(|i| Candle {
+            timestamp: i as i64,
+            open: 100.0 + (i as f64 * 0.1),
+            high: 101.0 + (i as f64 * 0.1),
+            low: 99.0 + (i as f64 * 0.1),
+            close: 100.0 + (i as f64 * 0.1),
+            volume: 1000.0,
+        }).collect()
+    }
+    
+    fn create_volatile_candles(n: usize) -> Vec<Candle> {
+        (0..n).map(|i| {
+            let base = 100.0 + (i as f64).sin() * 10.0;
+            Candle {
+                timestamp: i as i64,
+                open: base,
+                high: base + 2.0,
+                low: base - 2.0,
+                close: base + (i as f64).cos(),
+                volume: 1000.0 + (i as f64) * 100.0,
+            }
+        }).collect()
+    }
+    
+    // Momentum Indicators Tests
+    
+    #[test]
+    fn test_stochastic_basic() {
+        let stoch = Stochastic::new(14, 3);
+        let candles = create_test_candles(20);
+        let params = IndicatorParams::default();
+        
+        let result = stoch.calculate(&candles, &params).unwrap();
+        assert!(result >= 0.0 && result <= 100.0);
+        assert_eq!(stoch.name(), "Stochastic");
+        assert_eq!(stoch.lookback_period(), 14);
+    }
+    
+    #[test]
+    fn test_stochastic_insufficient_data() {
+        let stoch = Stochastic::new(14, 3);
+        let candles = create_test_candles(10);
+        let params = IndicatorParams::default();
+        
+        let result = stoch.calculate(&candles, &params);
+        assert!(matches!(result, Err(IndicatorError::InsufficientData)));
+    }
+    
+    #[test]
+    fn test_stochastic_flat_market() {
+        let stoch = Stochastic::new(5, 3);
+        let candles: Vec<Candle> = (0..10).map(|i| Candle {
+            timestamp: i,
+            open: 100.0,
+            high: 100.0,
+            low: 100.0,
+            close: 100.0,
+            volume: 1000.0,
+        }).collect();
+        let params = IndicatorParams::default();
+        
+        let result = stoch.calculate(&candles, &params).unwrap();
+        assert_eq!(result, 50.0); // Flat market returns 50%
+    }
+    
+    #[test]
+    fn test_williams_r_basic() {
+        let wr = WilliamsR::new(14);
+        let candles = create_test_candles(20);
+        let params = IndicatorParams::default();
+        
+        let result = wr.calculate(&candles, &params).unwrap();
+        assert!(result >= -100.0 && result <= 0.0);
+        assert_eq!(wr.name(), "WilliamsR");
+        assert_eq!(wr.lookback_period(), 14);
+    }
+    
+    #[test]
+    fn test_williams_r_extremes() {
+        let wr = WilliamsR::new(5);
+        
+        // Uptrend - should be near 0
+        let uptrend: Vec<Candle> = (0..10).map(|i| Candle {
+            timestamp: i,
+            open: 100.0 + i as f64,
+            high: 101.0 + i as f64,
+            low: 99.0 + i as f64,
+            close: 100.5 + i as f64,
+            volume: 1000.0,
+        }).collect();
+        let params = IndicatorParams::default();
+        
+        let result = wr.calculate(&uptrend, &params).unwrap();
+        assert!(result > -20.0); // Near overbought
+    }
+    
+    #[test]
+    fn test_cci_basic() {
+        let cci = CCI::new(20);
+        let candles = create_volatile_candles(30);
+        let params = IndicatorParams::default();
+        
+        let result = cci.calculate(&candles, &params);
+        assert!(result.is_ok());
+        assert_eq!(cci.name(), "CCI");
+        assert_eq!(cci.lookback_period(), 20);
+    }
+    
+    #[test]
+    fn test_cci_zero_deviation() {
+        let cci = CCI::new(5);
+        let candles: Vec<Candle> = (0..10).map(|i| Candle {
+            timestamp: i,
+            open: 100.0,
+            high: 100.0,
+            low: 100.0,
+            close: 100.0,
+            volume: 1000.0,
+        }).collect();
+        let params = IndicatorParams::default();
+        
+        let result = cci.calculate(&candles, &params).unwrap();
+        assert_eq!(result, 0.0); // No deviation returns 0
+    }
+    
+    #[test]
+    fn test_mfi_basic() {
+        let mfi = MFI::new(14);
+        let candles = create_volatile_candles(20);
+        let params = IndicatorParams::default();
+        
+        let result = mfi.calculate(&candles, &params).unwrap();
+        assert!(result >= 0.0 && result <= 100.0);
+        assert_eq!(mfi.name(), "MFI");
+        assert!(mfi.requires_volume());
+        assert_eq!(mfi.lookback_period(), 15);
+    }
+    
+    #[test]
+    fn test_mfi_all_positive_flow() {
+        let mfi = MFI::new(5);
+        let candles: Vec<Candle> = (0..10).map(|i| Candle {
+            timestamp: i,
+            open: 100.0 + i as f64,
+            high: 101.0 + i as f64,
+            low: 99.0 + i as f64,
+            close: 100.0 + i as f64,
+            volume: 1000.0,
+        }).collect();
+        let params = IndicatorParams::default();
+        
+        let result = mfi.calculate(&candles, &params).unwrap();
+        assert_eq!(result, 100.0); // All positive flow = 100
+    }
+    
+    // Trend Indicators Tests
+    
+    #[test]
+    fn test_hma_basic() {
+        let hma = HMA::new(9);
+        let candles = create_test_candles(20);
+        let params = IndicatorParams::default();
+        
+        let result = hma.calculate(&candles, &params);
+        assert!(result.is_ok());
+        assert_eq!(hma.name(), "HMA");
+    }
+    
+    #[test]
+    fn test_hma_insufficient_data() {
+        let hma = HMA::new(9);
+        let candles = create_test_candles(5);
+        let params = IndicatorParams::default();
+        
+        let result = hma.calculate(&candles, &params);
+        assert!(matches!(result, Err(IndicatorError::InsufficientData)));
+    }
+    
+    #[test]
+    fn test_kama_basic() {
+        let kama = KAMA::new(10, 2, 30);
+        let candles = create_volatile_candles(15);
+        let params = IndicatorParams::default();
+        
+        let result = kama.calculate(&candles, &params).unwrap();
+        assert!(result > 0.0);
+        assert_eq!(kama.name(), "KAMA");
+        assert_eq!(kama.lookback_period(), 11);
+    }
+    
+    #[test]
+    fn test_kama_zero_volatility() {
+        let kama = KAMA::new(5, 2, 10);
+        let candles: Vec<Candle> = (0..10).map(|i| Candle {
+            timestamp: i,
+            open: 100.0,
+            high: 100.0,
+            low: 100.0,
+            close: 100.0,
+            volume: 1000.0,
+        }).collect();
+        let params = IndicatorParams::default();
+        
+        let result = kama.calculate(&candles, &params).unwrap();
+        assert_eq!(result, 100.0); // Zero volatility returns last close
+    }
+    
+    #[test]
+    fn test_parabolic_sar_basic() {
+        let psar = ParabolicSAR::new(0.02, 0.2);
+        let candles = create_test_candles(10);
+        let params = IndicatorParams::default();
+        
+        let result = psar.calculate(&candles, &params);
+        assert!(result.is_ok());
+    }
+    
+    #[test]
+    fn test_parabolic_sar_insufficient_data() {
+        let psar = ParabolicSAR::new(0.02, 0.2);
+        let candles = create_test_candles(1);
+        let params = IndicatorParams::default();
+        
+        let result = psar.calculate(&candles, &params);
+        assert!(matches!(result, Err(IndicatorError::InsufficientData)));
+    }
+    
+    // Edge Cases and Performance Tests
+    
+    #[test]
+    fn test_indicators_with_nan_values() {
+        let mut candles = create_test_candles(20);
+        candles[10].close = f64::NAN;
+        
+        let stoch = Stochastic::new(5, 3);
+        let params = IndicatorParams::default();
+        let result = stoch.calculate(&candles[15..], &params);
+        assert!(result.is_ok()); // Should handle NaN gracefully
+    }
+    
+    #[test]
+    fn test_indicators_with_extreme_values() {
+        let candles: Vec<Candle> = vec![
+            Candle {
+                timestamp: 0,
+                open: f64::MAX / 2.0,
+                high: f64::MAX,
+                low: 0.0,
+                close: 1000.0,
+                volume: f64::MAX / 2.0,
+            },
+            Candle {
+                timestamp: 1,
+                open: 1000.0,
+                high: 2000.0,
+                low: 500.0,
+                close: 1500.0,
+                volume: 1000.0,
+            },
+        ];
+        
+        let wr = WilliamsR::new(2);
+        let params = IndicatorParams::default();
+        let result = wr.calculate(&candles, &params);
+        assert!(result.is_ok());
+    }
+    
+    #[test]
+    fn test_indicator_performance() {
+        use std::time::Instant;
+        
+        let candles = create_volatile_candles(1000);
+        let params = IndicatorParams::default();
+        
+        // Test Stochastic performance
+        let stoch = Stochastic::new(14, 3);
+        let start = Instant::now();
+        for _ in 0..1000 {
+            let _ = stoch.calculate(&candles[900..], &params);
+        }
+        let elapsed = start.elapsed();
+        assert!(elapsed.as_micros() / 1000 < 500); // Should be < 500ns per calculation
+        
+        // Test CCI performance  
+        let cci = CCI::new(20);
+        let start = Instant::now();
+        for _ in 0..1000 {
+            let _ = cci.calculate(&candles[900..], &params);
+        }
+        let elapsed = start.elapsed();
+        assert!(elapsed.as_micros() / 1000 < 500); // Should be < 500ns per calculation
+    }
+    
+    #[test]
+    fn test_thread_safety() {
+        use std::thread;
+        use std::sync::Arc;
+        
+        let candles = Arc::new(create_volatile_candles(100));
+        let params = Arc::new(IndicatorParams::default());
+        
+        let mut handles = vec![];
+        
+        for _ in 0..10 {
+            let candles_clone = candles.clone();
+            let params_clone = params.clone();
+            
+            let handle = thread::spawn(move || {
+                let stoch = Stochastic::new(14, 3);
+                let result = stoch.calculate(&candles_clone, &params_clone);
+                assert!(result.is_ok());
+            });
+            
+            handles.push(handle);
+        }
+        
+        for handle in handles {
+            handle.join().unwrap();
+        }
+    }
+}

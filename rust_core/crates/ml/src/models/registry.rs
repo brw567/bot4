@@ -10,11 +10,9 @@ use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc, Duration};
 use uuid::Uuid;
 use memmap2::{Mmap, MmapOptions};
-use std::fs::{File, OpenOptions};
-use std::path::{Path, PathBuf};
-use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
-use std::sync::atomic::{AtomicU64, AtomicBool, Ordering};
-use async_trait::async_trait;
+use std::fs::File;
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 // ============================================================================
 // ENHANCED REGISTRY ARCHITECTURE WITH ZERO-COPY MODEL LOADING
@@ -262,6 +260,12 @@ pub struct DegradationDetector {
     last_rollback: Arc<RwLock<HashMap<String, DateTime<Utc>>>>,
 }
 
+impl Default for DegradationDetector {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DegradationDetector {
     pub fn new() -> Self {
         Self {
@@ -343,7 +347,7 @@ impl DegradationDetector {
     pub fn set_baseline(&self, purpose: String, model_id: Uuid, metrics: ModelMetrics) {
         self.baseline_metrics.write()
             .entry(purpose)
-            .or_insert_with(HashMap::new)
+            .or_default()
             .insert(model_id, metrics);
     }
     
@@ -351,7 +355,7 @@ impl DegradationDetector {
     pub fn update_metrics(&self, purpose: String, model_id: Uuid, metrics: ModelMetrics) {
         self.current_metrics.write()
             .entry(purpose)
-            .or_insert_with(HashMap::new)
+            .or_default()
             .insert(model_id, metrics);
         
         *self.sample_counts.write().entry(model_id).or_insert(0) += 1;
@@ -473,7 +477,7 @@ impl ModelRegistry {
     ) -> Result<DeploymentResult, RegistryError> {
         // Start with small percentage of traffic
         let mut active = self.active_models.write();
-        let current_models = active.entry(purpose.clone()).or_insert_with(Vec::new);
+        let current_models = active.entry(purpose.clone()).or_default();
         
         // Keep existing model(s) active
         if !current_models.contains(&id) {
@@ -534,7 +538,7 @@ impl ModelRegistry {
         }
         
         let mut active = self.active_models.write();
-        let current_models = active.entry(format!("{}_shadow", purpose)).or_insert_with(Vec::new);
+        let current_models = active.entry(format!("{}_shadow", purpose)).or_default();
         current_models.push(id);
         
         Ok(DeploymentResult {
@@ -558,7 +562,7 @@ impl ModelRegistry {
             
             // Check for A/B test
             if let Some(ab_test) = self.ab_tests.read().get(purpose) {
-                return Some(self.select_ab_model(&ab_test, models));
+                return Some(self.select_ab_model(ab_test, models));
             }
             
             // Get model with highest traffic percentage

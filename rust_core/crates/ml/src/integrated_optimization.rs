@@ -18,13 +18,13 @@
 
 use std::sync::Arc;
 use std::time::Instant;
-use ndarray::{Array1, Array2, ArrayView1, ArrayView2, s};
+use ndarray::{Array1, Array2, s};
 use rayon::prelude::*;
 
 // Import our optimization layers
-use crate::simd::{AlignedVec, dot_product_avx512, gemm_avx512, has_avx512};
+use crate::simd::{AlignedVec, dot_product_avx512, has_avx512};
 use crate::math_opt::{StrassenMultiplier, RandomizedSVD, CSRMatrix, FFTConvolution, KahanSum};
-use infrastructure::zero_copy::{ObjectPool, Arena, ZeroCopyPipeline, MemoryPoolManager};
+use infrastructure::zero_copy::{ObjectPool, Arena, MemoryPoolManager};
 
 // ============================================================================
 // INTEGRATED ML PIPELINE - Combines All Optimizations
@@ -60,6 +60,12 @@ pub struct PipelineMetrics {
     svd_uses: u64,
     fft_uses: u64,
     total_speedup: f64,
+}
+
+impl Default for IntegratedMLPipeline {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl IntegratedMLPipeline {
@@ -664,34 +670,42 @@ mod tests {
 // BENCHMARKS - Jordan's Performance Validation
 // ============================================================================
 
-#[cfg(all(test, not(target_env = "msvc")))]
-mod benches {
+#[cfg(test)]
+mod perf_tests {
     use super::*;
-    use test::Bencher;
     
-    #[bench]
-    fn bench_integrated_feature_extraction(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_integrated_feature_extraction() {
         let mut pipeline = IntegratedMLPipeline::new();
         let data = vec![rand::random::<f64>(); 10000];
         
-        b.iter(|| {
-            pipeline.extract_features(&data, 100)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = pipeline.extract_features(&data, 100);
+        }
+        let elapsed = start.elapsed();
+        println!("Integrated feature extraction: {:?}/iter", elapsed / 10);
     }
     
-    #[bench]
-    fn bench_integrated_training(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_integrated_training() {
         let mut pipeline = IntegratedMLPipeline::new();
         let features = Array2::from_shape_fn((100, 50), |(i, j)| (i + j) as f64);
         let labels = Array1::from_shape_fn(100, |i| i as f64);
         
-        b.iter(|| {
-            pipeline.train_model(features.clone(), labels.clone())
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = pipeline.train_model(features.clone(), labels.clone());
+        }
+        let elapsed = start.elapsed();
+        println!("Integrated training: {:?}/iter", elapsed / 10);
     }
     
-    #[bench]
-    fn bench_integrated_prediction(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_integrated_prediction() {
         let mut pipeline = IntegratedMLPipeline::new();
         let model = TrainedModel {
             weights: vec![0.1; 100],
@@ -701,9 +715,12 @@ mod benches {
         };
         let features = vec![0.5; 100];
         
-        b.iter(|| {
-            pipeline.predict(&model, &features)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = pipeline.predict(&model, &features);
+        }
+        let elapsed = start.elapsed();
+        println!("Integrated prediction: {:?}/iter", elapsed / 10);
     }
 }
 

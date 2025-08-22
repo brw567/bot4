@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
-use tracing::{debug, info, warn, error};
+use tracing::error;
 
 /// Risk metrics snapshot
 #[derive(Debug, Clone, Serialize, Deserialize)]

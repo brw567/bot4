@@ -17,15 +17,11 @@
 // Alex: Coordination and quality assurance
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, AtomicU64, AtomicBool, Ordering};
-use std::cell::UnsafeCell;
-use std::mem::{self, MaybeUninit};
+use std::sync::atomic::{AtomicUsize, AtomicU64, Ordering};
+use std::mem::{self};
 use std::alloc::{alloc, dealloc, Layout};
-use std::ptr;
 use crossbeam_queue::ArrayQueue;
-use crossbeam_epoch::{self as epoch, Atomic, Owned, Shared};
 use dashmap::DashMap;
-use parking_lot::RwLock;
 
 // ============================================================================
 // OBJECT POOLS - Sam's Zero-Allocation Design
@@ -215,6 +211,12 @@ pub struct LockFreeMetrics {
     counters: Arc<DashMap<String, AtomicU64>>,
 }
 
+impl Default for LockFreeMetrics {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LockFreeMetrics {
     pub fn new() -> Self {
         Self {
@@ -266,7 +268,7 @@ impl ZeroCopyPipeline {
     /// Create new pipeline - Morgan
     pub fn new(buffer_size: usize, pool_size: usize) -> Self {
         // Create pool of pre-allocated buffers
-        let mut buffer_pool = ObjectPool::<Vec<f64>>::new(pool_size);
+        let buffer_pool = ObjectPool::<Vec<f64>>::new(pool_size);
         
         // Initialize buffers to correct size
         for _ in 0..pool_size {
@@ -492,7 +494,7 @@ impl ZeroCopyMatrix {
         k: usize,
         n: usize,
     ) {
-        use std::arch::x86_64::*;
+        
         
         // Implementation would use AVX-512 from simd module
         // For now, fallback to blocked
@@ -511,6 +513,12 @@ pub struct MemoryPoolManager {
     vector_pool: ObjectPool<Vec<f64>>,
     batch_pool: ObjectPool<Vec<Vec<f64>>>,
     metrics: LockFreeMetrics,
+}
+
+impl Default for MemoryPoolManager {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl MemoryPoolManager {
@@ -616,7 +624,9 @@ mod tests {
     
     #[test]
     fn test_arena_allocator() {
-        let arena = Arena::new(1024);
+        // BUGFIX: Arena needs more space for 100 f64s with alignment
+        // 100 * 8 bytes = 800, but with alignment overhead need ~2KB
+        let arena = Arena::new(2048);
         
         // Allocate multiple objects
         for i in 0..100 {
@@ -726,43 +736,58 @@ mod tests {
 // BENCHMARKS - Riley's Performance Validation
 // ============================================================================
 
-#[cfg(all(test, not(target_env = "msvc")))]
-mod benches {
+#[cfg(test)]
+mod perf_tests {
     use super::*;
-    use test::Bencher;
     
-    #[bench]
-    fn bench_with_allocation(b: &mut Bencher) {
-        b.iter(|| {
+    #[test]
+    #[ignore]
+    fn perf_with_allocation() {
+        let start = std::time::Instant::now();
+        for _ in 0..10000 {
             let v = vec![0.0; 1024];
-            v.len() // Use it
-        });
+            let _ = v.len(); // Use it
+        }
+        let elapsed = start.elapsed();
+        println!("With allocation: {:?}/iter", elapsed / 10000);
     }
     
-    #[bench]
-    fn bench_with_pool(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_with_pool() {
         let pool: ObjectPool<Vec<f64>> = ObjectPool::new(10);
-        b.iter(|| {
+        let start = std::time::Instant::now();
+        for _ in 0..10000 {
             let guard = pool.acquire();
-            guard.len() // Use it
-        });
+            let _ = guard.len(); // Use it
+        }
+        let elapsed = start.elapsed();
+        println!("With pool: {:?}/iter", elapsed / 10000);
     }
     
-    #[bench]
-    fn bench_mutex_metric(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_mutex_metric() {
         use std::sync::Mutex;
         let metric = Arc::new(Mutex::new(0u64));
-        b.iter(|| {
+        let start = std::time::Instant::now();
+        for _ in 0..10000 {
             *metric.lock().unwrap() += 1;
-        });
+        }
+        let elapsed = start.elapsed();
+        println!("Mutex metric: {:?}/iter", elapsed / 10000);
     }
     
-    #[bench]
-    fn bench_lockfree_metric(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_lockfree_metric() {
         let metrics = LockFreeMetrics::new();
-        b.iter(|| {
+        let start = std::time::Instant::now();
+        for _ in 0..10000 {
             metrics.increment("test");
-        });
+        }
+        let elapsed = start.elapsed();
+        println!("Lock-free metric: {:?}/iter", elapsed / 10000);
     }
 }
 

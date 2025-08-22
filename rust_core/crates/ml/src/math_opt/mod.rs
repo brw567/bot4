@@ -17,14 +17,14 @@
 // Alex: Coordination and quality assurance
 
 use std::cmp::min;
-use ndarray::{Array2, ArrayView2, s, Axis};
+use ndarray::{Array2, s};
 use num_complex::Complex;
 use rustfft::{FftPlanner, num_traits::Zero};
 use rand::prelude::*;
 use rayon::prelude::*;
 
 // Re-use our SIMD module
-use crate::simd::{dot_product_avx512, gemm_avx512};
+use crate::simd::gemm_avx512;
 
 // ============================================================================
 // STRASSEN'S ALGORITHM - Morgan's O(n^2.807) Implementation
@@ -35,6 +35,12 @@ use crate::simd::{dot_product_avx512, gemm_avx512};
 pub struct StrassenMultiplier {
     threshold: usize,  // Switch to conventional below this size
     use_simd: bool,
+}
+
+impl Default for StrassenMultiplier {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl StrassenMultiplier {
@@ -464,6 +470,12 @@ pub struct FFTConvolution {
     planner: FftPlanner<f64>,
 }
 
+impl Default for FFTConvolution {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FFTConvolution {
     /// Create new FFT convolution processor - Sam
     pub fn new() -> Self {
@@ -600,6 +612,12 @@ impl FFTConvolution {
 pub struct KahanSum {
     sum: f64,
     c: f64,  // Compensation for lost digits
+}
+
+impl Default for KahanSum {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl KahanSum {
@@ -777,47 +795,59 @@ mod tests {
 // BENCHMARKS - Riley's Performance Validation
 // ============================================================================
 
-#[cfg(all(test, not(target_env = "msvc")))]
-mod benches {
+#[cfg(test)]
+mod perf_tests {
     use super::*;
-    use test::Bencher;
     
-    #[bench]
-    fn bench_conventional_multiply_256(b: &mut Bencher) {
+    #[test]
+    #[ignore] // Run with: cargo test -- --ignored
+    fn perf_conventional_multiply_256() {
         let n = 256;
         let a = Array2::from_shape_fn((n, n), |(i, j)| (i + j) as f64);
         let m = Array2::from_shape_fn((n, n), |(i, j)| (i * j) as f64);
         
-        b.iter(|| {
-            a.dot(&m)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = a.dot(&m);
+        }
+        let elapsed = start.elapsed();
+        println!("Conventional multiply 256x256: {:?}/iter", elapsed / 10);
     }
     
-    #[bench]
-    fn bench_strassen_multiply_256(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_strassen_multiply_256() {
         let n = 256;
         let a = Array2::from_shape_fn((n, n), |(i, j)| (i + j) as f64);
         let m = Array2::from_shape_fn((n, n), |(i, j)| (i * j) as f64);
         let strassen = StrassenMultiplier::new();
         
-        b.iter(|| {
-            strassen.multiply(&a, &m)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = strassen.multiply(&a, &m);
+        }
+        let elapsed = start.elapsed();
+        println!("Strassen multiply 256x256: {:?}/iter", elapsed / 10);
     }
     
-    #[bench]
-    fn bench_fft_convolution(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_fft_convolution() {
         let signal = vec![1.0; 1024];
         let kernel = vec![0.5; 64];
         let mut fft = FFTConvolution::new();
         
-        b.iter(|| {
-            fft.convolve(&signal, &kernel)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = fft.convolve(&signal, &kernel);
+        }
+        let elapsed = start.elapsed();
+        println!("FFT convolution: {:?}/iter", elapsed / 10);
     }
     
-    #[bench]
-    fn bench_sparse_multiply(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_sparse_multiply() {
         let n = 1000;
         let mut a = Array2::zeros((n, n));
         
@@ -833,9 +863,12 @@ mod benches {
         let csr = CSRMatrix::from_dense(&a, 1e-10);
         let x = Array1::ones(n);
         
-        b.iter(|| {
-            csr.spmv(&x)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = csr.spmv(&x);
+        }
+        let elapsed = start.elapsed();
+        println!("Sparse CSR multiply: {:?}/iter", elapsed / 10);
     }
 }
 

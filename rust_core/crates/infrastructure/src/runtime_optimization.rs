@@ -33,6 +33,12 @@ pub struct RuntimeStats {
     pub failed_tasks: CachePadded<AtomicU64>,
 }
 
+impl Default for RuntimeStats {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RuntimeStats {
     pub fn new() -> Self {
         Self {
@@ -161,6 +167,12 @@ pub struct ZeroAllocTask<T> {
     completed: AtomicBool,
 }
 
+impl<T> Default for ZeroAllocTask<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> ZeroAllocTask<T> {
     /// Create new zero-alloc task
     pub fn new() -> Self {
@@ -234,7 +246,7 @@ impl HotPathVerifier {
 
 /// Optimized async primitives for hot paths
 pub mod async_primitives {
-    use super::*;
+    
     use tokio::sync::oneshot;
     use std::pin::Pin;
     use std::task::{Context, Poll};

@@ -12,7 +12,7 @@ use thiserror::Error;
 
 /// SIMD-accelerated indicator engine for 100+ technical indicators
 // Core data structures
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Candle {
     pub timestamp: i64,
     pub open: f64,
@@ -115,6 +115,12 @@ pub struct SimdAccelerator {
     workspace: Vec<f32>,  // Will be aligned naturally by Vec
 }
 
+impl Default for SimdAccelerator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SimdAccelerator {
     pub fn new() -> Self {
         Self {
@@ -215,6 +221,12 @@ pub struct CircuitBreaker {
     trip_count: std::sync::atomic::AtomicU32,
 }
 
+impl Default for CircuitBreaker {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CircuitBreaker {
     pub fn new() -> Self {
         Self {
@@ -242,6 +254,12 @@ pub struct FeatureBounds {
     
     // Statistics for normalization
     stats: HashMap<String, FeatureStats>,
+}
+
+impl Default for FeatureBounds {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl FeatureBounds {
@@ -676,6 +694,12 @@ impl Indicator for OBV {
 // FEATURE ENGINE IMPLEMENTATION
 // ============================================================================
 
+impl Default for IndicatorEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IndicatorEngine {
     pub fn new() -> Self {
         let mut indicators: HashMap<String, Box<dyn Indicator>> = HashMap::new();
@@ -778,6 +802,48 @@ impl IndicatorEngine {
 mod tests {
     use super::*;
     use proptest::prelude::*;
+    use approx::assert_relative_eq;
+    use serde::{Deserialize, Serialize};
+    
+    #[derive(Debug, Deserialize, Serialize)]
+    struct GoldenData {
+        sma_cases: Vec<TestCase>,
+        ema_cases: Vec<TestCase>,
+        rsi_cases: Vec<TestCase>,
+        macd_cases: Vec<MacdTestCase>,
+    }
+    
+    #[derive(Debug, Deserialize, Serialize)]
+    struct TestCase {
+        candles: Vec<Candle>,
+        expected: f64,
+    }
+    
+    #[derive(Debug, Deserialize, Serialize)]
+    struct MacdTestCase {
+        candles: Vec<Candle>,
+        expected: MacdResult,
+    }
+    
+    #[derive(Debug, Deserialize, Serialize)]
+    struct MacdResult {
+        macd: f64,
+        signal: f64,
+        histogram: f64,
+    }
+    
+    fn generate_test_candles(count: usize) -> Vec<Candle> {
+        (0..count).map(|i| {
+            Candle {
+                timestamp: i as i64 * 60,
+                open: 100.0 + (i as f64).sin() * 10.0,
+                high: 105.0 + (i as f64).sin() * 10.0,
+                low: 95.0 + (i as f64).sin() * 10.0,
+                close: 100.0 + ((i + 1) as f64).sin() * 10.0,
+                volume: 1000.0 + (i as f64) * 10.0,
+            }
+        }).collect()
+    }
     
     // Golden dataset from TradingView for validation
     const GOLDEN_DATA: &str = include_str!("../test_data/golden_indicators.json");

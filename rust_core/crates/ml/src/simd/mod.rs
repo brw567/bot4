@@ -680,37 +680,51 @@ mod tests {
 // BENCHMARKS - Riley's Performance Validation
 // ============================================================================
 
-#[cfg(all(test, not(target_env = "msvc")))]
-mod benches {
+#[cfg(test)]
+mod perf_tests {
     use super::*;
-    use test::Bencher;
     
-    #[bench]
-    fn bench_dot_product_scalar(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_dot_product_scalar() {
         let v1 = vec![1.0; 1024];
         let v2 = vec![2.0; 1024];
-        b.iter(|| {
-            v1.iter().zip(v2.iter()).map(|(x, y)| x * y).sum::<f64>()
-        });
+        
+        let start = std::time::Instant::now();
+        for _ in 0..10000 {
+            let _: f64 = v1.iter().zip(v2.iter()).map(|(x, y)| x * y).sum();
+        }
+        let elapsed = start.elapsed();
+        println!("Scalar dot product: {:?}/iter", elapsed / 10000);
     }
     
-    #[bench]
-    fn bench_dot_product_avx512(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_dot_product_avx512() {
         let v1 = vec![1.0; 1024];
         let v2 = vec![2.0; 1024];
-        b.iter(|| unsafe {
-            dot_product_avx512(&v1, &v2)
-        });
+        
+        let start = std::time::Instant::now();
+        for _ in 0..10000 {
+            let _ = unsafe { dot_product_avx512(&v1, &v2) };
+        }
+        let elapsed = start.elapsed();
+        println!("AVX-512 dot product: {:?}/iter", elapsed / 10000);
     }
     
-    #[bench]
-    fn bench_matrix_multiply_avx512(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_matrix_multiply_avx512() {
         let a = vec![1.0; 256 * 256];
         let b = vec![2.0; 256 * 256];
         let mut c = vec![0.0; 256 * 256];
-        b.iter(|| unsafe {
-            gemm_avx512(&a, &b, &mut c, 256, 256, 256)
-        });
+        
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            unsafe { gemm_avx512(&a, &b, &mut c, 256, 256, 256) };
+        }
+        let elapsed = start.elapsed();
+        println!("AVX-512 matrix multiply: {:?}/iter", elapsed / 10);
     }
 }
 

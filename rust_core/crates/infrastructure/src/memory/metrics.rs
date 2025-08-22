@@ -79,7 +79,7 @@ impl MemoryMetrics {
     }
     
     /// Record pool hit
-    #[inline(always)]
+    #[inline(always)]  // Zero-cost metrics
     pub fn record_pool_hit(&self, pool_type: PoolType) {
         match pool_type {
             PoolType::Order => self.order_pool_hits.fetch_add(1, Ordering::Relaxed),
@@ -99,13 +99,13 @@ impl MemoryMetrics {
     }
     
     /// Record TLS cache hit
-    #[inline(always)]
+    #[inline(always)]  // Zero-cost metrics
     pub fn record_tls_hit(&self) {
         self.tls_cache_hits.fetch_add(1, Ordering::Relaxed);
     }
     
     /// Record TLS cache miss
-    #[inline(always)]
+    #[inline(always)]  // Zero-cost metrics
     pub fn record_tls_miss(&self) {
         self.tls_cache_misses.fetch_add(1, Ordering::Relaxed);
     }
@@ -254,6 +254,7 @@ lazy_static! {
 }
 
 /// Get global metrics instance
+#[inline(always)]  // Zero-cost access
 pub fn metrics() -> &'static MemoryMetrics {
     &METRICS
 }

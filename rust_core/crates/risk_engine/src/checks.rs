@@ -4,7 +4,6 @@
 
 use std::sync::Arc;
 use std::time::Instant;
-use async_trait::async_trait;
 use dashmap::DashMap;
 use parking_lot::RwLock;
 use rust_decimal::Decimal;
@@ -14,7 +13,7 @@ use thiserror::Error;
 use tracing::{debug, warn, error};
 
 use order_management::{Order, Position};
-use crate::limits::{RiskLimits, PositionLimits};
+use crate::limits::RiskLimits;
 
 /// Result of risk check
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -12,6 +12,12 @@ use strum_macros::{Display, EnumString};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct OrderId(pub Uuid);
 
+impl Default for OrderId {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl OrderId {
     pub fn new() -> Self {
         Self(Uuid::new_v4())
@@ -269,7 +275,6 @@ impl Order {
     }
 }
 
-use rust_decimal::prelude::FromStr;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OrderValidationError {

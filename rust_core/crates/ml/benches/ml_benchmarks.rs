@@ -3,7 +3,7 @@
 // Every benchmark reviewed by all 8 team members
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
-use bot4_ml::{
+use ml::{
     models::{ARIMAModel, ARIMAConfig, ModelRegistry, DeploymentStrategy},
     feature_engine::indicators::IndicatorEngine,
     inference::{InferenceEngine, InferenceRequest, Priority, ModelData, ModelType, LayerConfig},
@@ -123,10 +123,10 @@ fn bench_feature_calculation(c: &mut Criterion) {
     let mut group = c.benchmark_group("feature_engine");
     
     // Casey: Generate realistic market data
-    let candles: Vec<bot4_ml::feature_engine::indicators::Candle> = (0..1000)
+    let candles: Vec<ml::feature_engine::indicators::Candle> = (0..1000)
         .map(|i| {
             let base = 50000.0 + (i as f32).sin() * 1000.0;
-            bot4_ml::feature_engine::indicators::Candle {
+            ml::feature_engine::indicators::Candle {
                 open: base,
                 high: base * 1.01,
                 low: base * 0.99,
@@ -290,14 +290,14 @@ fn bench_model_registry(c: &mut Criterion) {
     // Pre-register models
     let mut model_ids = Vec::new();
     for i in 0..100 {
-        let metadata = bot4_ml::models::ModelMetadata {
+        let metadata = ml::models::ModelMetadata {
             id: uuid::Uuid::new_v4(),
             name: format!("model_{}", i),
-            version: bot4_ml::models::ModelVersion::new(1, 0, i),
-            model_type: bot4_ml::models::ModelType::ARIMA,
+            version: ml::models::ModelVersion::new(1, 0, i),
+            model_type: ml::models::ModelType::ARIMA,
             created_at: chrono::Utc::now(),
             deployed_at: None,
-            status: bot4_ml::models::ModelStatus::Production,
+            status: ml::models::ModelStatus::Production,
             metrics: Default::default(),
             config: serde_json::json!({}),
             tags: vec![],
@@ -326,14 +326,14 @@ fn bench_model_registry(c: &mut Criterion) {
         let mut version = 0u32;
         b.iter(|| {
             version += 1;
-            let metadata = bot4_ml::models::ModelMetadata {
+            let metadata = ml::models::ModelMetadata {
                 id: uuid::Uuid::new_v4(),
                 name: "bench_model".to_string(),
-                version: bot4_ml::models::ModelVersion::new(2, 0, version),
-                model_type: bot4_ml::models::ModelType::ARIMA,
+                version: ml::models::ModelVersion::new(2, 0, version),
+                model_type: ml::models::ModelType::ARIMA,
                 created_at: chrono::Utc::now(),
                 deployed_at: None,
-                status: bot4_ml::models::ModelStatus::Staging,
+                status: ml::models::ModelStatus::Staging,
                 metrics: Default::default(),
                 config: serde_json::json!({}),
                 tags: vec![],
@@ -365,7 +365,7 @@ fn bench_end_to_end_pipeline(c: &mut Criterion) {
         
         // Generate data
         let candles: Vec<_> = (0..500)
-            .map(|i| bot4_ml::feature_engine::indicators::Candle {
+            .map(|i| ml::feature_engine::indicators::Candle {
                 open: 50000.0 + (i as f32).sin() * 1000.0,
                 high: 50500.0 + (i as f32).sin() * 1000.0,
                 low: 49500.0 + (i as f32).sin() * 1000.0,
@@ -423,7 +423,7 @@ fn bench_stress_scenarios(c: &mut Criterion) {
         let candles: Vec<_> = (0..1000)
             .map(|i| {
                 let base = 50000.0 * (1.0 + (i as f32 * 0.1).sin() * 0.5);
-                bot4_ml::feature_engine::indicators::Candle {
+                ml::feature_engine::indicators::Candle {
                     open: base,
                     high: base * 1.2,  // 20% swings
                     low: base * 0.8,

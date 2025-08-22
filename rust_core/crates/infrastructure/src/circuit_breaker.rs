@@ -162,8 +162,8 @@ pub enum Outcome {
 /// RAII guard for calls (addresses issue #4)
 pub struct CallGuard {
     breaker: Arc<ComponentBreaker>,
-    component: String,
-    start: Instant,
+    _component: String,  // Stored for future debugging use
+    _start: Instant,     // Stored for latency tracking 
     completed: bool,
     is_half_open: bool,  // Track if this was a half-open call (Sophia Issue #4)
 }
@@ -173,8 +173,8 @@ impl CallGuard {
         let is_half_open = breaker.current_state() == CircuitState::HalfOpen;
         CallGuard {
             breaker,
-            component,
-            start,
+            _component: component,
+            _start: start,
             completed: false,
             is_half_open,
         }

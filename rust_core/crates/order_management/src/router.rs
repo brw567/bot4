@@ -1,7 +1,6 @@
 // Smart Order Router
 // Routes orders to best exchange based on liquidity, fees, and latency
 
-use async_trait::async_trait;
 use dashmap::DashMap;
 use parking_lot::RwLock;
 use rust_decimal::Decimal;
@@ -9,9 +8,9 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use thiserror::Error;
-use tracing::{debug, info, warn};
+use tracing::{debug, info};
 
-use crate::order::{Order, OrderId};
+use crate::order::Order;
 
 /// Exchange route information
 #[derive(Debug, Clone)]
@@ -121,7 +120,6 @@ impl ExchangeRoute {
     }
 }
 
-use rust_decimal::prelude::FromStr;
 
 /// Routing strategy
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -197,10 +195,10 @@ impl OrderRouter {
     }
     
     fn route_round_robin(&self, order: &Order) -> Result<String, RoutingError> {
+        // ZERO-COPY: Find active routes without collecting
         let active_routes: Vec<_> = self.routes
             .iter()
             .filter(|r| r.can_handle(order))
-            .map(|r| r.key().clone())
             .collect();
         
         if active_routes.is_empty() {
@@ -208,7 +206,7 @@ impl OrderRouter {
         }
         
         let mut index = self.round_robin_index.write();
-        let selected = active_routes[*index % active_routes.len()].clone();
+        let selected = active_routes[*index % active_routes.len()].key().clone();
         *index += 1;
         
         Ok(selected)
@@ -286,9 +284,9 @@ impl OrderRouter {
             
             // Update success rate
             route.success_rate = if success {
-                (route.success_rate * 0.99 + 1.0)
+                route.success_rate * 0.99 + 1.0
             } else {
-                (route.success_rate * 0.99)
+                route.success_rate * 0.99
             };
             
             // Update slippage if provided
@@ -401,8 +399,8 @@ mod tests {
         assert!(selected == "fast_exchange" || selected == "cheap_exchange");
     }
     
-    #[test]
-    fn test_round_robin_routing() {
+    #[tokio::test]
+    async fn test_round_robin_routing() {
         let router = OrderRouter::new(RoutingStrategy::RoundRobin);
         
         router.add_route(ExchangeRoute::new("exchange1".to_string()));
@@ -418,7 +416,7 @@ mod tests {
         
         let mut selections = Vec::new();
         for _ in 0..6 {
-            selections.push(router.route_order(&order).unwrap());
+            selections.push(router.route_order(&order).await.unwrap());
         }
         
         // Should cycle through all exchanges

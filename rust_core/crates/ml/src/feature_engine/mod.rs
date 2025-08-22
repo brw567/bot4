@@ -15,7 +15,6 @@ pub use selector::{FeatureSelector, SelectionMethod};
 
 use anyhow::Result;
 use rust_decimal::Decimal;
-use std::collections::HashMap;
 
 // ============================================================================
 // TEAM ASSIGNMENTS

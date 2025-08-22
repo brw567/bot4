@@ -5,6 +5,9 @@
 // Phase 3: Added stream processing for ML integration
 // OPTIMIZATION SPRINT Day 2: Zero-copy architecture (10x speedup)
 
+// CRITICAL: Enable MiMalloc globally for <10ns allocations
+pub mod allocator;
+
 pub mod circuit_breaker;
 pub mod memory;
 pub mod parallelization;
@@ -14,6 +17,7 @@ pub mod stream_processing;
 pub mod zero_copy;  // Zero-copy architecture - FULL TEAM implementation
 pub mod object_pools;  // Comprehensive object pools - Nexus Priority 1
 pub mod rayon_enhanced;  // Enhanced Rayon parallelization - Nexus Priority 1
+pub mod simd_avx512;  // AVX-512 SIMD optimizations - Jordan (Performance)
 
 // Re-export main types
 pub use circuit_breaker::{

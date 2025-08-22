@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// Master risk limits configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct RiskLimits {
     pub position_limits: PositionLimits,
     pub loss_limits: LossLimits,
@@ -14,16 +15,6 @@ pub struct RiskLimits {
     pub correlation_limits: CorrelationLimits,
 }
 
-impl Default for RiskLimits {
-    fn default() -> Self {
-        Self {
-            position_limits: PositionLimits::default(),
-            loss_limits: LossLimits::default(),
-            exposure_limits: ExposureLimits::default(),
-            correlation_limits: CorrelationLimits::default(),
-        }
-    }
-}
 
 /// Position-specific limits
 #[derive(Debug, Clone, Serialize, Deserialize)]

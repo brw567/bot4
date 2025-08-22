@@ -3,11 +3,10 @@
 // CRITICAL: Prevents temporal leakage (Sophia #2)
 // Reference: "Advances in Financial Machine Learning" - López de Prado
 
-use ndarray::{Array1, Array2, Axis, s};
+use ndarray::{Array1, Array2, s};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use statrs::distribution::{ContinuousCDF, Normal};
-use std::collections::HashSet;
 
 /// Purged Walk-Forward Cross-Validation
 /// Prevents temporal leakage in time series data
@@ -28,7 +27,7 @@ pub struct PurgedWalkForwardCV {
 impl PurgedWalkForwardCV {
     pub fn new(n_splits: usize, purge_gap: usize, embargo_pct: f32) -> Self {
         assert!(n_splits > 1, "Need at least 2 splits");
-        assert!(embargo_pct >= 0.0 && embargo_pct < 1.0, "Embargo must be in [0, 1)");
+        assert!((0.0..1.0).contains(&embargo_pct), "Embargo must be in [0, 1)");
         
         Self {
             n_splits,
@@ -106,7 +105,7 @@ impl PurgedWalkForwardCV {
         n_combinations: usize
     ) -> Vec<(Vec<usize>, Vec<usize>)> {
         let mut splits = Vec::new();
-        let mut rng = thread_rng();
+        let rng = thread_rng();
         
         for _ in 0..n_combinations {
             // Random test period
@@ -148,6 +147,12 @@ impl PurgedWalkForwardCV {
 pub struct LeakageSentinel {
     significance_level: f64,
     min_samples: usize,
+}
+
+impl Default for LeakageSentinel {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl LeakageSentinel {
@@ -384,6 +389,7 @@ impl TimeDecayWeights {
 mod tests {
     use super::*;
     use ndarray::Array2;
+    use std::collections::HashSet;
     
     // Mock model for testing
     struct MockModel {

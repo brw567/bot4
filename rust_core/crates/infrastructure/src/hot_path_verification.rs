@@ -5,7 +5,7 @@
 
 use crate::memory::pools;
 use crate::parallelization::memory_ordering;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::AtomicU64;
 use std::time::Instant;
 
 /// Verifies zero allocations in hot paths
@@ -13,12 +13,12 @@ pub struct HotPathValidator {
     /// Allocation count before test
     initial_allocs: usize,
     /// Path being validated
-    path_name: String,
+    path_name: &'static str,  // ZERO-COPY: Use static string
 }
 
 impl HotPathValidator {
     /// Start validation
-    pub fn begin(path_name: &str) -> Self {
+    pub fn begin(path_name: &'static str) -> Self {
         // In production, would hook into MiMalloc stats
         // For now, we verify through pool metrics
         let stats = pools::get_pool_stats();
@@ -26,7 +26,7 @@ impl HotPathValidator {
         
         Self {
             initial_allocs,
-            path_name: path_name.to_string(),
+            path_name,  // ZERO-COPY: Just store the reference
         }
     }
     
@@ -37,13 +37,16 @@ impl HotPathValidator {
         let allocations = final_allocs.saturating_sub(self.initial_allocs);
         
         if allocations > 0 {
-            Err(format!(
-                "Hot path '{}' performed {} allocations - must be zero!",
-                self.path_name, allocations
-            ))
+            // ZERO-COPY: Log details, return static error
+            tracing::error!(
+                path = self.path_name,
+                allocations = allocations,
+                "Hot path performed allocations"
+            );
+            Err("Hot path allocation detected".to_string())  // Only allocate for error case
         } else {
             Ok(ValidationReport {
-                path_name: self.path_name,
+                path_name: self.path_name.to_string(),  // Allocate only on success
                 allocations: 0,
                 validated: true,
             })
@@ -63,18 +66,19 @@ pub struct ValidationReport {
 pub mod critical_paths {
     use super::*;
     use crate::memory::pools::{acquire_order, release_order, acquire_signal, release_signal};
-    use crate::circuit_breaker::{CircuitState, Outcome};
     
-    /// Order processing hot path
-    pub fn process_order_hot_path() -> Result<(), String> {
-        let validator = HotPathValidator::begin("order_processing");
+    
+    /// Order processing hot path - ZERO ALLOCATION
+    #[inline(always)]
+    pub fn process_order_hot_path() -> Result<(), &'static str> {
+        // NOTE: No validation inside hot path - measure from outside!
         
         // Acquire from pool (no allocation)
         let mut order = acquire_order();
         
-        // Simulate order processing (reuse existing string to avoid allocation)
-        order.symbol.clear();
-        order.symbol.push_str("BTC/USD");
+        // Use symbol ID instead of string manipulation
+        // Symbol 1 = BTC/USD (pre-registered)
+        order.symbol_id = 1;
         order.price = 50000.0;
         order.quantity = 0.1;
         order.timestamp = 1234567890;
@@ -84,26 +88,27 @@ pub mod critical_paths {
         
         if !risk_passed {
             release_order(order);
-            return Err("Risk check failed".to_string());
+            return Err("Risk check failed"); // Static string, no allocation
         }
         
         // Release back to pool (no deallocation)
         release_order(order);
         
-        // Validate zero allocations
-        validator.validate().map(|_| ())
+        // Success - validation happens externally
+        Ok(())
     }
     
-    /// Signal processing hot path
-    pub fn process_signal_hot_path() -> Result<(), String> {
-        let validator = HotPathValidator::begin("signal_processing");
+    /// Signal processing hot path - ZERO ALLOCATION
+    #[inline(always)]
+    pub fn process_signal_hot_path() -> Result<(), &'static str> {
+        // NOTE: No validation inside hot path - measure from outside!
         
         // Acquire from pool
         let mut signal = acquire_signal();
         
-        // Process signal (reuse string to avoid allocation)
-        signal.symbol.clear();
-        signal.symbol.push_str("ETH/USD");
+        // Use symbol ID instead of string manipulation
+        // Symbol 2 = ETH/USD (pre-registered)
+        signal.symbol_id = 2;
         signal.signal_type = crate::memory::pools::SignalType::Buy;
         signal.strength = 0.85;
         signal.timestamp = 1234567890;
@@ -115,11 +120,12 @@ pub mod critical_paths {
         // Release back to pool
         release_signal(signal);
         
-        // Validate
-        validator.validate().map(|_| ())
+        // Success - validation happens externally
+        Ok(())
     }
     
     /// Risk check using only atomics (zero allocation)
+    #[inline(always)]
     fn check_risk_atomic(price: f64, quantity: f64) -> bool {
         // Static risk limits (would be atomics in production)
         static MAX_POSITION_VALUE: AtomicU64 = AtomicU64::new(100000_00000000); // $100k in fixed point
@@ -133,6 +139,7 @@ pub mod critical_paths {
     }
     
     /// Apply filters without allocation
+    #[inline(always)]
     fn apply_filters_zero_alloc(strength: f64) -> f64 {
         // Simple EMA filter using static state
         static LAST_VALUE: AtomicU64 = AtomicU64::new(0);
@@ -204,9 +211,22 @@ mod tests {
         // Initialize pools first
         pools::initialize_all_pools();
         
-        // Run hot path
+        // Measure allocations from OUTSIDE the hot path
+        let validator = HotPathValidator::begin("order_processing");
         let result = critical_paths::process_order_hot_path();
         assert!(result.is_ok(), "Order hot path failed: {:?}", result);
+        
+        // Now validate with team debugging
+        let validation = validator.validate();
+        if let Err(e) = &validation {
+            // Team debugging: Log exact allocation count
+            let stats = pools::get_pool_stats();
+            eprintln!("TEAM DEBUG [Order Test]: Validation failed: {}", e);
+            eprintln!("  Order pool allocated: {}", stats.order_allocated);
+            eprintln!("  Signal pool allocated: {}", stats.signal_allocated);
+            eprintln!("  Tick pool allocated: {}", stats.tick_allocated);
+        }
+        assert!(validation.is_ok(), "Allocations detected in hot path");
     }
     
     #[test]
@@ -214,9 +234,14 @@ mod tests {
         // Initialize pools
         pools::initialize_all_pools();
         
-        // Run hot path
+        // Measure allocations from OUTSIDE the hot path
+        let validator = HotPathValidator::begin("signal_processing");
         let result = critical_paths::process_signal_hot_path();
         assert!(result.is_ok(), "Signal hot path failed: {:?}", result);
+        
+        // Now validate
+        let validation = validator.validate();
+        assert!(validation.is_ok(), "Allocations detected in hot path");
     }
     
     #[test]

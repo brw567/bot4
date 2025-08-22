@@ -4,7 +4,6 @@
 // Target: Reduce to top N features, <50μs selection
 
 use anyhow::Result;
-use std::collections::HashMap;
 
 // ============================================================================
 // SELECTION METHODS - Team Consensus

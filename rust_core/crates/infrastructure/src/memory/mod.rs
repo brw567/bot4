@@ -3,11 +3,8 @@
 // Owner: Jordan
 // Target: <10ns allocation, zero-alloc hot paths
 
-use mimalloc::MiMalloc;
-
-// CRITICAL: Global allocator - enables <10ns allocation
-#[global_allocator]
-static GLOBAL: MiMalloc = MiMalloc;
+// NOTE: Global MiMalloc allocator is now defined in crate::allocator
+// This ensures <10ns allocation performance globally
 
 pub mod pools;
 pub mod rings;
@@ -120,7 +117,7 @@ mod tests {
         let per_alloc = elapsed.as_nanos() / ITERATIONS as u128;
         println!("Allocation latency: {}ns", per_alloc);
         
-        // Should be <10ns with MiMalloc
-        assert!(per_alloc < 50, "Allocation too slow: {}ns", per_alloc);
+        // With MiMalloc active, we MUST achieve <50ns
+        assert!(per_alloc < 50, "Allocation too slow: {}ns (target <50ns with MiMalloc)", per_alloc);
     }
 }

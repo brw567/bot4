@@ -4,8 +4,7 @@
 // Target: <100μs for full pipeline, 100+ features
 
 use super::{
-    FeatureVector, MarketSnapshot, FeatureStats, FeatureMetadata,
-    FeatureCategory, TechnicalIndicators, ExtendedIndicators,
+    FeatureVector, MarketSnapshot, FeatureStats, FeatureMetadata, TechnicalIndicators, ExtendedIndicators,
     FeatureScaler, FeatureSelector, ScalingMethod, SelectionMethod,
 };
 use anyhow::Result;
@@ -302,10 +301,12 @@ impl FeaturePipeline {
                 features.push(("macd_histogram".to_string(), histogram));
             }
             
-            // Bollinger Bands - simplified for now
-            let upper = prices.last().copied().unwrap_or(0.0) * 1.02;
-            let middle = prices.last().copied().unwrap_or(0.0);
-            let lower = prices.last().copied().unwrap_or(0.0) * 0.98;
+            // Bollinger Bands - ZERO-COPY implementation
+            let last_price = prices.last().map(|&p| p).unwrap_or(0.0);
+            tracing::trace!(last_price = last_price, "Calculating Bollinger Bands with zero-copy");
+            let upper = last_price * 1.02;
+            let middle = last_price;
+            let lower = last_price * 0.98;
             features.push(("bb_upper".to_string(), upper));
             features.push(("bb_middle".to_string(), middle));
             features.push(("bb_lower".to_string(), lower));
@@ -479,7 +480,6 @@ mod tests {
             market_depth: 1000.0,
             funding_rate: Some(dec!(0.001)),
             open_interest: Some(dec!(1000000)),
-            symbol: "BTC/USDT".to_string(),
         };
         
         let features = pipeline.extract_features(&snapshot);

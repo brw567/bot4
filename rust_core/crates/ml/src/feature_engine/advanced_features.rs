@@ -767,14 +767,13 @@ impl AdvancedFeatureEngine {
                 // Calculate mean
                 let mean = window.iter().sum::<f64>() / *window_size as f64;
                 
-                // Mean-adjusted series
-                let adjusted: Vec<f64> = window.iter().map(|x| x - mean).collect();
-                
-                // Cumulative sum
+                // ZERO-COPY: Calculate cumulative sum directly without intermediate vector
                 let mut cumsum = vec![0.0; *window_size];
-                cumsum[0] = adjusted[0];
-                for i in 1..*window_size {
-                    cumsum[i] = cumsum[i - 1] + adjusted[i];
+                let mut running_sum = 0.0;
+                for (i, &value) in window.iter().enumerate() {
+                    let adjusted = value - mean;
+                    running_sum += adjusted;
+                    cumsum[i] = running_sum;
                 }
                 
                 // Range

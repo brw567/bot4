@@ -1,0 +1,43 @@
+[package]
+name = "risk"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Core dependencies
+anyhow = "1.0"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+tracing = "0.1"
+
+# Math and statistics
+rust_decimal = "1.33"
+rust_decimal_macros = "1.33"
+ndarray = "0.15"
+statrs = "0.16"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+log = "0.4"
+
+# Utilities
+uuid = { version = "1.6", features = ["v4", "serde"] }
+parking_lot = "0.12"
+dashmap = "5.5"
+
+# Random number generation
+rand = "0.8"
+
+# Custom crates (when available)
+# infrastructure = { path = "../infrastructure" }
+
+[dev-dependencies]
+tokio-test = "0.4"
+criterion = "0.5"
+proptest = "1.4"
+pretty_assertions = "1.4"

@@ -227,7 +227,7 @@ impl MessageRouter {
         
         for message in messages {
             let destination = self.get_destination(&message).await;
-            grouped.entry(destination).or_insert_with(Vec::new).push(message);
+            grouped.entry(destination).or_default().push(message);
         }
         
         // Send batches to each destination

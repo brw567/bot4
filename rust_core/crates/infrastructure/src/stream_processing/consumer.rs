@@ -281,7 +281,7 @@ impl StreamConsumer {
         
         let mut claimed = 0u64;
         
-        for (id, consumer, idle_time, _) in pending {
+        for (_id, _consumer, idle_time, _) in pending {
             if idle_time > self.config.claim_idle_time.as_millis() as u64 {
                 // Claim message - simplified for now
                 // TODO: Implement proper xclaim when redis crate supports it fully
@@ -339,11 +339,8 @@ pub struct MarketDataHandler {
 impl MessageHandler for MarketDataHandler {
     async fn handle_batch(&self, messages: Vec<StreamMessage>) -> Result<()> {
         for msg in messages {
-            match msg {
-                StreamMessage::MarketTick { symbol, bid, ask, .. } => {
-                    debug!("Market tick: {} - Bid: {}, Ask: {}", symbol, bid, ask);
-                }
-                _ => {}
+            if let StreamMessage::MarketTick { symbol, bid, ask, .. } = msg {
+                debug!("Market tick: {} - Bid: {}, Ask: {}", symbol, bid, ask);
             }
         }
         Ok(())

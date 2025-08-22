@@ -25,15 +25,16 @@
 
 use std::sync::Arc;
 use std::f64::consts::SQRT_2;
-use ndarray::{Array1, Array2, Array3, ArrayView1, ArrayView2, Axis, s};
+use ndarray::{Array1, Array2, Axis, s};
 use rand::prelude::*;
-use rand_distr::{Normal, Uniform};
+use rand_distr::Normal;
 use serde::{Serialize, Deserialize};
+use log::{debug, info, warn, error};
 
 // Import our optimizations
 use crate::simd::{dot_product_avx512, gemm_avx512, has_avx512};
-use crate::math_opt::{StrassenMultiplier, KahanSum};
-use infrastructure::zero_copy::{ObjectPool, PoolGuard, MemoryPoolManager};
+use crate::math_opt::StrassenMultiplier;
+use infrastructure::zero_copy::MemoryPoolManager;
 
 // ============================================================================
 // DEEP LSTM ARCHITECTURE - Morgan's Design with Team Enhancements
@@ -210,7 +211,7 @@ impl DeepLSTM {
         // Sam: Get buffers from pool
         // Note: acquire_matrix_batch doesn't exist, using Vec instead
         let mut layer_outputs: Vec<Array2<f32>> = Vec::with_capacity(5);
-        let mut hidden_states: Vec<Array2<f32>> = Vec::with_capacity(5);
+        let hidden_states: Vec<Array2<f32>> = Vec::with_capacity(5);
         
         // Initial input
         let mut current_input = input.clone();
@@ -283,7 +284,7 @@ impl DeepLSTM {
             for residual in &self.residual_connections {
                 if residual.from_layer == num_layers - 1 - idx {
                     // Add gradient from skip connection
-                    current_grad = current_grad * (1.0 + residual.scale_factor);
+                    current_grad *= 1.0 + residual.scale_factor;
                 }
             }
             
@@ -446,9 +447,9 @@ impl LSTMLayer {
             
             // Compute gates using AVX-512 GEMM
             let mut i_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
-            let mut f_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
-            let mut g_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
-            let mut o_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
+            let f_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
+            let g_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
+            let o_gate = Array2::<f64>::zeros((batch_size, self.hidden_size));
             
             // Input gate
             gemm_avx512(
@@ -786,34 +787,41 @@ mod tests {
 // BENCHMARKS - Jordan's Performance Validation
 // ============================================================================
 
-#[cfg(all(test, not(target_env = "msvc")))]
-mod benches {
+#[cfg(test)]
+mod perf_tests {
     use super::*;
-    use test::Bencher;
     
-    #[bench]
-    fn bench_forward_pass(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_forward_pass() {
         let mut model = DeepLSTM::new(100, 512, 1);
         let input = Array2::from_shape_fn((32, 100), |(i, j)| {
             ((i + j) as f64).sin()
         });
         
-        b.iter(|| {
-            model.forward(&input, false)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = model.forward(&input, false);
+        }
+        let elapsed = start.elapsed();
+        println!("Deep LSTM forward pass: {:?}/iter", elapsed / 10);
     }
     
-    #[bench]
-    fn bench_training_step(b: &mut Bencher) {
+    #[test]
+    #[ignore]
+    fn perf_training_step() {
         let mut model = DeepLSTM::new(100, 512, 1);
         let features = Array2::from_shape_fn((32, 100), |(i, j)| {
             ((i + j) as f64).sin()
         });
         let targets = Array1::from_shape_fn(32, |i| (i as f64).cos());
         
-        b.iter(|| {
-            model.train_batch(&features, &targets)
-        });
+        let start = std::time::Instant::now();
+        for _ in 0..10 {
+            let _ = model.train_batch(&features, &targets);
+        }
+        let elapsed = start.elapsed();
+        println!("Deep LSTM training step: {:?}/iter", elapsed / 10);
     }
 }
 

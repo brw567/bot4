@@ -8,16 +8,15 @@ use std::arch::x86_64::*;
 use std::collections::HashMap;
 use parking_lot::RwLock;
 use rayon::prelude::*;
-use ndarray::{Array1, Array2, ArrayView1, ArrayView2, Axis, s};
+use ndarray::{Array1, Array2, ArrayView1};
 use ordered_float::OrderedFloat;
 use dashmap::DashMap;
-use crossbeam::channel::{bounded, Sender, Receiver};
 
 // External crate integration would go here
 // For now using our custom implementation
 use serde::{Deserialize, Serialize};
 
-use crate::optimization::{MemoryPoolManager, AVXOptimizer};
+use crate::optimization::MemoryPoolManager;
 use crate::feature_engine::AdvancedFeatureEngine;
 
 /// XGBoost with Complete Optimizations - Pure Rust Implementation
@@ -829,7 +828,7 @@ impl OptimizedXGBoost {
     /// Predict using a single tree
     fn predict_single_tree(&self, tree: &DecisionTree, features: ArrayView1<f32>) -> f32 {
         if let Some(ref root) = tree.root {
-            self.traverse_tree(&**root, features)
+            self.traverse_tree(root, features)
         } else {
             0.0
         }
@@ -845,12 +844,10 @@ impl OptimizedXGBoost {
         if let (Some(feature_idx), Some(split_value)) = (node.feature_idx, node.split_value) {
             if features[feature_idx] <= split_value {
                 if let Some(ref left) = node.left {
-                    return self.traverse_tree(&**left, features);
+                    return self.traverse_tree(left, features);
                 }
-            } else {
-                if let Some(ref right) = node.right {
-                    return self.traverse_tree(&**right, features);
-                }
+            } else if let Some(ref right) = node.right {
+                return self.traverse_tree(right, features);
             }
         }
         
@@ -879,7 +876,7 @@ impl OptimizedXGBoost {
         }
         
         // Convert Vec<f64> to Array1<f32>
-        Ok(Array1::from_vec(predictions.iter().map(|&x| x as f32).collect()))
+        Ok(Array1::from_vec(predictions.to_vec()))
     }
     
     /// Subsample data for tree building
@@ -1095,12 +1092,13 @@ pub enum XGBoostError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ndarray::Axis;
     
     #[test]
     fn test_xgboost_training() {
         // Riley: Test coverage for training
-        let pool = Arc::new(MemoryPoolManager::new(100, 1000, 10000));
-        let features = Arc::new(AdvancedFeatureEngine::new(pool.clone()));
+        let pool = Arc::new(MemoryPoolManager::new(10000));
+        let features = Arc::new(AdvancedFeatureEngine::new());
         let mut model = OptimizedXGBoost::new(pool, features);
         
         // Generate test data
@@ -1123,17 +1121,19 @@ mod tests {
     #[test]
     fn test_prediction() {
         // Casey: Test prediction pipeline
-        let pool = Arc::new(MemoryPoolManager::new(100, 1000, 10000));
-        let features = Arc::new(AdvancedFeatureEngine::new(pool.clone()));
+        let pool = Arc::new(MemoryPoolManager::new(10000));
+        let features = Arc::new(AdvancedFeatureEngine::new());
         let mut model = OptimizedXGBoost::new(pool, features);
         
         // Train first
-        let train_x = Array2::random((50, 3), rand::distributions::Uniform::new(-1.0, 1.0));
+        use rand::Rng;
+        let mut rng = rand::thread_rng();
+        let train_x = Array2::from_shape_fn((50, 3), |_| rng.gen_range(-1.0..1.0));
         let train_y = train_x.sum_axis(Axis(1));
         model.train(&train_x, &train_y, None, None).unwrap();
         
         // Test prediction
-        let test_x = Array2::random((10, 3), rand::distributions::Uniform::new(-1.0, 1.0));
+        let test_x = Array2::from_shape_fn((10, 3), |_| rng.gen_range(-1.0..1.0));
         let predictions = model.predict(&test_x).unwrap();
         
         assert_eq!(predictions.len(), 10);
@@ -1143,12 +1143,14 @@ mod tests {
     #[test]
     fn test_numerical_stability() {
         // Quinn: Test numerical stability
-        let pool = Arc::new(MemoryPoolManager::new(100, 1000, 10000));
-        let features = Arc::new(AdvancedFeatureEngine::new(pool.clone()));
+        let pool = Arc::new(MemoryPoolManager::new(10000));
+        let features = Arc::new(AdvancedFeatureEngine::new());
         let mut model = OptimizedXGBoost::new(pool, features);
         
         // Test with extreme values
-        let mut train_x = Array2::random((30, 2), rand::distributions::Uniform::new(-10.0, 10.0));
+        use rand::Rng;
+        let mut rng = rand::thread_rng();
+        let mut train_x = Array2::from_shape_fn((30, 2), |_| rng.gen_range(-10.0..10.0));
         train_x[[0, 0]] = 1e10;  // Large value
         train_x[[1, 0]] = 1e-10;  // Small value
         

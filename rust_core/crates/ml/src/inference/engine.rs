@@ -178,7 +178,8 @@ impl InferenceEngine {
                 _ => 100,  // Normal/Low: large batches
             };
             
-            let to_process: Vec<_> = requests.drain(..requests.len().min(batch_size)).collect();
+            let drain_limit = requests.len().min(batch_size);
+            let to_process: Vec<_> = requests.drain(..drain_limit).collect();
             drop(requests); // Release lock early
             
             // Send to workers

@@ -68,7 +68,7 @@ impl BatchProducer {
     
     /// Force flush all buffered messages - Jordan's optimization
     pub async fn flush(&self) -> Result<()> {
-        let mut buffer = self.buffer.write().await;
+        let buffer = self.buffer.write().await;
         if !buffer.is_empty() {
             self.flush_internal(buffer).await?;
         }

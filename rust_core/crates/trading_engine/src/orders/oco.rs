@@ -731,4 +731,189 @@ mod tests {
         let group = groups.get(&group_id).unwrap();
         assert_eq!(group.status, OCOStatus::Filled);
     }
+    
+    #[tokio::test]
+    async fn test_bracket_order_creation() {
+        // COMPREHENSIVE TEST: Bracket order with take-profit and stop-loss
+        let exchange = MockExchangeInterface::new();
+        let validator = MockRiskValidator;
+        let mut manager = OCOManager::new(exchange, validator);
+        
+        let entry = OCOOrder {
+            order_id: Uuid::new_v4(),
+            symbol: "BTCUSDT".to_string(),
+            side: OrderSide::Buy,
+            quantity: 1.0,
+            order_type: OrderType::Market,
+            price: None,
+            stop_price: None,
+            time_in_force: TimeInForce::GTC,
+        };
+        
+        let group_id = manager.create_bracket_order(
+            entry,
+            52000.0,  // Take profit at $52k
+            48000.0,  // Stop loss at $48k
+        ).await.unwrap();
+        
+        // Verify bracket order created
+        let groups = manager.active_groups.read();
+        let group = groups.get(&group_id).unwrap();
+        assert_eq!(group.oco_type, OCOType::Bracket);
+        assert_eq!(group.secondary_order.stop_price, Some(52000.0)); // Take profit
+    }
+    
+    #[tokio::test]
+    async fn test_oco_cancellation_on_fill() {
+        // COMPREHENSIVE TEST: Secondary order cancelled when primary fills
+        let exchange = MockExchangeInterface::new();
+        let validator = MockRiskValidator;
+        let mut manager = OCOManager::new(exchange, validator);
+        
+        let primary = OCOOrder {
+            order_id: Uuid::new_v4(),
+            symbol: "ETHUSDT".to_string(),
+            side: OrderSide::Buy,
+            quantity: 10.0,
+            order_type: OrderType::Limit,
+            price: Some(3000.0),
+            stop_price: None,
+            time_in_force: TimeInForce::GTC,
+        };
+        
+        let secondary = OCOOrder {
+            order_id: Uuid::new_v4(),
+            symbol: "ETHUSDT".to_string(),
+            side: OrderSide::Buy,
+            quantity: 10.0,
+            order_type: OrderType::Limit,
+            price: Some(2800.0),
+            stop_price: None,
+            time_in_force: TimeInForce::GTC,
+        };
+        
+        let group_id = manager.create_oco_order(primary.clone(), secondary.clone(), OCOType::Standard)
+            .await.unwrap();
+        
+        // Fill primary order
+        manager.handle_order_fill(primary.order_id, 3000.0, 10.0).await.unwrap();
+        
+        // Verify secondary was cancelled
+        let groups = manager.active_groups.read();
+        assert!(groups.get(&group_id).is_none()); // Group should be removed
+    }
+    
+    #[tokio::test]
+    async fn test_multileg_oco_order() {
+        // COMPREHENSIVE TEST: Multi-leg OCO order handling
+        let exchange = MockExchangeInterface::new();
+        let validator = MockRiskValidator;
+        let mut manager = OCOManager::new(exchange, validator);
+        
+        let primary = OCOOrder {
+            order_id: Uuid::new_v4(),
+            symbol: "BTCUSDT".to_string(),
+            side: OrderSide::Buy,
+            quantity: 1.0,
+            order_type: OrderType::Limit,
+            price: Some(45000.0),
+            stop_price: None,
+            time_in_force: TimeInForce::GTC,
+        };
+        
+        let secondary = OCOOrder {
+            order_id: Uuid::new_v4(),
+            symbol: "ETHUSDT".to_string(),  // Different symbol!
+            side: OrderSide::Buy,
+            quantity: 10.0,
+            order_type: OrderType::Limit,
+            price: Some(3000.0),
+            stop_price: None,
+            time_in_force: TimeInForce::GTC,
+        };
+        
+        let group_id = manager.create_oco_order(primary.clone(), secondary.clone(), OCOType::MultiLeg)
+            .await.unwrap();
+        
+        // Verify multi-leg group created
+        let groups = manager.active_groups.read();
+        let group = groups.get(&group_id).unwrap();
+        assert_eq!(group.oco_type, OCOType::MultiLeg);
+        assert_ne!(group.primary_order.symbol, group.secondary_order.symbol);
+    }
+    
+    #[tokio::test]
+    async fn test_risk_validation_rejection() {
+        // COMPREHENSIVE TEST: OCO rejected by risk validation
+        let exchange = MockExchangeInterface::new();
+        let validator = MockRiskValidator;
+        let mut manager = OCOManager::new(exchange, validator);
+        
+        // Create order that violates size limits
+        let primary = OCOOrder {
+            order_id: Uuid::new_v4(),
+            symbol: "BTCUSDT".to_string(),
+            side: OrderSide::Buy,
+            quantity: 1000000.0,  // Huge quantity!
+            order_type: OrderType::Market,
+            price: None,
+            stop_price: None,
+            time_in_force: TimeInForce::GTC,
+        };
+        
+        let secondary = OCOOrder {
+            order_id: Uuid::new_v4(),
+            symbol: "BTCUSDT".to_string(),
+            side: OrderSide::Sell,
+            quantity: 1000000.0,
+            order_type: OrderType::Limit,
+            price: Some(60000.0),
+            stop_price: None,
+            time_in_force: TimeInForce::GTC,
+        };
+        
+        // Should fail risk validation
+        let result = manager.create_oco_order(primary, secondary, OCOType::Standard).await;
+        assert!(result.is_err());
+    }
+    
+    #[tokio::test]
+    async fn test_get_active_groups() {
+        // COMPREHENSIVE TEST: Query active groups by symbol
+        let exchange = MockExchangeInterface::new();
+        let validator = MockRiskValidator;
+        let mut manager = OCOManager::new(exchange, validator);
+        
+        // Create multiple OCO orders for same symbol
+        for i in 0..3 {
+            let primary = OCOOrder {
+                order_id: Uuid::new_v4(),
+                symbol: "BTCUSDT".to_string(),
+                side: OrderSide::Buy,
+                quantity: 0.1,
+                order_type: OrderType::Limit,
+                price: Some(45000.0 + i as f64 * 100.0),
+                stop_price: None,
+                time_in_force: TimeInForce::GTC,
+            };
+            
+            let secondary = OCOOrder {
+                order_id: Uuid::new_v4(),
+                symbol: "BTCUSDT".to_string(),
+                side: OrderSide::Sell,
+                quantity: 0.1,
+                order_type: OrderType::Limit,
+                price: Some(55000.0 + i as f64 * 100.0),
+                stop_price: None,
+                time_in_force: TimeInForce::GTC,
+            };
+            
+            manager.create_oco_order(primary, secondary, OCOType::Standard)
+                .await.unwrap();
+        }
+        
+        // Query active groups
+        let groups = manager.get_active_groups("BTCUSDT");
+        assert_eq!(groups.len(), 3);
+    }
 }

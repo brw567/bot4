@@ -4,7 +4,7 @@
 // Performance Target: <1µs metric recording
 
 use prometheus::{
-    Counter, CounterVec, Gauge, GaugeVec, Histogram, HistogramOpts, HistogramVec,
+    Gauge, GaugeVec, HistogramOpts, HistogramVec,
     IntCounter, IntCounterVec, IntGauge, IntGaugeVec, Opts, Registry,
 };
 use lazy_static::lazy_static;

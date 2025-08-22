@@ -4,8 +4,7 @@
 // CRITICAL: Prevents 15-25% forecast error (Nexus requirement)
 
 use std::arch::x86_64::*;
-use nalgebra::{DVector, DMatrix};
-use statrs::distribution::{StudentsT, Continuous};
+use statrs::distribution::StudentsT;
 use rand::prelude::*;
 use serde::{Serialize, Deserialize};
 
@@ -39,6 +38,12 @@ pub struct GARCHModel {
     // Overfitting prevention (CRITICAL!)
     regularization_lambda: f32,
     max_persistence: f32,  // α + β < 0.999 for stationarity
+}
+
+impl Default for GARCHModel {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl GARCHModel {
@@ -420,7 +425,7 @@ impl GARCHModel {
         // Note: inverse_cdf not available, using approximation
         // For t-distribution with df degrees of freedom, we can approximate
         // the quantile using the normal approximation for large df
-        use statrs::distribution::ContinuousCDF;
+        
         let t_dist = StudentsT::new(0.0, 1.0, self.degrees_of_freedom as f64).unwrap();
         // Use inverse via search (binary search for the quantile)
         let target = 1.0 - confidence as f64;

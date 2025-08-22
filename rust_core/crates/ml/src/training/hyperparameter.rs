@@ -4,12 +4,11 @@
 // Date: January 18, 2025
 // NO SIMPLIFICATIONS - FULL BAYESIAN IMPLEMENTATION
 
-use anyhow::{Result, Context};
-use ndarray::{Array1, Array2};
+use ndarray::Array2;
 use rand::prelude::*;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, BinaryHeap};
+use std::collections::HashMap;
 use std::cmp::Ordering;
 
 // ============================================================================
@@ -35,6 +34,12 @@ pub enum Constraint {
     GreaterThan(String, String),
     Sum { params: Vec<String>, max: f64 },
     Product { params: Vec<String>, max: f64 },
+}
+
+impl Default for SearchSpace {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl SearchSpace {

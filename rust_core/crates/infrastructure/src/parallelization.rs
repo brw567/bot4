@@ -5,9 +5,6 @@
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
-use std::thread;
-use std::pin::Pin;
-use crossbeam::channel::{bounded, Sender, Receiver};
 use crossbeam::utils::CachePadded;
 use dashmap::DashMap;
 use rayon::prelude::*;
@@ -103,6 +100,12 @@ pub struct LockFreeStats {
     pub error_count: CachePadded<AtomicUsize>,
     /// Peak throughput ops/sec
     pub peak_throughput: CachePadded<AtomicUsize>,
+}
+
+impl Default for LockFreeStats {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl LockFreeStats {
@@ -272,7 +275,7 @@ impl<T: Send + Sync> ParallelProcessor<T> {
             .into_par_iter()
             .flat_map(|(_instrument, items)| {
                 items.into_iter()
-                    .map(|item| processor(item))
+                    .map(&processor)
                     .collect::<Vec<_>>()
             })
             .collect();

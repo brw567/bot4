@@ -321,7 +321,7 @@ impl HistoricalCalibrator {
             VolatilityRegime {
                 id: 0,
                 name: "Low Vol".to_string(),
-                avg_volatility: volatilities.iter().copied().min_by(|a, b| a.partial_cmp(b).unwrap()).unwrap_or(0.1),
+                avg_volatility: volatilities.iter().min_by(|a, b| a.partial_cmp(b).unwrap()).copied().unwrap_or(0.1),
                 persistence: 0.95,
             },
             VolatilityRegime {
@@ -333,7 +333,7 @@ impl HistoricalCalibrator {
             VolatilityRegime {
                 id: 2,
                 name: "High Vol".to_string(),
-                avg_volatility: volatilities.iter().copied().max_by(|a, b| a.partial_cmp(b).unwrap()).unwrap_or(0.5),
+                avg_volatility: volatilities.iter().max_by(|a, b| a.partial_cmp(b).unwrap()).copied().unwrap_or(0.5),
                 persistence: 0.85,
             },
         ];

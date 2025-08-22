@@ -145,7 +145,7 @@ impl WebSocketClient {
     }
     
     async fn start_message_handler(&self, ws_stream: WebSocketStream<MaybeTlsStream<TcpStream>>) {
-        let (mut write, mut read) = ws_stream.split();
+        let (write, mut read) = ws_stream.split();
         
         // Clone for async tasks
         let messages_received = self.messages_received.clone();

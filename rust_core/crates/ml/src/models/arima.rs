@@ -4,10 +4,10 @@
 // Target: <100μs prediction latency, 85%+ directional accuracy
 
 use std::sync::Arc;
-use ndarray::{Array1, Array2, ArrayView1};
+use ndarray::Array1;
 use parking_lot::RwLock;
-use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+use log::{debug, info, warn, error};
 
 // ============================================================================
 // 360-DEGREE REVIEW CHECKPOINT #1: Model Configuration
@@ -117,7 +117,13 @@ impl ARIMAModel {
     /// Fit ARIMA model to time series data
     /// Morgan: Core fitting logic using maximum likelihood estimation
     pub fn fit(&self, data: &[f64]) -> Result<FitResult, ARIMAError> {
+        // COMPREHENSIVE LOGGING: Entry
+        info!("ARIMA fitting started: p={}, d={}, q={}, data_len={}", 
+              self.config.p, self.config.d, self.config.q, data.len());
+        
         if data.len() < self.config.min_observations {
+            warn!("Insufficient data for ARIMA: required={}, actual={}", 
+                  self.config.min_observations, data.len());
             return Err(ARIMAError::InsufficientData {
                 required: self.config.min_observations,
                 actual: data.len(),
@@ -125,7 +131,9 @@ impl ARIMAModel {
         }
         
         // Apply differencing
+        debug!("Applying differencing with d={}", self.config.d);
         let differenced = self.difference_series(data, self.config.d)?;
+        debug!("Differenced series length: {}", differenced.len());
         
         // Initialize parameters
         let mut ar_params = Array1::zeros(self.config.p);

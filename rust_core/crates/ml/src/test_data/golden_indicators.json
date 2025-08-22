@@ -1,0 +1,40 @@
+{
+  "sma_cases": [
+    {
+      "candles": [
+        {"open": 100.0, "high": 101.0, "low": 99.0, "close": 100.5, "volume": 1000.0, "timestamp": 1600000000},
+        {"open": 100.5, "high": 102.0, "low": 100.0, "close": 101.5, "volume": 1100.0, "timestamp": 1600000060},
+        {"open": 101.5, "high": 103.0, "low": 101.0, "close": 102.5, "volume": 1200.0, "timestamp": 1600000120}
+      ],
+      "expected": 101.5
+    }
+  ],
+  "ema_cases": [
+    {
+      "candles": [
+        {"open": 100.0, "high": 101.0, "low": 99.0, "close": 100.5, "volume": 1000.0, "timestamp": 1600000000},
+        {"open": 100.5, "high": 102.0, "low": 100.0, "close": 101.5, "volume": 1100.0, "timestamp": 1600000060}
+      ],
+      "expected": 101.0
+    }
+  ],
+  "rsi_cases": [
+    {
+      "candles": [
+        {"open": 100.0, "high": 101.0, "low": 99.0, "close": 100.5, "volume": 1000.0, "timestamp": 1600000000},
+        {"open": 100.5, "high": 102.0, "low": 100.0, "close": 101.5, "volume": 1100.0, "timestamp": 1600000060},
+        {"open": 101.5, "high": 103.0, "low": 101.0, "close": 102.5, "volume": 1200.0, "timestamp": 1600000120}
+      ],
+      "expected": 70.0
+    }
+  ],
+  "macd_cases": [
+    {
+      "candles": [
+        {"open": 100.0, "high": 101.0, "low": 99.0, "close": 100.5, "volume": 1000.0, "timestamp": 1600000000},
+        {"open": 100.5, "high": 102.0, "low": 100.0, "close": 101.5, "volume": 1100.0, "timestamp": 1600000060}
+      ],
+      "expected": {"macd": 0.5, "signal": 0.3, "histogram": 0.2}
+    }
+  ]
+}

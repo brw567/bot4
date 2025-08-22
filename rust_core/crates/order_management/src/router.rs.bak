@@ -1,0 +1,688 @@
+// Smart Order Router
+// Routes orders to best exchange based on liquidity, fees, and latency
+
+use async_trait::async_trait;
+use dashmap::DashMap;
+use parking_lot::RwLock;
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+use thiserror::Error;
+use tracing::{debug, info, warn, error};
+
+use crate::order::{Order, OrderId};
+
+/// Exchange route information with LIQUIDITY TRACKING
+/// Casey & Alex: "CRITICAL FIX - Must check liquidity before routing!"
+#[derive(Debug, Clone)]
+pub struct ExchangeRoute {
+    pub &exchange_name: String,
+    pub is_active: bool,
+    pub priority: u8,
+    
+    // Performance metrics
+    pub avg_latency_ms: u64,
+    pub success_rate: f64,
+    pub avg_slippage_bps: i32, // basis points
+    
+    // Fees
+    pub maker_fee_bps: i32,
+    pub taker_fee_bps: i32,
+    
+    // Limits
+    pub min_order_size: Decimal,
+    pub max_order_size: Decimal,
+    pub rate_limit_per_second: u32,
+    
+    // CRITICAL ADDITION: Liquidity tracking
+    pub order_book_depth: Arc<RwLock<OrderBookSnapshot>>,
+    pub available_liquidity: Arc<RwLock<HashMap<String, LiquidityInfo>>>,
+    pub liquidity_last_update: Arc<RwLock<Instant>>,
+    
+    // Current state (not serialized)
+    #[allow(dead_code)]
+    pub current_requests: Arc<RwLock<u32>>,
+    pub last_request: Arc<RwLock<Instant>>,
+}
+
+/// Order book snapshot for liquidity analysis
+#[derive(Debug, Clone, Default)]
+pub struct OrderBookSnapshot {
+    pub bids: Vec<(Decimal, Decimal)>, // (price, quantity)
+    pub asks: Vec<(Decimal, Decimal)>, // (price, quantity)
+    pub timestamp: i64,
+    pub mid_price: Decimal,
+    pub spread_bps: i32,
+}
+
+/// Liquidity information per symbol
+#[derive(Debug, Clone)]
+pub struct LiquidityInfo {
+    pub bid_liquidity_1pct: Decimal,  // Liquidity within 1% of mid
+    pub ask_liquidity_1pct: Decimal,
+    pub total_bid_depth: Decimal,
+    pub total_ask_depth: Decimal,
+    pub imbalance_ratio: Decimal,     // (bid - ask) / (bid + ask)
+    pub effective_spread: Decimal,
+    pub last_update: Instant,
+}
+
+impl ExchangeRoute {
+    pub fn new(&exchange_name: String) -> Self {
+        Self {
+            &exchange_name,
+            is_active: true,
+            priority: 1,
+            avg_latency_ms: 100,
+            success_rate: 0.99,
+            avg_slippage_bps: 5,
+            maker_fee_bps: 10,
+            taker_fee_bps: 20,
+            min_order_size: Decimal::from_str_exact("0.001").unwrap(),
+            max_order_size: Decimal::from_str_exact("100").unwrap(),
+            rate_limit_per_second: 10,
+            order_book_depth: Arc::new(RwLock::new(OrderBookSnapshot::default())),
+            available_liquidity: Arc::new(RwLock::new(HashMap::new())),
+            liquidity_last_update: Arc::new(RwLock::new(Instant::now())),
+            current_requests: Arc::new(RwLock::new(0)),
+            last_request: Arc::new(RwLock::new(Instant::now())),
+        }
+    }
+    
+    /// Update order book snapshot - Casey's real-time liquidity tracking
+    pub fn update_order_book(&self, snapshot: OrderBookSnapshot) {
+        *self.order_book_depth.write() = snapshot.clone();
+        *self.liquidity_last_update.write() = Instant::now();
+        
+        // Calculate liquidity metrics
+        for symbol in self.available_liquidity.read().keys().cloned().collect::<Vec<_>>() {
+            self.calculate_liquidity_metrics(&symbol, &snapshot);
+        }
+    }
+    
+    /// Calculate detailed liquidity metrics
+    fn calculate_liquidity_metrics(&self, symbol: &str, snapshot: &OrderBookSnapshot) {
+        let mid_price = snapshot.mid_price;
+        if mid_price == Decimal::ZERO {
+            return;
+        }
+        
+        let one_pct = mid_price * Decimal::from_str_exact("0.01").unwrap();
+        
+        // Calculate liquidity within 1% of mid price
+        let bid_liquidity_1pct: Decimal = snapshot.bids.iter()
+            .filter(|(price, _)| *price >= mid_price - one_pct)
+            .map(|(_, qty)| *qty)
+            .sum();
+            
+        let ask_liquidity_1pct: Decimal = snapshot.asks.iter()
+            .filter(|(price, _)| *price <= mid_price + one_pct)
+            .map(|(_, qty)| *qty)
+            .sum();
+        
+        let total_bid_depth: Decimal = snapshot.bids.iter().map(|(_, qty)| *qty).sum();
+        let total_ask_depth: Decimal = snapshot.asks.iter().map(|(_, qty)| *qty).sum();
+        
+        let imbalance_ratio = if total_bid_depth + total_ask_depth > Decimal::ZERO {
+            (total_bid_depth - total_ask_depth) / (total_bid_depth + total_ask_depth)
+        } else {
+            Decimal::ZERO
+        };
+        
+        let effective_spread = if let (Some(best_bid), Some(best_ask)) = 
+            (snapshot.bids.first(), snapshot.asks.first()) {
+            (best_ask.0 - best_bid.0) / mid_price * Decimal::from(10000)
+        } else {
+            Decimal::from(snapshot.spread_bps)
+        };
+        
+        let liquidity_info = LiquidityInfo {
+            bid_liquidity_1pct,
+            ask_liquidity_1pct,
+            total_bid_depth,
+            total_ask_depth,
+            imbalance_ratio,
+            effective_spread,
+            last_update: Instant::now(),
+        };
+        
+        self.available_liquidity.write().insert(symbol.to_string(), liquidity_info);
+    }
+    
+    /// Check if exchange has sufficient liquidity for order
+    /// Alex: "CRITICAL - This prevents slippage disasters!"
+    pub fn has_sufficient_liquidity(&self, order: &Order) -> bool {
+        let liquidity_map = self.available_liquidity.read();
+        
+        if let Some(liquidity) = liquidity_map.get(&order.symbol) {
+            // Check if data is fresh (< 1 second old)
+            if liquidity.last_update.elapsed() > Duration::from_secs(1) {
+                warn!("Liquidity data stale for {} on {}", order.symbol, self.&exchange_name);
+                return false;
+            }
+            
+            let order_value = order.quantity * order.price.unwrap_or(Decimal::from(50000));
+            
+            // Check available liquidity based on order side
+            let available = match order.side {
+                crate::order::OrderSide::Buy => liquidity.ask_liquidity_1pct,
+                crate::order::OrderSide::Sell => liquidity.bid_liquidity_1pct,
+            };
+            
+            // Need at least 2x order size in liquidity for safety
+            if available < order.quantity * Decimal::from(2) {
+                warn!(
+                    "Insufficient liquidity on {} for {}: available={}, needed={}",
+                    self.&exchange_name, order.symbol, available, order.quantity * Decimal::from(2)
+                );
+                return false;
+            }
+            
+            // Check imbalance (avoid trading into one-sided books)
+            if liquidity.imbalance_ratio.abs() > Decimal::from_str_exact("0.8").unwrap() {
+                warn!(
+                    "Order book too imbalanced on {} for {}: ratio={}",
+                    self.&exchange_name, order.symbol, liquidity.imbalance_ratio
+                );
+                return false;
+            }
+            
+            true
+        } else {
+            // No liquidity data = no trading
+            warn!("No liquidity data for {} on {}", order.symbol, self.&exchange_name);
+            false
+        }
+    }
+    
+    /// Check if exchange can handle the order
+    /// CRITICAL FIX: Now includes liquidity validation - Alex & Casey
+    pub fn can_handle(&self, order: &Order) -> bool {
+        if !self.is_active {
+            return false;
+        }
+        
+        // Check order size limits
+        if order.quantity < self.min_order_size || order.quantity > self.max_order_size {
+            return false;
+        }
+        
+        // Check rate limit
+        let now = Instant::now();
+        let last = *self.last_request.read();
+        let elapsed = now.duration_since(last);
+        
+        if elapsed < Duration::from_millis(1000 / self.rate_limit_per_second as u64) {
+            return false;
+        }
+        
+        // CRITICAL: Check liquidity BEFORE accepting order
+        if !self.has_sufficient_liquidity(order) {
+            warn!(
+                "Rejecting order for {} on {} due to insufficient liquidity",
+                order.symbol, self.&exchange_name
+            );
+            return false;
+        }
+        
+        true
+    }
+    
+    /// Calculate expected cost for order
+    pub fn calculate_cost(&self, order: &Order, order_value: Decimal) -> Decimal {
+        let fee_bps = if order.order_type == crate::order::OrderType::Limit {
+            self.maker_fee_bps
+        } else {
+            self.taker_fee_bps
+        };
+        
+        let fee = order_value * Decimal::from(fee_bps) / Decimal::from(10000);
+        let slippage = order_value * Decimal::from(self.avg_slippage_bps.abs()) / Decimal::from(10000);
+        
+        fee + slippage
+    }
+    
+    /// Score the route for order routing decision
+    /// ENHANCED: Now includes liquidity score - Casey & Alex
+    pub fn score(&self, order: &Order, order_value: Decimal) -> f64 {
+        if !self.can_handle(order) {
+            return 0.0;
+        }
+        
+        // Calculate cost score (lower is better)
+        let cost = self.calculate_cost(order, order_value);
+        use rust_decimal::prelude::ToPrimitive;
+        let cost_score = 1.0 / (1.0 + cost.to_f64().unwrap_or(0.0));
+        
+        // Latency score (lower is better)
+        let latency_score = 1.0 / (1.0 + self.avg_latency_ms as f64 / 100.0);
+        
+        // Success rate score
+        let success_score = self.success_rate;
+        
+        // Priority weight
+        let priority_weight = (11 - self.priority.min(10)) as f64 / 10.0;
+        
+        // CRITICAL ADDITION: Liquidity score
+        let liquidity_score = self.calculate_liquidity_score(order);
+        
+        // Weighted average with liquidity now 25% of score
+        cost_score * 0.3 + latency_score * 0.15 + success_score * 0.25 + 
+        priority_weight * 0.05 + liquidity_score * 0.25
+    }
+    
+    /// Calculate liquidity score for routing decision
+    fn calculate_liquidity_score(&self, order: &Order) -> f64 {
+        let liquidity_map = self.available_liquidity.read();
+        
+        if let Some(liquidity) = liquidity_map.get(&order.symbol) {
+            // Score based on multiple factors
+            let depth_score = match order.side {
+                crate::order::OrderSide::Buy => {
+                    let ratio = liquidity.ask_liquidity_1pct / order.quantity;
+                    (ratio.to_f64().unwrap_or(0.0) / 10.0).min(1.0) // Normalize to 0-1
+                }
+                crate::order::OrderSide::Sell => {
+                    let ratio = liquidity.bid_liquidity_1pct / order.quantity;
+                    (ratio.to_f64().unwrap_or(0.0) / 10.0).min(1.0)
+                }
+            };
+            
+            // Penalize imbalanced books
+            let balance_score = 1.0 - liquidity.imbalance_ratio.abs().to_f64().unwrap_or(0.0);
+            
+            // Penalize wide spreads
+            let spread_score = 1.0 / (1.0 + liquidity.effective_spread.to_f64().unwrap_or(0.0) / 100.0);
+            
+            // Combined liquidity score
+            depth_score * 0.5 + balance_score * 0.3 + spread_score * 0.2
+        } else {
+            0.0 // No liquidity data = worst score
+        }
+    }
+}
+
+use rust_decimal::prelude::FromStr;
+
+/// Routing strategy
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RoutingStrategy {
+    /// Route to exchange with best price
+    BestPrice,
+    /// Route to exchange with lowest fees
+    LowestFee,
+    /// Route to exchange with lowest latency
+    FastestExecution,
+    /// Route based on weighted score
+    SmartRoute,
+    /// Always use primary exchange
+    PrimaryOnly,
+    /// Round-robin between active exchanges
+    RoundRobin,
+}
+
+/// Order router for smart order routing
+pub struct OrderRouter {
+    routes: Arc<DashMap<String, ExchangeRoute>>,
+    strategy: Arc<RwLock<RoutingStrategy>>,
+    primary_exchange: Arc<RwLock<Option<String>>>,
+    round_robin_index: Arc<RwLock<usize>>,
+}
+
+impl OrderRouter {
+    pub fn new(strategy: RoutingStrategy) -> Self {
+        Self {
+            routes: Arc::new(DashMap::new()),
+            strategy: Arc::new(RwLock::new(strategy)),
+            primary_exchange: Arc::new(RwLock::new(None)),
+            round_robin_index: Arc::new(RwLock::new(0)),
+        }
+    }
+    
+    /// Add an exchange route
+    pub fn add_route(&self, route: ExchangeRoute) {
+        info!("Added route to {}", route.&exchange_name);
+        self.routes.insert(route.&exchange_name.clone(), route);
+    }
+    
+    /// Remove an exchange route
+    pub fn remove_route(&self, &exchange_name: &str) {
+        self.routes.remove(&exchange_name);
+        info!("Removed route to {}", &exchange_name);
+    }
+    
+    /// Set primary exchange
+    pub fn set_primary_exchange(&self, &exchange_name: String) {
+        *self.primary_exchange.write() = Some(&exchange_name);
+    }
+    
+    /// Route an order to best exchange
+    pub async fn route_order(&self, order: &Order) -> Result<String, RoutingError> {
+        let strategy = *self.strategy.read();
+        
+        match strategy {
+            RoutingStrategy::PrimaryOnly => self.route_to_primary(),
+            RoutingStrategy::RoundRobin => self.route_round_robin(order),
+            RoutingStrategy::BestPrice => self.route_best_price(order).await,
+            RoutingStrategy::LowestFee => self.route_lowest_fee(order),
+            RoutingStrategy::FastestExecution => self.route_fastest(order),
+            RoutingStrategy::SmartRoute => self.route_smart(order),
+        }
+    }
+    
+    fn route_to_primary(&self) -> Result<String, RoutingError> {
+        self.primary_exchange
+            .read()
+            .clone()
+            .ok_or(RoutingError::NoPrimaryExchange)
+    }
+    
+    fn route_round_robin(&self, order: &Order) -> Result<String, RoutingError> {
+        let active_routes: Vec<_> = self.routes
+            .iter()
+            .filter(|r| r.can_handle(order))
+            .map(|r| r.key().clone())
+            .collect();
+        
+        if active_routes.is_empty() {
+            return Err(RoutingError::NoAvailableRoute);
+        }
+        
+        let mut index = self.round_robin_index.write();
+        let selected = active_routes[*index % active_routes.len()].clone();
+        *index += 1;
+        
+        Ok(selected)
+    }
+    
+    async fn route_best_price(&self, order: &Order) -> Result<String, RoutingError> {
+        // In production, this would query actual order books
+        // For now, use the route with lowest slippage
+        self.routes
+            .iter()
+            .filter(|r| r.can_handle(order))
+            .min_by_key(|r| r.avg_slippage_bps)
+            .map(|r| r.key().clone())
+            .ok_or(RoutingError::NoAvailableRoute)
+    }
+    
+    fn route_lowest_fee(&self, order: &Order) -> Result<String, RoutingError> {
+        let fee_field = if order.order_type == crate::order::OrderType::Limit {
+            |r: &ExchangeRoute| r.maker_fee_bps
+        } else {
+            |r: &ExchangeRoute| r.taker_fee_bps
+        };
+        
+        self.routes
+            .iter()
+            .filter(|r| r.can_handle(order))
+            .min_by_key(|r| fee_field(r.value()))
+            .map(|r| r.key().clone())
+            .ok_or(RoutingError::NoAvailableRoute)
+    }
+    
+    fn route_fastest(&self, order: &Order) -> Result<String, RoutingError> {
+        self.routes
+            .iter()
+            .filter(|r| r.can_handle(order))
+            .min_by_key(|r| r.avg_latency_ms)
+            .map(|r| r.key().clone())
+            .ok_or(RoutingError::NoAvailableRoute)
+    }
+    
+    fn route_smart(&self, order: &Order) -> Result<String, RoutingError> {
+        // Calculate order value for scoring
+        let order_value = order.quantity * order.price.unwrap_or(Decimal::from(50000));
+        
+        // Score all routes and pick the best
+        let best_route = self.routes
+            .iter()
+            .filter(|r| r.can_handle(order))
+            .map(|r| (r.key().clone(), r.score(order, order_value)))
+            .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+        
+        match best_route {
+            Some((exchange, score)) => {
+                debug!(
+                    "Smart routing order {} to {} (score: {:.3})",
+                    order.id, exchange, score
+                );
+                Ok(exchange)
+            }
+            None => Err(RoutingError::NoAvailableRoute),
+        }
+    }
+    
+    /// Update route metrics after order execution
+    pub fn update_metrics(
+        &self,
+        &exchange_name: &str,
+        latency_ms: u64,
+        success: bool,
+        slippage_bps: Option<i32>,
+    ) {
+        if let Some(mut route) = self.routes.get_mut(&exchange_name) {
+            // Update latency (exponential moving average)
+            route.avg_latency_ms = (route.avg_latency_ms * 9 + latency_ms) / 10;
+            
+            // Update success rate
+            route.success_rate = if success {
+                (route.success_rate * 0.99 + 1.0)
+            } else {
+                (route.success_rate * 0.99)
+            };
+            
+            // Update slippage if provided
+            if let Some(slippage) = slippage_bps {
+                route.avg_slippage_bps = (route.avg_slippage_bps * 9 + slippage) / 10;
+            }
+            
+            // Update request tracking
+            *route.last_request.write() = Instant::now();
+        }
+    }
+    
+    /// Get routing statistics
+    pub fn get_stats(&self) -> RoutingStats {
+        let total_routes = self.routes.len();
+        let active_routes = self.routes.iter().filter(|r| r.is_active).count();
+        
+        let avg_latency = if total_routes > 0 {
+            self.routes.iter().map(|r| r.avg_latency_ms).sum::<u64>() / total_routes as u64
+        } else {
+            0
+        };
+        
+        let avg_success_rate = if total_routes > 0 {
+            self.routes.iter().map(|r| r.success_rate).sum::<f64>() / total_routes as f64
+        } else {
+            0.0
+        };
+        
+        RoutingStats {
+            total_routes,
+            active_routes,
+            avg_latency_ms: avg_latency,
+            avg_success_rate,
+            current_strategy: *self.strategy.read(),
+        }
+    }
+    
+    /// CRITICAL: Split large orders across multiple exchanges
+    /// Alex: "This prevents slippage disasters on large orders!"
+    pub async fn split_order_for_liquidity(
+        &self,
+        order: &Order,
+    ) -> Result<Vec<(String, Order)>, RoutingError> {
+        let mut splits = Vec::new();
+        let mut remaining_quantity = order.quantity;
+        
+        // Get all exchanges with liquidity for this symbol
+        let mut available_exchanges: Vec<_> = self.routes
+            .iter()
+            .filter(|r| {
+                r.is_active && 
+                r.available_liquidity.read().contains_key(&order.symbol)
+            })
+            .map(|r| (r.key().clone(), r.value().clone()))
+            .collect();
+        
+        // Sort by liquidity score
+        available_exchanges.sort_by(|a, b| {
+            let score_a = a.1.calculate_liquidity_score(order);
+            let score_b = b.1.calculate_liquidity_score(order);
+            score_b.partial_cmp(&score_a).unwrap()
+        });
+        
+        // Split order across exchanges
+        for (&exchange_name, route) in available_exchanges {
+            if remaining_quantity <= Decimal::ZERO {
+                break;
+            }
+            
+            let liquidity_map = route.available_liquidity.read();
+            if let Some(liquidity) = liquidity_map.get(&order.symbol) {
+                // Get available liquidity for this exchange
+                let available = match order.side {
+                    crate::order::OrderSide::Buy => liquidity.ask_liquidity_1pct,
+                    crate::order::OrderSide::Sell => liquidity.bid_liquidity_1pct,
+                };
+                
+                // Take up to 50% of available liquidity (conservative)
+                let max_size = available * Decimal::from_str_exact("0.5").unwrap();
+                let split_size = remaining_quantity.min(max_size);
+                
+                if split_size >= route.min_order_size {
+                    // Create split order
+                    let mut split_order = order.clone();
+                    split_order.quantity = split_size;
+                    split_order.id = OrderId::new(); // New ID for split
+                    
+                    splits.push((&exchange_name, split_order));
+                    remaining_quantity -= split_size;
+                    
+                    info!(
+                        "Split {} {} to {} (liquidity: {})",
+                        split_size, order.symbol, &exchange_name, available
+                    );
+                }
+            }
+        }
+        
+        // Check if we could route the entire order
+        if remaining_quantity > Decimal::ZERO {
+            warn!(
+                "Could not route full order: {} remaining of {}",
+                remaining_quantity, order.quantity
+            );
+            
+            if splits.is_empty() {
+                return Err(RoutingError::NoAvailableRoute);
+            }
+        }
+        
+        Ok(splits)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RoutingStats {
+    pub total_routes: usize,
+    pub active_routes: usize,
+    pub avg_latency_ms: u64,
+    pub avg_success_rate: f64,
+    pub current_strategy: RoutingStrategy,
+}
+
+#[derive(Debug, Error)]
+pub enum RoutingError {
+    #[error("No available route for order")]
+    NoAvailableRoute,
+    
+    #[error("No primary exchange configured")]
+    NoPrimaryExchange,
+    
+    #[error("Exchange not found: {0}")]
+    ExchangeNotFound(String),
+    
+    #[error("Rate limit exceeded for exchange: {0}")]
+    RateLimitExceeded(String),
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::order::{OrderSide, OrderType};
+    use rust_decimal_macros::dec;
+    
+    #[test]
+    fn test_route_scoring() {
+        let route = ExchangeRoute::new("binance".to_string());
+        
+        let order = Order::new(
+            "BTCUSDT".to_string(),
+            OrderSide::Buy,
+            OrderType::Limit,
+            dec!(0.1),
+        )
+        .with_price(dec!(50000));
+        
+        let score = route.score(&order, dec!(5000));
+        assert!(score > 0.0);
+        assert!(score <= 1.0);
+    }
+    
+    #[tokio::test]
+    async fn test_smart_routing() {
+        let router = OrderRouter::new(RoutingStrategy::SmartRoute);
+        
+        // Add routes with different characteristics
+        let mut fast_route = ExchangeRoute::new("fast_exchange".to_string());
+        fast_route.avg_latency_ms = 50;
+        fast_route.taker_fee_bps = 30;
+        router.add_route(fast_route);
+        
+        let mut cheap_route = ExchangeRoute::new("cheap_exchange".to_string());
+        cheap_route.avg_latency_ms = 150;
+        cheap_route.taker_fee_bps = 10;
+        router.add_route(cheap_route);
+        
+        let order = Order::new(
+            "BTCUSDT".to_string(),
+            OrderSide::Buy,
+            OrderType::Market,
+            dec!(0.1),
+        );
+        
+        let selected = router.route_order(&order).await.unwrap();
+        assert!(selected == "fast_exchange" || selected == "cheap_exchange");
+    }
+    
+    #[test]
+    fn test_round_robin_routing() {
+        let router = OrderRouter::new(RoutingStrategy::RoundRobin);
+        
+        router.add_route(ExchangeRoute::new("exchange1".to_string()));
+        router.add_route(ExchangeRoute::new("exchange2".to_string()));
+        router.add_route(ExchangeRoute::new("exchange3".to_string()));
+        
+        let order = Order::new(
+            "BTCUSDT".to_string(),
+            OrderSide::Buy,
+            OrderType::Market,
+            dec!(0.1),
+        );
+        
+        let mut selections = Vec::new();
+        for _ in 0..6 {
+            selections.push(router.route_order(&order).unwrap());
+        }
+        
+        // Should cycle through all exchanges
+        assert!(selections.contains(&"exchange1".to_string()));
+        assert!(selections.contains(&"exchange2".to_string()));
+        assert!(selections.contains(&"exchange3".to_string()));
+    }
+}

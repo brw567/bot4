@@ -2,7 +2,7 @@
 // Team Lead: Quinn (Safety Systems)
 // Full Implementation - NO SIMPLIFICATIONS
 
-use crate::circuit_breaker::{ComponentBreaker, CircuitConfig, GlobalTripConditions, SystemClock, Clock, Outcome};
+use crate::circuit_breaker::{ComponentBreaker, CircuitConfig, GlobalTripConditions, SystemClock, Outcome};
 use std::sync::Arc;
 use std::time::Duration;
 

@@ -11,7 +11,7 @@ use strum_macros::{Display, EnumString, FromRepr};
 use thiserror::Error;
 use tracing::{debug, warn, error};
 
-use crate::order::{Order, OrderId};
+use crate::order::OrderId;
 
 /// Order states in the lifecycle
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString, FromRepr)]

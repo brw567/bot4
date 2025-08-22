@@ -1,14 +1,12 @@
 // Correlation Analysis for Risk Management
 // Prevents overexposure to correlated assets (Quinn's 0.7 limit)
 
-use ndarray::{Array1, Array2};
+use ndarray::Array2;
 use parking_lot::RwLock;
-use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use statrs::statistics::Statistics;
 use std::collections::HashMap;
 use std::sync::Arc;
-use tracing::{debug, warn};
 
 /// Correlation matrix for asset pairs
 #[derive(Debug, Clone)]
@@ -110,7 +108,7 @@ impl CorrelationAnalyzer {
     /// Add price data point
     pub fn add_price(&self, symbol: String, price: f64) {
         let mut history = self.price_history.write();
-        let prices = history.entry(symbol).or_insert_with(Vec::new);
+        let prices = history.entry(symbol).or_default();
         prices.push(price);
         
         // Keep only window_size samples

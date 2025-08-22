@@ -22,11 +22,11 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use tokio::sync::{RwLock, Mutex};
-use ndarray::{Array2, ArrayView2, Axis, s};
+use tokio::sync::RwLock;
+use ndarray::{Array2, ArrayView2, s};
 use rand::prelude::*;
 use rayon::prelude::*;
-use tracing::{debug, error, info, warn};
+use tracing::{info, warn};
 
 // Submodules
 pub mod optimizer;
@@ -724,7 +724,7 @@ impl HyperparameterOptimizer {
             let config = self.sample_config(&pipeline.config);
             
             // Train with sampled config
-            let mut trial_pipeline = TrainingPipeline::new(
+            let trial_pipeline = TrainingPipeline::new(
                 config.clone(),
                 Arc::clone(&pipeline.registry),
                 Arc::clone(&pipeline.feature_extractor),

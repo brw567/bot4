@@ -4,8 +4,7 @@
 // Date: January 18, 2025
 // NO SIMPLIFICATIONS - FULL IMPLEMENTATION
 
-use anyhow::Result;
-use ndarray::{Array1, Array2, Axis};
+use ndarray::{Array1, Array2};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -266,6 +265,12 @@ pub struct MetricsReport {
 pub struct MetricsCalculator {
     include_trading: bool,
     include_risk: bool,
+}
+
+impl Default for MetricsCalculator {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl MetricsCalculator {

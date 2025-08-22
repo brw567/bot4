@@ -125,6 +125,12 @@ pub struct UnboundedQueue<T> {
     queue: Arc<SegQueue<T>>,
 }
 
+impl<T> Default for UnboundedQueue<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> UnboundedQueue<T> {
     pub fn new() -> Self {
         Self {
@@ -159,6 +165,12 @@ impl<T> UnboundedQueue<T> {
 pub struct TickRing {
     ring: SpscRing<super::pools::Tick>,
     dropped: AtomicUsize,
+}
+
+impl Default for TickRing {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl TickRing {
@@ -204,6 +216,12 @@ impl TickRing {
 pub struct OrderQueue {
     ring: MpmcRing<super::pools::Order>,
     rejected: AtomicUsize,
+}
+
+impl Default for OrderQueue {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl OrderQueue {

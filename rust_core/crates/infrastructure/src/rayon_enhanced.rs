@@ -15,7 +15,7 @@ use rust_decimal::prelude::*;
 
 // Import our object pools
 use crate::object_pools::{
-    acquire_order, acquire_signal, acquire_market_data,
+    acquire_signal,
     Order, Signal, MarketData, SignalType,
 };
 
@@ -114,7 +114,7 @@ impl ParallelTradingEngine {
                 by_instrument.into_iter().collect();
             
             instrument_groups.into_par_iter()
-                .flat_map(|(symbol, data_points)| {
+                .flat_map(|(_symbol, data_points)| {
                     // Process all data points for this instrument
                     data_points.par_iter()
                         .filter_map(|data| {
@@ -162,6 +162,30 @@ impl ParallelTradingEngine {
         } else {
             None
         }
+    }
+    
+    /// Get shard for instrument (uses sharding for better cache locality)
+    pub fn get_instrument_shard(&self, symbol: &str) -> usize {
+        self.sharding.get_shard(symbol)
+    }
+    
+    /// Process market data with sharding for better performance
+    pub fn process_with_sharding(&self, data: Vec<MarketData>) -> Vec<Vec<Signal>> {
+        // Group data by shard for better cache locality
+        let num_shards = 12; // Using 12 shards for 12-core system
+        let mut shards: Vec<Vec<MarketData>> = vec![Vec::new(); num_shards];
+        
+        for item in data {
+            let shard = self.get_instrument_shard(&item.symbol);
+            shards[shard].push(item);
+        }
+        
+        // Process each shard in parallel
+        self.trading_pool.install(|| {
+            shards.into_par_iter()
+                .map(|shard_data| self.process_market_data(shard_data))
+                .collect()
+        })
     }
     
     /// Parallel risk checks with dedicated thread pool
@@ -388,6 +412,12 @@ pub trait PipelineStage<T: Send + Sync>: Send + Sync {
     fn process(&self, input: T) -> Option<T>;
 }
 
+impl<T: Send + Sync + 'static> Default for ParallelPipeline<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T: Send + Sync + 'static> ParallelPipeline<T> {
     pub fn new() -> Self {
         Self {
@@ -425,6 +455,7 @@ impl<T: Send + Sync + 'static> ParallelPipeline<T> {
 mod benchmarks {
     use super::*;
     use criterion::{black_box, Criterion};
+    use crate::object_pools::{acquire_market_data, acquire_order};
     
     fn bench_parallel_processing(c: &mut Criterion) {
         let engine = ParallelTradingEngine::new().unwrap();
@@ -452,6 +483,7 @@ mod benchmarks {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::object_pools::{acquire_market_data, acquire_order};
     
     #[test]
     fn test_parallel_engine_creation() {
