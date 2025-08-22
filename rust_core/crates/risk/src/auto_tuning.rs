@@ -9,7 +9,7 @@ use serde::{Serialize, Deserialize};
 
 /// Market Regime Detection using Hidden Markov Models
 /// Morgan: "We need to detect Bull, Bear, and Sideways markets"
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum MarketRegime {
     Bull,       // Trending up, low volatility
     Bear,       // Trending down, high volatility  
@@ -101,20 +101,43 @@ impl AutoTuningSystem {
         // 1. Trend detection using linear regression
         let trend = self.calculate_trend(returns);
         
-        // 2. Volatility regime
+        // 2. Average return (important for regime detection!)
+        let avg_return = if returns.is_empty() { 
+            0.0 
+        } else { 
+            returns.iter().sum::<f64>() / returns.len() as f64 
+        };
+        
+        // 3. Volatility regime
         let vol_percentile = self.calculate_volatility_percentile(volatility);
         
-        // 3. Volume analysis
+        // 4. Volume analysis
         let volume_surge = self.detect_volume_surge(volumes);
         
-        // 4. Correlation breakdown detection
+        // 5. Correlation breakdown detection
         let correlation_stable = self.check_correlation_stability(returns);
         
         // Hidden Markov Model transition probabilities
-        let regime = match (trend, vol_percentile, volume_surge, correlation_stable) {
-            (t, v, _, false) if v > 0.9 => MarketRegime::Crisis,
-            (t, v, _, _) if t > 0.002 && v < 0.5 => MarketRegime::Bull,
-            (t, v, _, _) if t < -0.002 && v > 0.5 => MarketRegime::Bear,
+        // DEEP ANALYSIS: Real market behavior patterns
+        // Bull: Positive returns with controlled volatility
+        // Bear: Negative returns (volatility can vary - steady decline OR high vol)
+        // Crisis: Extreme volatility OR correlation breakdown
+        // Sideways: Everything else
+        
+        let regime = match (avg_return, trend, vol_percentile, volume_surge, correlation_stable) {
+            // Crisis detection first (highest priority)
+            (_, _, v, _, false) if v > 0.9 => MarketRegime::Crisis,  // Correlation breakdown
+            (_, _, v, _, _) if v > 0.8 => MarketRegime::Crisis,       // Extreme volatility
+            
+            // Bull market: positive returns with reasonable volatility
+            (a, t, v, _, _) if a > 0.008 && t >= 0.0 && v < 0.6 => MarketRegime::Bull,
+            (a, _, v, _, _) if a > 0.015 && v < 0.7 => MarketRegime::Bull, // Strong returns
+            
+            // Bear market: negative returns (any volatility level)
+            (a, t, _, _, _) if a < -0.008 && t <= 0.0 => MarketRegime::Bear,
+            (a, _, _, _, _) if a < -0.015 => MarketRegime::Bear, // Strong negative returns
+            
+            // Default to sideways
             _ => MarketRegime::Sideways,
         };
         

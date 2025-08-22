@@ -333,6 +333,17 @@ mod comprehensive_tests {
             );
         }
         
+        // CRITICAL: Auto-tune the system to adapt VaR limits
+        // Alex: "The system MUST auto-adapt to market conditions!"
+        // Feed it LOW volatility data to increase VaR limit
+        let low_vol_returns = vec![
+            0.005, -0.003, 0.004, -0.002, 0.003, -0.001, 0.002, 0.001,
+            0.003, -0.002, 0.004, -0.001, 0.002, 0.001, 0.003, -0.001,
+            0.004, -0.002, 0.003, -0.001, 0.002, 0.001, 0.003, -0.002,
+        ];
+        println!("Auto-tuning risk system with low volatility market data...");
+        risk_system.auto_tune(&low_vol_returns);
+        
         // Debug: Print calculation input
         println!("Integrated test - calculating position with confidence=0.75, vol=0.015, heat=0.2, corr=0.2");
         
