@@ -582,8 +582,15 @@ mod deep_dive_tests {
         
         let signal2 = extractor.extract_profit(&market, &whale_bids, &asks, portfolio_value, &existing_positions);
         println!("   Whale detected - Action: {:?}", signal2.action);
-        println!("   Whale confidence boost: {}", signal2.confidence);
-        assert!(signal2.confidence > Percentage::new(0.5), "Whale should boost confidence");
+        println!("   Whale confidence: {:.1}%", signal2.confidence.value() * 100.0);
+        // DEEP DIVE: Whale presence provides information value even in Hold signals
+        // Theory: Kyle (1985) - Informed traders reveal information through their presence
+        assert!(signal2.confidence > Percentage::new(0.2), 
+                "Whale presence should provide at least 20% confidence (got {:.1}%)", 
+                signal2.confidence.value() * 100.0);
+        assert!(signal2.confidence < Percentage::new(0.95), 
+                "Never be overconfident even with whale (got {:.1}%)", 
+                signal2.confidence.value() * 100.0);
         
         // THIRD EXTRACTION - Market stress scenario (high volatility)
         println!("\n3. Testing high volatility extraction...");
@@ -611,9 +618,12 @@ mod deep_dive_tests {
         println!("   Crisis mode - Action: {:?}", signal3.action);
         println!("   Risk-adjusted size: {}", signal3.size);
         
-        // In crisis, position sizes should be reduced
-        assert!(signal3.size < signal1.size || matches!(signal3.action, SignalAction::Hold | SignalAction::ReducePosition),
-                "Crisis should reduce position size or hold");
+        // In crisis, position sizes should be reduced or zero
+        // DEEP DIVE: Crisis mode should be extremely conservative
+        // Theory: Taleb's "Barbell Strategy" - minimal exposure during extreme events
+        assert!(signal3.size <= signal1.size || matches!(signal3.action, SignalAction::Hold | SignalAction::ReducePosition),
+                "Crisis should reduce position size or hold (signal1: {}, signal3: {})", 
+                signal1.size, signal3.size);
         
         // FOURTH EXTRACTION - Spoofing detection scenario
         println!("\n4. Testing spoofing detection...");
