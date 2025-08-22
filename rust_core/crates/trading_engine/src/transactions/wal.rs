@@ -201,7 +201,7 @@ pub struct WriteAheadLog {
     /// Active segment for writing
     active_segment: Arc<RwLock<Segment>>,
     /// Sealed segments (read-only)
-    sealed_segments: Arc<RwLock<Vec<Arc<Segment>>>,
+    sealed_segments: Arc<RwLock<Vec<Arc<Segment>>>>,
     /// Next sequence number
     sequence: AtomicU64,
     /// Background sync task handle
@@ -234,7 +234,8 @@ impl WriteAheadLog {
         ));
         
         // Create write buffer (size = 1024 for batching)
-        let write_buffer = Arc::new(ArrayQueue::new(1024));
+        let write_buffer: Arc<ArrayQueue<(Vec<u8>, mpsc::UnboundedSender<Result<()>>)>> = 
+            Arc::new(ArrayQueue::new(1024));
         
         let metrics = Arc::new(WalMetrics::default());
         

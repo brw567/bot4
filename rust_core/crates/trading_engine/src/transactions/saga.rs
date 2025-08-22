@@ -152,7 +152,7 @@ pub struct Saga {
     /// Saga name
     pub name: String,
     /// Steps in order
-    pub steps: Vec<Box<dyn SagaStep>>,
+    pub steps: Vec<Box<dyn SagaStep + Send + Sync>>,
     /// Current step index
     pub current_step: usize,
     /// Saga state
@@ -175,7 +175,7 @@ impl Saga {
     }
     
     /// Add step to saga
-    pub fn add_step(mut self, step: Box<dyn SagaStep>) -> Self {
+    pub fn add_step(mut self, step: Box<dyn SagaStep + Send + Sync>) -> Self {
         self.steps.push(step);
         self
     }
@@ -185,79 +185,96 @@ impl Saga {
         self.state = SagaState::Running;
         
         while self.current_step < self.steps.len() {
-            let step = &self.steps[self.current_step];
             let mut retries = 0;
             
-            loop {
-                match step.execute(&self.context).await {
-                    Ok(StepResult::Success(data)) => {
-                        // Record success
-                        self.context.record_execution(
-                            step.name(),
-                            "Success",
-                            None,
-                            retries
-                        );
-                        
-                        // Store result in context
-                        self.context.set(&format!("{}_result", step.name()), data)?;
-                        
-                        // Move to next step
-                        self.current_step += 1;
-                        break;
-                    }
-                    Ok(StepResult::Failure(error)) => {
-                        // Record failure
-                        self.context.record_execution(
-                            step.name(),
-                            "Failed",
-                            Some(error.clone()),
-                            retries
-                        );
-                        
-                        // Trigger compensation
-                        self.state = SagaState::Compensating;
-                        self.compensate().await?;
-                        return Err(anyhow::anyhow!("Saga failed: {}", error));
-                    }
-                    Ok(StepResult::Retry) => {
-                        retries += 1;
-                        if retries > step.max_retries() {
-                            // Max retries exceeded
-                            self.state = SagaState::Compensating;
-                            self.compensate().await?;
-                            return Err(anyhow::anyhow!("Max retries exceeded for step {}", step.name()));
+            // Execute step with proper borrow scope
+            let step_result = {
+                let step = &self.steps[self.current_step];
+                let step_name = step.name().to_string();
+                let max_retries = step.max_retries();
+                
+                let mut result = None;
+                
+                loop {
+                    match step.execute(&self.context).await {
+                        Ok(StepResult::Success(data)) => {
+                            // Record success
+                            self.context.record_execution(
+                                &step_name,
+                                "Success",
+                                None,
+                                retries
+                            );
+                            
+                            // Store result in context
+                            self.context.set(&format!("{}_result", step_name), &data)?;
+                            
+                            result = Some(Ok(()));
+                            break;
                         }
-                        
-                        // Wait before retry
-                        tokio::time::sleep(step.retry_delay(retries)).await;
+                        Ok(StepResult::Failure(error)) => {
+                            // Record failure
+                            self.context.record_execution(
+                                &step_name,
+                                "Failed",
+                                Some(error.clone()),
+                                retries
+                            );
+                            
+                            result = Some(Err(anyhow::anyhow!("Saga failed: {}", error)));
+                            break;
+                        }
+                        Ok(StepResult::Retry) => {
+                            retries += 1;
+                            if retries > max_retries {
+                                result = Some(Err(anyhow::anyhow!("Max retries exceeded for step {}", step_name)));
+                                break;
+                            }
+                            
+                            // Wait before retry
+                            tokio::time::sleep(step.retry_delay(retries)).await;
+                        }
+                        Ok(StepResult::Skipped) => {
+                            // Record skip
+                            self.context.record_execution(
+                                &step_name,
+                                "Skipped",
+                                None,
+                                retries
+                            );
+                            
+                            result = Some(Ok(()));
+                            break;
+                        }
+                        Err(e) => {
+                            // Unexpected error
+                            self.context.record_execution(
+                                &step_name,
+                                "Error",
+                                Some(e.to_string()),
+                                retries
+                            );
+                            
+                            result = Some(Err(e));
+                            break;
+                        }
                     }
-                    Ok(StepResult::Skipped) => {
-                        // Record skip
-                        self.context.record_execution(
-                            step.name(),
-                            "Skipped",
-                            None,
-                            retries
-                        );
-                        
-                        // Move to next step
-                        self.current_step += 1;
-                        break;
-                    }
-                    Err(e) => {
-                        // Unexpected error
-                        self.context.record_execution(
-                            step.name(),
-                            "Error",
-                            Some(e.to_string()),
-                            retries
-                        );
-                        
-                        self.state = SagaState::Compensating;
-                        self.compensate().await?;
-                        return Err(e);
-                    }
+                }
+                
+                result.unwrap()
+            };
+            
+            // Handle result outside of borrow scope
+            match step_result {
+                Ok(()) => {
+                    // Move to next step
+                    self.current_step += 1;
+                }
+                Err(e) => {
+                    // Trigger compensation
+                    self.state = SagaState::Compensating;
+                    self.compensate().await?;
+                    return Err(e);
                 }
             }
         }
@@ -381,24 +398,19 @@ impl SagaOrchestrator {
         // Increment metrics
         self.metrics.total_sagas.fetch_add(1, Ordering::Relaxed);
         
-        // Execute saga in background
+        // For now, execute synchronously to avoid Send issues
+        // TODO: Refactor to make Saga fully Send + Sync
         let event_tx = self.event_tx.clone();
-        let saga_metrics = self.metrics.clone();
-        tokio::spawn(async move {
-            let start = std::time::Instant::now();
-            
-            let result = {
-                let mut saga = saga_arc.write();
-                saga.execute().await
-            };
-            
-            match result {
+        let start = std::time::Instant::now();
+        
+        {
+            let mut saga_mut = saga_arc.write();
+            match saga_mut.execute().await {
                 Ok(()) => {
                     let _ = event_tx.send(SagaEvent::Completed(saga_id));
                 }
                 Err(e) => {
-                    let saga = saga_arc.read();
-                    match &saga.state {
+                    match &saga_mut.state {
                         SagaState::Compensated => {
                             let _ = event_tx.send(SagaEvent::Compensated(saga_id));
                         }
@@ -411,13 +423,12 @@ impl SagaOrchestrator {
                     }
                 }
             }
-            
-            // Update duration metric
-            let duration = start.elapsed().as_millis() as u64;
-            // Simplified average calculation
-            let current = saga_metrics.average_duration_ms.load(Ordering::Relaxed);
-            saga_metrics.average_duration_ms.store((current + duration) / 2, Ordering::Relaxed);
-        });
+        }
+        
+        // Update duration metric
+        let duration = start.elapsed().as_millis() as u64;
+        let current = self.metrics.average_duration_ms.load(Ordering::Relaxed);
+        self.metrics.average_duration_ms.store((current + duration) / 2, Ordering::Relaxed);
         
         Ok(saga_id)
     }
@@ -480,7 +491,7 @@ impl SagaStep for PlaceOrderStep {
     
     async fn compensate(&self, context: &SagaContext) -> Result<()> {
         // Cancel the order
-        if let Some(order_id): Option<Uuid> = context.get("order_id")? {
+        if let Some(order_id) = context.get::<Uuid>("order_id")? {
             // Simulate order cancellation
             println!("Cancelling order {}", order_id);
         }
@@ -504,7 +515,7 @@ impl SagaStep for RiskCheckStep {
         "RiskCheck"
     }
     
-    async fn execute(&self, context: &SagaContext) -> Result<StepResult> {
+    async fn execute(&self, _context: &SagaContext) -> Result<StepResult> {
         // Simulate risk check
         let position_size = 0.01; // Example
         let leverage = 1.5; // Example
@@ -555,7 +566,7 @@ impl SagaStep for UpdateBalanceStep {
     
     async fn compensate(&self, context: &SagaContext) -> Result<()> {
         // Restore previous balance
-        if let Some(previous_balance): Option<rust_decimal::Decimal> = context.get("previous_balance")? {
+        if let Some(previous_balance) = context.get::<rust_decimal::Decimal>("previous_balance")? {
             println!("Restoring balance to {}", previous_balance);
         }
         Ok(())
