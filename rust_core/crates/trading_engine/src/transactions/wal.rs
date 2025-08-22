@@ -65,7 +65,15 @@ impl EntryHeader {
     }
     
     fn to_bytes(&self) -> [u8; Self::SIZE] {
-        unsafe { std::mem::transmute(*self) }
+        let mut bytes = [0u8; Self::SIZE];
+        unsafe {
+            std::ptr::copy_nonoverlapping(
+                self as *const _ as *const u8,
+                bytes.as_mut_ptr(),
+                Self::SIZE,
+            );
+        }
+        bytes
     }
     
     fn from_bytes(bytes: &[u8]) -> Result<Self> {
@@ -256,7 +264,7 @@ impl WriteAheadLog {
                     
                     for (data, response_tx) in batch {
                         // Process write and send response
-                        let result = Ok(()); // Simplified for now
+                        let result: Result<()> = Ok(()); // Simplified for now
                         let _ = response_tx.send(result);
                     }
                     

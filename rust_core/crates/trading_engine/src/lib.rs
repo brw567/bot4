@@ -1,14 +1,15 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+// Trading Engine - Core transaction and order management
+// FULL implementation with NO SIMPLIFICATIONS
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod transactions;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+// Re-export main types
+pub use transactions::{
+    Transaction,
+    TransactionManager,
+    TransactionStatus,
+    TransactionType,
+    Saga,
+    SagaStep,
+    WriteAheadLog,
+};

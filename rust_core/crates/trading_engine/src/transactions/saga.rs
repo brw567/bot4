@@ -271,27 +271,29 @@ impl Saga {
         // Compensate in reverse order from current step
         for i in (0..self.current_step).rev() {
             let step = &self.steps[i];
+            let step_name = step.name().to_string();
             
             match step.compensate(&self.context).await {
                 Ok(()) => {
                     self.context.record_execution(
-                        &format!("{}_compensate", step.name()),
+                        &format!("{}_compensate", step_name),
                         "Success",
                         None,
                         0
                     );
                 }
                 Err(e) => {
+                    let error_msg = e.to_string();
                     self.context.record_execution(
-                        &format!("{}_compensate", step.name()),
+                        &format!("{}_compensate", step_name),
                         "Failed",
-                        Some(e.to_string()),
+                        Some(error_msg.clone()),
                         0
                     );
                     
                     // Compensation failed - inconsistent state
                     self.state = SagaState::Aborted {
-                        reason: format!("Compensation failed at {}: {}", step.name(), e),
+                        reason: format!("Compensation failed at {}: {}", step_name, error_msg),
                     };
                     return Err(e);
                 }
@@ -340,18 +342,18 @@ impl SagaOrchestrator {
         let metrics = Arc::new(SagaMetrics::default());
         
         // Spawn event processor for choreography
-        let metrics_clone = metrics.clone();
+        let event_metrics = metrics.clone();
         tokio::spawn(async move {
             while let Some(event) = event_rx.recv().await {
                 match event {
                     SagaEvent::Completed(_) => {
-                        metrics_clone.successful_sagas.fetch_add(1, Ordering::Relaxed);
+                        event_metrics.successful_sagas.fetch_add(1, Ordering::Relaxed);
                     }
                     SagaEvent::Compensated(_) => {
-                        metrics_clone.compensated_sagas.fetch_add(1, Ordering::Relaxed);
+                        event_metrics.compensated_sagas.fetch_add(1, Ordering::Relaxed);
                     }
                     SagaEvent::Aborted(_, _) => {
-                        metrics_clone.failed_sagas.fetch_add(1, Ordering::Relaxed);
+                        event_metrics.failed_sagas.fetch_add(1, Ordering::Relaxed);
                     }
                     _ => {}
                 }
@@ -381,6 +383,7 @@ impl SagaOrchestrator {
         
         // Execute saga in background
         let event_tx = self.event_tx.clone();
+        let saga_metrics = self.metrics.clone();
         tokio::spawn(async move {
             let start = std::time::Instant::now();
             
@@ -412,8 +415,8 @@ impl SagaOrchestrator {
             // Update duration metric
             let duration = start.elapsed().as_millis() as u64;
             // Simplified average calculation
-            let current = metrics_clone.average_duration_ms.load(Ordering::Relaxed);
-            metrics_clone.average_duration_ms.store((current + duration) / 2, Ordering::Relaxed);
+            let current = saga_metrics.average_duration_ms.load(Ordering::Relaxed);
+            saga_metrics.average_duration_ms.store((current + duration) / 2, Ordering::Relaxed);
         });
         
         Ok(saga_id)

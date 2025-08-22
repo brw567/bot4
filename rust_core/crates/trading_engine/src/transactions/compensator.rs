@@ -77,7 +77,7 @@ pub fn create_compensator(transaction: &Transaction) -> Result<Box<dyn Compensat
                 compensating_transaction_id: transaction.id,
             }))
         }
-        TransactionType::MarginRequirement { position_id, required_margin, current_margin } => {
+        TransactionType::MarginRequirement { position_id, required_margin, current_margin: _ } => {
             Ok(Box::new(MarginReleaseCompensator {
                 position_id: *position_id,
                 margin_to_release: *required_margin,
@@ -111,13 +111,13 @@ impl CompensatingTransaction for OrderCancellationCompensator {
         let order_status = exchange.get_order_status(self.order_id).await?;
         
         match order_status {
-            OrderStatus::Open | OrderStatus::PartiallyFilled => {
+            OrderStatus::Open | OrderStatus::PartiallyFilled { .. } => {
                 // Cancel the order
                 exchange.cancel_order(self.order_id).await
                     .context("Failed to cancel order")?;
                 
                 // If partially filled, we need additional compensation
-                if let OrderStatus::PartiallyFilled { filled_quantity, .. } = order_status {
+                if let OrderStatus::PartiallyFilled { filled_quantity, .. } = &order_status {
                     // Create reverse trade for filled portion
                     let reverse_side = match self.side {
                         OrderSide::Buy => OrderSide::Sell,
@@ -127,7 +127,7 @@ impl CompensatingTransaction for OrderCancellationCompensator {
                     let reverse_order = exchange.place_market_order(
                         &self.symbol,
                         reverse_side,
-                        filled_quantity,
+                        *filled_quantity,
                     ).await?;
                     
                     log::info!(

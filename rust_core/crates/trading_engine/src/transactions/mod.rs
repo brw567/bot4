@@ -21,6 +21,9 @@ pub mod saga;
 pub mod compensator;
 pub mod retry;
 
+#[cfg(test)]
+mod tests;
+
 pub use wal::WriteAheadLog;
 pub use saga::{Saga, SagaStep, SagaState};
 pub use compensator::CompensatingTransaction;
@@ -408,7 +411,15 @@ impl TransactionManager {
     
     /// Get metrics
     pub fn get_metrics(&self) -> TransactionMetrics {
-        self.metrics.read().clone()
+        let m = self.metrics.read();
+        TransactionMetrics {
+            total_transactions: m.total_transactions,
+            successful_transactions: m.successful_transactions,
+            failed_transactions: m.failed_transactions,
+            compensated_transactions: m.compensated_transactions,
+            retry_attempts: m.retry_attempts,
+            average_latency_us: m.average_latency_us,
+        }
     }
     
     /// Recover from WAL on startup

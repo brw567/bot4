@@ -3681,6 +3681,7 @@ dependencies = [
  "bincode",
  "crc32fast",
  "crossbeam-queue",
+ "futures",
  "log",
  "memmap2",
  "parking_lot",
