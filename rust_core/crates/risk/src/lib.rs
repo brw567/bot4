@@ -34,7 +34,10 @@ pub mod decision_orchestrator_enhanced;  // DEEP DIVE: FULLY INTEGRATED orchestr
 pub mod decision_orchestrator_enhanced_impl;  // DEEP DIVE: Complete implementation methods!
 pub mod order_book_extensions;  // DEEP DIVE: Complete missing OrderBook methods!
 pub mod integration_test_complete;  // DEEP DIVE: Comprehensive integration verification!
+pub mod master_orchestration_system;  // MASTER BRAIN: Connects EVERYTHING with NO SIMPLIFICATIONS!
 
+#[cfg(test)]
+mod master_integration_validation;  // DEEP DIVE: Validates ALL connections work!
 #[cfg(test)]
 mod comprehensive_tests;
 #[cfg(test)]
