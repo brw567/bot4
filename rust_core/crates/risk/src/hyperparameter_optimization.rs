@@ -427,6 +427,37 @@ impl Sampler for RandomSampler {
             }
         }
     }
+    
+    fn infer_relative_search_space(
+        &self,
+        _study: &OptimizationStudy,
+        _trial: &Trial,
+    ) -> HashMap<String, ParameterType> {
+        // Random sampler doesn't use relative search space
+        HashMap::new()
+    }
+    
+    fn sample_relative(
+        &mut self,
+        study: &OptimizationStudy,
+        trial: &Trial,
+        search_space: &HashMap<String, ParameterType>,
+    ) -> HashMap<String, ParameterValue> {
+        // Random sampler just samples each parameter
+        let mut result = HashMap::new();
+        for (name, param_type) in search_space {
+            // Create a temporary ParameterDef
+            let param_def = ParameterDef {
+                name: name.clone(),
+                param_type: param_type.clone(),
+                description: String::new(),
+                affects: Vec::new(),
+                importance: 0.5,
+            };
+            result.insert(name.clone(), self.sample(study, &param_def, trial.trial_id));
+        }
+        result
+    }
 }
 
 // No pruning pruner
@@ -463,6 +494,7 @@ pub trait Sampler: Send + Sync {
 }
 
 /// TPE (Tree-structured Parzen Estimator) Sampler - Optuna's default
+#[derive(Clone)]
 pub struct TPESampler {
     n_startup_trials: usize,
     n_ei_candidates: usize,
@@ -990,6 +1022,7 @@ pub trait Pruner: Send + Sync {
 }
 
 /// Median Pruner - prunes if trial is worse than median of previous trials
+#[derive(Clone)]
 pub struct MedianPruner {
     n_startup_trials: usize,
     n_warmup_steps: usize,

@@ -2,8 +2,8 @@
 // Team: Alex (Lead) + Morgan (ML) + Jordan (Performance) + Full Team
 // CRITICAL: Test AUTO-TUNING and AUTO-ADJUSTMENT capabilities
 
-use super::hyperparameter_optimization::*;
-use super::unified_types::*;
+use crate::hyperparameter_optimization::*;
+use crate::isotonic::MarketRegime;
 use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
 
@@ -43,9 +43,9 @@ impl MockTradingSystem {
         
         // Market regime adjustment (game theory - adapt to environment)
         let regime_multiplier = match self.market_regime {
-            MarketRegime::Bull => 1.3,
-            MarketRegime::Bear => 0.7,
-            MarketRegime::Sideways => 0.9,
+            MarketRegime::Trending => 1.3,
+            MarketRegime::Volatile => 0.7,
+            MarketRegime::RangeBound => 0.9,
             MarketRegime::Crisis => 0.5,
             MarketRegime::Normal => 1.0,
         };
@@ -229,10 +229,10 @@ fn test_market_regime_adaptation() {
     
     // Test adaptation for different market regimes
     let regimes = vec![
-        MarketRegime::Bull,
-        MarketRegime::Bear,
+        MarketRegime::Trending,
+        MarketRegime::Volatile,
         MarketRegime::Crisis,
-        MarketRegime::Sideways,
+        MarketRegime::RangeBound,
     ];
     
     for regime in regimes {
@@ -259,9 +259,9 @@ fn test_market_regime_adaptation() {
                 assert!(*kelly <= 0.15, "Kelly should be conservative in crisis");
                 assert!(*var_limit <= 0.015, "VaR should be tight in crisis");
             }
-            MarketRegime::Bull => {
-                // Can be more aggressive in bull market
-                assert!(*kelly >= 0.15, "Kelly can be higher in bull market");
+            MarketRegime::Trending => {
+                // Can be more aggressive in trending market
+                assert!(*kelly >= 0.15, "Kelly can be higher in trending market");
             }
             _ => {}
         }
