@@ -47,6 +47,8 @@ mod ml_integration_tests; // ML INTEGRATION tests - CRITICAL FOR CONTINUOUS IMPR
 mod ta_accuracy_audit; // TA ACCURACY AUDIT - NO SIMPLIFICATIONS!
 #[cfg(test)]
 mod risk_chain_audit; // COMPLETE RISK CHAIN AUDIT - EVERY LINK VERIFIED!
+#[cfg(test)]
+mod deep_dive_integration_tests; // DEEP DIVE integration tests - ALL enhancements validated!
 mod ta_improvements; // ADVANCED TA INDICATORS - PROPER IMPLEMENTATIONS!
 
 pub use clamps::{RiskClampSystem, ClampConfig, ClampMetrics};
