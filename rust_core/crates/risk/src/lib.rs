@@ -27,6 +27,7 @@ pub mod parameter_manager;  // CRITICAL: No hardcoded values - ALL parameters au
 pub mod game_theory_advanced;  // DEEP DIVE: Full game theory implementation - Nash, Prisoner's Dilemma, Multi-agent!
 pub mod performance_optimizations;  // DEEP DIVE: Zero allocations, lock-free, <1μs latency!
 pub mod t_copula;  // DEEP DIVE: t-Copula for tail dependence - models extreme event correlations!
+pub mod historical_regime_calibration;  // DEEP DIVE: Learn from 20+ years of crises - predict regime changes!
 
 #[cfg(test)]
 mod comprehensive_tests;
@@ -68,6 +69,10 @@ pub use isotonic::{IsotonicCalibrator, MarketRegime};
 pub use ml_feedback::{MLFeedbackSystem, MLMetrics};
 pub use profit_extractor::{ProfitExtractor, PerformanceStats, ExtendedMarketData};
 pub use t_copula::{TCopula, TCopulaConfig, TailRiskMetrics, TailDependenceMetrics};
+pub use historical_regime_calibration::{
+    HistoricalRegimeCalibration, HistoricalRegime, RegimeParameters, 
+    RegimeFeatures, CrisisWarning, CrisisEvent
+};
 
 // Re-export for convenience
 pub fn create_risk_system() -> (RiskClampSystem, KellySizer) {
