@@ -42,6 +42,11 @@ rand_distr = "0.4"
 rayon = "1.8"
 num_cpus = "1.16"
 
+# Performance optimizations - DEEP DIVE
+crossbeam = "0.8"
+smallvec = "1.11"
+arrayvec = "0.7"
+
 # Custom crates (when available)
 # infrastructure = { path = "../infrastructure" }
 

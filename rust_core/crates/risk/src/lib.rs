@@ -25,6 +25,7 @@ pub mod hyperparameter_integration;  // Integration of optimization into ALL com
 pub mod deep_dive_validation_study;  // Academic validation - NO SIMPLIFICATIONS!
 pub mod parameter_manager;  // CRITICAL: No hardcoded values - ALL parameters auto-tuned!
 pub mod game_theory_advanced;  // DEEP DIVE: Full game theory implementation - Nash, Prisoner's Dilemma, Multi-agent!
+pub mod performance_optimizations;  // DEEP DIVE: Zero allocations, lock-free, <1μs latency!
 
 #[cfg(test)]
 mod comprehensive_tests;

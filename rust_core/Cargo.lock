@@ -2535,9 +2535,11 @@ name = "risk"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "arrayvec",
  "async-trait",
  "chrono",
  "criterion",
+ "crossbeam",
  "dashmap",
  "lazy_static",
  "log",
@@ -2553,6 +2555,7 @@ dependencies = [
  "rust_decimal_macros",
  "serde",
  "serde_json",
+ "smallvec",
  "sqlx",
  "statrs 0.17.1",
  "thiserror 1.0.69",
