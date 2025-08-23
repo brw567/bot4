@@ -3,6 +3,8 @@
 
 use super::decision_orchestrator_enhanced::*;
 use crate::unified_types::*;
+use crate::decision_orchestrator::Signal;
+use crate::HistoricalRegime;
 use anyhow::{Result, anyhow};
 use rust_decimal::Decimal;
 use rust_decimal::prelude::*;

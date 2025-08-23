@@ -14,6 +14,7 @@ pub mod order_book_analytics; // Order book imbalance, VPIN, Kyle's Lambda - CRI
 pub mod unified_types;  // Unified type system - solves API mismatch
 pub mod profit_extractor;  // Profit extraction engine - makes MONEY!
 pub mod ml_feedback;  // ML feedback loops - CRITICAL for continuous improvement!
+pub mod xgboost_model;  // XGBoost gradient boosting - REAL ML MODEL!
 pub mod market_analytics;  // REAL market calculations - NO SIMPLIFICATIONS!
 pub mod portfolio_manager;  // Portfolio state management - NO HARDCODED VALUES!
 pub mod funding_rates;  // Funding rate arbitrage - 15-30% ADDITIONAL PROFIT!

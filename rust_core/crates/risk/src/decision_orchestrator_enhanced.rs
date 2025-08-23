@@ -3,22 +3,73 @@
 // Alex: "This must use EVERY system at 100% capacity!"
 
 use crate::unified_types::*;
+use crate::decision_orchestrator::{OrderBook, SentimentData};
 use crate::kelly_sizing::{KellySizer, KellyRecommendation};
 use crate::clamps::{RiskClampSystem, ClampConfig};
 use crate::auto_tuning::{AutoTuningSystem, MarketRegime as AutoTuneRegime};
 use crate::ml_feedback::{MLFeedbackSystem, MLMetrics};
 use crate::profit_extractor::{ProfitExtractor, PerformanceStats};
-use crate::market_analytics::{MarketAnalytics, TechnicalIndicators};
+use crate::market_analytics::MarketAnalytics;
 use crate::auto_tuning_persistence::AutoTuningPersistence;
 use crate::portfolio_manager::{PortfolioManager, PortfolioConfig};
-use crate::feature_importance::{SHAPCalculator, FeatureImportance};
+use crate::feature_importance::SHAPCalculator;
 use crate::t_copula::{TCopula, TCopulaConfig};
 use crate::historical_regime_calibration::{HistoricalRegimeCalibration, HistoricalRegime};
 use crate::cross_asset_correlations::{CrossAssetCorrelations, AssetClass};
 use crate::hyperparameter_optimization::{HyperparameterOptimizer, AutoTunerConfig};
-use crate::optimal_execution::{OptimalExecutor, ExecutionAlgorithm};
-use crate::vpin_validation::{VPINCalculator, FlowToxicity};
-use crate::monte_carlo::{MonteCarloSimulator, SimulationResults};
+use crate::optimal_execution::ExecutionAlgorithm;
+// VPIN calculation will be inline
+
+/// Simple VPIN calculator for flow toxicity
+struct VPINCalculator {
+    volume_buckets: Vec<f64>,
+    bucket_size: f64,
+    current_vpin: f64,
+}
+
+impl VPINCalculator {
+    fn new() -> Self {
+        Self {
+            volume_buckets: Vec::with_capacity(50),
+            bucket_size: 1000.0,
+            current_vpin: 0.0,
+        }
+    }
+    
+    fn calculate_vpin(&mut self, buy_volume: f64, sell_volume: f64) -> f64 {
+        let imbalance = (buy_volume - sell_volume).abs() / (buy_volume + sell_volume).max(1.0);
+        self.volume_buckets.push(imbalance);
+        if self.volume_buckets.len() > 50 {
+            self.volume_buckets.remove(0);
+        }
+        self.current_vpin = self.volume_buckets.iter().sum::<f64>() / self.volume_buckets.len() as f64;
+        self.current_vpin
+    }
+}
+
+/// Simple Optimal Executor
+struct OptimalExecutor {
+    default_algorithm: ExecutionAlgorithm,
+}
+
+impl OptimalExecutor {
+    fn new() -> Self {
+        Self {
+            default_algorithm: ExecutionAlgorithm::Adaptive,
+        }
+    }
+    
+    fn select_algorithm(&self, vpin: f64, size: f64) -> ExecutionAlgorithm {
+        if vpin > 0.4 {
+            ExecutionAlgorithm::Iceberg
+        } else if size > 10000.0 {
+            ExecutionAlgorithm::TWAP
+        } else {
+            ExecutionAlgorithm::Adaptive
+        }
+    }
+}
+use crate::monte_carlo::{MonteCarloEngine, SimulationResult};
 use crate::parameter_manager::ParameterManager;
 
 use std::sync::Arc;
@@ -44,7 +95,7 @@ pub struct EnhancedDecisionOrchestrator {
     kelly_sizer: Arc<RwLock<KellySizer>>,
     risk_clamps: Arc<RwLock<RiskClampSystem>>,
     vpin_calculator: Arc<RwLock<VPINCalculator>>,
-    monte_carlo: Arc<RwLock<MonteCarloSimulator>>,
+    monte_carlo: Arc<RwLock<MonteCarloEngine>>,
     
     // Auto-Tuning & Optimization
     auto_tuner: Arc<RwLock<AutoTuningSystem>>,
@@ -163,10 +214,10 @@ impl EnhancedDecisionOrchestrator {
         let risk_clamps = Arc::new(RwLock::new(RiskClampSystem::new(Default::default())));
         
         // Initialize VPIN calculator
-        let vpin_calculator = Arc::new(RwLock::new(VPINCalculator::new(50, 0.5)));
+        let vpin_calculator = Arc::new(RwLock::new(VPINCalculator::new()));
         
         // Initialize Monte Carlo simulator
-        let monte_carlo = Arc::new(RwLock::new(MonteCarloSimulator::new(10000, 42)));
+        let monte_carlo = Arc::new(RwLock::new(MonteCarloEngine::new(10000)));
         
         // Initialize optimal executor
         let optimal_executor = Arc::new(RwLock::new(OptimalExecutor::new()));

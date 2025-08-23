@@ -9,9 +9,11 @@
 
 use crate::unified_types::*;
 use crate::auto_tuning::MarketRegime;
+use crate::xgboost_model::{GradientBoostingModel, ObjectiveFunction, TrainingResult};
 use std::collections::{VecDeque, HashMap};
 use parking_lot::RwLock;
 use std::sync::Arc;
+use ndarray::{Array1, Array2};
 
 /// ML Feedback System - Learn from EVERY trade
 /// Morgan: "No trade is wasted - each one teaches us something!"
@@ -465,68 +467,366 @@ impl PredictionTracker {
     }
 }
 
-/// Online Learner - Update models in real-time
-/// Morgan: "Batch learning is dead - online is the future!"
+/// Online Learner - XGBoost with incremental updates
+/// Morgan: "State-of-the-art gradient boosting - online is the future!"
 struct OnlineLearner {
-    // Stochastic Gradient Descent parameters
-    learning_rate: f64,
-    momentum: f64,
+    // Main XGBoost model
+    primary_model: Arc<RwLock<GradientBoostingModel>>,
     
-    // Model weights (simplified linear model)
+    // Feature normalizer for consistent scaling
+    feature_normalizer: Arc<RwLock<FeatureNormalizer>>,
+    
+    // Training buffer for incremental updates
+    training_buffer: Arc<RwLock<TrainingBuffer>>,
+    
+    // Model versioning for A/B testing
+    model_versions: Arc<RwLock<ModelVersionManager>>,
+    
+    // Performance tracking
+    performance_tracker: Arc<RwLock<ModelPerformanceTracker>>,
+    
+    // Configuration
+    retrain_threshold: usize,  // Retrain after N new samples
+    min_training_samples: usize,
+}
+
+/// Feature normalizer for consistent scaling
+struct FeatureNormalizer {
+    means: Vec<f64>,
+    stds: Vec<f64>,
+    mins: Vec<f64>,
+    maxs: Vec<f64>,
+    n_samples: usize,
+    normalization_type: NormalizationType,
+}
+
+#[derive(Clone, Debug)]
+enum NormalizationType {
+    StandardScaler,   // (x - mean) / std
+    MinMaxScaler,     // (x - min) / (max - min)
+    RobustScaler,     // Using median and IQR
+}
+
+impl FeatureNormalizer {
+    fn new(n_features: usize) -> Self {
+        Self {
+            means: vec![0.0; n_features],
+            stds: vec![1.0; n_features],
+            mins: vec![f64::MAX; n_features],
+            maxs: vec![f64::MIN; n_features],
+            n_samples: 0,
+            normalization_type: NormalizationType::StandardScaler,
+        }
+    }
+    
+    fn update_statistics(&mut self, features: &[f64]) {
+        self.n_samples += 1;
+        let n = self.n_samples as f64;
+        
+        for (i, &value) in features.iter().enumerate() {
+            // Update running mean
+            let old_mean = self.means[i];
+            self.means[i] = old_mean + (value - old_mean) / n;
+            
+            // Update running variance (Welford's algorithm)
+            if self.n_samples > 1 {
+                let old_std = self.stds[i];
+                let variance = old_std.powi(2) * (n - 2.0) / (n - 1.0) 
+                    + (value - old_mean) * (value - self.means[i]) / n;
+                self.stds[i] = variance.sqrt();
+            }
+            
+            // Update min/max
+            self.mins[i] = self.mins[i].min(value);
+            self.maxs[i] = self.maxs[i].max(value);
+        }
+    }
+    
+    fn normalize(&self, features: &[f64]) -> Vec<f64> {
+        match self.normalization_type {
+            NormalizationType::StandardScaler => {
+                features.iter()
+                    .zip(self.means.iter().zip(self.stds.iter()))
+                    .map(|(&x, (&mean, &std))| {
+                        if std > 1e-8 {
+                            (x - mean) / std
+                        } else {
+                            0.0
+                        }
+                    })
+                    .collect()
+            }
+            NormalizationType::MinMaxScaler => {
+                features.iter()
+                    .zip(self.mins.iter().zip(self.maxs.iter()))
+                    .map(|(&x, (&min, &max))| {
+                        if (max - min) > 1e-8 {
+                            (x - min) / (max - min)
+                        } else {
+                            0.5
+                        }
+                    })
+                    .collect()
+            }
+            _ => features.to_vec(),
+        }
+    }
+}
+
+/// Training buffer for incremental updates
+struct TrainingBuffer {
+    features: Vec<Vec<f64>>,
+    targets: Vec<f64>,
     weights: Vec<f64>,
-    velocity: Vec<f64>,  // For momentum
+    max_size: usize,
+}
+
+impl TrainingBuffer {
+    fn new(max_size: usize) -> Self {
+        Self {
+            features: Vec::with_capacity(max_size),
+            targets: Vec::with_capacity(max_size),
+            weights: Vec::with_capacity(max_size),
+            max_size,
+        }
+    }
     
-    // Adaptive learning rate (AdaGrad-like)
-    gradient_cache: Vec<f64>,
+    fn add(&mut self, features: Vec<f64>, target: f64, weight: f64) {
+        if self.features.len() >= self.max_size {
+            // Remove oldest sample (FIFO)
+            self.features.remove(0);
+            self.targets.remove(0);
+            self.weights.remove(0);
+        }
+        
+        self.features.push(features);
+        self.targets.push(target);
+        self.weights.push(weight);
+    }
     
-    // Regularization
-    l2_lambda: f64,
+    fn to_arrays(&self) -> (Array2<f64>, Array1<f64>) {
+        let n_samples = self.features.len();
+        let n_features = self.features.first().map(|f| f.len()).unwrap_or(0);
+        
+        let mut x = Array2::zeros((n_samples, n_features));
+        let mut y = Array1::zeros(n_samples);
+        
+        for (i, (features, target)) in self.features.iter().zip(self.targets.iter()).enumerate() {
+            for (j, &value) in features.iter().enumerate() {
+                x[[i, j]] = value;
+            }
+            y[i] = *target;
+        }
+        
+        (x, y)
+    }
+}
+
+/// Model version manager for A/B testing
+struct ModelVersionManager {
+    versions: HashMap<String, Arc<GradientBoostingModel>>,
+    active_version: String,
+    champion_version: String,
+    challenger_versions: Vec<String>,
+    performance_history: HashMap<String, Vec<f64>>,
+}
+
+impl ModelVersionManager {
+    fn new() -> Self {
+        Self {
+            versions: HashMap::new(),
+            active_version: "v1".to_string(),
+            champion_version: "v1".to_string(),
+            challenger_versions: Vec::new(),
+            performance_history: HashMap::new(),
+        }
+    }
+    
+    fn add_version(&mut self, version_id: String, model: GradientBoostingModel) {
+        self.versions.insert(version_id.clone(), Arc::new(model));
+        self.performance_history.insert(version_id.clone(), Vec::new());
+        self.challenger_versions.push(version_id);
+    }
+    
+    fn get_active(&self) -> Option<Arc<GradientBoostingModel>> {
+        self.versions.get(&self.active_version).cloned()
+    }
+    
+    fn promote_challenger(&mut self, version_id: &str) {
+        if self.challenger_versions.contains(&version_id.to_string()) {
+            self.champion_version = version_id.to_string();
+            self.active_version = version_id.to_string();
+            self.challenger_versions.retain(|v| v != version_id);
+        }
+    }
+}
+
+/// Model performance tracker
+struct ModelPerformanceTracker {
+    predictions: VecDeque<f64>,
+    actuals: VecDeque<f64>,
+    timestamps: VecDeque<u64>,
+    max_history: usize,
+}
+
+impl ModelPerformanceTracker {
+    fn new(max_history: usize) -> Self {
+        Self {
+            predictions: VecDeque::with_capacity(max_history),
+            actuals: VecDeque::with_capacity(max_history),
+            timestamps: VecDeque::with_capacity(max_history),
+            max_history,
+        }
+    }
+    
+    fn add_prediction(&mut self, prediction: f64, actual: f64, timestamp: u64) {
+        if self.predictions.len() >= self.max_history {
+            self.predictions.pop_front();
+            self.actuals.pop_front();
+            self.timestamps.pop_front();
+        }
+        
+        self.predictions.push_back(prediction);
+        self.actuals.push_back(actual);
+        self.timestamps.push_back(timestamp);
+    }
+    
+    fn calculate_metrics(&self) -> MLMetrics {
+        if self.predictions.is_empty() {
+            return MLMetrics::default();
+        }
+        
+        let n = self.predictions.len() as f64;
+        
+        // Accuracy for binary classification
+        let correct = self.predictions.iter()
+            .zip(self.actuals.iter())
+            .filter(|(&pred, &actual)| {
+                (pred > 0.5 && actual > 0.5) || (pred <= 0.5 && actual <= 0.5)
+            })
+            .count() as f64;
+        
+        let accuracy = correct / n;
+        
+        // Mean Absolute Error
+        let mae = self.predictions.iter()
+            .zip(self.actuals.iter())
+            .map(|(&pred, &actual)| (pred - actual).abs())
+            .sum::<f64>() / n;
+        
+        // Root Mean Squared Error
+        let rmse = (self.predictions.iter()
+            .zip(self.actuals.iter())
+            .map(|(&pred, &actual)| (pred - actual).powi(2))
+            .sum::<f64>() / n).sqrt();
+        
+        MLMetrics {
+            accuracy,
+            mae,
+            rmse,
+            n_samples: self.predictions.len(),
+        }
+    }
 }
 
 impl OnlineLearner {
     fn new(feature_dim: usize) -> Self {
-        Self {
-            learning_rate: 0.001,
-            momentum: 0.9,
-            weights: vec![0.0; feature_dim],
-            velocity: vec![0.0; feature_dim],
-            gradient_cache: vec![1e-8; feature_dim],
-            l2_lambda: 0.0001,
-        }
-    }
-    
-    /// Update weights with single example (SGD with momentum)
-    pub fn update(&mut self, features: &[f64], target: f64, prediction: f64) {
-        let error = prediction - target;
+        // Initialize XGBoost model
+        let mut model = GradientBoostingModel::new(
+            100,  // n_estimators
+            6,    // max_depth
+            0.1,  // learning_rate
+        );
+        model.objective = ObjectiveFunction::Binary;
         
-        for (i, &feature) in features.iter().enumerate() {
-            if i >= self.weights.len() {
-                break;
-            }
-            
-            // Calculate gradient with L2 regularization
-            let gradient = error * feature + self.l2_lambda * self.weights[i];
-            
-            // Update gradient cache for adaptive learning
-            self.gradient_cache[i] += gradient * gradient;
-            
-            // Calculate adaptive learning rate
-            let adapted_lr = self.learning_rate / (self.gradient_cache[i].sqrt() + 1e-8);
-            
-            // Update velocity (momentum)
-            self.velocity[i] = self.momentum * self.velocity[i] - adapted_lr * gradient;
-            
-            // Update weight
-            self.weights[i] += self.velocity[i];
+        // Add initial version to manager
+        let mut version_manager = ModelVersionManager::new();
+        version_manager.versions.insert("v1".to_string(), Arc::new(model.clone()));
+        
+        Self {
+            primary_model: Arc::new(RwLock::new(model)),
+            feature_normalizer: Arc::new(RwLock::new(FeatureNormalizer::new(feature_dim))),
+            training_buffer: Arc::new(RwLock::new(TrainingBuffer::new(10000))),
+            model_versions: Arc::new(RwLock::new(version_manager)),
+            performance_tracker: Arc::new(RwLock::new(ModelPerformanceTracker::new(1000))),
+            retrain_threshold: 100,
+            min_training_samples: 500,
         }
     }
     
-    /// Make prediction
+    /// Update model with new training example
+    pub fn update(&mut self, features: &[f64], target: f64, weight: f64) {
+        // Update feature normalizer statistics
+        self.feature_normalizer.write().update_statistics(features);
+        
+        // Normalize features
+        let normalized = self.feature_normalizer.read().normalize(features);
+        
+        // Add to training buffer
+        self.training_buffer.write().add(normalized, target, weight);
+        
+        // Check if we should retrain
+        let buffer = self.training_buffer.read();
+        if buffer.features.len() >= self.min_training_samples 
+            && buffer.features.len() % self.retrain_threshold == 0 {
+            drop(buffer);  // Release lock
+            self.retrain_model();
+        }
+    }
+    
+    /// Retrain the model with accumulated data
+    fn retrain_model(&mut self) {
+        let buffer = self.training_buffer.read();
+        let (x, y) = buffer.to_arrays();
+        drop(buffer);
+        
+        if x.nrows() < 10 {
+            return;  // Not enough data
+        }
+        
+        // Create new model
+        let mut new_model = GradientBoostingModel::new(
+            100,  // n_estimators
+            6,    // max_depth
+            0.1,  // learning_rate
+        );
+        new_model.objective = ObjectiveFunction::Binary;
+        
+        // Split into train/validation (80/20)
+        let n_train = (x.nrows() as f64 * 0.8).max(1.0) as usize;
+        let train_x = x.slice(ndarray::s![..n_train, ..]).to_owned();
+        let train_y = y.slice(ndarray::s![..n_train]).to_owned();
+        
+        // Only use validation if we have enough data
+        let result = if x.nrows() > n_train {
+            let val_x = x.slice(ndarray::s![n_train.., ..]).to_owned();
+            let val_y = y.slice(ndarray::s![n_train..]).to_owned();
+            new_model.train(
+                &train_x,
+                &train_y,
+                Some(&val_x),
+                Some(&val_y),
+                Some(10),  // Early stopping rounds
+            )
+        } else {
+            new_model.train(&train_x, &train_y, None, None, None)
+        };
+        
+        // Update primary model
+        *self.primary_model.write() = new_model;
+        
+        // Add new version for A/B testing
+        let version_id = format!("v{}", self.model_versions.read().versions.len() + 1);
+        self.model_versions.write().add_version(version_id, self.primary_model.read().clone());
+    }
+    
+    /// Make prediction with XGBoost
     pub fn predict(&self, features: &[f64]) -> f64 {
-        features.iter()
-            .zip(self.weights.iter())
-            .map(|(f, w)| f * w)
-            .sum()
+        // Normalize features
+        let normalized = self.feature_normalizer.read().normalize(features);
+        
+        // Use primary model for prediction
+        self.primary_model.read().predict(&normalized)
     }
 }
 
@@ -698,23 +998,62 @@ impl MLFeedbackSystem {
     /// Predict action and confidence from features
     /// This is the main ML prediction interface
     pub fn predict(&self, features: &[f64]) -> (SignalAction, f64) {
-        // Get prediction from online learner
+        // Get prediction from XGBoost model
         let learner = self.online_learner.read();
         let prediction = learner.predict(features);
         
-        // Convert prediction to action
-        let action = if prediction > 0.1 {
+        // XGBoost returns probability [0, 1]
+        // Convert to action based on thresholds
+        let action = if prediction > 0.65 {
             SignalAction::Buy
-        } else if prediction < -0.1 {
+        } else if prediction < 0.35 {
             SignalAction::Sell
         } else {
             SignalAction::Hold
         };
         
-        // Confidence is absolute value of prediction
-        let confidence = prediction.abs().min(1.0);
+        // Confidence is distance from 0.5 (neutral)
+        let confidence = (prediction - 0.5).abs() * 2.0;
         
         (action, confidence)
+    }
+    
+    /// Train model from experience buffer
+    pub fn train_from_buffer(&mut self, n_samples: usize) {
+        let buffer = self.experience_buffer.read();
+        let experiences = buffer.sample_batch(n_samples);
+        drop(buffer);
+        
+        for exp in experiences {
+            // Calculate target for supervised learning
+            // Map action and reward to binary target
+            let target = match exp.action {
+                SignalAction::Buy => {
+                    if exp.reward > 0.0 { 1.0 } else { 0.3 }  // Partial credit for losses
+                }
+                SignalAction::Sell => {
+                    if exp.reward > 0.0 { 0.0 } else { 0.7 }  // Inverse for sell
+                }
+                SignalAction::Hold => 0.5,
+            };
+            
+            // Weight by confidence and reward magnitude
+            let weight = exp.confidence.to_f64() * (1.0 + exp.reward.abs()).min(10.0);
+            
+            // Update online learner with proper parameters
+            self.online_learner.write().update(
+                &exp.features,
+                target,
+                weight,
+            );
+        }
+    }
+    
+    /// Get feature importance from XGBoost model
+    pub fn get_feature_importance(&self) -> Vec<(String, f64)> {
+        self.online_learner.read()
+            .primary_model.read()
+            .get_feature_importance()
     }
     
     /// Get recommended action based on learning
@@ -765,6 +1104,25 @@ pub struct MLMetrics {
     pub brier_score: f64,
     pub top_features: Vec<(String, f64)>,
     pub best_strategy: Option<String>,
+    pub accuracy: f64,
+    pub mae: f64,  // Mean Absolute Error
+    pub rmse: f64,  // Root Mean Squared Error
+    pub n_samples: usize,
+}
+
+impl Default for MLMetrics {
+    fn default() -> Self {
+        Self {
+            calibration_score: 0.0,
+            brier_score: 0.0,
+            top_features: Vec::new(),
+            best_strategy: None,
+            accuracy: 0.0,
+            mae: 0.0,
+            rmse: 0.0,
+            n_samples: 0,
+        }
+    }
 }
 
 // External crate for random numbers (in production, use proper crate)

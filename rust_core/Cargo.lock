@@ -2549,6 +2549,7 @@ dependencies = [
  "approx",
  "arrayvec",
  "async-trait",
+ "bincode",
  "chrono",
  "criterion",
  "crossbeam",
