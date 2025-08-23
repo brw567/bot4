@@ -1205,10 +1205,13 @@ impl ProfitExtractor {
             
             // DEEP INTEGRATION: Combine order book signal with ML recommendation
             // Theory: "Ensemble Methods in Trading" - combine diverse signals
-            if ml_action != opportunity.action && ml_confidence > 0.7 {
+            let ml_threshold = crate::parameter_manager::PARAMETERS.get("ml_confidence_threshold");
+            if ml_action != opportunity.action && ml_confidence > ml_threshold {
                 // Strong ML signal disagrees with order book
-                // Use weighted average of confidences
-                let combined_confidence = opportunity.confidence.value() * 0.4 + ml_confidence * 0.6;
+                // Use auto-tuned weights from parameter manager
+                let orderbook_weight = crate::parameter_manager::PARAMETERS.get("ml_orderbook_weight");
+                let ml_weight = 1.0 - orderbook_weight; // Ensure weights sum to 1
+                let combined_confidence = opportunity.confidence.value() * orderbook_weight + ml_confidence * ml_weight;
                 
                 // If ML has high confidence and different action, consider it
                 if ml_confidence > opportunity.confidence.value() {
