@@ -356,6 +356,7 @@ mod tests {
             bid: Price::new(Decimal::from(44900)),
             ask: Price::new(Decimal::from(45100)),
             spread: Price::new(Decimal::from(200)), // Wide spread
+            mid: Price::new(Decimal::from(45000)),
             volume: Quantity::new(Decimal::from(5000)), // High volume
             volume_24h: 250000.0,
             volatility: 0.15, // EXTREME volatility

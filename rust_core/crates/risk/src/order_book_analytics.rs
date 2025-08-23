@@ -1006,6 +1006,8 @@ mod tests {
                     aggressor_side: if i % 2 == 0 { Side::Long } else { Side::Short },
                     trade_id: format!("trade_{}", i),
                 }],
+                bid_depth_1: 100.0,
+                ask_depth_1: 100.0,
             };
             
             analytics.process_order_book(snapshot);
@@ -1036,6 +1038,8 @@ mod tests {
                     aggressor_side: if i < 70 { Side::Long } else { Side::Short },
                     trade_id: format!("trade_{}", i),
                 }],
+                bid_depth_1: 100.0,
+                ask_depth_1: 100.0,
             };
             
             analytics.process_order_book(snapshot);
@@ -1065,6 +1069,8 @@ mod tests {
             mid_price: dec!(100),
             microprice: dec!(100),
             trades: vec![],
+            bid_depth_1: 10.0,
+            ask_depth_1: 10.0,
         };
         
         let metrics = analytics.process_order_book(snapshot);
@@ -1100,6 +1106,8 @@ mod tests {
                     aggressor_side: Side::Long,  // All buys = informed trading
                     trade_id: format!("trade_{}", i),
                 }],
+                bid_depth_1: 100.0,
+                ask_depth_1: 100.0,
             };
             
             analytics.process_order_book(snapshot);

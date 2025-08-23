@@ -18,9 +18,22 @@ pub mod market_analytics;  // REAL market calculations - NO SIMPLIFICATIONS!
 pub mod portfolio_manager;  // Portfolio state management - NO HARDCODED VALUES!
 pub mod funding_rates;  // Funding rate arbitrage - 15-30% ADDITIONAL PROFIT!
 pub mod optimal_execution;  // TWAP/VWAP/POV execution algorithms - MINIMIZE MARKET IMPACT!
+pub mod monte_carlo;  // Monte Carlo simulations - VALIDATE STRATEGIES UNDER ALL CONDITIONS!
+pub mod feature_importance;  // SHAP values for ML explainability - UNDERSTAND WHAT DRIVES PREDICTIONS!
+pub mod hyperparameter_optimization;  // Bayesian hyperparameter optimization - AUTO-TUNING WITH TPE!
+pub mod hyperparameter_integration;  // Integration of optimization into ALL components - MAXIMUM EXTRACTION!
+pub mod deep_dive_validation_study;  // Academic validation - NO SIMPLIFICATIONS!
 
 #[cfg(test)]
 mod comprehensive_tests;
+#[cfg(test)]
+mod hyperparameter_optimization_tests;
+#[cfg(test)]
+mod kyle_lambda_validation;
+#[cfg(test)]
+mod vpin_validation;
+#[cfg(test)]
+mod manipulation_detection;
 #[cfg(test)]
 mod auto_tuning_test;
 #[cfg(test)]
