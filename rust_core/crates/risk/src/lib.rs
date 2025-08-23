@@ -28,6 +28,7 @@ pub mod game_theory_advanced;  // DEEP DIVE: Full game theory implementation - N
 pub mod performance_optimizations;  // DEEP DIVE: Zero allocations, lock-free, <1μs latency!
 pub mod t_copula;  // DEEP DIVE: t-Copula for tail dependence - models extreme event correlations!
 pub mod historical_regime_calibration;  // DEEP DIVE: Learn from 20+ years of crises - predict regime changes!
+pub mod cross_asset_correlations;  // DEEP DIVE: DCC-GARCH for time-varying correlations - contagion detection!
 
 #[cfg(test)]
 mod comprehensive_tests;
@@ -72,6 +73,10 @@ pub use t_copula::{TCopula, TCopulaConfig, TailRiskMetrics, TailDependenceMetric
 pub use historical_regime_calibration::{
     HistoricalRegimeCalibration, HistoricalRegime, RegimeParameters, 
     RegimeFeatures, CrisisWarning, CrisisEvent
+};
+pub use cross_asset_correlations::{
+    CrossAssetCorrelations, AssetClass, DCCGARCHModel,
+    ContagionRisk, PortfolioRisk, ContagionEvent, ContagionSeverity
 };
 
 // Re-export for convenience
