@@ -11,7 +11,7 @@
 
 use crate::unified_types::*;
 use crate::market_analytics::{MarketAnalytics, Candle, Tick};
-use crate::ml_feedback::{MLFeedbackSystem, MLMetrics, MarketState, SignalAction as MLSignalAction};
+use crate::ml_feedback::{MLFeedbackSystem, MLMetrics, MarketState};
 use crate::profit_extractor::*;
 use crate::auto_tuning::{AutoTuningSystem, MarketRegime};
 use crate::clamps::*;
@@ -437,9 +437,9 @@ for i in 0..50 {
     };
     
     let action = if i % 2 == 0 { 
-        MLSignalAction::Buy 
+        SignalAction::Buy 
     } else { 
-        MLSignalAction::Sell 
+        SignalAction::Sell 
     };
     
     let pnl = if i % 3 == 0 {
@@ -557,7 +557,9 @@ let existing_positions = vec![
 
 // FIRST EXTRACTION - Bullish imbalance scenario
 println!("\n1. Testing bullish imbalance extraction...");
-let signal1 = extractor.extract_profit(&market, &bids, &asks, portfolio_value, &existing_positions);
+// Convert MarketData to ExtendedMarketData
+let extended_market = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal1 = extractor.extract_profit(&extended_market, &bids, &asks, portfolio_value, &existing_positions);
 
 // VALIDATE the signal properly - NO SHORTCUTS!
 assert_eq!(signal1.symbol, "BTC/USDT");
@@ -595,7 +597,8 @@ let whale_bids = vec![
     (Price::from_f64(41990.0), Quantity::from_f64(100.0)),
 ];
 
-let signal2 = extractor.extract_profit(&market, &whale_bids, &asks, portfolio_value, &existing_positions);
+let extended_market2 = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal2 = extractor.extract_profit(&extended_market2, &whale_bids, &asks, portfolio_value, &existing_positions);
 println!("   Whale detected - Action: {:?}", signal2.action);
 println!("   Whale confidence: {:.1}%", signal2.confidence.value() * 100.0);
 // DEEP DIVE: Whale presence provides information value even in Hold signals
@@ -629,7 +632,8 @@ println!("\n3. Testing high volatility extraction...");
     }
 }
 
-let signal3 = extractor.extract_profit(&market, &bids, &asks, portfolio_value, &existing_positions);
+let extended_market3 = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal3 = extractor.extract_profit(&extended_market3, &bids, &asks, portfolio_value, &existing_positions);
 println!("   Crisis mode - Action: {:?}", signal3.action);
 println!("   Risk-adjusted size: {}", signal3.size);
 
@@ -653,10 +657,12 @@ let spoof_asks = vec![
 // Extract multiple times to simulate order changes
 for i in 0..5 {
     let varying_asks = if i % 2 == 0 { spoof_asks.clone() } else { asks.clone() };
-    let _ = extractor.extract_profit(&market, &bids, &varying_asks, portfolio_value, &existing_positions);
+    let extended_market_temp = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+    let _ = extractor.extract_profit(&extended_market_temp, &bids, &varying_asks, portfolio_value, &existing_positions);
 }
 
-let signal4 = extractor.extract_profit(&market, &bids, &spoof_asks, portfolio_value, &existing_positions);
+let extended_market4 = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal4 = extractor.extract_profit(&extended_market4, &bids, &spoof_asks, portfolio_value, &existing_positions);
 println!("   Spoof detection - Action: {:?}", signal4.action);
 println!("   Spoof penalty applied to confidence: {}", signal4.confidence);
 
@@ -670,7 +676,8 @@ let thin_bids = vec![
     (Price::from_f64(41990.0), Quantity::from_f64(2.0)),
 ];
 
-let signal5 = extractor.extract_profit(&market, &thin_bids, &asks, portfolio_value, &existing_positions);
+let extended_market5 = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal5 = extractor.extract_profit(&extended_market5, &thin_bids, &asks, portfolio_value, &existing_positions);
 println!("   Thin liquidity - Size: {}", signal5.size);
 
 // With thin liquidity, size should be very small to avoid slippage
@@ -1051,8 +1058,9 @@ let existing_positions = vec![];
 let mut profit_extractor_mut = profit_extractor;
 
 // Extract profit signal with FULL analysis
+let extended_market = ExtendedMarketData::from_market_data(&market_data, 0.02, 0.5, 0.3);
 let profit_signal = profit_extractor_mut.extract_profit(
-    &market_data,
+    &extended_market,
     &order_bids,
     &order_asks,
     Price::from_f64(1000000.0),
@@ -1128,7 +1136,8 @@ let asks = vec![
 let portfolio_value = Price::from_f64(1000.0); // $1000 portfolio
 let positions = vec![];
 
-let signal = extractor.extract_profit(&market, &bids, &asks, portfolio_value, &positions);
+let extended_market = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal = extractor.extract_profit(&extended_market, &bids, &asks, portfolio_value, &positions);
 
 // With small edge and $10 minimum on $2000 ETH = 0.005 ETH minimum
 // System should decide based on edge strength
@@ -1140,7 +1149,8 @@ println!("   Minimum required: 0.005 ETH ($10 at $2000)");
 println!("\n2. Testing Coinbase $1 minimum order:");
 extractor.set_exchange("coinbase");
 
-let signal = extractor.extract_profit(&market, &bids, &asks, portfolio_value, &positions);
+let extended_market = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal = extractor.extract_profit(&extended_market, &bids, &asks, portfolio_value, &positions);
 println!("   Signal action: {:?}", signal.action);
 println!("   Size: {} ETH", signal.size);
 println!("   Minimum required: 0.0005 ETH ($1 at $2000)");
@@ -1159,7 +1169,8 @@ let weak_asks = vec![
 ];
 
 extractor.set_exchange("binance");
-let signal = extractor.extract_profit(&market, &strong_bids, &weak_asks, portfolio_value, &positions);
+let extended_market = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal = extractor.extract_profit(&extended_market, &strong_bids, &weak_asks, portfolio_value, &positions);
 
 println!("   Strong edge signal: {:?}", signal.action);
 println!("   Size: {} ETH", signal.size);
@@ -1180,7 +1191,8 @@ let volatility = 0.15;  // Low volatility
 tuner.detect_regime(&returns, &volumes, volatility);
 drop(tuner);
 
-let signal = extractor.extract_profit(&market, &bids, &asks, portfolio_value, &positions);
+let extended_market = ExtendedMarketData::from_market_data(&market, 0.02, 0.5, 0.3);
+let signal = extractor.extract_profit(&extended_market, &bids, &asks, portfolio_value, &positions);
 
 println!("   Bull market signal: {:?}", signal.action);
 println!("   Size: {} ETH", signal.size);

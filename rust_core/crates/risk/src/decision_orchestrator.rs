@@ -16,6 +16,7 @@ use crate::auto_tuning_persistence::AutoTuningPersistence;
 use std::sync::Arc;
 use parking_lot::RwLock;
 use rust_decimal::Decimal;
+use rust_decimal::prelude::{FromPrimitive, ToPrimitive};
 use rust_decimal_macros::dec;
 use anyhow::Result;
 
@@ -218,7 +219,7 @@ impl DecisionOrchestrator {
         
         // Price features
         features.push(market.last.to_f64());
-        features.push((market.last.0 / market.mid.0).to_f64().unwrap_or(1.0));
+        features.push((market.last.inner() / market.mid.inner()).to_f64().unwrap_or(1.0));
         features.push(market.spread_percentage().value());
         
         // Order book features
@@ -505,9 +506,28 @@ impl DecisionOrchestrator {
             ta_indicators: vec![],
         };
         
-        // Apply clamps
+        // Apply clamps - use calculate_position_size instead
         let mut clamps = self.risk_clamps.write();
-        Ok(clamps.apply_all_clamps(&trading_signal))
+        
+        // Get current market conditions for clamp calculation
+        let portfolio_heat = 0.3; // TODO: Get from portfolio manager
+        let correlation = 0.5; // TODO: Get from correlation matrix
+        let account_equity = 100000.0; // TODO: Get from account manager
+        
+        // Apply risk clamps to position size
+        let clamped_size = clamps.calculate_position_size(
+            signal.confidence as f32,
+            self.ta_analytics.read().get_current_volatility() as f32,
+            portfolio_heat,
+            correlation,
+            account_equity,
+        );
+        
+        // Update trading signal with clamped size
+        let mut clamped_signal = trading_signal;
+        clamped_signal.size = Quantity::new(Decimal::from_f32(clamped_size).unwrap_or(dec!(0)));
+        
+        Ok(clamped_signal)
     }
     
     /// Extract profit opportunity

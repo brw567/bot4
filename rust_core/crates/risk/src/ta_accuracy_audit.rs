@@ -25,11 +25,11 @@ mod tests {
             let base_price = 100.0 + (i as f64).sin() * 10.0; // Sine wave pattern
             candles.push_back(Candle {
                 timestamp: i as u64 * 3600,
-                open: Decimal::from_f64(base_price).unwrap(),
-                high: Decimal::from_f64(base_price + 2.0).unwrap(),
-                low: Decimal::from_f64(base_price - 2.0).unwrap(),
-                close: Decimal::from_f64(base_price + 1.0).unwrap(),
-                volume: Decimal::from(1000 + i * 10),
+                open: Price::from_f64(base_price),
+                high: Price::from_f64(base_price + 2.0),
+                low: Price::from_f64(base_price - 2.0),
+                close: Price::from_f64(base_price + 1.0),
+                volume: Quantity::new(Decimal::from(1000 + i * 10)),
             });
         }
         
@@ -50,6 +50,8 @@ mod tests {
             timestamp: 0,
             price: candles.back().unwrap().close,
             volume: candles.back().unwrap().volume,
+            bid: candles.back().unwrap().close - Price::from_f64(1.0),
+            ask: candles.back().unwrap().close + Price::from_f64(1.0),
         };
         
         // Update analytics with market data
@@ -79,7 +81,7 @@ mod tests {
         let mut losses = Vec::new();
         
         for i in 1..period + 1 {
-            let change = candles[i].close.to_f64().unwrap() - candles[i-1].close.to_f64().unwrap();
+            let change = candles[i].close.to_f64() - candles[i-1].close.to_f64();
             if change > 0.0 {
                 gains.push(change);
                 losses.push(0.0);
@@ -125,7 +127,7 @@ mod tests {
         
         // Extract closing prices
         let prices: Vec<f64> = candles.iter()
-            .map(|c| c.close.to_f64().unwrap())
+            .map(|c| c.close.to_f64())
             .collect();
         
         // Calculate 12-period EMA manually
@@ -186,7 +188,7 @@ mod tests {
         let last_20: Vec<f64> = candles.iter()
             .rev()
             .take(period)
-            .map(|c| c.close.to_f64().unwrap())
+            .map(|c| c.close.to_f64())
             .collect();
         
         let sma = last_20.iter().sum::<f64>() / period as f64;
@@ -231,9 +233,9 @@ mod tests {
         let mut true_ranges = Vec::new();
         
         for i in 1..=period {
-            let high = candles[i].high.to_f64().unwrap();
-            let low = candles[i].low.to_f64().unwrap();
-            let prev_close = candles[i-1].close.to_f64().unwrap();
+            let high = candles[i].high.to_f64();
+            let low = candles[i].low.to_f64();
+            let prev_close = candles[i-1].close.to_f64();
             
             // True Range formula
             let tr = (high - low)
@@ -266,15 +268,15 @@ mod tests {
         let candles = create_test_candles();
         
         let period = 14;
-        let current_close = candles.back().unwrap().close.to_f64().unwrap();
+        let current_close = candles.back().unwrap().close.to_f64();
         
         // Find highest high and lowest low
         let mut highest = f64::MIN;
         let mut lowest = f64::MAX;
         
         for i in (candles.len() - period)..candles.len() {
-            highest = highest.max(candles[i].high.to_f64().unwrap());
-            lowest = lowest.min(candles[i].low.to_f64().unwrap());
+            highest = highest.max(candles[i].high.to_f64());
+            lowest = lowest.min(candles[i].low.to_f64());
         }
         
         let expected_k = if highest > lowest {
@@ -311,10 +313,10 @@ mod tests {
         let mut total_volume = 0.0;
         
         for candle in candles.iter().take(20) {
-            let typical_price = (candle.high.to_f64().unwrap() + 
-                               candle.low.to_f64().unwrap() + 
-                               candle.close.to_f64().unwrap()) / 3.0;
-            let volume = candle.volume.to_f64().unwrap();
+            let typical_price = (candle.high.to_f64() + 
+                               candle.low.to_f64() + 
+                               candle.close.to_f64()) / 3.0;
+            let volume = candle.volume.to_f64();
             
             total_pv += typical_price * volume;
             total_volume += volume;
@@ -349,13 +351,13 @@ mod tests {
         let mut negative_flow = 0.0;
         
         for i in 1..=period {
-            let typical = (candles[i].high.to_f64().unwrap() + 
-                          candles[i].low.to_f64().unwrap() + 
-                          candles[i].close.to_f64().unwrap()) / 3.0;
-            let prev_typical = (candles[i-1].high.to_f64().unwrap() + 
-                               candles[i-1].low.to_f64().unwrap() + 
-                               candles[i-1].close.to_f64().unwrap()) / 3.0;
-            let money_flow = typical * candles[i].volume.to_f64().unwrap();
+            let typical = (candles[i].high.to_f64() + 
+                          candles[i].low.to_f64() + 
+                          candles[i].close.to_f64()) / 3.0;
+            let prev_typical = (candles[i-1].high.to_f64() + 
+                               candles[i-1].low.to_f64() + 
+                               candles[i-1].close.to_f64()) / 3.0;
+            let money_flow = typical * candles[i].volume.to_f64();
             
             if typical > prev_typical {
                 positive_flow += money_flow;

@@ -675,8 +675,15 @@ impl OrderBookAnalytics {
     fn calculate_urgency(&self) -> f64 {
         // High VPIN = toxic flow = execute quickly
         // High imbalance = opportunity disappearing = execute quickly
+        // Calculate VPIN from the latest bucket
         let vpin_urgency = self.vpin_buckets.back()
-            .map(|_| self.update_vpin(&OrderBookSnapshot::default()))
+            .map(|bucket| {
+                if bucket.volume > 0.0 {
+                    (bucket.buy_volume - bucket.sell_volume).abs() / bucket.volume
+                } else {
+                    0.0
+                }
+            })
             .unwrap_or(0.0);
         
         let imbalance_urgency = self.depth_imbalance.level_1.abs();
@@ -712,7 +719,7 @@ impl SpoofingDetector {
         // Detect fleeting orders
         
         // Simplified: return probability based on book dynamics
-        let mut score = 0.0;
+        let mut score: f64 = 0.0;
         
         // Large orders far from mid that disappear quickly
         for level in &snapshot.bids {
@@ -731,7 +738,7 @@ impl SpoofingDetector {
             }
         }
         
-        score.min(1.0)
+        score.min(1.0_f64)
     }
 }
 
@@ -747,7 +754,7 @@ impl LayeringDetector {
     
     fn detect(&mut self, snapshot: &OrderBookSnapshot) -> f64 {
         // Detect multiple orders at different price levels
-        let mut score = 0.0;
+        let mut score: f64 = 0.0;
         
         // Check for layering pattern on bid side
         if snapshot.bids.len() >= self.min_layers {
@@ -775,7 +782,7 @@ impl LayeringDetector {
             }
         }
         
-        score.min(1.0)
+        score.min(1.0_f64)
     }
 }
 
@@ -791,7 +798,7 @@ impl MomentumIgnitionDetector {
     
     fn detect(&mut self, snapshot: &OrderBookSnapshot) -> f64 {
         // Detect aggressive trades that move price
-        let mut score = 0.0;
+        let mut score: f64 = 0.0;
         
         // Count aggressive trades in recent history
         for trade in &snapshot.trades {
@@ -803,7 +810,7 @@ impl MomentumIgnitionDetector {
             }
         }
         
-        score.min(1.0)
+        score.min(1.0_f64)
     }
 }
 

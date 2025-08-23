@@ -653,6 +653,28 @@ impl MLFeedbackSystem {
         }
     }
     
+    /// Predict action and confidence from features
+    /// This is the main ML prediction interface
+    pub fn predict(&self, features: &[f64]) -> (SignalAction, f64) {
+        // Get prediction from online learner
+        let learner = self.online_learner.read();
+        let prediction = learner.predict(features);
+        
+        // Convert prediction to action
+        let action = if prediction > 0.1 {
+            SignalAction::Buy
+        } else if prediction < -0.1 {
+            SignalAction::Sell
+        } else {
+            SignalAction::Hold
+        };
+        
+        // Confidence is absolute value of prediction
+        let confidence = prediction.abs().min(1.0);
+        
+        (action, confidence)
+    }
+    
     /// Get recommended action based on learning
     pub fn recommend_action(&self, context: &str, features: &[f64]) -> (SignalAction, f64) {
         // Use contextual bandit for action selection

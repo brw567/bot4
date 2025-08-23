@@ -64,6 +64,14 @@ pub struct Tick {
     pub ask: Price,
 }
 
+/// MACD calculation result
+#[derive(Debug, Clone, Copy)]
+pub struct MACDResult {
+    pub macd: f64,
+    pub signal: f64,
+    pub histogram: f64,
+}
+
 impl PriceHistory {
     fn new() -> Self {
         Self {
@@ -315,6 +323,7 @@ pub struct TechnicalAnalysis {
     williams_r: f64,
     momentum: f64,
     roc: f64,
+    adx: f64,  // Average Directional Index
     
     // Volatility indicators
     bollinger_upper: f64,
@@ -328,11 +337,18 @@ pub struct TechnicalAnalysis {
     volume_sma: f64,
     vwap: f64,
     mfi: f64,  // Money Flow Index
+    current_volume: f64,
+    avg_volume: f64,
     
     // Market structure
     support_levels: Vec<f64>,
     resistance_levels: Vec<f64>,
+    support_1: f64,  // Primary support level
+    resistance_1: f64,  // Primary resistance level
     pivot_point: f64,
+    
+    // Current price for calculations
+    current_price: f64,
 }
 
 impl TechnicalAnalysis {
@@ -350,6 +366,7 @@ impl TechnicalAnalysis {
             williams_r: -50.0,
             momentum: 0.0,
             roc: 0.0,
+            adx: 25.0,  // Neutral ADX
             bollinger_upper: 0.0,
             bollinger_lower: 0.0,
             atr: 0.0,
@@ -359,9 +376,14 @@ impl TechnicalAnalysis {
             volume_sma: 0.0,
             vwap: 0.0,
             mfi: 50.0,
+            current_volume: 0.0,
+            avg_volume: 0.0,
             support_levels: vec![],
             resistance_levels: vec![],
+            support_1: 0.0,
+            resistance_1: 0.0,
             pivot_point: 0.0,
+            current_price: 0.0,
         }
     }
     
@@ -370,6 +392,20 @@ impl TechnicalAnalysis {
         if candles.len() < 50 {
             return; // Need enough data
         }
+        
+        // Update current price and volume
+        if let Some(last_candle) = candles.back() {
+            self.current_price = last_candle.close.to_f64();
+            self.current_volume = last_candle.volume.to_f64();
+        }
+        
+        // Calculate average volume
+        let volume_sum: f64 = candles.iter()
+            .rev()
+            .take(20)
+            .map(|c| c.volume.to_f64())
+            .sum();
+        self.avg_volume = volume_sum / 20.0f64.min(candles.len() as f64);
         
         // Moving averages
         self.calculate_moving_averages(candles);
@@ -446,6 +482,9 @@ impl TechnicalAnalysis {
         
         // Williams %R
         self.williams_r = self.calculate_williams_r(candles, 14);
+        
+        // ADX - Average Directional Index (trend strength)
+        self.adx = self.calculate_adx(candles, 14);
         
         // Momentum
         if candles.len() >= 10 {
@@ -533,6 +572,58 @@ impl TechnicalAnalysis {
         } else {
             -50.0
         }
+    }
+    
+    fn calculate_adx(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+        if candles.len() < period * 2 {
+            return 25.0; // Neutral ADX
+        }
+        
+        // Calculate True Range and Directional Movement
+        let mut tr_sum = 0.0;
+        let mut plus_dm_sum = 0.0;
+        let mut minus_dm_sum = 0.0;
+        
+        for i in (candles.len() - period)..candles.len() {
+            let curr = &candles[i];
+            let prev = &candles[i - 1];
+            
+            // True Range
+            let high_low = curr.high.to_f64() - curr.low.to_f64();
+            let high_close = (curr.high.to_f64() - prev.close.to_f64()).abs();
+            let low_close = (curr.low.to_f64() - prev.close.to_f64()).abs();
+            let tr = high_low.max(high_close).max(low_close);
+            tr_sum += tr;
+            
+            // Directional Movement
+            let up_move = curr.high.to_f64() - prev.high.to_f64();
+            let down_move = prev.low.to_f64() - curr.low.to_f64();
+            
+            if up_move > down_move && up_move > 0.0 {
+                plus_dm_sum += up_move;
+            }
+            if down_move > up_move && down_move > 0.0 {
+                minus_dm_sum += down_move;
+            }
+        }
+        
+        // Calculate directional indicators
+        let atr = tr_sum / period as f64;
+        if atr == 0.0 {
+            return 25.0;
+        }
+        
+        let plus_di = (plus_dm_sum / atr) * 100.0;
+        let minus_di = (minus_dm_sum / atr) * 100.0;
+        
+        // Calculate ADX
+        let di_sum = plus_di + minus_di;
+        if di_sum == 0.0 {
+            return 25.0;
+        }
+        
+        let dx = ((plus_di - minus_di).abs() / di_sum) * 100.0;
+        dx.min(100.0).max(0.0)
     }
     
     fn calculate_volatility_bands(&mut self, candles: &VecDeque<Candle>) {
@@ -696,6 +787,14 @@ impl TechnicalAnalysis {
         // Keep only significant levels (cluster nearby levels)
         self.support_levels = self.cluster_levels(supports);
         self.resistance_levels = self.cluster_levels(resistances);
+        
+        // Set primary support and resistance (closest to current price)
+        if !self.support_levels.is_empty() {
+            self.support_1 = *self.support_levels.first().unwrap_or(&0.0);
+        }
+        if !self.resistance_levels.is_empty() {
+            self.resistance_1 = *self.resistance_levels.first().unwrap_or(&0.0);
+        }
         
         // Calculate pivot point
         if let Some(last) = candles.back() {
@@ -1619,6 +1718,73 @@ impl MarketAnalytics {
     /// Get Sharpe ratio
     pub fn get_sharpe_ratio(&self) -> f64 {
         self.performance_calculator.read().calculate_sharpe()
+    }
+    
+    /// Get current volatility (best estimator - Yang-Zhang)
+    pub fn get_current_volatility(&self) -> f64 {
+        self.volatility_estimator.read().yang_zhang
+    }
+    
+    /// Get RSI value
+    pub fn get_rsi(&self) -> Option<f64> {
+        let ta = self.ta_calculator.read();
+        Some(ta.rsi)
+    }
+    
+    /// Get MACD values
+    pub fn get_macd(&self) -> Option<MACDResult> {
+        let ta = self.ta_calculator.read();
+        Some(MACDResult {
+            macd: ta.macd,
+            signal: ta.macd_signal,
+            histogram: ta.macd - ta.macd_signal,
+        })
+    }
+    
+    /// Get Bollinger Band position (0-1, 0.5 = at middle)
+    pub fn get_bollinger_position(&self) -> Option<f64> {
+        let ta = self.ta_calculator.read();
+        if ta.bollinger_upper > ta.bollinger_lower {
+            let range = ta.bollinger_upper - ta.bollinger_lower;
+            let position = (ta.current_price - ta.bollinger_lower) / range;
+            Some(position.max(0.0).min(1.0))
+        } else {
+            Some(0.5)
+        }
+    }
+    
+    /// Get ATR (Average True Range)
+    pub fn get_atr(&self) -> Option<f64> {
+        let ta = self.ta_calculator.read();
+        Some(ta.atr)
+    }
+    
+    /// Get volume ratio (current vs average)
+    pub fn get_volume_ratio(&self) -> Option<f64> {
+        let ta = self.ta_calculator.read();
+        if ta.avg_volume > 0.0 {
+            Some(ta.current_volume / ta.avg_volume)
+        } else {
+            Some(1.0)
+        }
+    }
+    
+    /// Get ADX (trend strength)
+    pub fn get_adx(&self) -> Option<f64> {
+        let ta = self.ta_calculator.read();
+        Some(ta.adx)
+    }
+    
+    /// Get support level
+    pub fn get_support_level(&self) -> Option<f64> {
+        let ta = self.ta_calculator.read();
+        Some(ta.support_1)
+    }
+    
+    /// Get resistance level
+    pub fn get_resistance_level(&self) -> Option<f64> {
+        let ta = self.ta_calculator.read();
+        Some(ta.resistance_1)
     }
     
     /// Update with trade result
