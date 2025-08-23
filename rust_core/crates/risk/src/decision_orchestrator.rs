@@ -15,6 +15,9 @@ use crate::market_analytics::MarketAnalytics;
 use crate::auto_tuning_persistence::AutoTuningPersistence;
 use crate::portfolio_manager::{PortfolioManager, PortfolioConfig};
 use crate::feature_importance::SHAPCalculator;
+use crate::t_copula::{TCopula, TCopulaConfig};
+use crate::historical_regime_calibration::HistoricalRegimeCalibration;
+use crate::cross_asset_correlations::{CrossAssetCorrelations, AssetClass};
 use std::sync::Arc;
 use parking_lot::RwLock;
 use rust_decimal::Decimal;
@@ -37,6 +40,11 @@ pub struct DecisionOrchestrator {
     
     // SHAP explainability - DEEP DIVE ENHANCEMENT
     shap_calculator: Arc<RwLock<SHAPCalculator>>,
+    
+    // NEXUS PRIORITY 2 SYSTEMS - DEEP DIVE ENHANCEMENTS
+    t_copula: Arc<TCopula>,  // Tail dependence modeling
+    regime_calibration: Arc<HistoricalRegimeCalibration>,  // HMM regime detection
+    cross_asset_corr: Arc<CrossAssetCorrelations>,  // DCC-GARCH correlations
     
     // Database persistence
     persistence: Arc<AutoTuningPersistence>,
@@ -118,6 +126,36 @@ impl DecisionOrchestrator {
         let portfolio_config = PortfolioConfig::default();
         let portfolio_manager = Arc::new(PortfolioManager::new(initial_equity, portfolio_config));
         
+        // Initialize Nexus Priority 2 systems
+        let param_manager = Arc::new(crate::parameter_manager::ParameterManager::new());
+        
+        // t-Copula for tail dependence
+        let t_copula_config = TCopulaConfig {
+            initial_df: 5.0,
+            min_df: 2.5,
+            max_df: 30.0,
+            calibration_window: 252,
+            crisis_threshold: 0.8,
+            update_frequency: 1,
+        };
+        let t_copula = Arc::new(TCopula::new(t_copula_config, param_manager.clone(), 5)); // 5 main asset classes
+        
+        // Historical regime calibration with HMM
+        let regime_calibration = Arc::new(HistoricalRegimeCalibration::new(param_manager.clone()));
+        
+        // Cross-asset correlations with DCC-GARCH
+        let assets = vec![
+            AssetClass::BTC,     // Crypto representative
+            AssetClass::SP500,   // Stocks representative
+            AssetClass::US10Y,   // Bonds representative
+            AssetClass::GOLD,    // Commodities representative
+            AssetClass::DXY,     // FX representative
+        ];
+        let mut cross_asset_corr = CrossAssetCorrelations::new(assets, param_manager.clone());
+        cross_asset_corr.set_t_copula(t_copula.clone());
+        cross_asset_corr.set_regime_calibration(regime_calibration.clone());
+        let cross_asset_corr = Arc::new(cross_asset_corr);
+        
         // Create feature names for SHAP explanations
         let feature_names = vec![
             "price".to_string(),
@@ -153,6 +191,9 @@ impl DecisionOrchestrator {
             profit_extractor: Arc::new(RwLock::new(ProfitExtractor::new(auto_tuner))),
             portfolio_manager,
             shap_calculator,
+            t_copula,
+            regime_calibration,
+            cross_asset_corr,
             persistence,
             ml_weight: Arc::new(RwLock::new(ml_weight)),
             ta_weight: Arc::new(RwLock::new(ta_weight)),
@@ -207,9 +248,27 @@ impl DecisionOrchestrator {
         println!("\nCombined Signal: {:?} (confidence: {:.2}%)", 
                  combined_signal.action, combined_signal.confidence * 100.0);
         
-        // Step 5: Detect market regime
+        // Step 5: Detect market regime with HMM
         let regime = self.detect_market_regime(market_data, &ta_indicators).await?;
         println!("Market Regime: {:?}", regime);
+        
+        // Step 5a: Check tail dependence risk (Nexus Priority 2)
+        let tail_metrics = self.t_copula.get_tail_metrics();
+        println!("Tail Dependence: {:.3} (DoF: {:.1})", 
+                 tail_metrics.max_tail_dependence, tail_metrics.degrees_of_freedom);
+        
+        // Step 5b: Check contagion risk (Nexus Priority 2)
+        let contagion_risk = self.cross_asset_corr.get_contagion_risk();
+        println!("Contagion Level: {:.2}% | Systemic Risk: {:.2}%",
+                 contagion_risk.contagion_level * 100.0,
+                 contagion_risk.systemic_risk * 100.0);
+        
+        // Adjust signal based on tail risk and contagion
+        let adjusted_signal = self.adjust_for_tail_risk(
+            combined_signal.clone(),
+            &tail_metrics,
+            &contagion_risk
+        );
         
         // Step 6: Apply Kelly sizing
         let kelly_size = self.calculate_kelly_size(
@@ -553,6 +612,47 @@ impl DecisionOrchestrator {
     }
     
     // ... Additional helper methods ...
+    
+    /// Adjust signal for tail risk and contagion (Nexus Priority 2)
+    fn adjust_for_tail_risk(
+        &self,
+        mut signal: Signal,
+        tail_metrics: &crate::t_copula::TailDependenceMetrics,
+        contagion_risk: &crate::cross_asset_correlations::ContagionRisk,
+    ) -> Signal {
+        // Alex: "When correlations spike to 1.0, REDUCE EVERYTHING!"
+        
+        // Reduce confidence based on tail dependence
+        if tail_metrics.max_tail_dependence > 0.5 {
+            signal.confidence *= 0.7;  // 30% reduction
+            signal.reason = format!("{} | Tail risk: {:.2}", 
+                                   signal.reason, tail_metrics.max_tail_dependence);
+        }
+        
+        // Further reduction for crisis mode
+        if tail_metrics.is_crisis {
+            signal.confidence *= 0.5;  // Another 50% reduction
+            signal.reason = format!("{} | CRISIS MODE", signal.reason);
+        }
+        
+        // Adjust for contagion
+        if contagion_risk.contagion_level > 0.5 {
+            signal.confidence *= 0.6;  // 40% reduction
+            signal.size *= 0.5;  // Halve position size
+            signal.reason = format!("{} | Contagion: {:.2}%", 
+                                   signal.reason, contagion_risk.contagion_level * 100.0);
+        }
+        
+        // Extreme risk - convert to hold/exit signal
+        if contagion_risk.systemic_risk > 0.8 {
+            signal.action = SignalAction::Hold;  // Conservative action
+            signal.confidence = 0.9;  // High confidence to hold
+            signal.reason = format!("SYSTEMIC RISK DETECTED: {}", 
+                                  contagion_risk.recommended_action);
+        }
+        
+        signal
+    }
     
     /// Detect market regime
     async fn detect_market_regime(

@@ -75,6 +75,14 @@ impl TradingParameterSpace {
                 ("max_participation_rate".to_string(), 0.05, 0.2),
                 ("trailing_stop_percentage".to_string(), 0.005, 0.03),
                 ("feature_importance_threshold".to_string(), 0.05, 0.3),
+                // Nexus Priority 2 parameters - DEEP DIVE ENHANCEMENTS
+                ("t_copula_df".to_string(), 2.5, 30.0),  // Degrees of freedom for tail dependence
+                ("t_copula_crisis_threshold".to_string(), 0.7, 0.95),  // When to declare crisis
+                ("dcc_alpha".to_string(), 0.01, 0.10),  // DCC-GARCH alpha parameter
+                ("dcc_beta".to_string(), 0.85, 0.99),  // DCC-GARCH beta parameter
+                ("contagion_threshold".to_string(), 0.3, 0.7),  // Contagion detection sensitivity
+                ("tail_risk_reduction".to_string(), 0.3, 0.8),  // Position reduction in tail events
+                ("regime_transition_threshold".to_string(), 0.1, 0.5),  // HMM regime change sensitivity
             ],
         }
     }
