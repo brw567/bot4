@@ -29,6 +29,8 @@ pub mod performance_optimizations;  // DEEP DIVE: Zero allocations, lock-free, <
 pub mod t_copula;  // DEEP DIVE: t-Copula for tail dependence - models extreme event correlations!
 pub mod historical_regime_calibration;  // DEEP DIVE: Learn from 20+ years of crises - predict regime changes!
 pub mod cross_asset_correlations;  // DEEP DIVE: DCC-GARCH for time-varying correlations - contagion detection!
+pub mod decision_orchestrator_enhanced;  // DEEP DIVE: FULLY INTEGRATED orchestrator using ALL systems!
+pub mod decision_orchestrator_enhanced_impl;  // DEEP DIVE: Complete implementation methods!
 
 #[cfg(test)]
 mod comprehensive_tests;
