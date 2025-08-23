@@ -62,6 +62,9 @@ pub struct OrderBookSnapshot {
     pub mid_price: Decimal,
     pub microprice: Decimal,  // Size-weighted price
     pub trades: Vec<Trade>,
+    // Depth at first level (for quick access)
+    pub bid_depth_1: f64,
+    pub ask_depth_1: f64,
 }
 
 /// Price level in order book
@@ -82,11 +85,7 @@ pub struct Trade {
     pub trade_id: String,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Side {
-    Buy,
-    Sell,
-}
+// Using Side from unified_types (Long/Short)
 
 /// VPIN bucket for toxicity measurement
 #[derive(Debug, Clone)]
@@ -114,6 +113,7 @@ struct SpoofingDetector {
     cancellation_rate_threshold: f64,
     time_to_cancel_threshold: u64,  // milliseconds
     fleeting_order_ratio: f64,
+    pub detection_score: f64,  // Current spoofing detection score (0-1)
 }
 
 /// Order lifecycle tracking
@@ -450,8 +450,8 @@ impl OrderBookAnalytics {
                 .map(|t| {
                     let vol = t.quantity.to_f64().unwrap();
                     match t.aggressor_side {
-                        Side::Buy => vol,
-                        Side::Sell => -vol,
+                        Side::Long => vol,
+                        Side::Short => -vol,
                     }
                 })
                 .sum();
@@ -501,8 +501,8 @@ impl OrderBookAnalytics {
             current_bucket.volume += vol;
             
             match trade.aggressor_side {
-                Side::Buy => current_bucket.buy_volume += vol,
-                Side::Sell => current_bucket.sell_volume += vol,
+                Side::Long => current_bucket.buy_volume += vol,
+                Side::Short => current_bucket.sell_volume += vol,
             }
         }
         
@@ -700,6 +700,81 @@ impl OrderBookAnalytics {
         
         base_limit * adverse_adjustment
     }
+    
+    /// Get order book imbalance (public method for optimal_execution)
+    /// DEEP DIVE: Simple wrapper for external access
+    pub fn get_imbalance(&self) -> f64 {
+        self.depth_imbalance.level_1
+    }
+    
+    /// Get spoof ratio for predatory detection
+    pub fn get_spoof_ratio(&self) -> f64 {
+        self.spoofing_detector.detection_score
+    }
+    
+    /// Get quote update rate (updates per second)
+    pub fn get_quote_update_rate(&self) -> f64 {
+        // Calculate from recent order book snapshots
+        if self.order_book_history.len() < 2 {
+            return 0.0;
+        }
+        
+        let duration = self.order_book_history.back().unwrap().timestamp - 
+                      self.order_book_history.front().unwrap().timestamp;
+        
+        if duration > 0 {
+            self.order_book_history.len() as f64 / duration as f64
+        } else {
+            0.0
+        }
+    }
+    
+    /// Get average trade size from recent history
+    pub fn get_average_trade_size(&self) -> f64 {
+        // Use recent flow imbalance history as proxy
+        if self.flow_imbalance_history.is_empty() {
+            return 1.0;  // Default 1 unit
+        }
+        
+        let sum: f64 = self.flow_imbalance_history.iter()
+            .map(|f| f.abs())
+            .sum();
+        
+        sum / self.flow_imbalance_history.len() as f64
+    }
+    
+    /// Detect liquidity events (large orders appearing)
+    pub fn detect_liquidity_events(&self) -> Vec<LiquidityEvent> {
+        let mut events = Vec::new();
+        
+        // Check recent order book changes for large orders
+        if self.order_book_history.len() >= 2 {
+            let current = self.order_book_history.back().unwrap();
+            let previous = &self.order_book_history[self.order_book_history.len() - 2];
+            
+            // Detect large bid appearance
+            if current.bid_depth_1 > previous.bid_depth_1 * 2.0 {
+                events.push(LiquidityEvent {
+                    side: Side::Long,  // Bid side
+                    size: current.bid_depth_1 - previous.bid_depth_1,
+                    price_level: 1,
+                    timestamp: current.timestamp,
+                });
+            }
+            
+            // Detect large ask appearance
+            if current.ask_depth_1 > previous.ask_depth_1 * 2.0 {
+                events.push(LiquidityEvent {
+                    side: Side::Short,  // Ask side
+                    size: current.ask_depth_1 - previous.ask_depth_1,
+                    price_level: 1,
+                    timestamp: current.timestamp,
+                });
+            }
+        }
+        
+        events
+    }
 }
 
 /// Spoofing detector implementation
@@ -710,6 +785,7 @@ impl SpoofingDetector {
             cancellation_rate_threshold: 0.9,  // 90% cancelled = suspicious
             time_to_cancel_threshold: 1000,    // Cancel within 1 second
             fleeting_order_ratio: 0.5,          // 50% fleeting = suspicious
+            detection_score: 0.0,
         }
     }
     
@@ -738,7 +814,8 @@ impl SpoofingDetector {
             }
         }
         
-        score.min(1.0_f64)
+        self.detection_score = score.min(1.0_f64);
+        self.detection_score
     }
 }
 
@@ -815,6 +892,15 @@ impl MomentumIgnitionDetector {
 }
 
 /// Order book metrics output
+/// Liquidity event detected in order book
+#[derive(Debug, Clone)]
+pub struct LiquidityEvent {
+    pub side: Side,
+    pub size: f64,
+    pub price_level: u32,
+    pub timestamp: u64,
+}
+
 #[derive(Debug, Clone)]
 pub struct OrderBookMetrics {
     pub timestamp: u64,
@@ -854,6 +940,8 @@ impl Default for OrderBookSnapshot {
             mid_price: dec!(0),
             microprice: dec!(0),
             trades: Vec::new(),
+            bid_depth_1: 0.0,
+            ask_depth_1: 0.0,
         }
     }
 }
@@ -879,6 +967,8 @@ mod tests {
             mid_price: dec!(100),
             microprice: dec!(100.02),
             trades: vec![],
+            bid_depth_1: 100.0,
+            ask_depth_1: 80.0,
         };
         
         let metrics = analytics.process_order_book(snapshot);
@@ -913,7 +1003,7 @@ mod tests {
                     timestamp: i as u64 * 1000,
                     price,
                     quantity: dec!(10),
-                    aggressor_side: if i % 2 == 0 { Side::Buy } else { Side::Sell },
+                    aggressor_side: if i % 2 == 0 { Side::Long } else { Side::Short },
                     trade_id: format!("trade_{}", i),
                 }],
             };
@@ -943,7 +1033,7 @@ mod tests {
                     timestamp: i as u64 * 1000,
                     price: dec!(100),
                     quantity: dec!(5),
-                    aggressor_side: if i < 70 { Side::Buy } else { Side::Sell },
+                    aggressor_side: if i < 70 { Side::Long } else { Side::Short },
                     trade_id: format!("trade_{}", i),
                 }],
             };
@@ -1007,7 +1097,7 @@ mod tests {
                     timestamp: i as u64 * 1000,
                     price: dec!(100),
                     quantity: dec!(10),
-                    aggressor_side: Side::Buy,  // All buys = informed trading
+                    aggressor_side: Side::Long,  // All buys = informed trading
                     trade_id: format!("trade_{}", i),
                 }],
             };

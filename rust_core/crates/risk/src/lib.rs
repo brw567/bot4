@@ -17,6 +17,7 @@ pub mod ml_feedback;  // ML feedback loops - CRITICAL for continuous improvement
 pub mod market_analytics;  // REAL market calculations - NO SIMPLIFICATIONS!
 pub mod portfolio_manager;  // Portfolio state management - NO HARDCODED VALUES!
 pub mod funding_rates;  // Funding rate arbitrage - 15-30% ADDITIONAL PROFIT!
+pub mod optimal_execution;  // TWAP/VWAP/POV execution algorithms - MINIMIZE MARKET IMPACT!
 
 #[cfg(test)]
 mod comprehensive_tests;

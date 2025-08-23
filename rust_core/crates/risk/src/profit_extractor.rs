@@ -27,6 +27,7 @@ pub struct ExtendedMarketData {
     pub bid: Price,
     pub ask: Price,
     pub spread: Price,
+    pub mid: Price,  // Mid price (bid + ask) / 2
     pub volume: Quantity,
     
     // Extended analytics data
@@ -45,6 +46,7 @@ impl ExtendedMarketData {
             bid: data.bid,
             ask: data.ask,
             spread: data.spread,
+            mid: data.mid,
             volume: data.volume,
             volume_24h: data.volume.inner().to_f64().unwrap_or(0.0),
             volatility,
