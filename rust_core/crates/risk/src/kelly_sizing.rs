@@ -7,6 +7,7 @@
 // - CRITICAL: Use fractional Kelly (25% max) to prevent blow-up!
 
 use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 use rust_decimal_macros::dec;
 use serde::{Serialize, Deserialize};
 use std::collections::VecDeque;
@@ -455,6 +456,25 @@ impl KellySizer {
             stats: self.stats.clone(),
             adjustments_applied: self.adjustments.clone(),
         }
+    }
+    
+    /// Calculate discrete Kelly for given win probability and odds
+    /// This is a wrapper for test compatibility
+    /// DEEP DIVE: Simplified interface for direct Kelly calculation
+    pub fn calculate_discrete_kelly(&self, win_prob: f64, odds: f64) -> f64 {
+        // Kelly formula: f* = (p*b - q) / b
+        // where p = win probability, q = loss probability, b = odds
+        let p = win_prob;
+        let q = 1.0 - p;
+        let b = odds;
+        
+        let kelly = (p * b - q) / b;
+        
+        // Apply fractional Kelly (safety factor)
+        let fractional_kelly = kelly * self.config.max_kelly_fraction.to_f64().unwrap_or(0.25);
+        
+        // Cap at maximum allowed (use max Kelly fraction as position limit)
+        fractional_kelly.min(0.02)  // 2% max position size
     }
 }
 

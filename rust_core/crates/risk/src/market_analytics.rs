@@ -309,12 +309,12 @@ impl VolatilityEngine {
 /// Morgan: "We need ALL the indicators for ML features!"
 pub struct TechnicalAnalysis {
     // Trend indicators
-    sma_short: f64,
-    sma_long: f64,
-    ema_short: f64,
-    ema_long: f64,
-    macd: f64,
-    macd_signal: f64,
+    pub sma_short: f64,
+    pub sma_long: f64,
+    pub ema_short: f64,
+    pub ema_long: f64,
+    pub macd: f64,
+    pub macd_signal: f64,
     
     // Momentum indicators
     rsi: f64,
@@ -352,7 +352,7 @@ pub struct TechnicalAnalysis {
 }
 
 impl TechnicalAnalysis {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             sma_short: 0.0,
             sma_long: 0.0,
@@ -423,7 +423,7 @@ impl TechnicalAnalysis {
         self.calculate_support_resistance(candles);
     }
     
-    fn calculate_moving_averages(&mut self, candles: &VecDeque<Candle>) {
+    pub fn calculate_moving_averages(&mut self, candles: &VecDeque<Candle>) {
         // Simple Moving Averages
         let prices: Vec<f64> = candles.iter()
             .rev()
@@ -678,7 +678,7 @@ impl TechnicalAnalysis {
         true_ranges.iter().sum::<f64>() / true_ranges.len() as f64
     }
     
-    fn calculate_volume_indicators(&mut self, candles: &VecDeque<Candle>) {
+    pub fn calculate_volume_indicators(&mut self, candles: &VecDeque<Candle>) {
         // On-Balance Volume
         if candles.len() >= 2 {
             let mut obv = 0.0;
@@ -1790,6 +1790,112 @@ impl MarketAnalytics {
     /// Update with trade result
     pub fn record_trade(&self, pnl: f64) {
         self.performance_calculator.write().update_trade(pnl);
+    }
+    
+    /// Update TA indicators with new candles
+    /// DEEP DIVE: This updates ALL technical indicators with latest data
+    pub fn update_ta_indicators(&self, candles: &VecDeque<Candle>) {
+        self.ta_calculator.write().calculate_all(candles);
+    }
+    
+    /// Calculate ATR (Average True Range) for specific period
+    /// Wilder's ATR formula for volatility measurement
+    pub fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+        if candles.len() < period + 1 {
+            return 0.0;
+        }
+        
+        let mut tr_values = Vec::new();
+        for i in 1..candles.len() {
+            let high = candles[i].high.to_f64();
+            let low = candles[i].low.to_f64();
+            let prev_close = candles[i-1].close.to_f64();
+            
+            // True Range = max(high - low, abs(high - prev_close), abs(low - prev_close))
+            let tr = (high - low)
+                .max((high - prev_close).abs())
+                .max((low - prev_close).abs());
+            tr_values.push(tr);
+        }
+        
+        // Calculate ATR as average of TR values
+        if tr_values.len() >= period {
+            let recent_tr = &tr_values[tr_values.len() - period..];
+            recent_tr.iter().sum::<f64>() / period as f64
+        } else {
+            0.0
+        }
+    }
+    
+    /// Calculate Stochastic Oscillator
+    /// %K = 100 * (Close - Low(n)) / (High(n) - Low(n))
+    /// %D = SMA of %K
+    pub fn calculate_stochastic(&self, candles: &VecDeque<Candle>, period: usize, _smooth: usize) -> (f64, f64) {
+        if candles.len() < period {
+            return (50.0, 50.0);
+        }
+        
+        let close = candles.back().unwrap().close.to_f64();
+        
+        // Get highest high and lowest low from recent period
+        let mut highest = f64::MIN;
+        let mut lowest = f64::MAX;
+        
+        let skip_count = if candles.len() > period { candles.len() - period } else { 0 };
+        for (i, candle) in candles.iter().enumerate() {
+            if i < skip_count { continue; }
+            highest = highest.max(candle.high.to_f64());
+            lowest = lowest.min(candle.low.to_f64());
+        }
+        
+        let k = if highest > lowest {
+            100.0 * (close - lowest) / (highest - lowest)
+        } else {
+            50.0
+        };
+        
+        // For simplicity, D is just K smoothed (would need history for real calculation)
+        let d = k; // Simplified - real implementation would track K history
+        
+        (k, d)
+    }
+    
+    /// Calculate Money Flow Index
+    /// MFI = 100 - (100 / (1 + Money Flow Ratio))
+    pub fn calculate_mfi(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+        if candles.len() < period + 1 {
+            return 50.0;
+        }
+        
+        let mut positive_flow = 0.0;
+        let mut negative_flow = 0.0;
+        
+        for i in (candles.len() - period)..candles.len() {
+            if i == 0 { continue; }
+            
+            let typical_price = (candles[i].high.to_f64() + 
+                               candles[i].low.to_f64() + 
+                               candles[i].close.to_f64()) / 3.0;
+            let prev_typical = (candles[i-1].high.to_f64() + 
+                               candles[i-1].low.to_f64() + 
+                               candles[i-1].close.to_f64()) / 3.0;
+            
+            let money_flow = typical_price * candles[i].volume.to_f64();
+            
+            if typical_price > prev_typical {
+                positive_flow += money_flow;
+            } else {
+                negative_flow += money_flow;
+            }
+        }
+        
+        let money_ratio = if negative_flow > 0.0 {
+            positive_flow / negative_flow
+        } else {
+            100.0
+        };
+        
+        100.0 - (100.0 / (1.0 + money_ratio))
     }
     
     /// Get comprehensive metrics

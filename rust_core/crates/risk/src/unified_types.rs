@@ -114,6 +114,11 @@ impl Percentage {
     pub fn value(&self) -> f64 {
         self.0
     }
+    
+    #[inline(always)]
+    pub fn to_f64(&self) -> f64 {
+        self.0
+    }
 }
 
 /// Risk Metrics - unified structure for all risk calculations

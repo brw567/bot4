@@ -12,8 +12,10 @@
 #[cfg(test)]
 mod tests {
     use crate::market_analytics::*;
+    use crate::unified_types::{Price, Quantity};
     use std::collections::VecDeque;
     use rust_decimal::prelude::*;
+    use rust_decimal_macros::dec;
     
     /// Create test candles with known values for verification
     fn create_test_candles() -> VecDeque<Candle> {
@@ -59,14 +61,14 @@ mod tests {
             &crate::unified_types::MarketData {
                 symbol: "TEST".to_string(),
                 timestamp: 0,
-                bid: crate::unified_types::Price::new(candles.back().unwrap().close),
-                ask: crate::unified_types::Price::new(candles.back().unwrap().close + Decimal::from(1)),
-                last: crate::unified_types::Price::new(candles.back().unwrap().close),
-                volume: crate::unified_types::Quantity::new(candles.back().unwrap().volume),
+                bid: candles.back().unwrap().close,
+                ask: crate::unified_types::Price::from_f64(candles.back().unwrap().close.to_f64() + 1.0),
+                last: candles.back().unwrap().close,
+                volume: candles.back().unwrap().volume,
                 bid_size: crate::unified_types::Quantity::new(Decimal::from(100)),
                 ask_size: crate::unified_types::Quantity::new(Decimal::from(100)),
-                spread: crate::unified_types::Price::new(Decimal::from(1)),
-                mid: crate::unified_types::Price::new(candles.back().unwrap().close),
+                spread: crate::unified_types::Price::from_f64(1.0),
+                mid: candles.back().unwrap().close,
             },
             candles.back().unwrap().clone(),
             tick
@@ -122,7 +124,7 @@ mod tests {
     /// Morgan: "MACD catches trend changes early!"
     #[test]
     fn test_macd_accuracy() {
-        let mut indicators = TechnicalIndicators::new();
+        let mut indicators = TechnicalAnalysis::new();
         let candles = create_test_candles();
         
         // Extract closing prices
@@ -179,7 +181,7 @@ mod tests {
     /// Quinn: "Bollinger Bands show volatility expansion!"
     #[test]
     fn test_bollinger_bands_accuracy() {
-        let mut indicators = TechnicalIndicators::new();
+        let mut indicators = TechnicalAnalysis::new();
         let mut analytics = MarketAnalytics::new();
         let candles = create_test_candles();
         
@@ -305,7 +307,7 @@ mod tests {
     /// Avery: "VWAP shows institutional interest levels!"
     #[test]
     fn test_vwap_accuracy() {
-        let mut indicators = TechnicalIndicators::new();
+        let mut indicators = TechnicalAnalysis::new();
         let candles = create_test_candles();
         
         // Calculate VWAP manually
