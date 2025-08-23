@@ -16,7 +16,8 @@ tracing = "0.1"
 # Math and statistics
 rust_decimal = "1.33"
 rust_decimal_macros = "1.33"
-ndarray = "0.15"
+ndarray = { version = "0.15", features = ["blas"] }
+nalgebra = "0.32"
 statrs = "0.17"
 
 # Time handling
@@ -37,6 +38,7 @@ sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "uuid"
 # Random number generation
 rand = { version = "0.8", features = ["std"] }
 rand_distr = "0.4"
+rand_chacha = "0.3"
 
 # Parallel processing
 rayon = "1.8"
@@ -55,3 +57,4 @@ tokio-test = "0.4"
 criterion = "0.5"
 proptest = "1.4"
 pretty_assertions = "1.4"
+approx = "0.5"

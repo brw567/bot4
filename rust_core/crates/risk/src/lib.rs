@@ -26,9 +26,12 @@ pub mod deep_dive_validation_study;  // Academic validation - NO SIMPLIFICATIONS
 pub mod parameter_manager;  // CRITICAL: No hardcoded values - ALL parameters auto-tuned!
 pub mod game_theory_advanced;  // DEEP DIVE: Full game theory implementation - Nash, Prisoner's Dilemma, Multi-agent!
 pub mod performance_optimizations;  // DEEP DIVE: Zero allocations, lock-free, <1μs latency!
+pub mod t_copula;  // DEEP DIVE: t-Copula for tail dependence - models extreme event correlations!
 
 #[cfg(test)]
 mod comprehensive_tests;
+#[cfg(test)]
+mod t_copula_tests;
 #[cfg(test)]
 mod hyperparameter_optimization_tests;
 #[cfg(test)]
@@ -64,6 +67,7 @@ pub use garch::GARCHModel;
 pub use isotonic::{IsotonicCalibrator, MarketRegime};
 pub use ml_feedback::{MLFeedbackSystem, MLMetrics};
 pub use profit_extractor::{ProfitExtractor, PerformanceStats, ExtendedMarketData};
+pub use t_copula::{TCopula, TCopulaConfig, TailRiskMetrics, TailDependenceMetrics};
 
 // Re-export for convenience
 pub fn create_risk_system() -> (RiskClampSystem, KellySizer) {
