@@ -31,6 +31,8 @@ pub mod historical_regime_calibration;  // DEEP DIVE: Learn from 20+ years of cr
 pub mod cross_asset_correlations;  // DEEP DIVE: DCC-GARCH for time-varying correlations - contagion detection!
 pub mod decision_orchestrator_enhanced;  // DEEP DIVE: FULLY INTEGRATED orchestrator using ALL systems!
 pub mod decision_orchestrator_enhanced_impl;  // DEEP DIVE: Complete implementation methods!
+pub mod order_book_extensions;  // DEEP DIVE: Complete missing OrderBook methods!
+pub mod integration_test_complete;  // DEEP DIVE: Comprehensive integration verification!
 
 #[cfg(test)]
 mod comprehensive_tests;
