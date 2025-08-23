@@ -99,6 +99,151 @@ reliability:
 
 ## 2. System Overview
 
+### 2.1 Unified Decision Pipeline (NEW - FULLY INTEGRATED)
+
+The system now features a **COMPLETE UNIFIED DECISION ORCHESTRATOR** that combines:
+- **Machine Learning predictions** (50+ features, deep learning models)
+- **Technical Analysis signals** (22+ indicators, multi-timeframe)
+- **Market Microstructure** (order book imbalance, VPIN, Kyle's Lambda)
+- **Sentiment Analysis** (Grok xAI integration for social signals)
+- **Risk Management** (8-layer clamps, Kelly sizing, regime detection)
+- **Auto-tuning** (Q-learning, adaptive parameters, continuous optimization)
+
+### 2.2 Complete Feedback Loop Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    UNIFIED DECISION ORCHESTRATOR                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Market Data → ML Features → ML Prediction ──┐                  │
+│       ↓                                       ↓                  │
+│  TA Indicators → TA Signals ──────────→ COMBINER → Decision     │
+│       ↓                                       ↑                  │
+│  Order Book → Microstructure ─────────────────┘                 │
+│       ↓                                                          │
+│  Sentiment → Grok Analysis ───────────────────┘                 │
+│                                                                  │
+│  Decision → Kelly Sizing → Risk Clamps → Final Signal           │
+│       ↓                                                          │
+│  Execution → Results → Performance Tracking                      │
+│       ↓                                                          │
+│  FEEDBACK LOOPS:                                                │
+│  - ML Model Updates (experience replay, online learning)        │
+│  - Weight Adjustments (ML vs TA vs Sentiment)                   │
+│  - Parameter Tuning (Q-learning optimization)                    │
+│  - Risk Limit Adaptation (regime-based)                         │
+│  - Strategy Selection (Thompson sampling)                        │
+│                                                                  │
+│  DATABASE PERSISTENCE:                                          │
+│  - All parameters saved/restored                                │
+│  - Q-table persistence                                          │
+│  - Performance history                                          │
+│  - Regime transitions                                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 2.3 Auto-Tuning and Auto-Adjustment Details
+
+**CONTINUOUS LEARNING SYSTEM:**
+1. **Real-time Parameter Adaptation**
+   - VaR limits: 0.5%-4% based on regime
+   - Volatility targets: 10%-30% adaptive
+   - Kelly fractions: 10%-40% based on edge
+   - Leverage caps: 1x-5x risk-adjusted
+
+2. **Q-Learning Optimization**
+   - State: (regime, volatility, drawdown, momentum)
+   - Actions: Parameter adjustments
+   - Rewards: Risk-adjusted returns
+   - Updates: Every trade outcome
+
+3. **Market Regime Detection**
+   - Bull: High returns, low volatility
+   - Bear: Negative returns, any volatility
+   - Sideways: Range-bound, medium volatility
+   - Crisis: Extreme volatility, correlation breakdown
+
+4. **Weight Optimization**
+   - ML weight: 40% (adjustable 20%-60%)
+   - TA weight: 40% (adjustable 20%-60%)
+   - Sentiment: 20% (adjustable 0%-30%)
+   - Weights adapt based on performance
+
+### 2.4 Complete Trading Decision Flow
+
+```python
+# STEP-BY-STEP DECISION PROCESS:
+
+1. DATA INGESTION (parallel)
+   ├── WebSocket price feeds
+   ├── Order book snapshots
+   ├── Trade flow analysis
+   └── Sentiment API calls
+
+2. FEATURE EXTRACTION (parallel)
+   ├── ML Features (50+)
+   │   ├── Price features (returns, volatility)
+   │   ├── Volume features (imbalance, intensity)
+   │   ├── Microstructure (spread, depth)
+   │   └── Technical features (indicators)
+   ├── TA Calculations (22 indicators)
+   │   ├── Trend (MACD, EMA, ADX)
+   │   ├── Momentum (RSI, Stochastic)
+   │   ├── Volatility (Bollinger, ATR)
+   │   └── Volume (OBV, VWAP, MFI)
+   └── Order Book Analytics
+       ├── Imbalance ratio
+       ├── Depth analysis
+       └── Whale detection
+
+3. SIGNAL GENERATION (parallel)
+   ├── ML Prediction
+   │   └── Confidence: 0.0-1.0
+   ├── TA Signal
+   │   └── Confidence: 0.0-1.0
+   └── Sentiment Signal
+       └── Confidence: 0.0-1.0
+
+4. SIGNAL COMBINATION
+   ├── Weighted average (adaptive weights)
+   ├── Majority voting with confidence
+   └── Conflict resolution
+
+5. POSITION SIZING
+   ├── Kelly Criterion calculation
+   ├── Fractional Kelly (25% max)
+   └── Edge-based adjustments
+
+6. RISK MANAGEMENT (8 layers)
+   ├── Layer 1: Volatility clamp
+   ├── Layer 2: VaR constraint
+   ├── Layer 3: CVaR (tail risk)
+   ├── Layer 4: Heat (exposure)
+   ├── Layer 5: Correlation limits
+   ├── Layer 6: Leverage constraints
+   ├── Layer 7: Crisis protection
+   └── Layer 8: Minimum size check
+
+7. PROFIT OPTIMIZATION
+   ├── Execution strategy selection
+   ├── Order chunking
+   ├── Timing optimization
+   └── Cost minimization
+
+8. ORDER EXECUTION
+   ├── Smart order routing
+   ├── Slippage control
+   └── Fill tracking
+
+9. FEEDBACK & LEARNING
+   ├── Record outcome
+   ├── Update ML models
+   ├── Adjust weights
+   ├── Tune parameters
+   └── Performance tracking
+```
+
 ### Vision
 Create the world's most advanced autonomous trading system that learns, adapts, and profits continuously without human intervention.
 
@@ -1618,7 +1763,88 @@ dashboard_components:
     - view_only_logs: Cannot delete audit trail
 ```
 
-## 8. Risk Management System (ENHANCED)
+## 8. Risk Management System
+
+### 8.1 Complete Risk Architecture (FULLY IMPLEMENTED)
+
+```rust
+// LIVE RISK MANAGEMENT PIPELINE
+pub struct RiskManagementSystem {
+    // Core Components (ALL IMPLEMENTED)
+    kelly_sizer: KellySizer,              // Optimal position sizing
+    risk_clamps: RiskClampSystem,         // 8-layer protection
+    auto_tuner: AutoTuningSystem,         // Adaptive parameters
+    garch_model: GARCHModel,              // Volatility forecasting
+    isotonic_calibrator: IsotonicCalibrator, // ML calibration
+    
+    // Database Persistence (NEW)
+    persistence: AutoTuningPersistence,    // All parameters saved
+    
+    // Real-time Metrics
+    current_var: f64,                      // Value at Risk
+    current_es: f64,                       // Expected Shortfall
+    portfolio_heat: f64,                   // Total exposure
+    correlation_matrix: Matrix<f64>,       // Position correlations
+}
+```
+
+### 8.2 Auto-Tuning Parameters (DATABASE PERSISTED)
+
+```sql
+-- All parameters now persist across restarts!
+CREATE TABLE adaptive_parameters (
+    parameter_name VARCHAR(100) PRIMARY KEY,
+    current_value DECIMAL(20, 8),
+    min_value DECIMAL(20, 8),
+    max_value DECIMAL(20, 8),
+    optimal_for_regime VARCHAR(20),
+    performance_impact DECIMAL(10, 4),
+    last_adjustment TIMESTAMPTZ
+);
+
+-- Q-Learning table for reinforcement learning
+CREATE TABLE q_learning_table (
+    state_hash VARCHAR(64),
+    action_id INTEGER,
+    q_value DECIMAL(20, 8),
+    visit_count INTEGER,
+    avg_reward DECIMAL(20, 8)
+);
+
+-- Performance feedback for continuous learning
+CREATE TABLE performance_feedback (
+    timestamp TIMESTAMPTZ,
+    market_regime VARCHAR(20),
+    action_type VARCHAR(50),
+    pnl DECIMAL(20, 8),
+    total_reward DECIMAL(20, 8)
+);
+```
+
+### 8.3 Feedback Loops (ALL ACTIVE)
+
+1. **ML Model Updates**
+   - Experience replay buffer (10,000 trades)
+   - Online SGD with momentum
+   - Feature importance tracking
+   - Thompson sampling for exploration
+
+2. **Parameter Optimization**
+   - Q-Learning with ε-greedy exploration
+   - State: (regime, volatility, drawdown)
+   - Actions: Adjust VaR, Kelly, leverage
+   - Rewards: Risk-adjusted returns
+
+3. **Weight Adaptation**
+   - Track performance by signal source
+   - Bayesian updating of weights
+   - Regime-specific optimization
+
+4. **Risk Limit Adjustment**
+   - Crisis: VaR ≤ 1%, Kelly ≤ 15%
+   - Bear: VaR ≤ 2%, Kelly ≤ 20%
+   - Sideways: VaR ≤ 3%, Kelly ≤ 25%
+   - Bull: VaR ≤ 4%, Kelly ≤ 30% (ENHANCED)
 
 ### 8.1 GARCH-Enhanced Risk Models (CRITICAL UPDATE)
 

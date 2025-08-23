@@ -17,7 +17,7 @@ tracing = "0.1"
 rust_decimal = "1.33"
 rust_decimal_macros = "1.33"
 ndarray = "0.15"
-statrs = "0.16"
+statrs = "0.17"
 
 # Time handling
 chrono = { version = "0.4", features = ["serde"] }
@@ -29,6 +29,9 @@ log = "0.4"
 uuid = { version = "1.6", features = ["v4", "serde"] }
 parking_lot = "0.12"
 dashmap = "5.5"
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "rust_decimal"] }
 
 # Random number generation
 rand = "0.8"

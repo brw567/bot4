@@ -70,7 +70,7 @@ dependencies = [
  "rand 0.8.5",
  "rand_chacha 0.3.1",
  "rand_distr",
- "statrs",
+ "statrs 0.16.1",
  "thiserror 1.0.69",
  "tracing",
 ]
@@ -1718,7 +1718,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "statrs",
+ "statrs 0.16.1",
  "tempfile",
  "thiserror 1.0.69",
  "tokio",
@@ -1781,6 +1781,8 @@ dependencies = [
  "num-complex",
  "num-rational",
  "num-traits",
+ "rand 0.8.5",
+ "rand_distr",
  "simba 0.8.1",
  "typenum",
 ]
@@ -2547,7 +2549,8 @@ dependencies = [
  "rust_decimal_macros",
  "serde",
  "serde_json",
- "statrs",
+ "sqlx",
+ "statrs 0.17.1",
  "thiserror 1.0.69",
  "tokio",
  "tokio-test",
@@ -2575,7 +2578,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
- "statrs",
+ "statrs 0.16.1",
  "thiserror 1.0.69",
  "tokio",
  "tracing",
@@ -3067,6 +3070,7 @@ dependencies = [
  "once_cell",
  "paste",
  "percent-encoding",
+ "rust_decimal",
  "rustls",
  "rustls-pemfile",
  "serde",
@@ -3154,6 +3158,7 @@ dependencies = [
  "percent-encoding",
  "rand 0.8.5",
  "rsa",
+ "rust_decimal",
  "serde",
  "sha1",
  "sha2",
@@ -3194,6 +3199,7 @@ dependencies = [
  "memchr",
  "once_cell",
  "rand 0.8.5",
+ "rust_decimal",
  "serde",
  "serde_json",
  "sha2",
@@ -3246,6 +3252,18 @@ dependencies = [
  "approx",
  "lazy_static",
  "nalgebra 0.29.0",
+ "num-traits",
+ "rand 0.8.5",
+]
+
+[[package]]
+name = "statrs"
+version = "0.17.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f697a07e4606a0a25c044de247e583a330dbb1731d11bc7350b81f48ad567255"
+dependencies = [
+ "approx",
+ "nalgebra 0.32.6",
  "num-traits",
  "rand 0.8.5",
 ]

@@ -9,19 +9,9 @@
 
 use crate::unified_types::*;
 use crate::auto_tuning::MarketRegime;
-use rust_decimal::Decimal;
-use rust_decimal::prelude::{FromPrimitive, ToPrimitive};
 use std::collections::{VecDeque, HashMap};
 use parking_lot::RwLock;
 use std::sync::Arc;
-
-// Signal actions for trading
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum SignalAction {
-    Buy,
-    Sell,
-    Hold,
-}
 
 /// ML Feedback System - Learn from EVERY trade
 /// Morgan: "No trade is wasted - each one teaches us something!"
