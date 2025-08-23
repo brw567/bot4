@@ -13,6 +13,7 @@ use crate::ml_feedback::MLFeedbackSystem;
 use crate::profit_extractor::ProfitExtractor;
 use crate::market_analytics::MarketAnalytics;
 use crate::auto_tuning_persistence::AutoTuningPersistence;
+use crate::portfolio_manager::{PortfolioManager, PortfolioConfig};
 use std::sync::Arc;
 use parking_lot::RwLock;
 use rust_decimal::Decimal;
@@ -30,6 +31,7 @@ pub struct DecisionOrchestrator {
     risk_clamps: Arc<RwLock<RiskClampSystem>>,
     auto_tuner: Arc<RwLock<AutoTuningSystem>>,
     profit_extractor: Arc<RwLock<ProfitExtractor>>,
+    portfolio_manager: Arc<PortfolioManager>,  // NO MORE HARDCODED VALUES!
     
     // Database persistence
     persistence: Arc<AutoTuningPersistence>,
@@ -77,7 +79,7 @@ pub struct ExecutionResult {
 
 impl DecisionOrchestrator {
     /// Create new orchestrator with all components
-    pub async fn new(database_url: &str) -> Result<Self> {
+    pub async fn new(database_url: &str, initial_equity: Decimal) -> Result<Self> {
         // Initialize persistence layer
         let persistence = Arc::new(AutoTuningPersistence::new(database_url).await?);
         
@@ -100,6 +102,10 @@ impl DecisionOrchestrator {
         // Create auto-tuner
         let auto_tuner = Arc::new(RwLock::new(AutoTuningSystem::new()));
         
+        // Create portfolio manager - NO MORE HARDCODED VALUES!
+        let portfolio_config = PortfolioConfig::default();
+        let portfolio_manager = Arc::new(PortfolioManager::new(initial_equity, portfolio_config));
+        
         Ok(Self {
             ml_system: Arc::new(RwLock::new(MLFeedbackSystem::new())),
             ta_analytics: Arc::new(RwLock::new(MarketAnalytics::new())),
@@ -107,6 +113,7 @@ impl DecisionOrchestrator {
             risk_clamps: Arc::new(RwLock::new(RiskClampSystem::new(Default::default()))),
             auto_tuner: auto_tuner.clone(),
             profit_extractor: Arc::new(RwLock::new(ProfitExtractor::new(auto_tuner))),
+            portfolio_manager,
             persistence,
             ml_weight: Arc::new(RwLock::new(ml_weight)),
             ta_weight: Arc::new(RwLock::new(ta_weight)),
@@ -509,10 +516,10 @@ impl DecisionOrchestrator {
         // Apply clamps - use calculate_position_size instead
         let mut clamps = self.risk_clamps.write();
         
-        // Get current market conditions for clamp calculation
-        let portfolio_heat = 0.3; // TODO: Get from portfolio manager
-        let correlation = 0.5; // TODO: Get from correlation matrix
-        let account_equity = 100000.0; // TODO: Get from account manager
+        // Get REAL portfolio state - NO HARDCODED VALUES!
+        let portfolio_heat = self.portfolio_manager.calculate_portfolio_heat() as f32;
+        let correlation = self.portfolio_manager.get_correlation(&trading_signal.symbol, "BTC/USDT") as f32;
+        let account_equity = self.portfolio_manager.get_account_equity() as f32;
         
         // Apply risk clamps to position size
         let clamped_size = clamps.calculate_position_size(

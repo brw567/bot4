@@ -15,6 +15,7 @@ pub mod unified_types;  // Unified type system - solves API mismatch
 pub mod profit_extractor;  // Profit extraction engine - makes MONEY!
 pub mod ml_feedback;  // ML feedback loops - CRITICAL for continuous improvement!
 pub mod market_analytics;  // REAL market calculations - NO SIMPLIFICATIONS!
+pub mod portfolio_manager;  // Portfolio state management - NO HARDCODED VALUES!
 
 #[cfg(test)]
 mod comprehensive_tests;
