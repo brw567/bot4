@@ -23,6 +23,7 @@ pub mod feature_importance;  // SHAP values for ML explainability - UNDERSTAND W
 pub mod hyperparameter_optimization;  // Bayesian hyperparameter optimization - AUTO-TUNING WITH TPE!
 pub mod hyperparameter_integration;  // Integration of optimization into ALL components - MAXIMUM EXTRACTION!
 pub mod deep_dive_validation_study;  // Academic validation - NO SIMPLIFICATIONS!
+pub mod parameter_manager;  // CRITICAL: No hardcoded values - ALL parameters auto-tuned!
 
 #[cfg(test)]
 mod comprehensive_tests;

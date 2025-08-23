@@ -131,6 +131,16 @@ impl RiskClampSystem {
         }
     }
     
+    /// Update configuration parameters - used by hyperparameter optimization
+    pub fn update_config(&mut self, config: ClampConfig) {
+        self.config = config;
+    }
+    
+    /// Get current configuration
+    pub fn get_config(&self) -> &ClampConfig {
+        &self.config
+    }
+    
     /// Calculate position size with 8 layers of risk control
     /// CRITICAL: This prevents oversizing that leads to catastrophic losses!
     pub fn calculate_position_size(

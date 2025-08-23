@@ -175,7 +175,11 @@ impl KellySizer {
         
         // Account for trading costs if enabled
         let cost_adjusted = if self.config.include_costs {
-            let costs = trading_costs.unwrap_or(dec!(0.002)); // 20bps default
+            // NO HARDCODED VALUES! Get from parameter manager
+            let costs = trading_costs.unwrap_or_else(|| {
+                // Get auto-tuned trading costs from parameter manager
+                crate::parameter_manager::PARAMETERS.get_decimal("trading_costs")
+            });
             self.adjust_for_costs(raw_kelly, costs)
         } else {
             raw_kelly

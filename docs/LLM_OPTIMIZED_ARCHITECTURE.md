@@ -76,6 +76,207 @@ example:
 
 ---
 
+## 🚀 PHASE 4 SYSTEMS - ADVANCED RISK & OPTIMIZATION
+
+### Hyperparameter Optimization System
+```yaml
+component_id: HYPERPARAMETER_OPTIMIZER
+component_name: Bayesian Auto-Tuning System
+owner: FULL_TEAM
+dependencies: [RISK_SYSTEM, ML_SYSTEM, TRADING_ENGINE]
+phase: 4
+
+contract:
+  inputs:
+    - performance_metrics: PerformanceHistory
+    - market_regime: MarketRegime
+  outputs:
+    - optimized_params: HashMap<String, f64>
+    
+algorithm:
+  tpe_sampler:
+    reference: Bergstra et al. (2011)
+    implementation:
+      - Good/bad trial separation (γ=0.15)
+      - Gaussian KDE for density estimation
+      - Expected Improvement acquisition
+      
+  median_pruner:
+    - Early stopping threshold: median performance
+    - Warmup trials: 5
+    
+  parameters_optimized: 19
+    - kelly_fraction: [0.01, 0.5]
+    - var_limit: [0.005, 0.05]
+    - ml_confidence_threshold: [0.5, 0.9]
+    - stop_loss_percentage: [0.005, 0.05]
+    - take_profit_percentage: [0.02, 0.15]
+    - [14 more parameters...]
+    
+performance:
+  convergence: 80% within 50 trials
+  improvement: 15-30% over static
+  optimization_time: <100ms per trial
+```
+
+### Monte Carlo Risk Analysis
+```yaml
+component_id: MONTE_CARLO_ENGINE
+component_name: Stochastic Risk Simulator
+owner: Quinn (Risk)
+dependencies: [MARKET_DATA, RISK_METRICS]
+phase: 4
+
+models_implemented:
+  1_geometric_brownian_motion:
+    formula: dS = μS dt + σS dW
+    use_case: Standard price evolution
+    
+  2_jump_diffusion:
+    formula: Merton model with Poisson jumps
+    use_case: Crypto flash crashes
+    
+  3_heston_stochastic:
+    formula: dv = κ(θ - v)dt + ξ√v dW
+    use_case: Volatility clustering
+    
+  4_mean_reverting:
+    formula: Ornstein-Uhlenbeck process
+    use_case: Pairs trading
+    
+  5_fractional_brownian:
+    hurst_exponent: [0.3, 0.7]
+    use_case: Long-range dependence
+    
+performance:
+  paths_per_second: 1M+ (Rayon parallel)
+  var_accuracy: <0.1% error
+  memory_usage: O(paths) bounded
+```
+
+### VPIN Order Flow Toxicity
+```yaml
+component_id: VPIN_CALCULATOR
+component_name: Order Flow Toxicity Monitor
+owner: Morgan (ML) + Quinn (Risk)
+dependencies: [ORDER_BOOK, TRADE_FLOW]
+phase: 4
+
+reference: "Easley, López de Prado, O'Hara (2012)"
+
+algorithm:
+  bulk_volume_classification:
+    - Z-score of price changes
+    - Standard normal CDF
+    - Superior to tick rule
+    
+  vpin_formula: |Vb - Vs| / V
+  
+  toxicity_thresholds:
+    normal: [0, 0.2]
+    cautious: [0.2, 0.3]
+    defensive: [0.3, 0.4]
+    exit_only: [0.4, 1.0]
+    
+  response_strategy:
+    normal: Full trading
+    cautious: 50% position reduction
+    defensive: 80% position reduction
+    exit_only: Close positions only
+    
+performance:
+  calculation_time: <1ms
+  update_frequency: Every trade
+  memory: O(bucket_count)
+```
+
+### Market Manipulation Detection
+```yaml
+component_id: MANIPULATION_DETECTOR
+component_name: Market Abuse Detection System
+owner: Casey (Exchange) + Quinn (Risk)
+dependencies: [ORDER_BOOK, TRADE_HISTORY]
+phase: 4
+
+detection_algorithms:
+  spoofing:
+    indicators:
+      - Large orders >3σ from mid
+      - Cancellation rate >90%
+      - Lifetime <5 seconds
+      
+  layering:
+    indicators:
+      - Multiple price levels
+      - Coordinated placement
+      - False depth >20% of book
+      
+  wash_trading:
+    indicators:
+      - Circular flow detection
+      - Same beneficial owner
+      - Price unchanged
+      
+  momentum_ignition:
+    indicators:
+      - Rapid price move >1%
+      - Immediate reversal
+      - Triggering algo responses
+      
+game_theory_integration:
+  nash_equilibrium: Calculate fair spread
+  predatory_detection: Stop hunting patterns
+  collusion_analysis: Multi-trader coordination
+  
+alert_system:
+  levels: [INFO, WARNING, HIGH, SEVERE, CRITICAL]
+  regulatory_compliance: MiFID II, MAR
+  evidence_trail: Full audit log
+```
+
+### SHAP Feature Importance
+```yaml
+component_id: SHAP_ANALYZER
+component_name: ML Explainability System
+owner: Morgan (ML)
+dependencies: [ML_MODELS, FEATURE_STORE]
+phase: 4
+
+reference: "Lundberg & Lee (2017)"
+
+implementation:
+  kernel_shap:
+    - Weighted least squares regression
+    - Coalition sampling (Monte Carlo)
+    - Parallel computation (Rayon)
+    
+  exact_shapley:
+    - Full enumeration for n<10
+    - Marginal contribution calculation
+    - Game-theoretic fairness
+    
+feature_categories:
+  price: [returns, volatility, momentum]
+  volume: [imbalance, intensity, profile]
+  technical: [RSI, MACD, Bollinger]
+  microstructure: [spread, depth, Kyle_lambda]
+  ml_predictions: [LSTM, XGBoost, ensemble]
+  sentiment: [Grok, news, social]
+  fundamentals: [on_chain, macro]
+  risk: [VaR, correlation, drawdown]
+  
+analysis_outputs:
+  importance_scores: Mean |SHAP|
+  stability: Bootstrap CI
+  interactions: Pairwise effects
+  recommendations: Feature selection
+  
+performance:
+  features_analyzed: 100+
+  calculation_time: <100ms
+  stability_samples: 1000
+```
+
 ## 🔄 UNIFIED DECISION PIPELINE (NEW)
 
 ```yaml

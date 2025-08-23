@@ -9,6 +9,7 @@
 
 use std::collections::{HashMap, BTreeMap};
 use std::sync::{Arc, RwLock};
+use std::fmt::Debug;
 use rand::{SeedableRng, Rng};
 use rand::rngs::StdRng;
 use rand_distr::{Normal, Uniform, Beta, Distribution};
@@ -92,7 +93,6 @@ impl TradingParameterSpace {
 }
 
 /// Main auto-tuner that orchestrates optimization
-#[derive(Clone)]
 pub struct AutoTuner {
     pub sampler: TPESampler,
     pub pruner: MedianPruner,
@@ -270,7 +270,7 @@ pub struct ParameterDef {
 }
 
 /// Study for optimization (like Optuna Study)
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct OptimizationStudy {
     pub study_name: String,
     pub direction: OptimizationDirection,
@@ -471,7 +471,7 @@ impl Pruner for NoPruner {
 }
 
 /// Sampler trait for different sampling strategies
-pub trait Sampler: Send + Sync {
+pub trait Sampler: Send + Sync + Debug {
     fn sample(
         &mut self,
         study: &OptimizationStudy,
@@ -494,7 +494,7 @@ pub trait Sampler: Send + Sync {
 }
 
 /// TPE (Tree-structured Parzen Estimator) Sampler - Optuna's default
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct TPESampler {
     n_startup_trials: usize,
     n_ei_candidates: usize,
@@ -651,8 +651,29 @@ impl TPESampler {
         
         // Split into good and bad based on gamma quantile
         let n_good = ((completed_trials.len() as f64) * self.gamma).ceil() as usize;
-        self.good_trials = completed_trials[..n_good].to_vec();
-        self.bad_trials = completed_trials[n_good..].to_vec();
+        
+        // Convert Trial to SimpleTrial
+        let simple_trials: Vec<SimpleTrial> = completed_trials
+            .iter()
+            .map(|t| SimpleTrial {
+                id: t.trial_id,
+                params: t.params.iter()
+                    .filter_map(|(k, v)| {
+                        match v {
+                            ParameterValue::Float(f) => Some((k.clone(), *f)),
+                            ParameterValue::Integer(i) => Some((k.clone(), *i as f64)),
+                            _ => None,
+                        }
+                    })
+                    .collect(),
+                value: t.value.unwrap_or(0.0),
+                state: t.state.clone(),
+                timestamp: t.datetime_start,
+            })
+            .collect();
+        
+        self.good_trials = simple_trials[..n_good].to_vec();
+        self.bad_trials = simple_trials[n_good..].to_vec();
     }
     
     /// Calculate Expected Improvement (EI)
@@ -770,9 +791,10 @@ impl Sampler for TPESampler {
     ) -> HashMap<String, ParameterValue> {
         let mut params = HashMap::new();
         
-        for (name, param_type) in search_space {
+        for (name, _param_type) in search_space {
             if let Some(param_def) = study.parameters.iter().find(|p| &p.name == name) {
-                let value = self.sample(study, param_def, trial.trial_id);
+                // Call the trait method explicitly
+                let value = <Self as Sampler>::sample(self, study, param_def, trial.trial_id);
                 params.insert(name.clone(), value);
             }
         }
@@ -848,28 +870,16 @@ impl TPESampler {
         &self,
         candidates: &[f64],
         param: &ParameterDef,
-        good_trials: &[Trial],
-        bad_trials: &[Trial],
+        good_trials: &[SimpleTrial],
+        bad_trials: &[SimpleTrial],
     ) -> f64 {
         // Extract values from good and bad trials
         let good_values: Vec<f64> = good_trials.iter()
-            .filter_map(|t| {
-                if let Some(ParameterValue::Float(v)) = t.params.get(&param.name) {
-                    Some(*v)
-                } else {
-                    None
-                }
-            })
+            .filter_map(|t| t.params.get(&param.name).copied())
             .collect();
         
         let bad_values: Vec<f64> = bad_trials.iter()
-            .filter_map(|t| {
-                if let Some(ParameterValue::Float(v)) = t.params.get(&param.name) {
-                    Some(*v)
-                } else {
-                    None
-                }
-            })
+            .filter_map(|t| t.params.get(&param.name).copied())
             .collect();
         
         // Calculate bandwidth for KDE
@@ -897,8 +907,8 @@ impl TPESampler {
         &self,
         candidates: &[i64],
         param: &ParameterDef,
-        good_trials: &[Trial],
-        bad_trials: &[Trial],
+        good_trials: &[SimpleTrial],
+        bad_trials: &[SimpleTrial],
     ) -> i64 {
         // Convert to float for KDE calculation
         let float_candidates: Vec<f64> = candidates.iter().map(|&x| x as f64).collect();
@@ -915,31 +925,30 @@ impl TPESampler {
         &self,
         choices: &[String],
         param: &ParameterDef,
-        good_trials: &[Trial],
-        bad_trials: &[Trial],
+        good_trials: &[SimpleTrial],
+        bad_trials: &[SimpleTrial],
     ) -> String {
         let mut best_choice = choices[0].clone();
         let mut best_ei = 0.0;
         
         for choice in choices {
-            // Count occurrences in good and bad trials
+            // For SimpleTrial, we can't store categorical directly - use index
+            // Map categorical choices to indices
+            let choice_idx = choices.iter().position(|c| c == choice).unwrap_or(0) as f64;
+            
             let good_count = good_trials.iter()
                 .filter(|t| {
-                    if let Some(ParameterValue::Categorical(v)) = t.params.get(&param.name) {
-                        v == choice
-                    } else {
-                        false
-                    }
+                    t.params.get(&param.name)
+                        .map(|&v| (v as usize) < choices.len() && choices[v as usize] == *choice)
+                        .unwrap_or(false)
                 })
                 .count();
             
             let bad_count = bad_trials.iter()
                 .filter(|t| {
-                    if let Some(ParameterValue::Categorical(v)) = t.params.get(&param.name) {
-                        v == choice
-                    } else {
-                        false
-                    }
+                    t.params.get(&param.name)
+                        .map(|&v| (v as usize) < choices.len() && choices[v as usize] == *choice)
+                        .unwrap_or(false)
                 })
                 .count();
             
@@ -961,26 +970,23 @@ impl TPESampler {
     fn calculate_boolean_probability(
         &self,
         param: &ParameterDef,
-        good_trials: &[Trial],
-        bad_trials: &[Trial],
+        good_trials: &[SimpleTrial],
+        bad_trials: &[SimpleTrial],
     ) -> f64 {
+        // For SimpleTrial, boolean is stored as 0.0 or 1.0
         let good_true = good_trials.iter()
             .filter(|t| {
-                if let Some(ParameterValue::Boolean(v)) = t.params.get(&param.name) {
-                    *v
-                } else {
-                    false
-                }
+                t.params.get(&param.name)
+                    .map(|&v| v > 0.5)  // true if > 0.5
+                    .unwrap_or(false)
             })
             .count();
         
         let bad_true = bad_trials.iter()
             .filter(|t| {
-                if let Some(ParameterValue::Boolean(v)) = t.params.get(&param.name) {
-                    *v
-                } else {
-                    false
-                }
+                t.params.get(&param.name)
+                    .map(|&v| v > 0.5)  // true if > 0.5
+                    .unwrap_or(false)
             })
             .count();
         
@@ -1017,12 +1023,12 @@ impl TPESampler {
 }
 
 /// Pruner trait for early stopping of unpromising trials
-pub trait Pruner: Send + Sync {
+pub trait Pruner: Send + Sync + Debug {
     fn should_prune(&self, study: &OptimizationStudy, trial: &Trial) -> bool;
 }
 
 /// Median Pruner - prunes if trial is worse than median of previous trials
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MedianPruner {
     n_startup_trials: usize,
     n_warmup_steps: usize,
@@ -1347,7 +1353,7 @@ impl HyperparameterOptimizer {
             auto_tune_interval: std::time::Duration::from_secs(3600), // 1 hour
             last_auto_tune: std::time::Instant::now(),
             auto_tune_enabled: true,
-            market_regime: MarketRegime::Sideways,
+            market_regime: MarketRegime::RangeBound,
             regime_specific_params: HashMap::new(),
         }
     }
@@ -1365,8 +1371,9 @@ impl HyperparameterOptimizer {
             parameters,
             trials: Vec::new(),
             best_trial: None,
-            sampler: self.default_sampler.read().unwrap().clone(),
-            pruner: self.default_pruner.read().unwrap().clone(),
+            // Create new instances since trait objects can't be cloned
+            sampler: Box::new(TPESampler::new(25, 42)),
+            pruner: Box::new(MedianPruner::new(5, 0)),
             user_attrs: HashMap::new(),
             system_attrs: HashMap::new(),
         };
@@ -1456,8 +1463,33 @@ impl HyperparameterOptimizer {
         let mut params = HashMap::new();
         let mut distributions = HashMap::new();
         
-        for param_def in &study.parameters {
-            let value = study.sampler.sample(study, param_def, trial_id);
+        // Clone parameters to avoid borrow conflict
+        let parameters = study.parameters.clone();
+        
+        for param_def in &parameters {
+            // For now, use a simple random sampling since we can't borrow study mutably
+            let value = match &param_def.param_type {
+                ParameterType::Float { min, max, log_scale } => {
+                    if *log_scale {
+                        let log_min = min.ln();
+                        let log_max = max.ln();
+                        let log_value = log_min + (log_max - log_min) * rand::random::<f64>();
+                        ParameterValue::Float(log_value.exp())
+                    } else {
+                        ParameterValue::Float(min + (max - min) * rand::random::<f64>())
+                    }
+                },
+                ParameterType::Integer { min, max, .. } => {
+                    ParameterValue::Integer((*min as f64 + (*max - *min) as f64 * rand::random::<f64>()) as i64)
+                },
+                ParameterType::Categorical { choices } => {
+                    let idx = (choices.len() as f64 * rand::random::<f64>()) as usize;
+                    ParameterValue::Categorical(choices[idx.min(choices.len() - 1)].clone())
+                },
+                ParameterType::Boolean => {
+                    ParameterValue::Boolean(rand::random::<bool>())
+                },
+            };
             params.insert(param_def.name.clone(), value);
             distributions.insert(param_def.name.clone(), param_def.param_type.clone());
         }

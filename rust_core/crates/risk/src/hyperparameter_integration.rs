@@ -13,7 +13,8 @@ use crate::market_analytics::MarketAnalytics;
 use crate::isotonic::MarketRegime;
 use rust_decimal::Decimal;
 use std::str::FromStr;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use parking_lot::RwLock;
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
@@ -110,7 +111,10 @@ impl HyperparameterIntegrationSystem {
         let risk_clamps = Arc::new(RwLock::new(RiskClampSystem::new(ClampConfig::default())));
         let ml_system = Arc::new(RwLock::new(MLFeedbackSystem::new()));
         let executor = Arc::new(RwLock::new(OptimalExecutor::new()));
-        let profit_extractor = Arc::new(RwLock::new(ProfitExtractor::new()));
+        
+        // Create AutoTuningSystem for ProfitExtractor
+        let auto_tuning_system = Arc::new(RwLock::new(AutoTuningSystem::new()));
+        let profit_extractor = Arc::new(RwLock::new(ProfitExtractor::new(auto_tuning_system)));
         
         Self {
             auto_tuner,
@@ -140,7 +144,7 @@ impl HyperparameterIntegrationSystem {
         let objective = self.build_comprehensive_objective();
         
         // Run Bayesian optimization with TPE
-        let mut tuner = self.auto_tuner.write().unwrap();
+        let mut tuner = self.auto_tuner.write();
         let optimized_params = if self.should_use_regime_specific() {
             tuner.optimize_for_regime(objective, self.current_regime)
         } else {
@@ -151,7 +155,7 @@ impl HyperparameterIntegrationSystem {
         self.apply_parameters_to_all_components(&optimized_params);
         
         // Record optimization event
-        let old_params = self.current_params.read().unwrap().clone();
+        let old_params = self.current_params.read().clone();
         let improvement = self.calculate_improvement(&old_params, &optimized_params);
         
         self.optimization_history.push(OptimizationEvent {
@@ -163,7 +167,7 @@ impl HyperparameterIntegrationSystem {
         });
         
         // Update current parameters
-        *self.current_params.write().unwrap() = optimized_params.clone();
+        *self.current_params.write() = optimized_params.clone();
         self.last_optimization = Utc::now();
         
         println!("✅ Optimization complete! Improvement: {:.2}%", improvement * 100.0);
@@ -236,7 +240,8 @@ impl HyperparameterIntegrationSystem {
         println!("📊 Applying optimized parameters to ALL components...");
         
         // 1. Update Kelly Sizer
-        if let Ok(mut kelly) = self.kelly_sizer.write() {
+        {
+            let mut kelly = self.kelly_sizer.write();
             use rust_decimal::prelude::*;
             let kelly_fraction = *params.get("kelly_fraction").unwrap_or(&0.25);
             let min_edge = *params.get("entry_threshold").unwrap_or(&0.005);
@@ -259,15 +264,21 @@ impl HyperparameterIntegrationSystem {
         }
         
         // 2. Update Risk Clamps
-        if let Ok(mut clamps) = self.risk_clamps.write() {
-            // Update config with new limits
-            clamps.config.max_position_var = *params.get("var_limit").unwrap_or(&0.02);
-            clamps.config.max_position_size = *params.get("max_position_size").unwrap_or(&0.02);
-            clamps.config.max_leverage = *params.get("max_leverage").unwrap_or(&3.0);
-            clamps.config.max_correlation = *params.get("correlation_limit").unwrap_or(&0.7);
-            println!("  ✓ Risk Clamps updated: VaR={:.3}, MaxPos={:.3}",
+        {
+            let mut clamps = self.risk_clamps.write();
+            // Create new config with updated limits
+            let mut new_config = clamps.get_config().clone();
+            new_config.var_limit = *params.get("var_limit").unwrap_or(&0.02) as f32;
+            new_config.vol_target = *params.get("vol_target").unwrap_or(&0.20) as f32;
+            new_config.leverage_cap = *params.get("max_leverage").unwrap_or(&3.0) as f32;
+            new_config.correlation_threshold = *params.get("correlation_limit").unwrap_or(&0.7) as f32;
+            
+            // Update the config
+            clamps.update_config(new_config);
+            
+            println!("  ✓ Risk Clamps updated: VaR={:.3}, Vol={:.3}",
                     params.get("var_limit").unwrap_or(&0.02),
-                    params.get("max_position_size").unwrap_or(&0.02));
+                    params.get("vol_target").unwrap_or(&0.20));
         }
         
         // 3. Update ML System thresholds
@@ -280,7 +291,8 @@ impl HyperparameterIntegrationSystem {
         // These will be used when calling ML prediction methods
         
         // 4. Update Execution Algorithm preferences
-        if let Ok(mut executor) = self.executor.write() {
+        {
+            let mut executor = self.executor.write();
             executor.set_algorithm_bias(
                 *params.get("execution_algorithm_bias").unwrap_or(&0.5)
             );
@@ -341,7 +353,7 @@ impl HyperparameterIntegrationSystem {
             max_drawdown: drawdown,
             win_rate,
             total_return: self.total_pnl,
-            parameters_used: self.current_params.read().unwrap().clone(),
+            parameters_used: self.current_params.read().clone(),
         });
         
         // Check if we need emergency re-optimization
@@ -371,7 +383,7 @@ impl HyperparameterIntegrationSystem {
             self.optimization_history.push(OptimizationEvent {
                 timestamp: Utc::now(),
                 trigger: OptimizationTrigger::RegimeChange(old_regime, new_regime),
-                old_params: self.current_params.read().unwrap().clone(),
+                old_params: self.current_params.read().clone(),
                 new_params: optimized,
                 improvement: 0.0, // Will be calculated after trading
             });
@@ -380,7 +392,7 @@ impl HyperparameterIntegrationSystem {
     
     /// Get current optimized parameters
     pub fn get_current_parameters(&self) -> HashMap<String, f64> {
-        self.current_params.read().unwrap().clone()
+        self.current_params.read().clone()
     }
     
     /// Check if optimization is due
@@ -575,12 +587,23 @@ impl AutoTuner {
                 best_params = params.clone();
             }
             
+            // Convert params from HashMap<String, f64> to HashMap<String, ParameterValue>
+            let param_values: HashMap<String, ParameterValue> = params
+                .iter()
+                .map(|(k, v)| (k.clone(), ParameterValue::Float(*v)))
+                .collect();
+            
             let trial = Trial {
-                id: i,
-                params,
-                value,
+                trial_id: i,
+                params: param_values,
+                value: Some(value),
+                intermediate_values: Vec::new(),
                 state: TrialState::Complete,
-                timestamp: chrono::Utc::now(),
+                datetime_start: chrono::Utc::now(),
+                datetime_complete: Some(chrono::Utc::now()),
+                user_attrs: HashMap::new(),
+                system_attrs: HashMap::new(),
+                distributions: HashMap::new(),
             };
             
             self.sampler.update(trial);

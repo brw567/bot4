@@ -2539,6 +2539,7 @@ dependencies = [
  "chrono",
  "criterion",
  "dashmap",
+ "lazy_static",
  "log",
  "ndarray",
  "num_cpus",
