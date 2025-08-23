@@ -53,6 +53,12 @@ impl ParameterManager {
         bounds.insert("ml_orderbook_weight".to_string(), (0.0, 1.0));
         bounds.insert("ml_technical_weight".to_string(), (0.0, 1.0));
         bounds.insert("ml_sentiment_weight".to_string(), (0.0, 1.0));
+        bounds.insert("ml_price_weight".to_string(), (0.0, 1.0));
+        
+        // Base position sizes for signal sources - DEEP DIVE ENHANCEMENT
+        bounds.insert("ml_base_size".to_string(), (0.005, 0.05));  // 0.5-5% for ML
+        bounds.insert("ta_base_size".to_string(), (0.005, 0.03));  // 0.5-3% for TA
+        bounds.insert("sentiment_base_size".to_string(), (0.005, 0.02)); // 0.5-2% for sentiment
         
         // Game theory parameters
         bounds.insert("nash_equilibrium_iterations".to_string(), (10.0, 1000.0));

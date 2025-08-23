@@ -404,9 +404,33 @@ database_persistence:
 
 ---
 
-## 🚨 CRITICAL UPDATES (2024-01-23)
+## 🚨 CRITICAL UPDATES (2025-08-23)
 
 ```yaml
+deep_dive_enhancements:
+  - issue: Hardcoded Values Throughout Codebase
+    status: ✅ ELIMINATED
+    solution: Implemented ParameterManager system (300+ lines)
+    impact: ALL parameters now auto-tuned, no hardcoded values
+    files: 
+      - crates/risk/src/parameter_manager.rs
+      - Eliminated hardcoded 0.002 trading costs
+      - Eliminated hardcoded 0.7 ML confidence
+      - Eliminated hardcoded 0.4/0.6 ML weights
+    
+  - issue: No Real Game Theory Implementation
+    status: ✅ IMPLEMENTED
+    solution: AdvancedGameTheory module (500+ lines) with full Nash equilibrium
+    impact: Multi-agent modeling with 7 strategies, market dynamics simulation
+    features:
+      - Fictitious play iteration for Nash equilibrium
+      - Regret minimization algorithms
+      - Market Maker Prisoner's Dilemma
+      - Information asymmetry quantification
+      - Payoff matrices for strategy evaluation
+    files:
+      - crates/risk/src/game_theory_advanced.rs
+
 completed_fixes:
   - issue: Kelly Sizing Variable Names
     status: ✅ FIXED

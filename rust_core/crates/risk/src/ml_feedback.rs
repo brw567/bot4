@@ -189,6 +189,48 @@ impl FeatureImportance {
         scores.truncate(n);
         scores
     }
+    
+    /// Update importance from SHAP values - DEEP DIVE ENHANCEMENT
+    pub fn update_shap_importance(&mut self, feature: &str, shap_value: f64) {
+        // Update importance score based on SHAP value
+        let score = self.importance_scores.entry(feature.to_string()).or_insert(0.0);
+        *score = 0.8 * *score + 0.2 * shap_value.abs(); // Weighted average
+        
+        // Store SHAP value history for stability analysis
+        let history = self.shap_values.entry(feature.to_string()).or_insert(Vec::new());
+        history.push(shap_value);
+        if history.len() > 100 {
+            history.remove(0); // Keep last 100 values
+        }
+    }
+    
+    /// Calculate stability scores for features - DEEP DIVE ENHANCEMENT
+    pub fn calculate_stability_scores(&mut self) {
+        // Calculate coefficient of variation for each feature
+        for (feature, history) in &self.shap_values {
+            if history.len() < 10 {
+                continue; // Need enough data
+            }
+            
+            let mean: f64 = history.iter().sum::<f64>() / history.len() as f64;
+            if mean.abs() < 1e-10 {
+                continue; // Avoid division by zero
+            }
+            
+            let variance: f64 = history.iter()
+                .map(|v| (v - mean).powi(2))
+                .sum::<f64>() / history.len() as f64;
+            
+            let std_dev = variance.sqrt();
+            let cv = std_dev / mean.abs(); // Coefficient of variation
+            
+            // Lower CV means more stable feature importance
+            let stability = 1.0 / (1.0 + cv); // Convert to 0-1 scale
+            
+            // Update permutation scores with stability (proxy for now)
+            self.permutation_scores.insert(feature.clone(), stability);
+        }
+    }
 }
 
 /// Strategy Performance Tracker
@@ -700,6 +742,20 @@ impl MLFeedbackSystem {
             top_features: importance.top_features(10),
             best_strategy: perf.best_strategy(MarketRegime::Sideways),
         }
+    }
+    
+    /// Update feature importance from SHAP values - DEEP DIVE ENHANCEMENT
+    /// Alex: "SHAP tells us WHY the model made that decision!"
+    pub fn update_feature_importance(&self, feature_names: &[String], shap_values: &[f64]) {
+        let mut importance = self.feature_importance.write();
+        
+        // Update importance scores based on SHAP values
+        for (name, &shap_value) in feature_names.iter().zip(shap_values.iter()) {
+            importance.update_shap_importance(name, shap_value);
+        }
+        
+        // Calculate stability scores
+        importance.calculate_stability_scores();
     }
 }
 

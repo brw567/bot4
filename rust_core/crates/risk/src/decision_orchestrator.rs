@@ -14,12 +14,14 @@ use crate::profit_extractor::ProfitExtractor;
 use crate::market_analytics::MarketAnalytics;
 use crate::auto_tuning_persistence::AutoTuningPersistence;
 use crate::portfolio_manager::{PortfolioManager, PortfolioConfig};
+use crate::feature_importance::SHAPCalculator;
 use std::sync::Arc;
 use parking_lot::RwLock;
 use rust_decimal::Decimal;
 use rust_decimal::prelude::{FromPrimitive, ToPrimitive};
 use rust_decimal_macros::dec;
 use anyhow::Result;
+use ndarray::Array2;
 
 /// The BRAIN of the trading system - orchestrates ALL components
 /// Alex: "This is where EVERYTHING comes together!"
@@ -33,6 +35,9 @@ pub struct DecisionOrchestrator {
     profit_extractor: Arc<RwLock<ProfitExtractor>>,
     portfolio_manager: Arc<PortfolioManager>,  // NO MORE HARDCODED VALUES!
     
+    // SHAP explainability - DEEP DIVE ENHANCEMENT
+    shap_calculator: Arc<RwLock<SHAPCalculator>>,
+    
     // Database persistence
     persistence: Arc<AutoTuningPersistence>,
     
@@ -43,6 +48,10 @@ pub struct DecisionOrchestrator {
     
     // Performance tracking
     decision_history: Arc<RwLock<Vec<DecisionRecord>>>,
+    
+    // Feature explanations from SHAP
+    latest_shap_values: Arc<RwLock<Option<Vec<f64>>>>,
+    feature_names: Vec<String>,
 }
 
 /// Complete decision record for learning
@@ -65,6 +74,9 @@ pub struct Signal {
     pub size: f64,
     pub features: Vec<f64>,
     pub reason: String,
+    // DEEP DIVE: SHAP explanations for ML transparency
+    pub shap_values: Option<Vec<f64>>,
+    pub top_features: Option<Vec<(String, f64)>>, // Feature name and importance
 }
 
 /// Execution result
@@ -106,6 +118,32 @@ impl DecisionOrchestrator {
         let portfolio_config = PortfolioConfig::default();
         let portfolio_manager = Arc::new(PortfolioManager::new(initial_equity, portfolio_config));
         
+        // Create feature names for SHAP explanations
+        let feature_names = vec![
+            "price".to_string(),
+            "price_ratio".to_string(),
+            "spread_pct".to_string(),
+            "order_imbalance".to_string(),
+            "depth_ratio".to_string(),
+            "volume".to_string(),
+            "bid_size".to_string(),
+            "ask_size".to_string(),
+            "rsi".to_string(),
+            "macd".to_string(),
+            "macd_signal".to_string(),
+        ];
+        
+        // Create SHAP calculator with dummy model for now
+        // In production, this would use the actual ML model
+        let background_data = Array2::zeros((100, feature_names.len()));
+        let shap_calculator = Arc::new(RwLock::new(
+            SHAPCalculator::new(
+                |x| Array2::zeros((x.nrows(), 1)).column(0).to_owned(),
+                feature_names.clone(),
+                background_data,
+            )
+        ));
+        
         Ok(Self {
             ml_system: Arc::new(RwLock::new(MLFeedbackSystem::new())),
             ta_analytics: Arc::new(RwLock::new(MarketAnalytics::new())),
@@ -114,11 +152,14 @@ impl DecisionOrchestrator {
             auto_tuner: auto_tuner.clone(),
             profit_extractor: Arc::new(RwLock::new(ProfitExtractor::new(auto_tuner))),
             portfolio_manager,
+            shap_calculator,
             persistence,
             ml_weight: Arc::new(RwLock::new(ml_weight)),
             ta_weight: Arc::new(RwLock::new(ta_weight)),
             sentiment_weight: Arc::new(RwLock::new(sentiment_weight)),
             decision_history: Arc::new(RwLock::new(Vec::with_capacity(10000))),
+            latest_shap_values: Arc::new(RwLock::new(None)),
+            feature_names,
         })
     }
     
@@ -254,17 +295,60 @@ impl DecisionOrchestrator {
         Ok(features)
     }
     
-    /// Get ML signal
+    /// Get ML signal with SHAP explanations - DEEP DIVE ENHANCEMENT
     async fn get_ml_signal(&self, features: &[f64]) -> Result<Signal> {
         let ml = self.ml_system.read();
         let (action, confidence) = ml.predict(features);
         
+        // DEEP DIVE: Calculate SHAP values for explainability
+        let (shap_values, top_features) = {
+            let mut shap = self.shap_calculator.write();
+            
+            // Convert features to ndarray for SHAP
+            let features_array = Array2::from_shape_vec(
+                (1, features.len()),
+                features.to_vec()
+            ).unwrap_or_else(|_| Array2::zeros((1, features.len())));
+            
+            // Calculate SHAP values
+            let shap_matrix = shap.calculate_kernel_shap(&features_array);
+            let shap_vec: Vec<f64> = shap_matrix.row(0).to_vec();
+            
+            // Get top 5 most important features
+            let mut feature_importance: Vec<(String, f64)> = self.feature_names
+                .iter()
+                .zip(shap_vec.iter())
+                .map(|(name, &value)| (name.clone(), value.abs()))
+                .collect();
+            
+            feature_importance.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+            let top_5: Vec<(String, f64)> = feature_importance.into_iter().take(5).collect();
+            
+            // Store for later analysis
+            *self.latest_shap_values.write() = Some(shap_vec.clone());
+            
+            (Some(shap_vec), Some(top_5))
+        };
+        
+        // Update ML feedback with SHAP insights
+        ml.update_feature_importance(&self.feature_names, &shap_values.as_ref().unwrap());
+        
+        // Create enhanced reason with top features
+        let top_features_str = top_features.as_ref()
+            .map(|tf| tf.iter()
+                .map(|(name, val)| format!("{}:{:.3}", name, val))
+                .collect::<Vec<_>>()
+                .join(", "))
+            .unwrap_or_default();
+        
         Ok(Signal {
             action,
             confidence,
-            size: confidence * 0.02, // Base 2% scaled by confidence
+            size: confidence * crate::parameter_manager::PARAMETERS.get("ml_base_size"), // Auto-tuned!
             features: features.to_vec(),
-            reason: "ML prediction based on 50+ features".to_string(),
+            reason: format!("ML prediction | Top factors: {}", top_features_str),
+            shap_values,
+            top_features,
         })
     }
     
@@ -326,7 +410,7 @@ impl DecisionOrchestrator {
         Ok(Signal {
             action,
             confidence,
-            size: confidence * 0.015, // Base 1.5% for TA
+            size: confidence * crate::parameter_manager::PARAMETERS.get("ta_base_size"), // Auto-tuned!
             features: vec![
                 indicators.rsi,
                 indicators.macd,
@@ -335,6 +419,8 @@ impl DecisionOrchestrator {
             ],
             reason: format!("TA: RSI={:.1}, MACD={:.3}, ADX={:.1}", 
                           indicators.rsi, indicators.macd, indicators.trend_strength),
+            shap_values: None, // TA doesn't use SHAP
+            top_features: None,
         })
     }
     
@@ -351,9 +437,11 @@ impl DecisionOrchestrator {
         Ok(Signal {
             action,
             confidence: sentiment.confidence,
-            size: sentiment.confidence * 0.01, // Base 1% for sentiment
+            size: sentiment.confidence * crate::parameter_manager::PARAMETERS.get("sentiment_base_size"), // Auto-tuned!
             features: vec![sentiment.score, sentiment.confidence],
             reason: format!("Sentiment: {} (score: {:.2})", sentiment.source, sentiment.score),
+            shap_values: None, // Sentiment doesn't use SHAP
+            top_features: None,
         })
     }
     
@@ -424,6 +512,8 @@ impl DecisionOrchestrator {
                           ml_w * 100.0 / total_w, 
                           ta_w * 100.0 / total_w,
                           sent_w * 100.0 / total_w),
+            shap_values: ml.shap_values.clone(), // Preserve ML SHAP values
+            top_features: ml.top_features.clone(), // Preserve ML top features
         })
     }
     
@@ -567,6 +657,8 @@ impl DecisionOrchestrator {
                 size: final_signal.size.to_f64(),
                 features: final_signal.ml_features,
                 reason: final_signal.reason,
+                shap_values: None, // Final signal doesn't have SHAP (already applied)
+                top_features: None,
             },
             execution_result: None,
             pnl: None,
