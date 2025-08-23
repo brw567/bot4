@@ -1936,6 +1936,7 @@ pub struct RiskManagementSystem {
     auto_tuner: AutoTuningSystem,         // Adaptive parameters
     garch_model: GARCHModel,              // Volatility forecasting
     isotonic_calibrator: IsotonicCalibrator, // ML calibration
+    t_copula: TCopula,                    // Tail dependence modeling (NEW)
     
     // Database Persistence (NEW)
     persistence: AutoTuningPersistence,    // All parameters saved
@@ -2041,6 +2042,55 @@ pub struct PerformanceLayer {
 // Stack allocation (SmallVec/ArrayVec)
 // Branchless operations
 ```
+
+### 8.3.1 t-Copula Tail Dependence Modeling (NEW - 2025-08-23)
+
+```rust
+/// Models extreme event correlations - when everything crashes together
+pub struct TCopula {
+    correlation_matrix: Arc<RwLock<DMatrix<f64>>>,  // Time-varying correlations
+    degrees_of_freedom: Arc<RwLock<f64>>,           // 2.5-30 (fat tails to normal)
+    tail_dependence: Arc<RwLock<HashMap<(usize, usize), f64>>>,
+    
+    // Auto-calibration from market
+    calibration_window: usize,       // 252 days default
+    regime_parameters: HashMap<String, CopulaParameters>,
+}
+
+impl TCopula {
+    /// Critical formula: λ = 2 * t_{ν+1}(-√((ν+1)(1-ρ)/(1+ρ)))
+    pub fn calculate_tail_dependence(&self, correlation: f64) -> f64 {
+        // Joe (1997) formula for tail dependence
+        let df = *self.degrees_of_freedom.read();
+        let term = ((df + 1.0) * (1.0 - correlation) / (1.0 + correlation)).sqrt();
+        2.0 * t_cdf(-term, df + 1.0)
+    }
+    
+    /// Crisis detection - when correlations spike
+    pub fn stress_test_crisis(&self) -> CrisisScenario {
+        // Apply 50% correlation increase
+        // Reduce degrees of freedom to 3 (maximum fat tails)
+        // Calculate portfolio tail risk under stress
+    }
+}
+
+// Market Regime Adaptation
+Crisis:    df = 3.0,  corr_scale = 1.5  // Everything crashes
+Bear:      df = 5.0,  corr_scale = 1.2  // High correlation
+Sideways:  df = 10.0, corr_scale = 1.0  // Normal
+Bull:      df = 15.0, corr_scale = 0.8  // Lower correlation
+```
+
+**Academic Foundation:**
+- Joe (1997): Multivariate Models and Dependence Concepts
+- McNeil, Frey, Embrechts (2015): Quantitative Risk Management
+- Demarta & McNeil (2005): The t-copula and related copulas
+
+**Why t-Copula Over Gaussian:**
+- Gaussian copula: Underestimates tail risk by 50%+
+- t-Copula: Captures "all correlations go to 1" in crashes
+- Dynamic df: Adapts to market regime automatically
+- MLE calibration: Learns from historical crises
 
 ### 8.4 Feedback Loops (ALL ACTIVE)
 
