@@ -9,6 +9,7 @@ members = [
     "crates/order_management",
     "crates/analysis",
     "crates/ml",
+    "crates/data_intelligence",
 ]
 resolver = "2"
 
@@ -75,6 +76,7 @@ dotenv = "0.15"
 ndarray = "0.15"
 statrs = "0.16"
 nalgebra = "0.32"
+rust_decimal = "1.33"
 
 # Configuration
 config = "0.13"

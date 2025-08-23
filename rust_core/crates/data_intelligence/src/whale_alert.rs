@@ -478,7 +478,9 @@ impl WhaleAlertIntegration {
     async fn connect_websocket(&self) -> Result<()> {
         // WebSocket implementation for paid tier
         // This would establish persistent connection for real-time updates
-        todo!("WebSocket requires paid API key")
+        Err(WhaleAlertError::ApiError(
+            "WebSocket connection requires paid API key. Using REST API polling instead.".to_string()
+        ))
     }
     
     async fn fetch_recent_transactions(&self) -> Result<Vec<WhaleTransaction>> {
