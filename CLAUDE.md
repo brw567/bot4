@@ -233,6 +233,9 @@ chmod +x .git/hooks/*
 # MUST pass before marking ANY task complete
 ./scripts/verify_completion.sh
 
+# Check integration status - MANDATORY
+./scripts/verify_integration.sh
+
 # Validate no fake implementations in Rust
 python scripts/validate_no_fakes_rust.py
 
@@ -243,6 +246,27 @@ cd rust_core && cargo test --all
 cargo fmt --check
 cargo clippy -- -D warnings
 ```
+
+### 🔗 Integration Verification (MANDATORY)
+**Run before EVERY task and after EVERY change:**
+```bash
+# Full integration check
+./scripts/verify_integration.sh
+
+# Quick check (for CI/hooks)
+./scripts/verify_integration.sh --quiet
+```
+
+**Integration includes:**
+- Compilation status
+- Database connections (PostgreSQL, Redis)
+- Crate dependencies
+- Data pipeline components
+- Risk engine integration
+- Layer architecture dependencies
+- Documentation sync
+
+**Git hooks automatically run integration checks on commit!**
 
 ## 🎯 Project Overview
 

@@ -39,13 +39,15 @@ rust_decimal = "1.36"
 rust_decimal_macros = "1.36"
 
 # Natural Language Processing
-rust-bert = "0.21"  # For sentiment analysis
-tokenizers = "0.13"  # For text tokenization
+# Temporarily disabled due to torch dependency
+# rust-bert = "0.21"  # For sentiment analysis
+# tokenizers = "0.13"  # For text tokenization
 
 # Machine Learning
-candle-core = "0.3"  # For embeddings
-candle-nn = "0.3"
-candle-transformers = "0.3"
+# Temporarily disabled due to compilation issues
+# candle-core = "0.3"  # For embeddings
+# candle-nn = "0.3"
+# candle-transformers = "0.3"
 
 # Database
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "rust_decimal"] }
