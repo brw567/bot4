@@ -419,27 +419,13 @@ impl<T: Default + Send + Sync + 'static> SafeObjectPool<T> {
     
     /// Add object to garbage list for epoch-based reclamation
     fn add_to_garbage(&self, obj: Box<T>) {
-        let guard = &epoch::pin();
-        let mut garbage = Owned::new(GarbageList {
-            items: vec![obj],
-            next: None,
-        });
+        // For simplicity, just drop the object immediately
+        // since epoch-based reclamation requires more complex setup
+        drop(obj);
         
-        loop {
-            let current = self.garbage.load(Ordering::Relaxed, guard);
-            garbage.next = current.as_ref().map(|_| current);
-            
-            match self.garbage.compare_exchange(
-                current,
-                garbage,
-                Ordering::Release,
-                Ordering::Relaxed,
-                guard,
-            ) {
-                Ok(_) => break,
-                Err(e) => garbage = e.new,
-            }
-        }
+        // TODO: Implement proper epoch-based reclamation
+        // This requires reworking the GarbageList structure
+        // to not require 'static lifetimes
     }
     
     /// Cleanup local cache
@@ -478,7 +464,8 @@ impl<T: Default + Send + Sync + 'static> SafeObjectPool<T> {
     /// Reclaim unused memory
     /// Quinn: "Critical for preventing memory exhaustion"
     pub fn reclaim(&self) -> usize {
-        let guard = &epoch::pin();
+        let pinned = epoch::pin();
+        let guard = &pinned;
         let mut reclaimed = 0;
         
         // Collect garbage
@@ -548,7 +535,8 @@ impl<T: Default + Send + Sync + 'static> Drop for SafeObjectPool<T> {
         self.shutdown.store(true, Ordering::Relaxed);
         
         // Final cleanup
-        let guard = &epoch::pin();
+        let pinned = epoch::pin();
+        let guard = &pinned;
         let garbage = self.garbage.swap(Shared::null(), Ordering::AcqRel, guard);
         
         if !garbage.is_null() {

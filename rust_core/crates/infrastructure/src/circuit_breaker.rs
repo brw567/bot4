@@ -253,6 +253,18 @@ impl ComponentBreaker {
         self.state.load(Ordering::Acquire).into()
     }
     
+    /// Reset the circuit breaker to closed state
+    /// DEEP DIVE: Essential for recovery after system stabilization
+    /// Reference: "Release It!" by Michael Nygard on circuit breaker patterns
+    pub fn reset(&self) {
+        self.state.store(CircuitState::Closed as u8, Ordering::Release);
+        self.consecutive_failures.store(0, Ordering::Release);
+        self.half_open_tokens.store(0, Ordering::Release);
+        self.half_open_successes.store(0, Ordering::Release);
+        self.half_open_failures.store(0, Ordering::Release);
+        // Keep total_calls and error_calls for statistics
+    }
+    
     pub fn should_trip(&self) -> bool {
         let total = self.total_calls.load(Ordering::Relaxed);
         let errors = self.error_calls.load(Ordering::Relaxed);
