@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🏁 CURRENT TASK - ENTIRE TEAM FOCUS
+**Task**: Layer 0.1 - Hardware Kill Switch
+**Hours**: 40 total (10 research, 8 design, 16 implement, 6 test)
+**Status**: NOT STARTED
+**Team**: ALL 8 MEMBERS WORKING TOGETHER
+**External Research Required**: YES - GPIO, safety standards, interrupt handling
+
+### DO NOT WORK ON ANYTHING ELSE!
+The ENTIRE TEAM must complete this task before moving to the next one.
+
 ## 🔴 ALEX'S MANDATORY INSTRUCTIONS - ABSOLUTE REQUIREMENTS
 
 ### 1. PROJECT GOAL
@@ -21,8 +31,51 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
 - ❌ **NO hardcoded values**
 - **THIS IS MANDATORY - MUST DO!!!**
 
+### 🔴 CRITICAL UPDATE: ONE TASK AT A TIME - ENTIRE TEAM FOCUS
+**AS OF AUGUST 24, 2025 - NEW MANDATORY WORK METHODOLOGY:**
+
+#### ⚠️ ABSOLUTE RULE: ONE TASK, FULL TEAM, 360° COVERAGE
+1. **ONLY ONE TASK AT A TIME** - No parallel work allowed
+2. **ALL 8 TEAM MEMBERS** must participate in EVERY task
+3. **360-DEGREE ANALYSIS** required before implementation
+4. **EXTERNAL RESEARCH MANDATORY** - Study best practices, papers, implementations
+5. **NO SOLO WORK** - Even if you're the expert, full team reviews everything
+
+#### 📚 MANDATORY EXTERNAL RESEARCH PROCESS:
+Before implementing ANY task:
+1. **Research Phase** (2-4 hours minimum):
+   - Academic papers on the topic
+   - Industry best practices
+   - Open source implementations
+   - Stack Overflow / GitHub discussions
+   - Technical blog posts from experts
+   - Performance benchmarks from others
+
+2. **Team Analysis Meeting**:
+   - Alex: Architectural implications
+   - Morgan: Mathematical/ML aspects
+   - Sam: Code quality and patterns
+   - Quinn: Risk implications
+   - Jordan: Performance considerations
+   - Casey: Integration challenges
+   - Riley: Testing strategies
+   - Avery: Data flow impacts
+
+3. **Implementation Plan**:
+   - Document findings from external sources
+   - Compare multiple approaches
+   - Select best approach with team consensus
+   - Define success metrics
+   - Plan test cases
+
+4. **Collaborative Implementation**:
+   - Primary implementer writes code
+   - ALL 7 others review in real-time
+   - Immediate feedback and corrections
+   - No moving forward without consensus
+
 ### 🎯 NEW: 7-LAYER ARCHITECTURE - STRICT EXECUTION ORDER
-**AS OF AUGUST 24, 2025 - THIS IS THE ONLY APPROVED WORK ORDER:**
+**COMBINED WITH SINGLE-TASK FOCUS:**
 
 #### CURRENT STATUS: 35% Complete | 1,880 hours remaining
 
@@ -72,12 +125,20 @@ Develop a new generation, mixed **TA + ML + Grok xAI** fully autonomous trading 
    - Paper trading (0% - MANDATORY 60-90 days)
    - Current team: Riley + All
 
-#### CRITICAL RULE: NO WORK ON HIGHER LAYERS UNTIL LOWER LAYERS COMPLETE!
-**Exception**: Layer 6 (Infrastructure) can progress in parallel
+#### CRITICAL RULES:
+1. **NO WORK ON HIGHER LAYERS** until lower layers complete
+2. **ONE SUB-TASK AT A TIME** within each layer
+3. **ENTIRE TEAM** focuses on that single sub-task
+4. **MANDATORY EXTERNAL RESEARCH** before coding
+5. **360-DEGREE REVIEW** at every step
+6. **NO EXCEPTIONS** - This prevents the 65% failure we discovered
 
 ### 3. MANDATORY GITHUB PR WORKFLOW - EXTERNAL QA REVIEW
 **EVERY SUB-TASK REQUIRES A SEPARATE PR WITH FULL DOCUMENTATION:**
-1. **ONE SUB-TASK = ONE PR** - Granular review by external QA team
+1. **ONE SUB-TASK = ONE PR** - But now with FULL TEAM participation
+   - Must include: "All 8 team members participated in this implementation"
+   - Must include: "External sources researched: [list sources]"
+   - Must include: "Team consensus achieved on approach"
 2. **BEFORE starting ANY task**: 
    - Read PROJECT_MANAGEMENT_MASTER.md (7-layer architecture)
    - Read COMPREHENSIVE_PROJECT_PLAN_FINAL.md (detailed tasks)
@@ -292,8 +353,20 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 
 ## 🎯 IMMEDIATE GOALS & SUCCESS METRICS
 
+### NEW WORK METHODOLOGY - SINGLE TASK FOCUS:
+**Current Task**: Layer 0.1 - Hardware Kill Switch (40 hours)
+**Full Team Assignment**: ALL 8 members working together
+**External Research Required**: 
+- Raspberry Pi GPIO best practices
+- Industrial safety switch implementations
+- Emergency stop standards (IEC 60204-1)
+- Similar projects on GitHub
+
 ### Sprint Goals (Next 4 Weeks):
-1. **Week 1-2**: Complete Layer 0 Safety Systems (Sam + Quinn)
+1. **Week 1-2**: Complete Layer 0 Safety Systems (ENTIRE TEAM)
+   - Task 0.1: Hardware Kill Switch (40h) - FULL TEAM
+   - Task 0.2: Software Control Modes (32h) - FULL TEAM
+   - Task 0.3: Panic Conditions (16h) - FULL TEAM
    - [ ] Hardware kill switch operational
    - [ ] All 4 control modes working
    - [ ] Dashboards deployed
@@ -470,11 +543,17 @@ mod tests {
 5. **DO NOT create new features** - Foundation incomplete
 
 ### ONLY work on:
-- **Layer 0**: Safety Systems (if Sam/Quinn)
-- **Layer 1**: Data Foundation (if Avery)
-- **Layer 2**: Risk Management (if Quinn)
-- **Layer 6**: Infrastructure (can parallel)
-- **Documentation**: Update tracking/status
+- **THE CURRENT SINGLE TASK** - Check what it is
+- **AS A FULL TEAM** - All 8 members participate
+- **WITH EXTERNAL RESEARCH** - Study others' solutions first
+- **WITH 360° REVIEW** - Every angle covered
+- **Documentation**: Update after task completion
+
+### WORKFLOW FOR EVERY TASK:
+1. **Research Together** (25% of time)
+2. **Design Together** (25% of time)
+3. **Implement Together** (25% of time)
+4. **Test Together** (25% of time)
 
 ## 🚫 Common Pitfalls to Avoid
 
@@ -512,10 +591,12 @@ fn place_order(order: Order) -> Result<OrderId> {
 ## 🚨 BLOCKING ISSUES - MUST RESOLVE IMMEDIATELY
 
 ### Layer 0 Blockers (NOTHING can proceed without these):
-1. **Hardware Kill Switch** - 0% complete - Sam owns this
-2. **Control Modes** - 0% complete - Quinn owns this
-3. **Read-Only Dashboards** - 0% complete - Avery owns this
-4. **Audit System** - 20% complete - Riley owns this
+1. **Hardware Kill Switch** - 0% complete - ENTIRE TEAM FOCUS NOW
+2. **Control Modes** - 0% complete - ENTIRE TEAM NEXT
+3. **Read-Only Dashboards** - 0% complete - ENTIRE TEAM AFTER
+4. **Audit System** - 20% complete - ENTIRE TEAM LAST
+
+**NO INDIVIDUAL OWNERSHIP** - Every task is owned by all 8 members
 
 ### Critical Missing Components:
 1. **Feature Store** - Causes massive recomputation (Avery)
@@ -524,19 +605,64 @@ fn place_order(order: Order) -> Result<OrderId> {
 4. **Market Making Engine** - Core revenue strategy (Casey)
 5. **Paper Trading Environment** - Cannot validate (Riley)
 
-## 🎭 Multi-Agent System
+## 🎭 Multi-Agent System - NEW COLLABORATIVE METHODOLOGY
 
-The project uses 8 virtual agents with specific roles:
+### 🔴 MANDATORY: ALL 8 AGENTS WORK ON SAME TASK
+**No more individual assignments - FULL TEAM on EVERY task**
 
-### Internal Development Team
-1. **Alex** - Team Lead: Coordinates all work, breaks deadlocks
-2. **Morgan** - ML Specialist: ML models, zero tolerance for overfitting
-3. **Sam** - Code Quality: Rust lead, VETO on fake code
-4. **Quinn** - Risk Manager: VETO on uncapped risk
-5. **Jordan** - Performance: <50ns latency enforcement
-6. **Casey** - Exchange Integration: Order accuracy, rate limits
-7. **Riley** - Testing: 95%+ coverage requirement
-8. **Avery** - Data Engineer: TimescaleDB optimization
+The project uses 8 virtual agents working AS ONE TEAM:
+
+### Internal Development Team - COLLABORATIVE ROLES:
+
+#### For EVERY SINGLE TASK, each member contributes:
+
+1. **Alex** - Team Lead:
+   - Researches: Architecture patterns for the task
+   - Analyzes: System-wide implications
+   - Reviews: Integration points
+   - Ensures: Consensus achieved
+
+2. **Morgan** - ML/Math Specialist:
+   - Researches: Academic papers on algorithms
+   - Analyzes: Mathematical correctness
+   - Reviews: Statistical validity
+   - Ensures: No overfitting/bias
+
+3. **Sam** - Code Quality:
+   - Researches: Best practices and patterns
+   - Analyzes: SOLID compliance
+   - Reviews: Code structure
+   - VETO: Any fake implementations
+
+4. **Quinn** - Risk Manager:
+   - Researches: Risk implications
+   - Analyzes: Failure modes
+   - Reviews: Safety constraints
+   - VETO: Any uncapped risk
+
+5. **Jordan** - Performance:
+   - Researches: Optimization techniques
+   - Analyzes: Latency implications
+   - Reviews: Resource usage
+   - Ensures: <100μs maintained
+
+6. **Casey** - Exchange Integration:
+   - Researches: Exchange documentation
+   - Analyzes: API limitations
+   - Reviews: Rate limit compliance
+   - Ensures: Order accuracy
+
+7. **Riley** - Testing:
+   - Researches: Testing methodologies
+   - Analyzes: Edge cases
+   - Reviews: Coverage gaps
+   - Ensures: 100% coverage
+
+8. **Avery** - Data Engineer:
+   - Researches: Data flow patterns
+   - Analyzes: Storage implications
+   - Reviews: Query performance
+   - Ensures: Data integrity
 
 ### External Review Team (ChatGPT/Grok)
 9. **Sophia (ChatGPT)** - Senior Trader & Strategy Validator
@@ -551,12 +677,48 @@ The project uses 8 virtual agents with specific roles:
     - Assesses statistical validity of strategies
     - Evaluates performance metrics and benchmarks
 
-### Conflict Resolution
-- Max 3 debate rounds before Alex decides
-- Quinn has absolute veto on risk matters
-- Sam has absolute veto on fake implementations
-- External reviewers have advisory veto on strategy viability
-- Data-driven decisions when possible
+### Conflict Resolution - NEW CONSENSUS MODEL:
+- **NO SOLO DECISIONS** - Team must reach consensus
+- **Research Wins** - External sources break ties
+- **3-Round Debate Maximum**:
+  - Round 1: Present research findings
+  - Round 2: Discuss trade-offs
+  - Round 3: Vote (6/8 majority required)
+- **Absolute Vetos Still Apply**:
+  - Quinn: Risk matters
+  - Sam: Fake code
+  - Sophia/Nexus: Strategy viability
+- **If No Consensus**: More research required
+
+### EXAMPLE: Hardware Kill Switch Task
+**ALL 8 members participate:**
+1. **Research Phase** (8 hours):
+   - Alex: Studies emergency stop standards
+   - Morgan: Researches interrupt latency math
+   - Sam: Reviews GPIO best practices
+   - Quinn: Analyzes failure modes
+   - Jordan: Benchmarks GPIO performance
+   - Casey: Checks exchange timeout implications
+   - Riley: Plans test scenarios
+   - Avery: Designs audit log structure
+
+2. **Design Phase** (8 hours):
+   - ENTIRE TEAM designs together
+   - Compare 3+ approaches from research
+   - Document pros/cons
+   - Select best with consensus
+
+3. **Implementation** (16 hours):
+   - Sam leads coding (Rust expert)
+   - Other 7 review LIVE
+   - Immediate corrections
+   - No moving forward without agreement
+
+4. **Testing** (8 hours):
+   - Riley leads test design
+   - All 8 verify different aspects
+   - 100% coverage required
+   - Performance validation by Jordan
 
 ## 🔍 Quality Enforcement Scripts
 
@@ -629,6 +791,12 @@ cargo clippy -- -D warnings
 git add -A
 git commit -m "Task X.Y.Z: Description of implementation"
 ```
+
+### 🔄 CONTINUOUS TEAM SYNC
+- **Every 2 hours**: Quick sync on progress
+- **Every decision**: Requires team input
+- **Every problem**: Research solution together
+- **Every success**: Celebrate as team
 
 ## 🔐 Security & Risk Management
 
