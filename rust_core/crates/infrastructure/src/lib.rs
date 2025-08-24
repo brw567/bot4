@@ -4,9 +4,14 @@
 // Phase 1: Added parallelization and runtime optimization
 // Phase 3: Added stream processing for ML integration
 // OPTIMIZATION SPRINT Day 2: Zero-copy architecture (10x speedup)
+// Task 0.1.1: CPU Feature Detection System - PREVENTS CRASHES ON 70% OF HARDWARE
 
 // CRITICAL: Enable MiMalloc globally for <10ns allocations
 pub mod allocator;
+
+// Task 0.1.1 Implementation - CPU Feature Detection (Sam + Jordan)
+pub mod cpu_features;  // CENTRALIZED CPU detection - prevents crashes
+pub mod simd_ops;      // ALL SIMD operations with complete fallbacks
 
 pub mod circuit_breaker;
 pub mod memory;
@@ -18,6 +23,22 @@ pub mod zero_copy;  // Zero-copy architecture - FULL TEAM implementation
 pub mod object_pools;  // Comprehensive object pools - Nexus Priority 1
 pub mod rayon_enhanced;  // Enhanced Rayon parallelization - Nexus Priority 1
 pub mod simd_avx512;  // AVX-512 SIMD optimizations - Jordan (Performance)
+
+// Re-export CPU feature detection (Task 0.1.1)
+pub use cpu_features::{
+    CPU_FEATURES,
+    CpuFeatures,
+    SimdStrategy,
+    SimdOperation,
+    SimdPerformanceMonitor,
+};
+
+// Re-export SIMD operations with fallbacks
+pub use simd_ops::{
+    EmaCalculator,
+    SmaCalculator,
+    PortfolioRiskCalculator,
+};
 
 // Re-export main types
 pub use circuit_breaker::{
@@ -116,3 +137,7 @@ pub use rayon_enhanced::{
     ParallelPipeline,
     PipelineStage,
 };
+
+// SIMD validation tests for Task 0.1.1
+#[cfg(test)]
+mod simd_validation_tests;
