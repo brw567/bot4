@@ -378,10 +378,10 @@ impl EnhancedDecisionOrchestrator {
         
         // Step 8: Ensemble Signal with Dynamic Weighting
         let ensemble_signal = self.create_ensemble_signal(
-            ml_signal,
-            ta_signal,
-            regime_signal,
-            sentiment_signal,
+            ml_signal.clone(),
+            ta_signal.clone(),
+            regime_signal.clone(),
+            sentiment_signal.clone(),
             vpin_toxicity,
             tail_risk,
             contagion_risk,
