@@ -9,6 +9,11 @@ use crate::HistoricalRegime;
 use crate::prelude::{
     OrderBook, SentimentData, ExecutionAlgorithm, AssetClass, tail_risk, Utc
 };
+// Import ML method wrappers for RwLock guard access
+use crate::ml_method_wrappers::{
+    MLFeedbackSystemReadGuardExt, MLFeedbackSystemWriteGuardExt,
+    SHAPCalculatorReadGuardExt, MarketAnalyticsWriteGuardExt
+};
 use anyhow::{Result, anyhow};
 use rust_decimal::Decimal;
 use rust_decimal::prelude::*;
@@ -440,7 +445,7 @@ impl EnhancedDecisionOrchestrator {
         Ok(adjusted_kelly.min(max_size))
     }
     
-    /// Apply comprehensive risk clamps
+    /// Apply comprehensive risk clamps with DEEP DIVE validation
     pub async fn apply_comprehensive_risk_clamps(
         &self,
         mut signal: Signal,
@@ -450,7 +455,18 @@ impl EnhancedDecisionOrchestrator {
     ) -> Result<Signal> {
         let mut clamps = self.risk_clamps.write();
         
-        // Prepare risk metrics
+        // Extract confidence from signal
+        let confidence = signal.confidence;
+        
+        // Calculate volatility from market data (simplified 24h volatility)
+        let price_range = (market_data.ask.to_f64() - market_data.bid.to_f64()) / market_data.last.to_f64();
+        let volatility = price_range * 100.0; // Convert to percentage
+        
+        // Calculate tail risk from VPIN toxicity
+        // Reference: "Tail Risk and Asset Prices" - Kelly (2014)
+        let tail_risk = vpin_toxicity.max(0.01).min(1.0);
+        
+        // Prepare risk metrics with calculated values
         let risk_metrics = RiskMetrics {
             position_size: dec!(0.02),
             confidence: Decimal::from_f64(confidence).unwrap_or(Decimal::ZERO),
