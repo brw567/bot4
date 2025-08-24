@@ -8,7 +8,7 @@ members = [
     "crates/websocket", 
     "crates/order_management",
     "crates/analysis",
-    # "crates/ml",  # Temporarily disabled due to candle-core compilation issues
+    "crates/ml",  # Re-enabled with libtorch installed
     "crates/data_intelligence",
 ]
 resolver = "2"
