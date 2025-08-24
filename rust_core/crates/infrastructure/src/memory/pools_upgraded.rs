@@ -53,7 +53,7 @@ pub trait ObjectPool<T>: Send + Sync {
 // GENERIC POOL IMPLEMENTATION - Team Collaboration
 // ============================================================================
 
-pub struct GenericPool<T> {
+pub struct GenericPool<T: Send> {
     // Global queue - Jordan's lock-free design
     global: Arc<ArrayQueue<T>>,
     
@@ -214,7 +214,7 @@ impl<T: Default + Send + 'static> ObjectPool<T> for GenericPool<T> {
     }
 }
 
-impl<T> GenericPool<T> {
+impl<T: Send> GenericPool<T> {
     fn calculate_hit_rate(&self) -> f64 {
         let hits = self.hits.load(Ordering::Relaxed);
         let total = hits + self.misses.load(Ordering::Relaxed);

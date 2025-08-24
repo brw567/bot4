@@ -16,7 +16,7 @@ impl EnhancedOrderBook {
     pub fn total_bid_volume(&self) -> Decimal {
         self.bids
             .iter()
-            .map(|level| level.quantity)
+            .map(|level| level.quantity.inner())  // Extract Decimal from Quantity
             .fold(Decimal::ZERO, |acc, size| acc + size)
     }
     
@@ -25,7 +25,7 @@ impl EnhancedOrderBook {
     pub fn total_ask_volume(&self) -> Decimal {
         self.asks
             .iter()
-            .map(|level| level.quantity)
+            .map(|level| level.quantity.inner())  // Extract Decimal from Quantity
             .fold(Decimal::ZERO, |acc, size| acc + size)
     }
     
@@ -42,35 +42,38 @@ impl EnhancedOrderBook {
         let ask_quantity = self.asks[0].quantity;
         
         let total_size = bid_quantity + ask_quantity;
-        if total_size == Decimal::ZERO {
-            (best_bid + best_ask) / Decimal::from(2)
+        if total_size.inner() == Decimal::ZERO {
+            Price::new((best_bid.inner() + best_ask.inner()) / Decimal::from(2))
         } else {
-            (best_bid * ask_quantity + best_ask * bid_quantity) / total_size
+            // Weighted mid: (bid_price * ask_size + ask_price * bid_size) / total_size
+            let weighted_sum = best_bid.inner() * ask_quantity.inner() + 
+                               best_ask.inner() * bid_quantity.inner();
+            Price::new(weighted_sum / total_size.inner())
         }
     }
     
     /// Calculate Volume-Weighted Average Price (VWAP) for N levels
     /// DEEP DIVE: Better execution price estimation than mid-price
     pub fn calculate_vwap(&self, levels: usize) -> Price {
-        let mut total_value = Price::ZERO;
+        let mut total_value = Decimal::ZERO;
         let mut total_volume = Decimal::ZERO;
         
         // Process bid side
         for level in self.bids.iter().take(levels) {
-            total_value += level.price * level.quantity;
-            total_volume += level.quantity;
+            total_value += level.price.inner() * level.quantity.inner();
+            total_volume += level.quantity.inner();
         }
         
         // Process ask side
         for level in self.asks.iter().take(levels) {
-            total_value += level.price * level.quantity;
-            total_volume += level.quantity;
+            total_value += level.price.inner() * level.quantity.inner();
+            total_volume += level.quantity.inner();
         }
         
         if total_volume == Decimal::ZERO {
             self.weighted_mid_price()
         } else {
-            total_value / total_volume
+            Price::new(total_value / total_volume)
         }
     }
     
@@ -103,8 +106,8 @@ impl EnhancedOrderBook {
             let ask_price = self.asks[i].price.to_f64();
             let mid_price = (bid_price + ask_price) / 2.0;
             
-            let bid_quantity = self.bids[i].quantity.to_f64().unwrap_or(1.0);
-            let ask_quantity = self.asks[i].quantity.to_f64().unwrap_or(1.0);
+            let bid_quantity = self.bids[i].quantity.to_f64();
+            let ask_quantity = self.asks[i].quantity.to_f64();
             let total_volume = bid_quantity + ask_quantity;
             
             // Price impact per unit volume
@@ -136,14 +139,14 @@ impl EnhancedOrderBook {
         // Probability of up move based on relative sizes
         let total_size = best_bid.quantity + best_ask.quantity;
         
-        if total_size == Decimal::ZERO {
-            (best_bid.price + best_ask.price) / Decimal::from(2)
+        if total_size.inner() == Decimal::ZERO {
+            Price::new((best_bid.price.inner() + best_ask.price.inner()) / Decimal::from(2))
         } else {
             // More ask size = higher probability of down move
-            let prob_up = best_ask.quantity / total_size;
-            let prob_down = best_bid.quantity / total_size;
+            let prob_up = best_ask.quantity.inner() / total_size.inner();
+            let prob_down = best_bid.quantity.inner() / total_size.inner();
             
-            best_bid.price * prob_up + best_ask.price * prob_down
+            Price::new(best_bid.price.inner() * prob_up + best_ask.price.inner() * prob_down)
         }
     }
     
@@ -153,9 +156,9 @@ impl EnhancedOrderBook {
         let mid_price = self.weighted_mid_price();
         
         if is_buy {
-            (trade_price - mid_price) * Decimal::from(2)
+            Price::new((trade_price.inner() - mid_price.inner()) * Decimal::from(2))
         } else {
-            (mid_price - trade_price) * Decimal::from(2)
+            Price::new((mid_price.inner() - trade_price.inner()) * Decimal::from(2))
         }
     }
     
@@ -163,9 +166,9 @@ impl EnhancedOrderBook {
     /// Reference: "Empirical Market Microstructure" - Hasbrouck (2007)
     pub fn calculate_realized_spread(&self, trade_price: Price, future_mid: Price, is_buy: bool) -> Price {
         if is_buy {
-            (trade_price - future_mid) * Decimal::from(2)
+            Price::new((trade_price.inner() - future_mid.inner()) * Decimal::from(2))
         } else {
-            (future_mid - trade_price) * Decimal::from(2)
+            Price::new((future_mid.inner() - trade_price.inner()) * Decimal::from(2))
         }
     }
     
@@ -176,8 +179,9 @@ impl EnhancedOrderBook {
         let mut cumulative_volume = Decimal::ZERO;
         
         for level in levels {
-            if (is_bid && level.price >= target_price) || (!is_bid && level.price <= target_price) {
-                cumulative_volume += level.quantity;
+            if (is_bid && level.price.inner() >= target_price.inner()) || 
+               (!is_bid && level.price.inner() <= target_price.inner()) {
+                cumulative_volume += level.quantity.inner();
             } else {
                 break;
             }
@@ -195,7 +199,7 @@ impl EnhancedOrderBook {
             .enumerate()
             .map(|(i, level)| {
                 let weight = 1.0 / (i as f64 + 1.0); // Decay by level
-                level.quantity.to_f64().unwrap_or(0.0) * weight
+                level.quantity.to_f64() * weight
             })
             .sum::<f64>();
             
@@ -205,7 +209,7 @@ impl EnhancedOrderBook {
             .enumerate()
             .map(|(i, level)| {
                 let weight = 1.0 / (i as f64 + 1.0);
-                level.quantity.to_f64().unwrap_or(0.0) * weight
+                level.quantity.to_f64() * weight
             })
             .sum::<f64>();
             
@@ -277,22 +281,22 @@ mod tests {
         
         // Add bids (more volume)
         book.bids.push(OrderLevel {
-            price: dec!(50000),
-            quantity: dec!(10),
+            price: Price::new(dec!(50000)),
+            quantity: Quantity::new(dec!(10)),
         });
         book.bids.push(OrderLevel {
-            price: dec!(49990),
-            quantity: dec!(5),
+            price: Price::new(dec!(49990)),
+            quantity: Quantity::new(dec!(5)),
         });
         
         // Add asks (less volume)
         book.asks.push(OrderLevel {
-            price: dec!(50010),
-            quantity: dec!(5),
+            price: Price::new(dec!(50010)),
+            quantity: Quantity::new(dec!(5)),
         });
         book.asks.push(OrderLevel {
-            price: dec!(50020),
-            quantity: dec!(3),
+            price: Price::new(dec!(50020)),
+            quantity: Quantity::new(dec!(3)),
         });
         
         let imbalance = book.calculate_imbalance();
@@ -312,12 +316,12 @@ mod tests {
         // Add 5 levels of depth
         for i in 0..5 {
             book.bids.push(OrderLevel {
-                price: dec!(50000) - dec!(10) * Decimal::from(i),
-                quantity: dec!(10) + Decimal::from(i),
+                price: Price::new(dec!(50000) - dec!(10) * Decimal::from(i)),
+                quantity: Quantity::new(dec!(10) + Decimal::from(i)),
             });
             book.asks.push(OrderLevel {
-                price: dec!(50010) + dec!(10) * Decimal::from(i),
-                quantity: dec!(10) + Decimal::from(i),
+                price: Price::new(dec!(50010) + dec!(10) * Decimal::from(i)),
+                quantity: Quantity::new(dec!(10) + Decimal::from(i)),
             });
         }
         
@@ -332,16 +336,16 @@ mod tests {
         
         // Asymmetric book - more ask size
         book.bids.push(OrderLevel {
-            price: dec!(50000),
-            quantity: dec!(5),
+            price: Price::new(dec!(50000)),
+            quantity: Quantity::new(dec!(5)),
         });
         book.asks.push(OrderLevel {
-            price: dec!(50010),
-            quantity: dec!(15), // 3x bid size
+            price: Price::new(dec!(50010)),
+            quantity: Quantity::new(dec!(15)), // 3x bid size
         });
         
         let microprice = book.calculate_microprice();
-        let mid = (dec!(50000) + dec!(50010)) / dec!(2);
+        let mid = Price::new((dec!(50000) + dec!(50010)) / dec!(2));
         
         // Microprice should be below mid (more ask pressure)
         assert!(microprice < mid);
@@ -354,16 +358,16 @@ mod tests {
         // Strong bid pressure
         for i in 0..3 {
             book.bids.push(OrderLevel {
-                price: dec!(50000) - dec!(10) * Decimal::from(i),
-                quantity: dec!(20) - Decimal::from(i * 2), // Decreasing size
+                price: Price::new(dec!(50000) - dec!(10) * Decimal::from(i)),
+                quantity: Quantity::new(dec!(20) - Decimal::from(i * 2)), // Decreasing size
             });
         }
         
         // Weak ask pressure
         for i in 0..3 {
             book.asks.push(OrderLevel {
-                price: dec!(50010) + dec!(10) * Decimal::from(i),
-                quantity: dec!(5) + Decimal::from(i), // Smaller sizes
+                price: Price::new(dec!(50010) + dec!(10) * Decimal::from(i)),
+                quantity: Quantity::new(dec!(5) + Decimal::from(i)), // Smaller sizes
             });
         }
         

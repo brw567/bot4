@@ -86,7 +86,7 @@ impl ThreadRegistry {
             objects_held: AtomicUsize::new(0),
         });
         
-        tracing::debug!("Registered thread: {} ({})", name, id);
+        tracing::debug!("Registered thread: {} ({:?})", name, id);
     }
     
     fn unregister_thread(&self) {
@@ -101,7 +101,7 @@ impl ThreadRegistry {
                     info.name, held
                 );
             }
-            tracing::debug!("Unregistered thread: {} ({})", info.name, id);
+            tracing::debug!("Unregistered thread: {} ({:?})", info.name, id);
         }
     }
     
@@ -235,7 +235,7 @@ struct MemoryStatsSnapshot {
 
 /// Thread-safe object pool with automatic cleanup
 /// Morgan: "Uses epoch-based reclamation for safe memory management"
-pub struct SafeObjectPool<T: Default + Send + 'static> {
+pub struct SafeObjectPool<T: Default + Send + Sync + 'static> {
     // Global pool using lock-free queue
     global: Arc<ArrayQueue<Box<T>>>,
     
@@ -261,10 +261,15 @@ struct LocalCache<T> {
     last_cleanup: Instant,
 }
 
-struct GarbageList<T> {
+struct GarbageList<T: Send + Sync + 'static> {
     items: Vec<Box<T>>,
     next: Option<Shared<'static, GarbageList<T>>>,
 }
+
+// Safety: GarbageList is only accessed through epoch-based memory reclamation
+// which provides the necessary synchronization
+unsafe impl<T: Send + Sync + 'static> Send for GarbageList<T> {}
+unsafe impl<T: Send + Sync + 'static> Sync for GarbageList<T> {}
 
 #[derive(Clone)]
 struct PoolConfig {
@@ -283,7 +288,7 @@ struct PoolStatistics {
     reclaimed: AtomicU64,
 }
 
-impl<T: Default + Send + 'static> SafeObjectPool<T> {
+impl<T: Default + Send + Sync + 'static> SafeObjectPool<T> {
     /// Create new pool with safety features
     /// Alex: "Full validation and safety checks"
     pub fn new(config: PoolConfig) -> Arc<Self> {
@@ -401,9 +406,12 @@ impl<T: Default + Send + 'static> SafeObjectPool<T> {
         }
         
         // Return to global pool
-        if self.global.push(obj).is_err() {
-            // Pool full, add to garbage for later reclamation
-            self.add_to_garbage(obj);
+        match self.global.push(obj) {
+            Ok(_) => {},
+            Err(returned_obj) => {
+                // Pool full, add to garbage for later reclamation
+                self.add_to_garbage(returned_obj);
+            }
         }
         
         self.stats.deallocations.fetch_add(1, Ordering::Relaxed);
@@ -419,7 +427,7 @@ impl<T: Default + Send + 'static> SafeObjectPool<T> {
         
         loop {
             let current = self.garbage.load(Ordering::Relaxed, guard);
-            garbage.next = current;
+            garbage.next = current.as_ref().map(|_| current);
             
             match self.garbage.compare_exchange(
                 current,
@@ -534,7 +542,7 @@ impl<T: Default + Send + 'static> SafeObjectPool<T> {
 
 /// Implement Drop for proper cleanup
 /// Alex: "Critical for preventing leaks on shutdown"
-impl<T: Default + Send + 'static> Drop for SafeObjectPool<T> {
+impl<T: Default + Send + Sync + 'static> Drop for SafeObjectPool<T> {
     fn drop(&mut self) {
         // Mark shutdown
         self.shutdown.store(true, Ordering::Relaxed);

@@ -12,6 +12,7 @@ pub mod auto_tuning_persistence; // Database persistence for auto-tuning
 pub mod decision_orchestrator; // UNIFIED ML+TA decision maker
 pub mod order_book_analytics; // Order book imbalance, VPIN, Kyle's Lambda - CRITICAL!
 pub mod unified_types;  // Unified type system - solves API mismatch
+pub mod unified_type_ops;  // Complete arithmetic operations for unified types
 pub mod profit_extractor;  // Profit extraction engine - makes MONEY!
 pub mod ml_feedback;  // ML feedback loops - CRITICAL for continuous improvement!
 pub mod xgboost_model;  // XGBoost gradient boosting - REAL ML MODEL!
