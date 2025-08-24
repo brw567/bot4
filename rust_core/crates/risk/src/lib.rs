@@ -36,6 +36,8 @@ pub mod order_book_extensions;  // DEEP DIVE: Complete missing OrderBook methods
 pub mod integration_test_complete;  // DEEP DIVE: Comprehensive integration verification!
 pub mod master_orchestration_system;  // MASTER BRAIN: Connects EVERYTHING with NO SIMPLIFICATIONS!
 pub mod simd_decision_engine;  // JORDAN'S REQUIREMENT: <50ns decision latency with SIMD!
+pub mod trading_types_complete;  // COMPLETE TRADING TYPES - Full implementation with NO SHORTCUTS!
+pub mod type_compatibility;  // TYPE COMPATIBILITY LAYER - Seamless integration!
 
 #[cfg(test)]
 mod master_integration_validation;  // DEEP DIVE: Validates ALL connections work!
