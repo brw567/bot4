@@ -1544,6 +1544,18 @@ pub struct PerformanceStats {
     pub max_drawdown: Percentage,
 }
 
+impl Default for PerformanceStats {
+    fn default() -> Self {
+        Self {
+            total_trades: 0,
+            win_rate: 0.0,
+            total_pnl: Price::ZERO,
+            sharpe_ratio: 0.0,
+            max_drawdown: Percentage::ZERO,
+        }
+    }
+}
+
 // Alex: "THIS is how you extract maximum profit from the market!"
 // Quinn: "Risk-adjusted profit extraction with multiple safety layers!"
 // Morgan: "ML features will feed into this for even better signals!"

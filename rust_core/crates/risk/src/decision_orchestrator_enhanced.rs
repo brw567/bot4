@@ -189,12 +189,13 @@ impl EnhancedDecisionOrchestrator {
         // Initialize ML system with feedback loops
         let ml_system = Arc::new(RwLock::new(MLFeedbackSystem::new()));
         
-        // Initialize hyperparameter optimizer
+        // Initialize hyperparameter optimizer with valid fields
         let optimizer_config = AutoTunerConfig {
             n_trials: 100,
             n_startup_trials: 10,
-            pruning_percentile: 25.0,
-            optimization_direction: "maximize".to_string(),
+            optimization_interval: std::time::Duration::from_secs(3600), // 1 hour
+            performance_window: 100,
+            min_samples_before_optimization: 20,
         };
         let hyperparameter_optimizer = Arc::new(RwLock::new(
             HyperparameterOptimizer::new(optimizer_config)
