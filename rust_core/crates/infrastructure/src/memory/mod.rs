@@ -9,6 +9,8 @@
 pub mod pools;
 pub mod rings;
 pub mod metrics;
+pub mod safe_pools;  // NEW: Memory-safe pools with cleanup
+pub mod pools_upgraded;  // Existing upgraded pools
 
 #[cfg(test)]
 mod zero_alloc_tests;
@@ -17,6 +19,13 @@ mod zero_alloc_tests;
 pub use pools::{OrderPool, SignalPool, TickPool, PoolStats};
 pub use rings::{SpscRing, MpmcRing};
 pub use metrics::MemoryMetrics;
+
+// NEW: Export safe pools
+pub use safe_pools::{
+    SafeObjectPool, Order as SafeOrder, Signal as SafeSignal, Tick as SafeTick,
+    ORDER_POOL, SIGNAL_POOL, TICK_POOL,
+    create_order_pool, create_signal_pool, create_tick_pool,
+};
 
 /// Initialize all memory pools at startup
 /// Must be called before any trading operations
