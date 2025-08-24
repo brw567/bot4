@@ -3,7 +3,7 @@
 // Alex: "This must use EVERY system at 100% capacity!"
 
 use crate::unified_types::*;
-use crate::decision_orchestrator::{OrderBook, SentimentData};
+use crate::trading_types_complete::{EnhancedOrderBook, SentimentData};
 use crate::kelly_sizing::{KellySizer, KellyRecommendation};
 use crate::clamps::{RiskClampSystem, ClampConfig};
 use crate::auto_tuning::{AutoTuningSystem, MarketRegime as AutoTuneRegime};
@@ -327,7 +327,7 @@ impl EnhancedDecisionOrchestrator {
     pub async fn make_enhanced_trading_decision(
         &self,
         market_data: &MarketData,
-        order_book: &OrderBook,
+        order_book: &EnhancedOrderBook,
         sentiment_data: Option<&SentimentData>,
         historical_data: &[MarketData],  // For advanced calculations
     ) -> Result<TradingSignal> {
@@ -471,7 +471,7 @@ impl EnhancedDecisionOrchestrator {
     async fn engineer_all_features(
         &self,
         market_data: &MarketData,
-        order_book: &OrderBook,
+        order_book: &EnhancedOrderBook,
         historical_data: &[MarketData],
     ) -> Result<FeaturePipeline> {
         let mut features = FeaturePipeline {

@@ -5,9 +5,10 @@ use super::decision_orchestrator_enhanced::*;
 use crate::unified_types::*;
 use crate::decision_orchestrator::Signal;
 use crate::HistoricalRegime;
+use crate::trading_types_complete::{EnhancedOrderBook, SentimentData};
 // Import all types from prelude - fixes missing types
 use crate::prelude::{
-    OrderBook, SentimentData, ExecutionAlgorithm, AssetClass, tail_risk, Utc
+    ExecutionAlgorithm, AssetClass, tail_risk, Utc
 };
 // Import ML method wrappers for RwLock guard access
 use crate::ml_method_wrappers::{
@@ -271,7 +272,7 @@ impl EnhancedDecisionOrchestrator {
     /// Calculate VPIN toxicity
     pub async fn calculate_vpin_toxicity(
         &self,
-        order_book: &OrderBook,
+        order_book: &EnhancedOrderBook,
         historical_data: &[MarketData],
     ) -> Result<f64> {
         let mut vpin = self.vpin_calculator.write();
@@ -535,7 +536,7 @@ impl EnhancedDecisionOrchestrator {
         &self,
         signal: Signal,
         market_data: &MarketData,
-        order_book: &OrderBook,
+        order_book: &EnhancedOrderBook,
     ) -> Result<Signal> {
         let mut extractor = self.profit_extractor.write();
         
@@ -569,7 +570,7 @@ impl EnhancedDecisionOrchestrator {
     pub async fn select_optimal_execution(
         &self,
         signal: &Signal,
-        order_book: &OrderBook,
+        order_book: &EnhancedOrderBook,
         vpin_toxicity: f64,
     ) -> Result<ExecutionAlgorithm> {
         let executor = self.optimal_executor.read();

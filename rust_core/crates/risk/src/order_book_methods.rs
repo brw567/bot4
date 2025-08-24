@@ -256,6 +256,51 @@ impl EnhancedOrderBook {
             ((best_ask - best_bid) / mid) * 10000.0
         }
     }
+    
+    // Alias methods for compatibility with other modules
+    
+    /// Alias for calculate_imbalance
+    pub fn volume_imbalance(&self) -> f64 {
+        self.calculate_imbalance()
+    }
+    
+    /// Calculate bid-ask spread in price units
+    pub fn bid_ask_spread(&self) -> Price {
+        if self.bids.is_empty() || self.asks.is_empty() {
+            return Price::ZERO;
+        }
+        self.asks[0].price - self.bids[0].price
+    }
+    
+    /// Get mid price (alias for weighted_mid_price)
+    pub fn mid_price(&self) -> Price {
+        self.weighted_mid_price()
+    }
+    
+    /// Calculate order flow imbalance (alias for calculate_imbalance)
+    pub fn order_flow_imbalance(&self) -> f64 {
+        self.calculate_imbalance()
+    }
+    
+    /// Calculate depth imbalance at multiple levels
+    pub fn depth_imbalance(&self, levels: usize) -> f64 {
+        let bid_depth: Decimal = self.bids.iter()
+            .take(levels)
+            .map(|l| l.quantity.inner())
+            .sum();
+            
+        let ask_depth: Decimal = self.asks.iter()
+            .take(levels)
+            .map(|l| l.quantity.inner())
+            .sum();
+            
+        let total = bid_depth + ask_depth;
+        if total == Decimal::ZERO {
+            0.0
+        } else {
+            ((bid_depth - ask_depth) / total).to_f64().unwrap_or(0.0)
+        }
+    }
 }
 
 // Extension trait for Price type conversion
