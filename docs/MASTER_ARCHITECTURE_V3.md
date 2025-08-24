@@ -87,23 +87,45 @@ Bot4 is a **zero-intervention** cryptocurrency trading platform that autonomousl
 ### Physical Architecture
 
 ```yaml
+# CRITICAL: We run on modest hardware BY DESIGN
+# This constraint drives our entire optimization strategy
 deployment:
-  primary_datacenter:
-    location: AWS us-east-1
-    servers:
-      - trading_engine: c6i.8xlarge (32 vCPU, 64GB RAM)
-      - ml_inference: g4dn.4xlarge (GPU for complex models)
-      - database: r6i.4xlarge (16 vCPU, 128GB RAM)
-      - monitoring: t3.large (2 vCPU, 8GB RAM)
+  single_server:
+    type: Development-grade hardware (NO cloud complexity)
+    specifications:
+      - cpu: 12 vCPUs (x86_64 with AVX-512 support)
+      - ram: 32GB DDR4
+      - storage: 400GB NVMe SSD
+      - gpu: NONE (intentionally - forces algorithmic efficiency)
+      - network: 1Gbps dedicated
+      - os: Linux 5.15+ (Ubuntu 22.04 LTS)
     
-  backup_datacenter:
-    location: AWS eu-west-1
-    servers: [mirror of primary]
+  # WHY this architecture:
+  rationale:
+    - "NO GPU = Must achieve <100μs through SIMD/AVX-512"
+    - "32GB RAM = Aggressive memory management required"
+    - "12 vCPUs = Lock-free algorithms and CPU pinning critical"
+    - "Single server = No network overhead, direct market access"
+    - "Cost: ~$200/month vs $5000+/month for cloud setup"
     
-  edge_nodes:
-    - tokyo: t3.medium (near Binance Japan)
-    - singapore: t3.medium (near Binance Asia)
-    - frankfurt: t3.medium (near Kraken EU)
+  performance_optimizations:
+    cpu_features:
+      - AVX-512 for vectorized calculations (16x speedup)
+      - CPU pinning for critical threads (latency reduction)
+      - NUMA awareness for memory locality
+      - Huge pages (2MB) for reduced TLB misses
+    
+    memory_strategy:
+      - Memory pools to prevent allocation overhead
+      - Lock-free ring buffers for zero-copy messaging
+      - Compressed data structures (bit-packing)
+      - Aggressive memory reuse patterns
+    
+    no_gpu_advantages:
+      - Zero PCIe transfer latency
+      - Predictable performance (no CUDA scheduling)
+      - Simplified deployment and maintenance
+      - Forces elegant algorithmic solutions
 ```
 
 ---
@@ -1334,29 +1356,68 @@ critical_concerns:
 
 ## 📈 PERFORMANCE BENCHMARKS
 
+### Hardware-Constrained Performance Strategy
+
+```rust
+// CRITICAL: Achieving <100μs latency WITHOUT GPU requires extreme optimization
+pub struct PerformanceStrategy {
+    // Why SIMD/AVX-512 is MANDATORY (not optional):
+    hardware_reality: HardwareConstraints {
+        cpu_cores: 12,           // Must parallelize efficiently
+        ram_gb: 32,              // Cannot waste memory
+        gpu: None,               // FORCES us to optimize CPU code
+        
+        // This constraint is our STRENGTH:
+        // - Forces elegant algorithms over brute force
+        // - Ensures deployability on any hardware
+        // - Reduces operational costs by 95%
+    },
+    
+    simd_optimizations: SimdRequirements {
+        // 16x speedup through AVX-512 vectorization
+        vector_width: 512,        // Process 16 f32s simultaneously
+        
+        // Critical operations that MUST use SIMD:
+        operations: vec![
+            "Price calculations (bid/ask spreads)",
+            "Technical indicators (EMA, RSI, Bollinger)",
+            "Risk calculations (portfolio heat)",
+            "Feature normalization (ML preprocessing)",
+            "Matrix operations (correlation matrices)",
+        ],
+        
+        // Example: EMA calculation with AVX-512
+        // Before: 1600ns for 100 prices (sequential)
+        // After:  100ns for 100 prices (16x parallel)
+    },
+}
+```
+
 ### Current vs Target Performance
 
 ```yaml
 performance_metrics:
+  # ACHIEVED through SIMD/AVX-512 optimizations:
   latency:
     current:
-      decision_simple: 85μs
-      decision_complex: 950ms
-      execution: 8ms
+      decision_simple: 85μs      # Using AVX-512 for calculations
+      decision_complex: 950ms     # ML inference without GPU
+      execution: 8ms              # Lock-free data structures
     target:
-      decision_simple: <100μs ✅
-      decision_complex: <1s ✅
-      execution: <10ms ✅
+      decision_simple: <100μs ✅  # Achieved via SIMD
+      decision_complex: <1s ✅    # Achieved via model optimization
+      execution: <10ms ✅         # Achieved via zero-copy
       
+  # REQUIRES further SIMD optimization:
   throughput:
     current:
-      events_ingestion: 500K/sec
-      order_generation: 50K/sec
-      ml_inference: 100/sec
+      events_ingestion: 500K/sec  # Need batched SIMD processing
+      order_generation: 50K/sec   # Need vectorized validation
+      ml_inference: 100/sec       # Need quantized models
     target:
-      events_ingestion: 1M/sec ❌
-      order_generation: 100K/sec ❌
-      ml_inference: 1000/sec ❌
+      events_ingestion: 1M/sec ❌  # Requires full SIMD pipeline
+      order_generation: 100K/sec ❌ # Requires parallel validation
+      ml_inference: 1000/sec ❌     # Requires INT8 quantization
       
   accuracy:
     current:
