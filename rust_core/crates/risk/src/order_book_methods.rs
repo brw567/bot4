@@ -303,15 +303,15 @@ impl EnhancedOrderBook {
     }
 }
 
-// Extension trait for Price type conversion
-trait PriceExt {
+// Extension trait for Price type conversion - made public for external use
+pub trait PriceExt {
     fn to_f64(&self) -> f64;
 }
 
 impl PriceExt for Price {
     fn to_f64(&self) -> f64 {
-        // Convert Decimal Price to f64
-        Price::to_f64(self).unwrap_or(0.0)
+        // Convert Decimal Price to f64 using inner value
+        self.inner().to_f64().unwrap_or(0.0)
     }
 }
 

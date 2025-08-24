@@ -7,6 +7,9 @@
 // - Quantlib for risk calculations
 
 use rust_decimal::Decimal;
+
+// Re-export critical types from market_analytics
+pub use crate::market_analytics::{Candle, Tick};
 use rust_decimal::prelude::{ToPrimitive, FromPrimitive};
 use std::ops::{Add, Sub, Mul, Div};
 use serde::{Serialize, Deserialize};
@@ -239,6 +242,10 @@ pub struct TradingSignal {
     pub risk_metrics: RiskMetrics,
     pub ml_features: Vec<f64>,
     pub ta_indicators: Vec<f64>,
+    // DEEP DIVE: Added critical trading fields
+    pub entry_price: Option<Price>,
+    pub stop_loss: Option<Price>,
+    pub take_profit: Option<Price>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

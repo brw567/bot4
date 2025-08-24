@@ -72,6 +72,13 @@ pub struct MACDResult {
     pub histogram: f64,
 }
 
+/// Stochastic Oscillator result
+#[derive(Debug, Clone, Copy)]
+pub struct StochasticResult {
+    pub k: f64,  // Fast %K
+    pub d: f64,  // Slow %D
+}
+
 impl PriceHistory {
     fn new() -> Self {
         Self {
@@ -1784,6 +1791,15 @@ impl MarketAnalytics {
     pub fn get_adx(&self) -> Option<f64> {
         let ta = self.ta_calculator.read();
         Some(ta.adx)
+    }
+    
+    /// Get Stochastic Oscillator values
+    pub fn get_stochastic(&self) -> Option<StochasticResult> {
+        let ta = self.ta_calculator.read();
+        Some(StochasticResult {
+            k: ta.stochastic_k,
+            d: ta.stochastic_d,
+        })
     }
     
     /// Get support level

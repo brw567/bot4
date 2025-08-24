@@ -19,6 +19,7 @@ use crate::cross_asset_correlations::{CrossAssetCorrelations, AssetClass};
 use crate::hyperparameter_optimization::{HyperparameterOptimizer, AutoTunerConfig};
 use crate::optimal_execution::ExecutionAlgorithm;
 use crate::order_book_analytics_ext::OrderBookAnalytics; // Extension trait for OrderBook methods
+use crate::order_book_methods::PriceExt; // Extension trait for Price.to_f64() method
 // VPIN calculation will be inline
 
 /// Simple VPIN calculator for flow toxicity
@@ -510,13 +511,13 @@ impl EnhancedDecisionOrchestrator {
         
         // Volume features
         features.volume_features.push(market_data.volume.to_f64());
-        features.volume_features.push(order_book.total_bid_volume());
-        features.volume_features.push(order_book.total_ask_volume());
+        features.volume_features.push(order_book.total_bid_volume().to_f64().unwrap_or(0.0));
+        features.volume_features.push(order_book.total_ask_volume().to_f64().unwrap_or(0.0));
         features.volume_features.push(order_book.volume_imbalance());
         
         // Microstructure features
-        features.microstructure_features.push(order_book.bid_ask_spread());
-        features.microstructure_features.push(order_book.mid_price());
+        features.microstructure_features.push(order_book.bid_ask_spread().to_f64());
+        features.microstructure_features.push(order_book.mid_price().to_f64());
         features.microstructure_features.push(order_book.order_flow_imbalance());
         features.microstructure_features.push(order_book.depth_imbalance(5)); // Use top 5 levels
         
