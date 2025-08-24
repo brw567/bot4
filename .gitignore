@@ -107,3 +107,33 @@ rust_core_old*/
 *_archived_*/
 deprecated/
 legacy/
+
+# ============================================
+# TEMPORARY FILES & SESSION DATA
+# ============================================
+SESSION_*.md
+CLAUDE_SESSION_*.md
+*_TEMP.md
+*_BACKUP.md
+.tmp/
+tmp/
+temp/
+
+# Test artifacts
+test_simd
+test_*.rs
+*.test
+*.bench
+
+# Temporary scripts
+fix_*.sh
+patch_*.sh
+temp_*.sh
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
