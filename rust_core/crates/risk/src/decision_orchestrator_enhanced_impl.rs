@@ -104,13 +104,27 @@ impl EnhancedDecisionOrchestrator {
         let ask_price = market_data.ask.to_f64();
         let bid_price = market_data.bid.to_f64();
         
-        ta.update(
-            last_price,                    // Current price (using last trade)
-            ask_price * 1.001,             // High approximation (slightly above ask)
-            bid_price * 0.999,             // Low approximation (slightly below bid)
-            last_price,                    // Close (same as current for real-time)
-            market_data.volume.to_f64(),  // Volume
-        );
+        // Create a Candle from market data
+        use crate::market_analytics::{Candle, Tick};
+        let candle = Candle {
+            open: last_price,
+            high: ask_price * 1.001,      // High approximation
+            low: bid_price * 0.999,        // Low approximation  
+            close: last_price,
+            volume: market_data.volume.to_f64(),
+            timestamp: market_data.timestamp,
+        };
+        
+        // Create a Tick from market data
+        let tick = Tick {
+            timestamp: market_data.timestamp,
+            price: market_data.last,
+            volume: market_data.volume,
+            bid: market_data.bid,
+            ask: market_data.ask,
+        };
+        
+        ta.update(market_data, candle, tick);
         
         // Collect all indicator signals
         let mut buy_signals = 0.0;
