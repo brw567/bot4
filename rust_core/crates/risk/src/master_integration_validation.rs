@@ -33,19 +33,18 @@ mod master_integration_tests {
             config,
         ).await.expect("Failed to create master system");
         
-        // Create test market data
+        // Create test market data using actual MarketData fields
         let market_data = MarketData {
-            timestamp: 1000000,
             symbol: "BTC/USDT".to_string(),
-            price: Price::from_f64(50000.0).unwrap(),
-            bid: Price::from_f64(49995.0).unwrap(),
-            ask: Price::from_f64(50005.0).unwrap(),
-            spread: Price::from_f64(10.0).unwrap(),
-            volume: Quantity::from_f64(1000.0).unwrap(),
-            high: Price::from_f64(51000.0).unwrap(),
-            low: Price::from_f64(49000.0).unwrap(),
-            close: Price::from_f64(50000.0).unwrap(),
-            returns_24h: Percentage::from_f64(0.02).unwrap(),
+            timestamp: 1000000,
+            bid: Price::from_f64(49995.0),
+            ask: Price::from_f64(50005.0),
+            last: Price::from_f64(50000.0),  // Current price
+            volume: Quantity::from_f64(1000.0),
+            bid_size: Quantity::from_f64(50.0),
+            ask_size: Quantity::from_f64(45.0),
+            spread: Price::from_f64(10.0),
+            mid: Price::from_f64(50000.0),  // (bid + ask) / 2
         };
         
         // Create test order book
@@ -117,12 +116,13 @@ mod master_integration_tests {
         println!("\nTEST 4: Technical Analysis System");
         let ta_analytics = orchestrator.ta_analytics.read();
         
-        // Update with market data
+        // Update with market data - using actual MarketData fields
+        // For real-time data, approximate OHLC from bid/ask/last
         ta_analytics.update(
-            market_data.price.to_f64(),
-            market_data.high.to_f64(),
-            market_data.low.to_f64(),
-            market_data.close.to_f64(),
+            market_data.last.to_f64(),       // Current price
+            market_data.ask.to_f64() * 1.001, // Approximate high
+            market_data.bid.to_f64() * 0.999, // Approximate low
+            market_data.last.to_f64(),       // Close (same as current)
             market_data.volume.to_f64(),
         );
         

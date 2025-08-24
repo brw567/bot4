@@ -39,6 +39,7 @@ pub mod simd_decision_engine;  // JORDAN'S REQUIREMENT: <50ns decision latency w
 pub mod trading_types_complete;  // COMPLETE TRADING TYPES - Full implementation with NO SHORTCUTS!
 pub mod type_compatibility;  // TYPE COMPATIBILITY LAYER - Seamless integration!
 pub mod prelude;  // CENTRALIZED IMPORTS - All types in one place for easy access!
+pub mod order_book_analytics_ext;  // ORDER BOOK ANALYTICS - Missing methods implementation!
 
 #[cfg(test)]
 mod master_integration_validation;  // DEEP DIVE: Validates ALL connections work!

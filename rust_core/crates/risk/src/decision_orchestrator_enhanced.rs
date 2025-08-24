@@ -18,6 +18,7 @@ use crate::historical_regime_calibration::{HistoricalRegimeCalibration, Historic
 use crate::cross_asset_correlations::{CrossAssetCorrelations, AssetClass};
 use crate::hyperparameter_optimization::{HyperparameterOptimizer, AutoTunerConfig};
 use crate::optimal_execution::ExecutionAlgorithm;
+use crate::order_book_analytics_ext::OrderBookAnalytics; // Extension trait for OrderBook methods
 // VPIN calculation will be inline
 
 /// Simple VPIN calculator for flow toxicity
@@ -473,17 +474,24 @@ impl EnhancedDecisionOrchestrator {
             correlation_features: Vec::new(),
         };
         
-        // Price features
-        features.price_features.push(market_data.price.to_f64());
+        // Price features - using actual MarketData fields
+        // Using 'last' as the current price (most recent trade)
+        let current_price = market_data.last.to_f64();
+        features.price_features.push(current_price);
         features.price_features.push(market_data.spread.to_f64());
-        features.price_features.push((market_data.price / market_data.high).to_f64());
-        features.price_features.push((market_data.price / market_data.low).to_f64());
+        
+        // For high/low, we'll use bid/ask as approximations in real-time data
+        // In production, you'd get these from historical candles
+        let high_approx = market_data.ask.to_f64() * 1.001; // Approximate daily high
+        let low_approx = market_data.bid.to_f64() * 0.999;  // Approximate daily low
+        features.price_features.push(current_price / high_approx);
+        features.price_features.push(current_price / low_approx);
         
         // Calculate returns at multiple horizons
         if historical_data.len() > 10 {
-            let returns_1 = (market_data.price / historical_data[historical_data.len()-2].price).to_f64() - 1.0;
-            let returns_5 = (market_data.price / historical_data[historical_data.len()-6].price).to_f64() - 1.0;
-            let returns_10 = (market_data.price / historical_data[historical_data.len()-11].price).to_f64() - 1.0;
+            let returns_1 = (market_data.last / historical_data[historical_data.len()-2].last).to_f64() - 1.0;
+            let returns_5 = (market_data.last / historical_data[historical_data.len()-6].last).to_f64() - 1.0;
+            let returns_10 = (market_data.last / historical_data[historical_data.len()-11].last).to_f64() - 1.0;
             
             features.price_features.push(returns_1);
             features.price_features.push(returns_5);

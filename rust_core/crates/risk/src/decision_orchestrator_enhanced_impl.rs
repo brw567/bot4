@@ -90,13 +90,18 @@ impl EnhancedDecisionOrchestrator {
     ) -> Result<Signal> {
         let mut ta = self.ta_analytics.write();
         
-        // Update with latest data
+        // Update with latest data - map MarketData to OHLCV approximations
+        // For real-time tick data, we use last price as close, and approximate high/low
+        let last_price = market_data.last.to_f64();
+        let ask_price = market_data.ask.to_f64();
+        let bid_price = market_data.bid.to_f64();
+        
         ta.update(
-            market_data.price.to_f64(),
-            market_data.high.to_f64(),
-            market_data.low.to_f64(),
-            market_data.close.to_f64(),
-            market_data.volume.to_f64(),
+            last_price,                    // Current price (using last trade)
+            ask_price * 1.001,             // High approximation (slightly above ask)
+            bid_price * 0.999,             // Low approximation (slightly below bid)
+            last_price,                    // Close (same as current for real-time)
+            market_data.volume.to_f64(),  // Volume
         );
         
         // Collect all indicator signals
@@ -456,7 +461,7 @@ impl EnhancedDecisionOrchestrator {
         // Apply all 8 clamp layers
         let clamped_size = clamps.apply_all_clamps(
             Decimal::from_f64(kelly_size).unwrap(),
-            Decimal::from_f64(market_data.price.to_f64()).unwrap(),
+            Decimal::from_f64(market_data.last.to_f64()).unwrap(),
             &risk_metrics,
         );
         
