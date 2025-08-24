@@ -817,215 +817,164 @@ current_status: Phase 0-2 mostly complete, Phase 3+ has critical gaps (~35% over
   - Multi-tier cache management
   - Cache warming strategies
 
-### Phase 3.5: ENHANCED MODELS & RISK (EXPANDED)
-**Duration**: 2 weeks | **Owner**: Morgan + Quinn | **Status**: NOT STARTED
-**Mathematical Enhancements**: GARCH integration for fat tails
-**Risk Improvements**: Complete risk architecture per Sophia/Nexus
+### Phase 3.5: Mathematical Models & Risk Architecture ⚠️ CONSOLIDATED
+**Duration**: 3 weeks | **Owner**: Morgan + Quinn | **Status**: NOT STARTED
+**Priority**: CRITICAL - Blocks safe trading
+**Hours**: 236 hours total
+**Note**: Consolidated from duplicate Phase 3.5 entries
 
-#### Week 1: Mathematical Model Corrections
-- [ ] **GARCH-ARIMA Implementation** (Morgan)
-  - Replace basic ARIMA
-  - Student-t distribution (df=4)
-  - Handle volatility clustering
-  - 15-25% RMSE improvement expected
-- [ ] **GARCH-VaR Integration** (Quinn)
-  - Fix 20-30% tail underestimation
-  - 99% confidence level
-  - Conditional volatility forecasting
-  - Expected Shortfall (CVaR) addition
-- [ ] **DCC-GARCH Correlations** (Morgan)
-  - Dynamic correlation modeling
-  - Time-varying correlation matrix
-  - Regime-aware adjustments
-  - Portfolio optimization integration
-- [ ] **TimeSeriesSplit CV** (Morgan)
-  - Replace standard train/test split
-  - 10-fold with 1-week gap
-  - Purge and embargo implementation
-  - <10% generalization error target
-
-#### Week 2: Risk & Execution Enhancements
-- [ ] **Partial-Fill Manager** (Casey)
-  - Weighted average entry tracking
-  - Dynamic stop/target repricing
-  - OCO order management
-  - Exchange-specific handling
-- [ ] **Microstructure Analyzer** (Casey)
-  - Microprice calculation
-  - Toxic flow detection
-  - Optimal placement strategies
-  - Queue position tracking
-- [ ] **Non-Linear Signal Combiner** (Morgan)
-  - PCA orthogonalization
-  - XGBoost ensemble
-  - Regime-aware weighting
-  - 10-20% accuracy improvement
-- [ ] **Comprehensive Risk Constraints** (Quinn)
-  - Volatility targeting (15% annual)
-  - Portfolio heat caps (0.25 max)
-  - Correlation limits (0.7 pairwise)
-  - Concentration limits (5% per symbol)
-
-### Phase 3.6: GROK INTEGRATION (ASYNC ONLY)
-**Duration**: 1 week | **Owner**: Casey + Avery | **Status**: NOT STARTED
-**Architecture**: Async enrichment only - NOT in hot path
-**Budget**: $20/month initial (80,000 analyses)
-
-#### Week 1: Grok Integration & Auto-Adaptation
-- [ ] **Grok 3 Mini API Integration** (Casey + Avery)
-  - API client with exponential backoff
-  - Multi-tier caching (L1: 60s, L2: 1hr, L3: 24hr)
-  - Cost tracking & budgeting per capital tier
-  - 75% cost reduction via cached queries
-- [ ] **Capital-Adaptive Strategy System** (Morgan + Quinn)
-  - 5 tiers: Survival ($2-5K), Growth ($5-20K), Acceleration ($20-100K), Institutional ($100K-1M), Whale ($1-10M)
-  - Automatic tier transitions with 20% hysteresis
-  - Strategy activation based on available capital
-  - Risk limits scaling per tier
-- [ ] **Emotionless Control System** (Sam + Riley)
-  - Remove ALL manual controls from UI
-  - 24-hour parameter change cooldown
-  - Encrypted configuration with no runtime changes
-  - P&L reporting only after market close
-
-#### Week 2: Auto-Tuning & Zero Intervention
-- [ ] **Bayesian Auto-Tuning System** (Morgan + Jordan)
-  - 4-hour tuning cycles (no manual triggers)
-  - Sharpe ratio optimization with drawdown penalty
-  - Gradual parameter adjustment (no shocks)
-  - Audit-only logging (no UI display)
-- [ ] **Zero Human Intervention Architecture** (Full Team)
-  - All decisions via algorithm only
-  - Emergency stop = full liquidation only
-  - No position details in real-time
-  - Weekly summary reports only
-
-### Phase 3.5: Advanced Trading Logic & Efficiency - NOT STARTED
-**Duration**: 5 weeks → 6 weeks | **Owner**: Morgan & Quinn + Full Team
-**Note**: Trading efficiency optimization + Risk management overhaul
-**Budget**: $0.20-100/month (99% REDUCTION via Grok 3 Mini!)
-**Target APY**: 25-150% (Capital-Adaptive)
-**Sophia's Additions**: 2 CRITICAL items added
-
-#### Week 1: Critical Foundations (REVISED)
-- [ ] **Fractional Kelly Position Sizing** (Morgan + Quinn) ✅ Already planned
-  - 0.25x Kelly MAX (Sophia's safety constraint)
-  - Volatility targeting overlay
-  - VaR constraint integration
-  - Per-venue leverage limits (max 3x)
-  - Heat map visualization
-  - Minimum size filter (>0.5% of capital)
-- [ ] **Partial-Fill Aware Order Management** (Sam + Casey)
-  - Weighted average entry tracking
-  - Dynamic stop-loss adjustment on fills
-  - OCO (One-Cancels-Other) support
-  - Time-based stop implementation
-- [ ] **Trading Cost Management System** (Riley + Quinn)
-  - Real-time fee tracking (maker/taker)
-  - Slippage measurement & budgeting
-  - Market impact modeling
-  - Break-even analysis per trade
-  - Monthly cost reporting
-- [ ] **MiMalloc + Object Pools** (Jordan)
-  - Global allocator (<10ns allocs)
-  - 10M pre-allocated objects
-  - Lock-free data structures
-  - Memory monitoring
-
-#### Week 2: Risk & Mathematical Models (CRITICAL)
-- [ ] **GARCH Risk Suite Implementation** (Morgan)
+#### Week 1: Mathematical Foundations
+- [ ] **GARCH Suite Complete** (Morgan - 40 hours)
   - GARCH(1,1) for volatility forecasting
   - DCC-GARCH for dynamic correlations
   - EGARCH for asymmetric shocks
-  - Jump diffusion overlay for gaps
-  - Copula dependencies for tail risk
-- [ ] **Signal Orthogonalization System** (Morgan + Sam)
-  - PCA/ICA for decorrelation
-  - Random Forest for non-linear combination
-  - Multicollinearity detection
+  - Student-t distribution (df=4)
+  - Jump diffusion overlay
+  - 15-25% RMSE improvement expected
+- [ ] **TimeSeriesSplit CV** (Morgan - 16 hours)
+  - 10-fold with 1-week gap
+  - Purge and embargo implementation
+  - Walk-forward validation framework
+  - <10% generalization error target
+- [ ] **Signal Orthogonalization** (Morgan + Sam - 24 hours)
+  - PCA/ICA decorrelation
+  - XGBoost ensemble
+  - Regime-aware weighting
   - Feature importance ranking
-  - Online learning adaptation
-- [ ] **L2 Order Book Priority** (Avery)
-  - Multi-venue normalized L2 data ($1000/month)
-  - Historical L2 for backtesting ($200/month)
-  - Funding/basis rates (FREE)
-  - Microstructure analytics
-  - CANCEL xAI/Grok until proven
-- [ ] **Adaptive Risk Controls** (Quinn)
-  - Regime-based stop losses
-  - Correlation matrix estimation
-  - Portfolio heat management
+
+#### Week 2: Risk Controls & Position Sizing
+- [ ] **Fractional Kelly Implementation** (Quinn - 32 hours) ✅ CRITICAL
+  - 0.25x Kelly MAX (Sophia's constraint)
+  - Per-venue leverage limits (max 3x)
+  - Volatility targeting overlay
+  - Heat map visualization
+- [ ] **Comprehensive Risk Constraints** (Quinn - 24 hours)
+  - Portfolio heat caps (0.25 max)
+  - Correlation limits (0.7 pairwise)
+  - Concentration limits (5% per symbol)
   - Soft DD: 15%, Hard DD: 20%
-  - Recovery rules implementation
-
-#### Week 3: Performance & Execution Optimization
-- [ ] **Panic Conditions & Kill Switches** (Quinn) 🆕 SOPHIA REQUIREMENT
-  - Slippage threshold (>3x expected = halt)
+- [ ] **Panic Conditions & Kill Switches** (Quinn - 16 hours) 🆕 SOPHIA
+  - Slippage threshold (>3x = halt)
   - Quote staleness (>500ms = halt)
-  - Spread blow-out (>3x normal = halt)
-  - API error cascade (>threshold = halt)
-  - Cross-exchange price divergence (>2% = alert)
-- [ ] **Full Rayon Parallelization** (Jordan)
-  - 12-core utilization (8-10x speedup)
-  - SIMD optimization everywhere
-  - Lock-free concurrent structures
-  - Performance profiling & tuning
-- [ ] **Smart Order Router** (Casey)
-  - TWAP/VWAP/POV algorithms
-  - Venue selection optimization
-  - Anti-gaming protection
-  - Iceberg order support
-  - Maker preference logic (save 10bps)
-- [ ] **ARC Cache Implementation** (Jordan)
-  - Replace LRU with ARC policy
-  - Predictive prefetching
-  - Cache warming strategies
-  - 10-15% hit rate improvement
-- [ ] **Execution Efficiency System** (Casey + Sam)
-  - Order size optimization
-  - Slippage minimization
-  - Participation rate limits
-  - Best execution policies
+  - Spread blow-out (>3x = halt)
+  - API error cascade detection
 
-#### Week 4: Validation & Testing Framework
-- [ ] **Walk-Forward Analysis** (Riley + Morgan)
-  - 2+ years historical data required
+#### Week 3: Validation & Testing
+- [ ] **Walk-Forward Analysis** (Riley + Morgan - 32 hours)
+  - 2+ years historical data
   - Rolling window optimization
   - Out-of-sample validation
-  - Regime change detection
-- [ ] **Monte Carlo Simulation** (Morgan)
+- [ ] **Monte Carlo Simulation** (Morgan - 24 hours)
   - 10,000 path generation
-  - Confidence interval calculation
   - Risk-of-ruin analysis
   - Capacity decay modeling
-- [ ] **Property-Based Testing** (Riley)
+- [ ] **Property-Based Testing** (Riley - 24 hours)
   - Invariant verification
-  - Edge case generation
-  - Chaos engineering
-  - Load testing framework
-- [ ] **Trading Efficiency Metrics** (All)
-  - Sharpe after costs >1.5
-  - Profit factor >1.5
-  - Win rate 55-60%
-  - Average winner/loser >1.5
+  - Chaos engineering framework
 
-#### Week 5: Integration & Architecture Patterns
-- [ ] **Event Sourcing + CQRS** (Alex + Sam)
+### Phase 3.6: Execution & Microstructure ⚠️ RENUMBERED
+**Duration**: 3 weeks | **Owner**: Casey + Sam | **Status**: NOT STARTED
+**Priority**: HIGH - Critical for execution quality
+**Hours**: 200 hours total
+**Note**: Was part of duplicate Phase 3.5, now properly separated
+
+#### Week 1: Order Management
+- [ ] **Partial-Fill Manager** (Casey - 32 hours)
+  - Weighted average entry tracking
+  - Dynamic stop/target repricing
+  - OCO order management
+  - Time-based stops
+- [ ] **Trading Cost Management** (Riley + Quinn - 24 hours)
+  - Real-time fee tracking
+  - Slippage measurement
+  - Market impact modeling
+  - Break-even analysis
+
+#### Week 2: Microstructure & Execution
+- [ ] **Microstructure Analyzer** (Casey - 32 hours)
+  - Microprice calculation
+  - Toxic flow detection
+  - Queue position tracking
+  - L2 Order Book integration
+- [ ] **Smart Order Router** (Casey - 40 hours)
+  - TWAP/VWAP/POV algorithms
+  - Venue selection optimization
+  - Iceberg order support
+  - Anti-gaming protection
+
+#### Week 3: Performance Optimization
+- [ ] **Full Rayon Parallelization** (Jordan - 32 hours)
+  - 12-core utilization
+  - SIMD optimization
+  - Lock-free structures
+- [ ] **MiMalloc + Object Pools** (Jordan - 24 hours)
+  - Global allocator (<10ns)
+  - 10M pre-allocated objects
+  - Memory monitoring
+- [ ] **ARC Cache Implementation** (Jordan - 16 hours)
+  - Replace LRU with ARC
+  - Predictive prefetching
+  - 10-15% hit rate improvement
+
+### Phase 3.7: Grok Integration & Auto-Adaptation ⚠️ RENUMBERED
+**Duration**: 2 weeks | **Owner**: Casey + Avery + Morgan | **Status**: NOT STARTED
+**Priority**: MEDIUM - Enables autonomous adaptation
+**Hours**: 128 hours total
+**Budget**: $20/month initial (80,000 analyses via Grok 3 Mini)
+**Note**: Was Phase 3.6, now properly sequenced after execution
+
+#### Week 1: Grok Integration
+- [ ] **Grok 3 Mini API Integration** (Casey + Avery - 32 hours)
+  - API client with exponential backoff
+  - Multi-tier caching (L1: 60s, L2: 1hr, L3: 24hr)
+  - Cost tracking per capital tier
+  - 75% cost reduction via caching
+- [ ] **Capital-Adaptive Strategy System** (Morgan + Quinn - 24 hours)
+  - 5 tiers: Survival → Whale
+  - Automatic tier transitions
+  - Strategy activation by capital
+  - Risk limits scaling
+
+#### Week 2: Auto-Tuning & Zero Intervention
+- [ ] **Bayesian Auto-Tuning** (Morgan + Jordan - 32 hours)
+  - 4-hour tuning cycles
+  - Sharpe ratio optimization
+  - Gradual parameter adjustment
+  - Audit-only logging
+- [ ] **Emotionless Control System** (Sam + Riley - 24 hours)
+  - Remove ALL manual controls
+  - 24-hour parameter cooldown
+  - Encrypted configuration
+  - P&L reporting delay
+- [ ] **Zero Human Intervention Architecture** (Full Team - 16 hours)
+  - All decisions algorithmic
+  - Emergency = full liquidation
+  - Weekly summary only
+
+### Phase 3.8: Architecture & Integration ⚠️ NEW
+**Duration**: 2 weeks | **Owner**: Alex + Sam | **Status**: NOT STARTED
+**Priority**: MEDIUM - Final integration layer
+**Hours**: 120 hours total
+**Note**: Consolidates all architecture patterns and integration testing
+
+#### Week 1: Architecture Patterns
+- [ ] **Event Sourcing + CQRS** (Alex + Sam - 32 hours)
   - Event store implementation
   - Command/Query separation
-  - Audit trail complete
+  - Complete audit trail
   - Time-travel debugging
-- [ ] **Bulkhead Pattern** (Alex)
+- [ ] **Bulkhead Pattern** (Alex - 24 hours)
   - Per-exchange isolation
   - Per-strategy boundaries
   - Circuit breakers everywhere
   - Graceful degradation
-- [ ] **Distributed Tracing** (Avery)
+
+#### Week 2: Integration & Monitoring
+- [ ] **Distributed Tracing** (Avery - 24 hours)
   - OpenTelemetry integration
   - End-to-end visibility
   - Performance bottleneck detection
-  - Root cause analysis
-- [ ] **Final Integration Testing** (All)
+- [ ] **Final Integration Testing** (All - 40 hours)
   - 60-90 day paper trading setup
   - All systems integrated
   - Performance validation
@@ -1844,6 +1793,33 @@ current_status: Phase 0-2 mostly complete, Phase 3+ has critical gaps (~35% over
 
 ---
 
+## 📊 Phase 3.5-3.8 Reorganization - COMPLETED August 24, 2025
+
+### Problem Resolved:
+- **BEFORE**: Two duplicate Phase 3.5 entries with 236 hours of overlapping work
+- **AFTER**: Clean separation into 4 distinct phases (3.5-3.8)
+
+### New Structure:
+- **Phase 3.5**: Mathematical Models & Risk (236 hours) - Morgan + Quinn
+- **Phase 3.6**: Execution & Microstructure (200 hours) - Casey + Sam  
+- **Phase 3.7**: Grok Integration & Auto-Adaptation (128 hours) - Casey + Avery + Morgan
+- **Phase 3.8**: Architecture & Integration (120 hours) - Alex + Sam
+
+### Total Phase 3.5-3.8 Timeline:
+- **Duration**: 10 weeks (684 hours)
+- **Critical Path**: 3.5 (Math/Risk) → 3.6 (Execution) → 3.7 (Grok) → 3.8 (Integration)
+- **Can Parallelize**: Some 3.6 and 3.7 work after prerequisites
+
+### Key Consolidation Decisions:
+1. ✅ Eliminated all duplicate GARCH/risk implementations
+2. ✅ Moved Fractional Kelly to Phase 3.5 Week 2 (CRITICAL)
+3. ✅ Kept Panic Conditions in Phase 3.5 (Sophia requirement)
+4. ✅ Separated execution from mathematical models
+5. ✅ Sequenced Grok integration after core functionality
+6. ✅ Made architecture patterns the final integration phase
+
+---
+
 ## 📝 Document Status
 
 | Document | Status | Purpose |
@@ -1857,6 +1833,7 @@ current_status: Phase 0-2 mostly complete, Phase 3+ has critical gaps (~35% over
 | PHASE_3_3_SAFETY_SYSTEMS_STATUS.md | NEW 2025-08-24 | Safety systems analysis (40% complete) |
 | PHASE_3_ADVANCED_COMPONENTS_STATUS.md | NEW 2025-08-24 | Phase 3.1, 3.2, 3.4 analysis |
 | WEEK_2_ADVANCED_FEATURES_STATUS.md | NEW 2025-08-24 | Week 2 features analysis (75% complete) |
+| PHASE_3_5_CONSOLIDATION_ANALYSIS.md | NEW 2025-08-24 | Resolved duplicate Phase 3.5 entries |
 
 ---
 
