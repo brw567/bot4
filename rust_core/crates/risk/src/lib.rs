@@ -40,6 +40,7 @@ pub mod trading_types_complete;  // COMPLETE TRADING TYPES - Full implementation
 pub mod type_compatibility;  // TYPE COMPATIBILITY LAYER - Seamless integration!
 pub mod prelude;  // CENTRALIZED IMPORTS - All types in one place for easy access!
 pub mod order_book_analytics_ext;  // ORDER BOOK ANALYTICS - Missing methods implementation!
+// pub mod ml_methods_impl;  // ML METHODS - Temporarily disabled for incremental fixing
 
 #[cfg(test)]
 mod master_integration_validation;  // DEEP DIVE: Validates ALL connections work!

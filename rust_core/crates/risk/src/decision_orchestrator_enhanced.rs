@@ -499,9 +499,9 @@ impl EnhancedDecisionOrchestrator {
         
         // Calculate returns at multiple horizons
         if historical_data.len() > 10 {
-            let returns_1 = (market_data.last / historical_data[historical_data.len()-2].last).to_f64() - 1.0;
-            let returns_5 = (market_data.last / historical_data[historical_data.len()-6].last).to_f64() - 1.0;
-            let returns_10 = (market_data.last / historical_data[historical_data.len()-11].last).to_f64() - 1.0;
+            let returns_1 = (market_data.last / historical_data[historical_data.len()-2].last).to_f64().unwrap_or(0.0) - 1.0;
+            let returns_5 = (market_data.last / historical_data[historical_data.len()-6].last).to_f64().unwrap_or(0.0) - 1.0;
+            let returns_10 = (market_data.last / historical_data[historical_data.len()-11].last).to_f64().unwrap_or(0.0) - 1.0;
             
             features.price_features.push(returns_1);
             features.price_features.push(returns_5);

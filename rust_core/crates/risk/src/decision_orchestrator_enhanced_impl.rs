@@ -12,6 +12,7 @@ use crate::prelude::{
 use anyhow::{Result, anyhow};
 use rust_decimal::Decimal;
 use rust_decimal::prelude::*;
+use rust_decimal_macros::dec;  // Critical for compile-time decimal literals
 use std::collections::HashMap;
 
 /// Enhanced ML Signal with calibration
@@ -52,9 +53,10 @@ impl EnhancedDecisionOrchestrator {
         // Get ML prediction
         let ml_system = self.ml_system.read();
         let prediction = ml_system.predict(&all_features);
+        let (signal_action, raw_confidence) = prediction;  // Destructure tuple
         
         // Apply isotonic calibration
-        let calibrated_confidence = ml_system.calibrate_probability(prediction.confidence);
+        let calibrated_confidence = ml_system.calibrate_probability(raw_confidence);
         
         // Calculate SHAP values
         let shap_calc = self.shap_calculator.read();
@@ -74,8 +76,8 @@ impl EnhancedDecisionOrchestrator {
         ml_system.update_prediction_history(prediction.clone());
         
         Ok(EnhancedMLSignal {
-            action: if prediction.signal > 0.0 { SignalAction::Buy } else { SignalAction::Sell },
-            raw_confidence: prediction.confidence,
+            action: signal_action,  // Use the destructured action from prediction tuple
+            raw_confidence,  // Use the destructured confidence value
             calibrated_confidence,
             shap_values,
             top_features,
@@ -295,7 +297,7 @@ impl EnhancedDecisionOrchestrator {
         // Calculate approximate 24h return from current price
         let returns_24h = ((market_data.last.to_f64() - market_data.bid.to_f64()) / market_data.bid.to_f64()) * 100.0;
         let returns = HashMap::from([
-            (AssetClass::BTC, returns_24h),
+            (AssetClass::Crypto, returns_24h),  // BTC is part of Crypto asset class
         ]);
         self.cross_asset_corr.update(returns);
         
@@ -451,14 +453,14 @@ impl EnhancedDecisionOrchestrator {
         // Prepare risk metrics
         let risk_metrics = RiskMetrics {
             position_size: dec!(0.02),
-            confidence: dec!(confidence),
+            confidence: Decimal::from_f64(confidence).unwrap_or(Decimal::ZERO),
             expected_return: dec!(0.05),
-            volatility: dec!(volatility),
-            var_limit: dec!(vpin_toxicity.min(0.1)),  // Cap VaR limit
+            volatility: Decimal::from_f64(volatility).unwrap_or(dec!(0.02)),
+            var_limit: Decimal::from_f64(vpin_toxicity.min(0.1)).unwrap_or(dec!(0.1)),  // Cap VaR limit
             sharpe_ratio: 1.5,
-            kelly_fraction: dec!(kelly_size.min(1.0)),
+            kelly_fraction: Decimal::from_f64(kelly_size.min(1.0)).unwrap_or(dec!(0.02)),
             max_drawdown: dec!(0.15),
-            current_heat: dec!(tail_risk * 0.1),
+            current_heat: Decimal::from_f64(tail_risk * 0.1).unwrap_or(dec!(0.01)),
             leverage: 1.0,
         };
         
