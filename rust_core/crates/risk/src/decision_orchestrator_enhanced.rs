@@ -46,6 +46,10 @@ impl VPINCalculator {
         self.current_vpin = self.volume_buckets.iter().sum::<f64>() / self.volume_buckets.len() as f64;
         self.current_vpin
     }
+    
+    fn get_current_vpin(&self) -> f64 {
+        self.current_vpin
+    }
 }
 
 /// Simple Optimal Executor
@@ -86,50 +90,50 @@ use chrono::Utc;
 /// ENHANCED Decision Orchestrator - Uses ALL systems at FULL capacity
 pub struct EnhancedDecisionOrchestrator {
     // Core AI/ML Components
-    ml_system: Arc<RwLock<MLFeedbackSystem>>,
-    shap_calculator: Arc<RwLock<SHAPCalculator>>,
+    pub(crate) ml_system: Arc<RwLock<MLFeedbackSystem>>,
+    pub(crate) shap_calculator: Arc<RwLock<SHAPCalculator>>,
     
     // Technical Analysis
-    ta_analytics: Arc<RwLock<MarketAnalytics>>,
+    pub(crate) ta_analytics: Arc<RwLock<MarketAnalytics>>,
     
     // Risk Management
-    kelly_sizer: Arc<RwLock<KellySizer>>,
-    risk_clamps: Arc<RwLock<RiskClampSystem>>,
-    vpin_calculator: Arc<RwLock<VPINCalculator>>,
-    monte_carlo: Arc<RwLock<MonteCarloEngine>>,
+    pub(crate) kelly_sizer: Arc<RwLock<KellySizer>>,
+    pub(crate) risk_clamps: Arc<RwLock<RiskClampSystem>>,
+    pub(crate) vpin_calculator: Arc<RwLock<VPINCalculator>>,
+    pub(crate) monte_carlo: Arc<RwLock<MonteCarloEngine>>,
     
     // Auto-Tuning & Optimization
-    auto_tuner: Arc<RwLock<AutoTuningSystem>>,
-    hyperparameter_optimizer: Arc<RwLock<HyperparameterOptimizer>>,
-    parameter_manager: Arc<ParameterManager>,
+    pub(crate) auto_tuner: Arc<RwLock<AutoTuningSystem>>,
+    pub(crate) hyperparameter_optimizer: Arc<RwLock<HyperparameterOptimizer>>,
+    pub(crate) parameter_manager: Arc<ParameterManager>,
     
     // Profit Extraction
-    profit_extractor: Arc<RwLock<ProfitExtractor>>,
-    optimal_executor: Arc<RwLock<OptimalExecutor>>,
+    pub(crate) profit_extractor: Arc<RwLock<ProfitExtractor>>,
+    pub(crate) optimal_executor: Arc<RwLock<OptimalExecutor>>,
     
     // Portfolio Management
-    portfolio_manager: Arc<PortfolioManager>,
+    pub(crate) portfolio_manager: Arc<PortfolioManager>,
     
     // Nexus Priority 2 Systems
-    t_copula: Arc<TCopula>,
-    regime_calibration: Arc<HistoricalRegimeCalibration>,
-    cross_asset_corr: Arc<CrossAssetCorrelations>,
+    pub(crate) t_copula: Arc<TCopula>,
+    pub(crate) regime_calibration: Arc<HistoricalRegimeCalibration>,
+    pub(crate) cross_asset_corr: Arc<CrossAssetCorrelations>,
     
     // Database
-    persistence: Arc<AutoTuningPersistence>,
+    pub(crate) persistence: Arc<AutoTuningPersistence>,
     
     // Dynamic Weights (auto-tuned in real-time!)
-    ml_weight: Arc<RwLock<f64>>,
-    ta_weight: Arc<RwLock<f64>>,
-    sentiment_weight: Arc<RwLock<f64>>,
-    regime_weight: Arc<RwLock<f64>>,  // Weight for regime-based adjustments
+    pub(crate) ml_weight: Arc<RwLock<f64>>,
+    pub(crate) ta_weight: Arc<RwLock<f64>>,
+    pub(crate) sentiment_weight: Arc<RwLock<f64>>,
+    pub(crate) regime_weight: Arc<RwLock<f64>>,  // Weight for regime-based adjustments
     
     // Performance Tracking
-    decision_history: Arc<RwLock<Vec<EnhancedDecisionRecord>>>,
-    performance_stats: Arc<RwLock<PerformanceStats>>,
+    pub(crate) decision_history: Arc<RwLock<Vec<EnhancedDecisionRecord>>>,
+    pub(crate) performance_stats: Arc<RwLock<PerformanceStats>>,
     
     // Feature Engineering
-    feature_pipeline: Arc<RwLock<FeaturePipeline>>,
+    pub(crate) feature_pipeline: Arc<RwLock<FeaturePipeline>>,
 }
 
 #[derive(Debug, Clone)]
@@ -198,7 +202,7 @@ impl EnhancedDecisionOrchestrator {
             min_samples_before_optimization: 20,
         };
         let hyperparameter_optimizer = Arc::new(RwLock::new(
-            HyperparameterOptimizer::new(optimizer_config)
+            HyperparameterOptimizer::new()  // No config needed per implementation
         ));
         
         // Initialize market analytics with FULL TA
@@ -219,7 +223,12 @@ impl EnhancedDecisionOrchestrator {
         let vpin_calculator = Arc::new(RwLock::new(VPINCalculator::new()));
         
         // Initialize Monte Carlo simulator
-        let monte_carlo = Arc::new(RwLock::new(MonteCarloEngine::new(10000)));
+        let monte_carlo = Arc::new(RwLock::new(MonteCarloEngine::new(
+            10000,          // num_simulations
+            252,            // time_steps (1 year of trading days)
+            1.0 / 252.0,    // dt (daily time step)
+            dec!(100000.0), // initial_capital
+        )));
         
         // Initialize optimal executor
         let optimal_executor = Arc::new(RwLock::new(OptimalExecutor::new()));
@@ -509,7 +518,7 @@ impl EnhancedDecisionOrchestrator {
         features.microstructure_features.push(order_book.bid_ask_spread());
         features.microstructure_features.push(order_book.mid_price());
         features.microstructure_features.push(order_book.order_flow_imbalance());
-        features.microstructure_features.push(order_book.depth_imbalance());
+        features.microstructure_features.push(order_book.depth_imbalance(5)); // Use top 5 levels
         
         // Get TA indicators
         let ta = self.ta_analytics.read();
@@ -520,10 +529,10 @@ impl EnhancedDecisionOrchestrator {
             features.technical_features.push(macd.macd);
             features.technical_features.push(macd.signal);
         }
-        if let Some(bb) = ta.get_bollinger_bands() {
-            features.technical_features.push(bb.upper);
-            features.technical_features.push(bb.middle);
-            features.technical_features.push(bb.lower);
+        if let Some((upper, middle, lower)) = ta.get_bollinger_bands() {
+            features.technical_features.push(upper);
+            features.technical_features.push(middle);
+            features.technical_features.push(lower);
         }
         
         // Regime features
@@ -575,10 +584,11 @@ impl EnhancedDecisionOrchestrator {
     
     fn extract_regime_features(&self, market_data: &MarketData) -> Vec<f64> {
         vec![
-            market_data.price.to_f64(),
+            market_data.last.to_f64(),  // Use last price instead of 'price'
             market_data.volume.to_f64(),
             market_data.spread.to_f64(),
-            (market_data.high - market_data.low).to_f64(),
+            // Approximate daily range from bid/ask spread
+            (market_data.ask - market_data.bid).to_f64() * 10.0,  // Amplify for feature
         ]
     }
 }

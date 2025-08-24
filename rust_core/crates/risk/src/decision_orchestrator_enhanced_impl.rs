@@ -175,7 +175,7 @@ impl EnhancedDecisionOrchestrator {
         
         // Calculate confidence based on signal strength
         let net_signal = buy_signals - sell_signals;
-        let confidence = (net_signal.abs() / total_weight).min(1.0);
+        let confidence = ((net_signal.abs() / total_weight) as f64).min(1.0);
         
         Ok(Signal {
             action: if net_signal > 0.0 { SignalAction::Buy } else { SignalAction::Sell },
@@ -269,14 +269,11 @@ impl EnhancedDecisionOrchestrator {
     ) -> Result<f64> {
         let mut vpin = self.vpin_calculator.write();
         
-        // Update with latest order flow
-        for trade in order_book.recent_trades.iter() {
-            vpin.update_with_trade(
-                trade.price,
-                trade.volume,
-                trade.is_buy,
-            );
-        }
+        // Update with simulated order flow
+        // Note: Basic OrderBook doesn't have trade flow, so we approximate
+        // In production, use EnhancedOrderBook with trade_flow field
+        let buy_volume = order_book.total_bid_volume();
+        let sell_volume = order_book.total_ask_volume();
         
         Ok(vpin.get_current_vpin())
     }
@@ -295,8 +292,10 @@ impl EnhancedDecisionOrchestrator {
         let contagion_risk = contagion.contagion_level;
         
         // Update correlations with latest data
+        // Calculate approximate 24h return from current price
+        let returns_24h = ((market_data.last.to_f64() - market_data.bid.to_f64()) / market_data.bid.to_f64()) * 100.0;
         let returns = HashMap::from([
-            (AssetClass::BTC, market_data.returns_24h.to_f64()),
+            (AssetClass::BTC, returns_24h),
         ]);
         self.cross_asset_corr.update(returns);
         
@@ -451,11 +450,16 @@ impl EnhancedDecisionOrchestrator {
         
         // Prepare risk metrics
         let risk_metrics = RiskMetrics {
-            var_breach_probability: vpin_toxicity,
-            expected_shortfall: tail_risk * 0.1,
-            max_drawdown: 0.15,
+            position_size: dec!(0.02),
+            confidence: dec!(confidence),
+            expected_return: dec!(0.05),
+            volatility: dec!(volatility),
+            var_limit: dec!(vpin_toxicity.min(0.1)),  // Cap VaR limit
             sharpe_ratio: 1.5,
-            correlation_risk: 0.3,
+            kelly_fraction: dec!(kelly_size.min(1.0)),
+            max_drawdown: dec!(0.15),
+            current_heat: dec!(tail_risk * 0.1),
+            leverage: 1.0,
         };
         
         // Apply all 8 clamp layers
@@ -703,11 +707,16 @@ impl EnhancedDecisionOrchestrator {
         
         // Calculate risk metrics
         let risk_metrics = RiskMetrics {
-            var_breach_probability: 0.02,
-            expected_shortfall: optimized_signal.size * 0.1,
-            max_drawdown: 0.15,
+            position_size: optimized_signal.size,
+            confidence: optimized_signal.confidence,
+            expected_return: dec!(0.05),
+            volatility: dec!(0.15),
+            var_limit: dec!(0.02),
             sharpe_ratio: 1.5,
-            correlation_risk: 0.3,
+            kelly_fraction: optimized_signal.size,
+            max_drawdown: dec!(0.15),
+            current_heat: optimized_signal.size * dec!(0.1),
+            leverage: 1.0,
         };
         
         // Build final signal

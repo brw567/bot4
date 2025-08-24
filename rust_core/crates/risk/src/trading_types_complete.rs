@@ -68,6 +68,8 @@ pub enum ExecutionAlgorithm {
     // Adaptive algorithms
     IS,             // Implementation Shortfall
     AC,             // Adaptive Curve
+    Adaptive,       // ML-based adaptive execution
+    AdaptiveLiquidity, // Adapts to book depth
     Guerrilla,      // Opportunistic execution
     
     // Market making
@@ -77,8 +79,10 @@ pub enum ExecutionAlgorithm {
     
     // Smart routing
     SOR,            // Smart Order Router
+    SmartOrderRouting, // Best execution across venues
     DarkPool,       // Dark pool seeking
     Aggressive,     // Take liquidity aggressively
+    SweepToFill,    // Sweep multiple levels
 }
 
 impl ExecutionAlgorithm {

@@ -11,6 +11,7 @@ pub trait OrderBookAnalytics {
     fn total_ask_volume(&self) -> f64;
     fn volume_imbalance(&self) -> f64;
     fn bid_ask_spread(&self) -> f64;
+    fn spread_bps(&self) -> f64;
     fn mid_price(&self) -> f64;
     fn order_flow_imbalance(&self) -> f64;
     fn depth_imbalance(&self, levels: usize) -> f64;
@@ -53,6 +54,22 @@ impl OrderBookAnalytics for OrderBook {
             let best_ask = self.asks[0].price.to_f64();
             let best_bid = self.bids[0].price.to_f64();
             best_ask - best_bid
+        } else {
+            0.0
+        }
+    }
+    
+    /// Calculate spread in basis points
+    fn spread_bps(&self) -> f64 {
+        if !self.bids.is_empty() && !self.asks.is_empty() {
+            let best_ask = self.asks[0].price.to_f64();
+            let best_bid = self.bids[0].price.to_f64();
+            let mid_price = (best_ask + best_bid) / 2.0;
+            if mid_price > 0.0 {
+                ((best_ask - best_bid) / mid_price) * 10000.0  // Convert to bps
+            } else {
+                0.0
+            }
         } else {
             0.0
         }

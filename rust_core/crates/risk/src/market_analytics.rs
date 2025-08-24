@@ -1753,6 +1753,17 @@ impl MarketAnalytics {
         }
     }
     
+    /// Get Bollinger Bands (upper, middle, lower)
+    pub fn get_bollinger_bands(&self) -> Option<(f64, f64, f64)> {
+        let ta = self.ta_calculator.read();
+        if ta.bollinger_upper > 0.0 && ta.bollinger_lower > 0.0 {
+            let middle = (ta.bollinger_upper + ta.bollinger_lower) / 2.0;
+            Some((ta.bollinger_upper, middle, ta.bollinger_lower))
+        } else {
+            None
+        }
+    }
+    
     /// Get ATR (Average True Range)
     pub fn get_atr(&self) -> Option<f64> {
         let ta = self.ta_calculator.read();
