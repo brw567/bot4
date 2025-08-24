@@ -133,7 +133,7 @@ pub enum ToxicityBreach {
 /// Alex: "Single point of control for all protective mechanisms"
 pub struct CircuitBreakerHub {
     /// Component-specific breakers
-    breakers: Arc<DashMap<String, Arc<CircuitBreaker>>>,
+    breakers: Arc<DashMap<String, Arc<ComponentBreaker>>>,
     
     /// Risk calculation breakers
     risk_breakers: Arc<RiskCircuitBreakers>,
@@ -190,7 +190,7 @@ impl RiskCircuitBreakers {
             ..Default::default()
         };
         
-        let clock = Arc::new(SystemClock::new());
+        let clock = Arc::new(SystemClock);
         let config = Arc::new(risk_config);
         
         Self {
@@ -232,7 +232,7 @@ impl RiskCircuitBreakers {
     }
     
     /// Get all breakers for monitoring
-    fn all_breakers(&self) -> Vec<Arc<CircuitBreaker>> {
+    fn all_breakers(&self) -> Vec<Arc<ComponentBreaker>> {
         vec![
             self.var_breaker.clone(),
             self.kelly_breaker.clone(),
@@ -388,7 +388,7 @@ impl CircuitBreakerHub {
     }
     
     /// Register a component circuit breaker
-    pub fn register_breaker(&self, name: String, breaker: Arc<CircuitBreaker>) {
+    pub fn register_breaker(&self, name: String, breaker: Arc<ComponentBreaker>) {
         self.breakers.insert(name.clone(), breaker);
         info!("Registered circuit breaker: {}", name);
     }
