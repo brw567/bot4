@@ -18,7 +18,7 @@ use async_trait::async_trait;
 use serde::{Serialize, Deserialize};
 use tracing::{error, warn, info, debug};
 
-use crate::{CircuitBreaker, CircuitState, CircuitConfig, Outcome};
+use crate::circuit_breaker::{ComponentBreaker, CircuitState, CircuitConfig, Outcome, Clock, SystemClock};
 use crate::emergency_coordinator::{EmergencyCoordinator, EmergencyReason, Shutdownable};
 
 // ============================================================================
@@ -158,22 +158,22 @@ pub struct CircuitBreakerHub {
 /// Quinn: "Each risk calculation needs protection"
 struct RiskCircuitBreakers {
     /// Portfolio VaR calculation
-    var_breaker: Arc<CircuitBreaker>,
+    var_breaker: Arc<ComponentBreaker>,
     
     /// Kelly sizing calculation
-    kelly_breaker: Arc<CircuitBreaker>,
+    kelly_breaker: Arc<ComponentBreaker>,
     
     /// Correlation matrix calculation
-    correlation_breaker: Arc<CircuitBreaker>,
+    correlation_breaker: Arc<ComponentBreaker>,
     
     /// Monte Carlo simulation
-    monte_carlo_breaker: Arc<CircuitBreaker>,
+    monte_carlo_breaker: Arc<ComponentBreaker>,
     
     /// Position sizing
-    position_breaker: Arc<CircuitBreaker>,
+    position_breaker: Arc<ComponentBreaker>,
     
     /// Stop loss calculation
-    stop_loss_breaker: Arc<CircuitBreaker>,
+    stop_loss_breaker: Arc<ComponentBreaker>,
 }
 
 impl RiskCircuitBreakers {
@@ -190,30 +190,33 @@ impl RiskCircuitBreakers {
             ..Default::default()
         };
         
+        let clock = Arc::new(SystemClock::new());
+        let config = Arc::new(risk_config);
+        
         Self {
-            var_breaker: Arc::new(CircuitBreaker::new(
-                "VaR_Calculation".to_string(),
-                risk_config.clone(),
+            var_breaker: Arc::new(ComponentBreaker::new(
+                clock.clone(),
+                config.clone(),
             )),
-            kelly_breaker: Arc::new(CircuitBreaker::new(
-                "Kelly_Sizing".to_string(),
-                risk_config.clone(),
+            kelly_breaker: Arc::new(ComponentBreaker::new(
+                clock.clone(),
+                config.clone(),
             )),
-            correlation_breaker: Arc::new(CircuitBreaker::new(
-                "Correlation_Matrix".to_string(),
-                risk_config.clone(),
+            correlation_breaker: Arc::new(ComponentBreaker::new(
+                clock.clone(),
+                config.clone(),
             )),
-            monte_carlo_breaker: Arc::new(CircuitBreaker::new(
-                "Monte_Carlo".to_string(),
-                risk_config.clone(),
+            monte_carlo_breaker: Arc::new(ComponentBreaker::new(
+                clock.clone(),
+                config.clone(),
             )),
-            position_breaker: Arc::new(CircuitBreaker::new(
-                "Position_Sizing".to_string(),
-                risk_config.clone(),
+            position_breaker: Arc::new(ComponentBreaker::new(
+                clock.clone(),
+                config.clone(),
             )),
-            stop_loss_breaker: Arc::new(CircuitBreaker::new(
-                "Stop_Loss".to_string(),
-                risk_config.clone(),
+            stop_loss_breaker: Arc::new(ComponentBreaker::new(
+                clock.clone(),
+                config.clone(),
             )),
         }
     }
