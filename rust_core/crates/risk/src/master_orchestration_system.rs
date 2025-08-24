@@ -18,6 +18,8 @@ use crate::ml_feedback::MLFeedbackSystem;
 use crate::market_analytics::MarketAnalytics;
 use crate::kelly_sizing::KellySizer;
 use crate::clamps::RiskClampSystem;
+// Import missing types from prelude
+use crate::prelude::{OrderBook, SentimentData, OptimizationStrategy};
 use crate::profit_extractor::ProfitExtractor;
 use crate::auto_tuning::AutoTuningSystem;
 use crate::portfolio_manager::{PortfolioManager, PortfolioConfig};

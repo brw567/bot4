@@ -38,6 +38,7 @@ pub mod master_orchestration_system;  // MASTER BRAIN: Connects EVERYTHING with 
 pub mod simd_decision_engine;  // JORDAN'S REQUIREMENT: <50ns decision latency with SIMD!
 pub mod trading_types_complete;  // COMPLETE TRADING TYPES - Full implementation with NO SHORTCUTS!
 pub mod type_compatibility;  // TYPE COMPATIBILITY LAYER - Seamless integration!
+pub mod prelude;  // CENTRALIZED IMPORTS - All types in one place for easy access!
 
 #[cfg(test)]
 mod master_integration_validation;  // DEEP DIVE: Validates ALL connections work!

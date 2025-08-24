@@ -5,6 +5,10 @@ use super::decision_orchestrator_enhanced::*;
 use crate::unified_types::*;
 use crate::decision_orchestrator::Signal;
 use crate::HistoricalRegime;
+// Import all types from prelude - fixes missing types
+use crate::prelude::{
+    OrderBook, SentimentData, ExecutionAlgorithm, AssetClass, tail_risk, Utc
+};
 use anyhow::{Result, anyhow};
 use rust_decimal::Decimal;
 use rust_decimal::prelude::*;
