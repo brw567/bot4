@@ -538,7 +538,7 @@ impl MasterOrchestrationSystem {
         // If auto-optimization is enabled, get latest optimized values
         if self.config.enable_auto_optimization {
             let hp_system = self.hyperparameter_system.read();
-            let optimized = hp_system.current_params.read();
+            let optimized = hp_system.current_params().read();
             for (key, value) in optimized.iter() {
                 params.insert(key.clone(), *value);
             }

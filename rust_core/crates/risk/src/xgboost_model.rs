@@ -91,6 +91,28 @@ impl GradientBoostingModel {
             objective: ObjectiveFunction::Binary,
         }
     }
+    
+    // Public setter and getter methods
+    
+    /// Set the objective function
+    pub fn set_objective(&mut self, objective: ObjectiveFunction) {
+        self.objective = objective;
+    }
+    
+    /// Get the objective function
+    pub fn objective(&self) -> &ObjectiveFunction {
+        &self.objective
+    }
+    
+    /// Get feature importance scores
+    pub fn feature_importance(&self) -> &HashMap<String, f64> {
+        &self.feature_importance
+    }
+    
+    /// Get feature names
+    pub fn feature_names(&self) -> &[String] {
+        &self.feature_names
+    }
 
     /// Train the gradient boosting model
     pub fn train(

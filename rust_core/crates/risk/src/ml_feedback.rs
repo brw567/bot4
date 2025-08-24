@@ -737,7 +737,7 @@ impl OnlineLearner {
             6,    // max_depth
             0.1,  // learning_rate
         );
-        model.objective = ObjectiveFunction::Binary;
+        model.set_objective(ObjectiveFunction::Binary);
         
         // Add initial version to manager
         let mut version_manager = ModelVersionManager::new();
@@ -790,7 +790,7 @@ impl OnlineLearner {
             6,    // max_depth
             0.1,  // learning_rate
         );
-        new_model.objective = ObjectiveFunction::Binary;
+        new_model.set_objective(ObjectiveFunction::Binary);
         
         // Split into train/validation (80/20)
         let n_train = (x.nrows() as f64 * 0.8).max(1.0) as usize;

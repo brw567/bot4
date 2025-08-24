@@ -136,6 +136,33 @@ impl HyperparameterIntegrationSystem {
         }
     }
     
+    // Public getter methods for encapsulated fields
+    
+    /// Get current parameters (read-only access)
+    pub fn current_params(&self) -> Arc<RwLock<HashMap<String, f64>>> {
+        Arc::clone(&self.current_params)
+    }
+    
+    /// Get performance history
+    pub fn performance_history(&self) -> &[PerformanceSnapshot] {
+        &self.performance_history
+    }
+    
+    /// Get optimization history
+    pub fn optimization_history(&self) -> &[OptimizationEvent] {
+        &self.optimization_history
+    }
+    
+    /// Get current market regime
+    pub fn current_regime(&self) -> MarketRegime {
+        self.current_regime
+    }
+    
+    /// Get recent performance metrics
+    pub fn recent_metrics(&self) -> (f64, f64, f64) {
+        (self.recent_sharpe, self.recent_drawdown, self.recent_win_rate)
+    }
+    
     /// CRITICAL: Main optimization cycle that adapts ALL parameters
     pub fn run_optimization_cycle(&mut self) -> HashMap<String, f64> {
         println!("🔧 Running DEEP DIVE optimization cycle - NO SIMPLIFICATIONS!");

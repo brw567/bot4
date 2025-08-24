@@ -111,6 +111,33 @@ impl SHAPCalculator {
         }
     }
     
+    // Public getter methods for encapsulated fields
+    
+    /// Get feature names
+    pub fn feature_names(&self) -> &[String] {
+        &self.feature_names
+    }
+    
+    /// Get feature metadata
+    pub fn feature_metadata(&self) -> &HashMap<String, FeatureMetadata> {
+        &self.feature_metadata
+    }
+    
+    /// Get SHAP values cache (read-only access)
+    pub fn shap_values_cache(&self) -> Arc<RwLock<HashMap<u64, Array1<f64>>>> {
+        Arc::clone(&self.shap_values_cache)
+    }
+    
+    /// Get computation time in milliseconds
+    pub fn computation_time_ms(&self) -> f64 {
+        self.computation_time_ms
+    }
+    
+    /// Get accuracy score
+    pub fn accuracy_score(&self) -> f64 {
+        self.accuracy_score
+    }
+    
     /// Calculate SHAP values using KernelSHAP algorithm
     pub fn calculate_kernel_shap(&mut self, X: &Array2<f64>) -> Array2<f64> {
         let start_time = std::time::Instant::now();

@@ -69,7 +69,7 @@ impl EnhancedDecisionOrchestrator {
         let shap_values = shap_calc.calculate_shap_values(&all_features);
         
         // Get top features by importance
-        let mut feature_importance: Vec<(String, f64)> = shap_calc.feature_names.iter()
+        let mut feature_importance: Vec<(String, f64)> = shap_calc.feature_names().iter()
             .zip(shap_values.iter())
             .map(|(name, &value)| (name.clone(), value.abs()))
             .collect();
