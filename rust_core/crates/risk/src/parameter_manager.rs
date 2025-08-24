@@ -217,6 +217,41 @@ impl ParameterManager {
         // Re-optimize every hour or after significant market change
         self.last_update.elapsed().as_secs() > 3600
     }
+    
+    /// Update a parameter value - with validation
+    pub fn update_parameter(&self, key: String, value: f64) {
+        // Validate against bounds
+        if let Some((min, max)) = self.bounds.get(&key) {
+            let clamped_value = value.max(*min).min(*max);
+            if (clamped_value - value).abs() > 0.0001 {
+                log::warn!(
+                    "Parameter {} value {} clamped to bounds [{}, {}]",
+                    key, value, min, max
+                );
+            }
+            
+            let mut params = self.parameters.write().unwrap();
+            params.insert(key.clone(), clamped_value);
+            
+            log::info!(
+                "Updated parameter {} to {} (bounds: [{}, {}])",
+                key, clamped_value, min, max
+            );
+        } else {
+            log::error!(
+                "Cannot update unknown parameter: {}. Valid parameters: {:?}",
+                key,
+                self.bounds.keys().collect::<Vec<_>>()
+            );
+        }
+    }
+    
+    /// Batch update parameters from optimization results
+    pub fn update_all(&self, new_params: HashMap<String, f64>) {
+        for (key, value) in new_params {
+            self.update_parameter(key, value);
+        }
+    }
 }
 
 /// Game Theory Parameter Calculator

@@ -478,6 +478,55 @@ impl AutoTuningSystem {
             regime_confidence: self.regime_confidence,
         }
     }
+    
+    /// Set VaR limit directly (for hyperparameter optimization)
+    pub fn set_var_limit(&mut self, var_limit: rust_decimal::Decimal) {
+        let var_limit_f64 = var_limit.to_f64().unwrap_or(0.02);
+        // Clamp to reasonable bounds (0.5% to 10%)
+        let clamped = var_limit_f64.max(0.005).min(0.10);
+        *self.adaptive_var_limit.write() = clamped;
+        
+        log::info!(
+            "Updated VaR limit to {:.2}% (input: {:.2}%)",
+            clamped * 100.0,
+            var_limit_f64 * 100.0
+        );
+    }
+    
+    /// Set Kelly fraction directly (for hyperparameter optimization)
+    pub fn set_kelly_fraction(&mut self, kelly_fraction: rust_decimal::Decimal) {
+        let kelly_f64 = kelly_fraction.to_f64().unwrap_or(0.25);
+        // Clamp to reasonable bounds (1% to 50%)
+        let clamped = kelly_f64.max(0.01).min(0.50);
+        *self.adaptive_kelly_fraction.write() = clamped;
+        
+        log::info!(
+            "Updated Kelly fraction to {:.2}% (input: {:.2}%)",
+            clamped * 100.0,
+            kelly_f64 * 100.0
+        );
+    }
+    
+    /// Set volatility target (for strategy tuning)
+    pub fn set_vol_target(&mut self, vol_target: f64) {
+        // Clamp to reasonable bounds (5% to 50% annualized)
+        let clamped = vol_target.max(0.05).min(0.50);
+        *self.adaptive_vol_target.write() = clamped;
+        
+        log::info!(
+            "Updated volatility target to {:.2}% annualized",
+            clamped * 100.0
+        );
+    }
+    
+    /// Set leverage cap (risk management)
+    pub fn set_leverage_cap(&mut self, leverage: f64) {
+        // Clamp to reasonable bounds (1x to 10x)
+        let clamped = leverage.max(1.0).min(10.0);
+        *self.adaptive_leverage_cap.write() = clamped;
+        
+        log::info!("Updated leverage cap to {:.1}x", clamped);
+    }
 }
 
 impl QTable {
