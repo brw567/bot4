@@ -93,6 +93,7 @@ Market Data → Regime Detection → Strategy Selection → Mathematical Validat
 - Rust 1.75+ (stable)
 - PostgreSQL 14+ with TimescaleDB
 - Redis 7.0+
+- LibTorch 1.8+ (for ML components)
 - Docker 24+
 - Python 3.9+ (for validation scripts only)
 ```
@@ -102,17 +103,23 @@ Market Data → Regime Detection → Strategy Selection → Mathematical Validat
 # 1. Clone and enter directory
 cd /home/hamster/bot4
 
-# 2. Run QA environment setup
-./scripts/qa_environment_setup.sh
+# 2. Run complete development environment setup
+./scripts/setup_dev_environment.sh
 
-# 3. Sync with LLM documentation
-./scripts/enforce_document_sync.sh check
+# 3. Setup LibTorch for ML components
+sudo ./scripts/setup_libtorch.sh
 
-# 4. Build Rust workspace
+# 4. Load environment variables
+source ~/.bot4_env
+
+# 5. Build Rust workspace
 cd rust_core
-cargo build --release
+LIBTORCH=/usr/lib/x86_64-linux-gnu cargo build --release
 
-# 5. Run validation
+# 6. Run integration verification
+./scripts/verify_integration.sh
+
+# 7. Run validation
 ./scripts/verify_completion.sh
 ```
 
