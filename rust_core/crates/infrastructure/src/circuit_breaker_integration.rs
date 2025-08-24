@@ -9,17 +9,16 @@
 // - SEC Risk Controls for Algorithmic Trading (2015)
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, AtomicU64, AtomicU32, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 use parking_lot::RwLock;
 use dashmap::DashMap;
-use tokio::sync::{broadcast, mpsc};
+use tokio::sync::broadcast;
 use async_trait::async_trait;
-use serde::{Serialize, Deserialize};
-use tracing::{error, warn, info, debug};
+use tracing::{error, warn, info};
 
-use crate::circuit_breaker::{ComponentBreaker, CircuitState, CircuitConfig, Outcome, Clock, SystemClock};
-use crate::emergency_coordinator::{EmergencyCoordinator, EmergencyReason, Shutdownable};
+use crate::circuit_breaker::{ComponentBreaker, CircuitState, CircuitConfig, Outcome, SystemClock};
+use crate::emergency_coordinator::{EmergencyCoordinator, EmergencyReason};
 
 // ============================================================================
 // TOXICITY DETECTION - Multi-Signal Approach
@@ -258,6 +257,7 @@ struct ToxicityMonitor {
     history: Arc<RwLock<Vec<(Instant, ToxicitySignals)>>>,
     
     /// Thresholds configuration
+    #[allow(dead_code)]
     thresholds: ToxicityThresholds,
     
     /// Trip count
@@ -268,6 +268,7 @@ struct ToxicityMonitor {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 struct ToxicityThresholds {
     /// Order flow imbalance threshold
     ofi_critical: f64,

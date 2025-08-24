@@ -4,7 +4,7 @@
 // Target: Zero-allocation with 1M+ pre-allocated objects
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, AtomicU64, Ordering};
+use std::sync::atomic::{AtomicU64, Ordering};
 use crossbeam::queue::ArrayQueue;
 use thread_local::ThreadLocal;
 use std::cell::RefCell;

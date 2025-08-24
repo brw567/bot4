@@ -13,8 +13,8 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use parking_lot::RwLock;
 use crossbeam::channel::{bounded, Sender, Receiver};
-use tracing::{error, warn, info, debug};
-use anyhow::{Result, Context};
+use tracing::{error, info};
+use anyhow::Result;
 
 // GPIO pin assignments following industrial standards
 const EMERGENCY_STOP_PIN: u8 = 15;      // Normally Closed (NC) circuit
@@ -26,6 +26,7 @@ const TAMPER_DETECT_PIN: u8 = 24;       // Tamper Detection Sensor
 const RESET_BUTTON_PIN: u8 = 25;        // Reset button (separate from E-stop)
 
 // IEC 60204-1 compliant timing requirements
+#[allow(dead_code)]
 const DEBOUNCE_TIME_US: u64 = 50;       // 50μs debounce for industrial switches
 const MAX_RESPONSE_TIME_US: u64 = 10;   // <10μs response requirement
 const WATCHDOG_TIMEOUT_MS: u64 = 100;   // 100ms watchdog timer
@@ -103,6 +104,7 @@ pub struct HardwareKillSwitch {
     
     /// Event channel for notifications
     event_tx: Sender<EmergencyEvent>,
+    #[allow(dead_code)]
     event_rx: Receiver<EmergencyEvent>,
     
     /// Watchdog timer
@@ -640,6 +642,219 @@ mod tests {
         
         // Should complete well within 1ms (1000μs)
         assert!(elapsed.as_micros() < 1000);
+    }
+    
+    #[test]
+    fn test_reset_after_emergency() {
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = HardwareKillSwitch::new(gpio, StopCategory::Category0).unwrap();
+        
+        // Activate emergency stop
+        kill_switch.activate_emergency_stop(ActivationSource::Software).unwrap();
+        assert_eq!(kill_switch.current_state(), KillSwitchState::EmergencyStopped);
+        
+        // Attempt reset (should fail immediately after activation)
+        assert!(kill_switch.reset().is_err());
+        
+        // Wait for cooldown period to expire
+        std::thread::sleep(Duration::from_millis(RESET_COOLDOWN_MS + 100));
+        
+        // Now reset should succeed
+        kill_switch.reset().unwrap();
+        assert_eq!(kill_switch.current_state(), KillSwitchState::Normal);
+        assert!(kill_switch.is_trading_allowed());
+    }
+    
+    #[test]
+    fn test_tamper_detection() {
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = HardwareKillSwitch::new(gpio.clone(), StopCategory::Category0).unwrap();
+        
+        // Simulate tamper detection
+        gpio.write_pin(TAMPER_DETECT_PIN, true);
+        kill_switch.check_tamper();
+        
+        assert_eq!(kill_switch.current_state(), KillSwitchState::TamperDetected);
+        assert!(!kill_switch.is_trading_allowed());
+        assert_eq!(kill_switch.activation_count(), 1);
+    }
+    
+    #[test]
+    fn test_multiple_activation_sources() {
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = HardwareKillSwitch::new(gpio, StopCategory::Category0).unwrap();
+        
+        // Test each activation source
+        let sources = vec![
+            ActivationSource::PhysicalButton,
+            ActivationSource::Software,
+            ActivationSource::RiskLimit,
+            ActivationSource::CircuitBreaker,
+            ActivationSource::NetworkFailure,
+            ActivationSource::Manual,
+        ];
+        
+        for source in &sources {
+            // Reset before each test
+            std::thread::sleep(Duration::from_millis(RESET_COOLDOWN_MS + 100));
+            kill_switch.reset().ok();
+            
+            // Activate with specific source
+            kill_switch.activate_emergency_stop(*source).unwrap();
+            assert!(kill_switch.is_emergency_active());
+            
+            // Verify audit log contains the activation
+            let log = kill_switch.get_audit_log();
+            assert!(log.iter().any(|entry| entry.source == *source));
+        }
+    }
+    
+    #[test]
+    fn test_stop_categories() {
+        // Test Category 0 - Immediate stop
+        let gpio0 = Arc::new(MockGPIO::new());
+        let kill_switch0 = HardwareKillSwitch::new(gpio0, StopCategory::Category0).unwrap();
+        kill_switch0.activate_emergency_stop(ActivationSource::Software).unwrap();
+        assert_eq!(kill_switch0.current_state(), KillSwitchState::EmergencyStopped);
+        
+        // Test Category 1 - Controlled stop
+        let gpio1 = Arc::new(MockGPIO::new());
+        let kill_switch1 = HardwareKillSwitch::new(gpio1, StopCategory::Category1).unwrap();
+        kill_switch1.activate_emergency_stop(ActivationSource::Software).unwrap();
+        assert_eq!(kill_switch1.current_state(), KillSwitchState::EmergencyStopped);
+    }
+    
+    #[test]
+    fn test_layer_integration() {
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = HardwareKillSwitch::new(gpio, StopCategory::Category0).unwrap();
+        
+        // Normal state - all layers operational
+        assert!(kill_switch.is_trading_allowed());
+        assert!(kill_switch.exchange_operations_allowed());
+        assert!(kill_switch.ml_operations_allowed());
+        assert!(kill_switch.risk_calculations_allowed());
+        assert!(kill_switch.analysis_allowed());
+        assert!(kill_switch.monitoring_allowed());
+        assert!(kill_switch.data_collection_allowed());
+        assert!(kill_switch.infrastructure_operations_allowed());
+        
+        // Emergency state - only essential layers operational
+        kill_switch.activate_emergency_stop(ActivationSource::Software).unwrap();
+        assert!(!kill_switch.is_trading_allowed());
+        assert!(!kill_switch.exchange_operations_allowed());
+        assert!(!kill_switch.ml_operations_allowed());
+        assert!(!kill_switch.risk_calculations_allowed());
+        assert!(!kill_switch.analysis_allowed());
+        assert!(kill_switch.monitoring_allowed()); // Always allowed
+        assert!(kill_switch.data_collection_allowed()); // Always allowed
+        assert!(!kill_switch.infrastructure_operations_allowed());
+    }
+    
+    #[test]
+    fn test_watchdog_functionality() {
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = HardwareKillSwitch::new(gpio, StopCategory::Category0).unwrap();
+        
+        // Start watchdog
+        kill_switch.start_watchdog();
+        
+        // Feed watchdog multiple times
+        for _ in 0..5 {
+            std::thread::sleep(Duration::from_millis(50));
+            kill_switch.feed_watchdog();
+            assert_eq!(kill_switch.current_state(), KillSwitchState::Normal);
+        }
+        
+        // Stop feeding watchdog
+        std::thread::sleep(Duration::from_millis(WATCHDOG_TIMEOUT_MS + 50));
+        
+        // Watchdog should have triggered emergency stop
+        assert_eq!(kill_switch.current_state(), KillSwitchState::EmergencyStopped);
+    }
+    
+    #[test]
+    fn test_audit_log_persistence() {
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = HardwareKillSwitch::new(gpio, StopCategory::Category0).unwrap();
+        
+        // Generate multiple events
+        kill_switch.activate_emergency_stop(ActivationSource::Software).unwrap();
+        std::thread::sleep(Duration::from_millis(RESET_COOLDOWN_MS + 100));
+        kill_switch.reset().unwrap();
+        kill_switch.activate_emergency_stop(ActivationSource::RiskLimit).unwrap();
+        
+        // Verify audit log contains all events
+        let log = kill_switch.get_audit_log();
+        assert!(log.len() >= 3); // At least 2 activations and 1 reset
+        
+        // Verify chronological order
+        for i in 1..log.len() {
+            assert!(log[i].timestamp >= log[i-1].timestamp);
+        }
+    }
+    
+    #[test]
+    fn test_concurrent_activation_safety() {
+        use std::sync::Arc;
+        use std::thread;
+        
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = Arc::new(HardwareKillSwitch::new(gpio, StopCategory::Category0).unwrap());
+        
+        // Spawn multiple threads trying to activate simultaneously
+        let mut handles = vec![];
+        for i in 0..10 {
+            let ks = kill_switch.clone();
+            let handle = thread::spawn(move || {
+                let source = if i % 2 == 0 {
+                    ActivationSource::Software
+                } else {
+                    ActivationSource::RiskLimit
+                };
+                ks.activate_emergency_stop(source)
+            });
+            handles.push(handle);
+        }
+        
+        // Wait for all threads
+        for handle in handles {
+            handle.join().unwrap().ok();
+        }
+        
+        // Should be in emergency state
+        assert!(kill_switch.is_emergency_active());
+        
+        // Activation count should be reasonable (may be less than 10 due to race conditions)
+        assert!(kill_switch.activation_count() > 0);
+        assert!(kill_switch.activation_count() <= 10);
+    }
+    
+    #[test]
+    fn test_iec_60204_1_compliance() {
+        // Test IEC 60204-1:2016 Section 9.2.2 requirements
+        let gpio = Arc::new(MockGPIO::new());
+        let kill_switch = HardwareKillSwitch::new(gpio.clone(), StopCategory::Category0).unwrap();
+        
+        // Requirement 1: Emergency stop must be immediately effective
+        let start = Instant::now();
+        kill_switch.activate_emergency_stop(ActivationSource::PhysicalButton).unwrap();
+        assert!(start.elapsed().as_micros() < MAX_RESPONSE_TIME_US);
+        
+        // Requirement 2: Must remain in stopped state until manually reset
+        assert!(kill_switch.is_emergency_active());
+        assert!(kill_switch.reset().is_err()); // Cannot reset immediately
+        
+        // Requirement 3: Reset must not restart operation automatically
+        std::thread::sleep(Duration::from_millis(RESET_COOLDOWN_MS + 100));
+        kill_switch.reset().unwrap();
+        assert!(!kill_switch.is_emergency_active());
+        // Operations must be explicitly restarted (handled by application layer)
+        
+        // Requirement 4: Visual indication of emergency stop state
+        kill_switch.activate_emergency_stop(ActivationSource::PhysicalButton).unwrap();
+        assert!(gpio.read_pin(DANGER_LED_PIN)); // Red LED on
+        assert!(!gpio.read_pin(READY_LED_PIN)); // Green LED off
     }
 }
 

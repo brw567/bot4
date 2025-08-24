@@ -11,15 +11,13 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, AtomicBool, AtomicU64, Ordering};
 use crossbeam::queue::ArrayQueue;
-use crossbeam::epoch::{self, Atomic, Owned, Shared, Guard};
+use crossbeam::epoch::{self, Atomic, Shared};
 use thread_local::ThreadLocal;
 use parking_lot::{RwLock, Mutex};
 use std::cell::RefCell;
 use std::time::{Duration, Instant};
 use std::collections::HashMap;
 use std::thread::{self, ThreadId};
-use std::mem::ManuallyDrop;
-use super::metrics::{metrics, PoolType};
 
 // ============================================================================
 // CRITICAL CONSTANTS - Based on Production Analysis
@@ -27,7 +25,9 @@ use super::metrics::{metrics, PoolType};
 
 // Memory limits to prevent exhaustion
 const MAX_MEMORY_MB: usize = 4096;  // 4GB max for all pools combined
+#[allow(dead_code)]
 const MAX_THREAD_LOCAL_MB: usize = 32;  // 32MB per thread max
+#[allow(dead_code)]
 const RECLAMATION_THRESHOLD: f64 = 0.75;  // Reclaim when 75% unused
 const CLEANUP_INTERVAL_SECS: u64 = 60;  // Clean every 60 seconds
 
@@ -272,7 +272,7 @@ unsafe impl<T: Send + Sync + 'static> Send for GarbageList<T> {}
 unsafe impl<T: Send + Sync + 'static> Sync for GarbageList<T> {}
 
 #[derive(Clone)]
-struct PoolConfig {
+pub struct PoolConfig {
     name: String,
     capacity: usize,
     object_size: usize,

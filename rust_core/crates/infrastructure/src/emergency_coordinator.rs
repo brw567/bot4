@@ -82,7 +82,9 @@ pub struct EmergencyCoordinator {
     avg_shutdown_time_ms: Arc<AtomicU64>,
     
     /// Thresholds
+    #[allow(dead_code)]
     max_drawdown_pct: f64,
+    #[allow(dead_code)]
     max_latency_ms: u64,
     min_healthy_components_pct: f64,
 }

@@ -144,7 +144,7 @@ pub unsafe fn calculate_bollinger_avx512(
 ) -> (Vec<f32>, Vec<f32>, Vec<f32>) {
     let len = prices.len();
     let mut upper = vec![0.0f32; len];
-    let mut middle = vec![sma; len];
+    let middle = vec![sma; len];
     let mut lower = vec![0.0f32; len];
     
     // Calculate standard deviation with AVX-512
