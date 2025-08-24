@@ -6,7 +6,7 @@ use crate::ml_feedback::MLFeedbackSystem;
 use crate::feature_importance::SHAPCalculator;
 use crate::market_analytics::MarketAnalytics;
 use crate::unified_types::SignalAction;
-use parking_lot::{RwLockReadGuard, RwLockWriteGuard, RawRwLock};
+use parking_lot::{RwLockReadGuard, RwLockWriteGuard};
 use std::collections::VecDeque;
 
 /// Wrapper methods for MLFeedbackSystem accessed through RwLock guards
@@ -90,7 +90,7 @@ pub trait MLFeedbackSystemReadGuardExt {
     fn calibrate_probability(&self, raw_prob: f64) -> f64;
 }
 
-impl MLFeedbackSystemReadGuardExt for RwLockReadGuard<'_, RawRwLock, MLFeedbackSystem> {
+impl MLFeedbackSystemReadGuardExt for RwLockReadGuard<'_, MLFeedbackSystem> {
     fn calibrate_probability(&self, raw_prob: f64) -> f64 {
         (**self).calibrate_probability(raw_prob)
     }
@@ -101,7 +101,7 @@ pub trait MLFeedbackSystemWriteGuardExt {
     fn update_prediction_history(&mut self, prediction: (SignalAction, f64));
 }
 
-impl MLFeedbackSystemWriteGuardExt for RwLockWriteGuard<'_, RawRwLock, MLFeedbackSystem> {
+impl MLFeedbackSystemWriteGuardExt for RwLockWriteGuard<'_, MLFeedbackSystem> {
     fn update_prediction_history(&mut self, prediction: (SignalAction, f64)) {
         (**self).update_prediction_history(prediction)
     }
@@ -112,7 +112,7 @@ pub trait SHAPCalculatorReadGuardExt {
     fn calculate_shap_values(&self, features: &[f64]) -> Vec<f64>;
 }
 
-impl SHAPCalculatorReadGuardExt for RwLockReadGuard<'_, RawRwLock, SHAPCalculator> {
+impl SHAPCalculatorReadGuardExt for RwLockReadGuard<'_, SHAPCalculator> {
     fn calculate_shap_values(&self, features: &[f64]) -> Vec<f64> {
         (**self).calculate_shap_values(features)
     }
@@ -125,7 +125,7 @@ pub trait MarketAnalyticsWriteGuardExt {
     fn get_obv_ma(&mut self, period: usize) -> f64;
 }
 
-impl MarketAnalyticsWriteGuardExt for RwLockWriteGuard<'_, RawRwLock, MarketAnalytics> {
+impl MarketAnalyticsWriteGuardExt for RwLockWriteGuard<'_, MarketAnalytics> {
     fn get_stochastic(&mut self, period: usize) -> f64 {
         (**self).get_stochastic(period)
     }

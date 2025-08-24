@@ -41,6 +41,7 @@ pub mod type_compatibility;  // TYPE COMPATIBILITY LAYER - Seamless integration!
 pub mod prelude;  // CENTRALIZED IMPORTS - All types in one place for easy access!
 pub mod order_book_analytics_ext;  // ORDER BOOK ANALYTICS - Missing methods implementation!
 pub mod ml_method_wrappers;  // ML METHOD WRAPPERS - Fix RwLock guard access!
+pub mod order_book_methods;  // ORDER BOOK METHODS - Complete implementation!
 // pub mod ml_complete_impl;  // ML COMPLETE - Temporarily disabled for incremental fixing
 // pub mod ml_extensions;  // ML EXTENSIONS - Temporarily disabled for incremental fixing
 
