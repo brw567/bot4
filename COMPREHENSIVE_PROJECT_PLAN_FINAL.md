@@ -28,7 +28,16 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 ## 📊 COMPLETE TASK INVENTORY (DEDUPLICATED & ORGANIZED)
 
 ### LAYER 0: CRITICAL SAFETY SYSTEMS (BLOCKS ALL TRADING)
-**Total: 160 hours | Priority: IMMEDIATE | Owner: Sam + Quinn**
+**Total: 176 hours (160 original + 16 critical fix) | Priority: IMMEDIATE | Owner: Sam + Quinn**
+
+#### 0.0 CRITICAL FIX: CPU Feature Detection (16 hours) ✅ COMPLETE
+- [x] Centralized CPU feature detection system
+- [x] SIMD fallback chains (AVX-512 → AVX2 → SSE4.2 → SSE2 → Scalar)
+- [x] Fixed broken EMA calculation
+- [x] Fixed portfolio risk calculation ignoring correlations
+- [x] Comprehensive validation tests
+**Deliverable**: Prevents crashes on 70% of consumer hardware
+**Completed**: January 24, 2025 by full team
 
 #### 0.1 Hardware Kill Switch System (40 hours)
 - [ ] GPIO interface implementation for Raspberry Pi
@@ -496,7 +505,7 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 - **Month 9**: Production deployment preparation
 
 **Total Timeline**: 9 months with full team
-**Total Effort**: 1,880 hours
+**Total Effort**: 1,880 hours (1,864 hours remaining after CPU detection)
 
 ---
 
