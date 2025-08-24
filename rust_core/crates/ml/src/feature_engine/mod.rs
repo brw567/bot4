@@ -5,6 +5,9 @@
 
 pub mod indicators;
 pub mod indicators_extended;
+pub mod ichimoku;
+pub mod elliott_wave;
+pub mod harmonic_patterns;
 pub mod pipeline;
 pub mod scaler;
 pub mod selector;
@@ -12,6 +15,9 @@ pub mod selector;
 pub use pipeline::{FeaturePipeline, FeatureConfig};
 pub use scaler::{FeatureScaler, ScalingMethod};
 pub use selector::{FeatureSelector, SelectionMethod};
+pub use ichimoku::{IchimokuCloud, IchimokuResult, IchimokuSignal};
+pub use elliott_wave::{ElliottWaveDetector, ElliottPattern, WaveType, PatternType, MarketPosition};
+pub use harmonic_patterns::{HarmonicPatternDetector, HarmonicPattern, HarmonicType, PotentialReversalZone};
 
 use anyhow::Result;
 use rust_decimal::Decimal;
