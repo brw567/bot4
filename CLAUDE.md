@@ -140,10 +140,11 @@ Before implementing ANY task:
    - Must include: "External sources researched: [list sources]"
    - Must include: "Team consensus achieved on approach"
 2. **BEFORE starting ANY task**: 
-   - Read PROJECT_MANAGEMENT_MASTER.md (7-layer architecture)
-   - Read COMPREHENSIVE_PROJECT_PLAN_FINAL.md (detailed tasks)
+   - Read PROJECT_MANAGEMENT_MASTER.md (ONLY source of tasks)
+   - Find your task using Layer.Task numbering (e.g., 0.1, 1.2)
    - Verify you're working on the CURRENT LAYER priority
    - STOP if trying to work on higher layers before lower ones
+   - DO NOT reference any archived documents
 3. **Create feature branch**: `git checkout -b task-X.Y.Z-description`
 4. **Implement with 100% quality** - No shortcuts, no fakes
 5. **Create PR to GitHub** with MANDATORY elements:
@@ -266,11 +267,14 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 - `/home/hamster/bot4/grok_reviews/` - For Nexus (Grok) reviews
 - **NO review documents in root folder - KEEP IT CLEAN!**
 
-#### Single Source of Truth
-**PROJECT_MANAGEMENT_MASTER.md is the ONLY project management document**
-- All task tracking in PROJECT_MANAGEMENT_MASTER.md
-- PROJECT_MANAGEMENT_TASK_LIST_V5.md is DEPRECATED and REMOVED
-- Never create duplicate project management files
+#### ⚠️ CRITICAL: Single Source of Truth (NO EXCEPTIONS)
+**PROJECT_MANAGEMENT_MASTER.md v11.0 is the ONLY task document**
+- Location: `/home/hamster/bot4/PROJECT_MANAGEMENT_MASTER.md`
+- Contains: 3,524 total hours of work
+- Format: Layer.Task numbering (0.0, 0.1, 1.1, etc.)
+- FORBIDDEN: Creating ANY new task documents
+- FORBIDDEN: Using archived documents from `/archived_plans/`
+- MANDATORY: Update master after EVERY task completion
 
 ### Primary Documents (MANDATORY SYNCHRONIZATION)
 
@@ -292,10 +296,11 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 3. **Document any deviations from spec**
 4. **Update dependency status for dependent tasks**
 
-**SUPER CRITICAL DOCUMENTS - MUST BE SYNCHRONIZED AFTER EVERY SUB-TASK:**
-1. **PROJECT_MANAGEMENT_MASTER.md** - Single source of project truth (PRIMARY)
-2. **LLM_OPTIMIZED_ARCHITECTURE.md** - Architecture specifications (PRIMARY)
-3. **LLM_TASK_SPECIFICATIONS.md** - Task specifications (PRIMARY)
+**SINGLE CRITICAL DOCUMENT - THE ONLY SOURCE:**
+1. **PROJECT_MANAGEMENT_MASTER.md** - THE ONLY task tracking document
+   - All tasks, hours, status, assignments in ONE place
+   - Updated after EVERY task completion
+   - NO OTHER TASK DOCUMENTS ALLOWED
 
 **These three documents MUST be updated IMMEDIATELY after EVERY sub-task completion!**
 **NO SLACKING - This is MANDATORY!**
