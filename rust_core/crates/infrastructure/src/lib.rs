@@ -16,6 +16,7 @@ pub mod simd_ops;      // ALL SIMD operations with complete fallbacks
 pub mod circuit_breaker;
 pub mod circuit_breaker_integration;  // Task 0.2: Circuit breaker integration
 pub mod emergency_coordinator;        // Emergency shutdown coordination
+pub mod hardware_kill_switch;         // Task 0.4: Hardware kill switch - IEC 60204-1 compliant
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
