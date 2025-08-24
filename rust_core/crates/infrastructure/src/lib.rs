@@ -14,6 +14,8 @@ pub mod cpu_features;  // CENTRALIZED CPU detection - prevents crashes
 pub mod simd_ops;      // ALL SIMD operations with complete fallbacks
 
 pub mod circuit_breaker;
+pub mod circuit_breaker_integration;  // Task 0.2: Circuit breaker integration
+pub mod emergency_coordinator;        // Emergency shutdown coordination
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
