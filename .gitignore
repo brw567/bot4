@@ -37,12 +37,17 @@ connection_strings.txt
 # ============================================
 # RUST BUILD ARTIFACTS (LARGE FILES)
 # ============================================
+# CRITICAL: Never commit compiled artifacts!
 target/
 **/target/
+**/target/**
 rust_core/target/
+rust_core/target/**
 rust_core/target/debug/
 rust_core/target/release/
 rust_core/target/x86_64-unknown-linux-gnu/
+rust_core/target/x86_64-*/
+rust_core/target/*/
 Cargo.lock
 **/*.rs.bk
 *.pdb
@@ -70,6 +75,23 @@ Cargo.lock
 # Build cache
 **/.fingerprint/
 **/build/
+
+# CRITICAL: Additional safety patterns for Rust artifacts
+# These ensure nothing from compilation gets committed
+rust_core/target/debug/deps/*
+rust_core/target/release/deps/*
+rust_core/target/debug/build/*
+rust_core/target/release/build/*
+rust_core/target/debug/incremental/*
+rust_core/target/release/incremental/*
+rust_core/target/.rustc_info.json
+rust_core/target/CACHEDIR.TAG
+
+# Binary executables (should never be committed)
+rust_core/target/debug/bot4*
+rust_core/target/release/bot4*
+rust_core/target/debug/trading*
+rust_core/target/release/trading*
 
 # ============================================
 # LOGS & RUNTIME DATA
