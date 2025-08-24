@@ -11,8 +11,9 @@
 
 use crate::unified_types::*;
 use crate::decision_orchestrator::{DecisionOrchestrator, Signal as DecisionSignal};
+use rust_decimal_macros::dec;
 use crate::hyperparameter_integration::HyperparameterIntegrationSystem;
-use crate::hyperparameter_optimization::{AutoTunerConfig, OptimizationStrategy};
+use crate::hyperparameter_optimization::{AutoTunerConfig, OptimizationStudy};
 use crate::ml_feedback::MLFeedbackSystem;
 use crate::market_analytics::MarketAnalytics;
 use crate::kelly_sizing::KellySizer;
