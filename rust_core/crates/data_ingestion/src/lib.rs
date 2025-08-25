@@ -18,6 +18,7 @@
 pub mod producers;
 pub mod consumers;
 pub mod sinks;
+pub mod aggregators;
 pub mod schema;
 pub mod monitoring;
 
@@ -41,6 +42,13 @@ pub use consumers::{
 pub use sinks::{
     ClickHouseSink,
     ParquetWriter,
+};
+
+pub use aggregators::{
+    TimescaleAggregator,
+    TimescaleConfig,
+    AggregatorMetrics,
+    CandleInterval,
 };
 
 #[cfg(test)]
