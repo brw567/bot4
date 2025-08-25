@@ -17,7 +17,8 @@ use std::collections::{VecDeque, HashMap};
 use parking_lot::RwLock;
 use tokio::sync::broadcast;
 use tracing::{info, warn, error};
-use anyhow::{Result, bail};
+use anyhow::Result;
+use chrono::{Local, Timelike};
 
 use crate::circuit_breaker_integration::{CircuitBreakerHub, ToxicitySignals};
 use crate::software_control_modes::{ControlModeManager, ControlMode};
@@ -135,7 +136,7 @@ struct ExecutionRecord {
 }
 
 #[derive(Debug, Clone, Copy)]
-enum OrderSide {
+pub enum OrderSide {
     Buy,
     Sell,
 }
@@ -196,7 +197,7 @@ impl SlippageDetector {
         let slippage_bps = slippage_pct * 10000.0;
         
         // Get expected slippage
-        let hour = chrono::Local::now().hour() as u8;
+        let hour = Local::now().hour() as u8;
         let model = self.expected_model.read();
         let expected = model.expected_slippage(size, volatility, hour) * 10000.0;
         
@@ -264,7 +265,7 @@ impl SlippageDetector {
             .map(|s| (s - mean).powi(2))
             .sum::<f64>() / slippages.len() as f64;
         let std_dev = variance.sqrt();
-        let max = slippages.iter().fold(0.0, |a, &b| a.max(b));
+        let max = slippages.iter().fold(0.0_f64, |a, &b| a.max(b));
         
         *self.stats.write() = SlippageStats {
             mean_slippage: mean,
@@ -680,7 +681,7 @@ impl PriceDivergenceMonitor {
             
             if divergence_pct > self.threshold_pct {
                 divergent_exchanges.push((exchange.clone(), divergence_pct));
-                max_divergence = max_divergence.max(divergence_pct);
+                max_divergence = f64::max(max_divergence, divergence_pct);
             }
         }
         

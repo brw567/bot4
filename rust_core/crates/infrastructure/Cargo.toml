@@ -33,6 +33,10 @@ redis = { version = "0.24", features = ["aio", "tokio-comp", "streams", "connect
 uuid = { version = "1.6", features = ["v4", "serde"] }
 serde_json = { workspace = true }
 
+# Task 0.7: WebSocket dependencies for monitoring dashboards
+tokio-tungstenite = "0.21"
+futures-util = "0.3"
+
 # Workspace dependencies
 tokio = { workspace = true }
 async-trait = { workspace = true }

@@ -12,10 +12,12 @@
 use std::sync::atomic::{AtomicU64, AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+use std::collections::HashMap;
 use parking_lot::RwLock;
 use tokio::sync::broadcast;
 use tracing::{info, warn};
 use anyhow::{Result, bail};
+use serde::{Serialize, Deserialize};
 
 use crate::hardware_kill_switch::HardwareKillSwitch;
 use crate::circuit_breaker_integration::CircuitBreakerHub;
@@ -27,7 +29,7 @@ use crate::emergency_coordinator::EmergencyCoordinator;
 
 /// Trading system control modes with graduated capabilities
 /// Alex: "Each mode provides specific guarantees about system behavior"
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ControlMode {
     /// Manual mode - Human operator has full control
     /// - No automated trading
@@ -100,13 +102,13 @@ impl ControlMode {
 
 /// Valid mode transitions with safety constraints
 /// Sam: "Based on IEC 61508 safe state transition patterns"
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct TransitionRules {
     /// Allowed transitions from each mode
-    transitions: std::collections::HashMap<ControlMode, Vec<ControlMode>>,
+    transitions: HashMap<ControlMode, Vec<ControlMode>>,
     
     /// Minimum time in mode before transition allowed
-    cooldown_periods: std::collections::HashMap<ControlMode, Duration>,
+    cooldown_periods: HashMap<ControlMode, Duration>,
     
     /// Required conditions for each transition
     guard_conditions: Arc<dyn GuardConditions>,
@@ -114,7 +116,7 @@ pub struct TransitionRules {
 
 impl Default for TransitionRules {
     fn default() -> Self {
-        let mut transitions = std::collections::HashMap::new();
+        let mut transitions = HashMap::new();
         
         // Manual mode can transition to any mode
         transitions.insert(ControlMode::Manual, vec![
@@ -141,7 +143,7 @@ impl Default for TransitionRules {
         ]);
         
         // Cooldown periods to prevent mode thrashing
-        let mut cooldown_periods = std::collections::HashMap::new();
+        let mut cooldown_periods = HashMap::new();
         cooldown_periods.insert(ControlMode::Manual, Duration::from_secs(10));
         cooldown_periods.insert(ControlMode::SemiAuto, Duration::from_secs(30));
         cooldown_periods.insert(ControlMode::FullAuto, Duration::from_secs(60));
@@ -391,7 +393,7 @@ impl ControlModeManager {
             if elapsed < *cooldown && !self.override_active.load(Ordering::Acquire) {
                 bail!(
                     "Cooldown period not met: {}s remaining",
-                    (cooldown - elapsed).as_secs()
+                    (*cooldown - elapsed).as_secs()
                 );
             }
         }

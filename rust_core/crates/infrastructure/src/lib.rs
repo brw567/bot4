@@ -19,6 +19,7 @@ pub mod emergency_coordinator;        // Emergency shutdown coordination
 pub mod hardware_kill_switch;         // Task 0.4: Hardware kill switch - IEC 60204-1 compliant
 pub mod software_control_modes;       // Task 0.5: Software control modes - 4-state operational control
 pub mod panic_conditions;             // Task 0.6: Panic conditions & thresholds - Market anomaly detection
+pub mod monitoring_dashboards;        // Task 0.7: Read-only monitoring dashboards - Real-time WebSocket updates
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -94,6 +95,18 @@ pub use panic_conditions::{
     CascadeAlert,
     DivergenceAlert,
     OrderSide,
+};
+
+// Re-export monitoring dashboards (Task 0.7)
+pub use monitoring_dashboards::{
+    DashboardManager,
+    DashboardWebSocketServer,
+    DashboardAggregator,
+    DashboardMessage,
+    PnLSnapshot,
+    PositionSnapshot,
+    RiskMetricsSnapshot,
+    SystemHealthSnapshot,
 };
 
 // Re-export memory management (legacy)
