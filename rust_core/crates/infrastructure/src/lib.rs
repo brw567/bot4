@@ -18,6 +18,7 @@ pub mod circuit_breaker_integration;  // Task 0.2: Circuit breaker integration
 pub mod emergency_coordinator;        // Emergency shutdown coordination
 pub mod hardware_kill_switch;         // Task 0.4: Hardware kill switch - IEC 60204-1 compliant
 pub mod software_control_modes;       // Task 0.5: Software control modes - 4-state operational control
+pub mod panic_conditions;             // Task 0.6: Panic conditions & thresholds - Market anomaly detection
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -73,6 +74,26 @@ pub use software_control_modes::{
     ExchangeOperations,
     DataConfig,
     InfrastructureConfig,
+};
+
+// Re-export panic conditions (Task 0.6)
+pub use panic_conditions::{
+    PanicDetector,
+    PanicThresholds,
+    PanicEvent,
+    PanicCondition,
+    SlippageDetector,
+    QuoteStalenessMonitor,
+    SpreadMonitor,
+    APICascadeDetector,
+    PriceDivergenceMonitor,
+    AlertSeverity,
+    SlippageAlert,
+    StalenessAlert,
+    SpreadAlert,
+    CascadeAlert,
+    DivergenceAlert,
+    OrderSide,
 };
 
 // Re-export memory management (legacy)
