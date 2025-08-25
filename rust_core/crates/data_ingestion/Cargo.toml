@@ -84,6 +84,10 @@ types = { path = "../types" }
 criterion = { version = "0.5", features = ["html_reports"] }
 proptest = "1.4"
 tempfile = "3.8"
+rand = "0.8"
+rand_distr = "0.4"
+statrs = "0.16"
+hdrhistogram = "7.5"
 
 # Profile settings should be in workspace Cargo.toml
 # [profile.release]
