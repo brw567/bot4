@@ -21,6 +21,7 @@ pub mod sinks;
 pub mod aggregators;
 pub mod schema;
 pub mod monitoring;
+pub mod replay;
 
 // Re-export main types
 pub use producers::{
@@ -59,6 +60,26 @@ pub use schema::{
     CompatibilityLevel,
     DataContract,
     RegistryMetrics,
+};
+
+// Layer 1.2: LOB Record-Replay Simulator exports
+pub use replay::{
+    LOBSimulator,
+    OrderBook,
+    OrderBookSnapshot,
+    OrderBookUpdate,
+    MicroburstDetector,
+    MicroburstEvent,
+    SlippageModel,
+    ExecutionCost,
+    FeeCalculator,
+    FeeStructure,
+    HistoricalDataLoader,
+    DataSource,
+    MarketImpactCalculator,
+    PlaybackEngine,
+    PlaybackConfig,
+    ReplayResult,
 };
 
 #[cfg(test)]
