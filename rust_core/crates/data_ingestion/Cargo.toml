@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 # Redpanda (Kafka-compatible client)
-rdkafka = { version = "0.36", features = ["cmake-build", "ssl", "gssapi", "libz", "zstd-pkg-config"] }
+rdkafka = { version = "0.36", features = ["cmake-build", "ssl"] }
 
 # Async runtime
 tokio = { version = "1.35", features = ["full"] }
@@ -22,16 +22,16 @@ bytes = "1.5"
 bytemuck = "1.14"
 
 # Schema Registry
-schema_registry_converter = { version = "4.0", features = ["avro", "proto", "json"] }
+schema_registry_converter = { version = "4.0", features = ["avro", "json"] }
 apache-avro = "0.16"
 
 # ClickHouse
-clickhouse = { version = "0.11", features = ["tokio", "compression", "native-tls"] }
+clickhouse = { version = "0.13", features = ["native-tls"] }
 
 # Parquet
-parquet = { version = "50.0", features = ["async", "arrow", "compression"] }
-arrow = { version = "50.0", features = ["prettyprint"] }
-arrow-flight = "50.0"
+parquet = { version = "52.0", features = ["async", "arrow"] }
+arrow = { version = "52.0", features = ["prettyprint"] }
+arrow-flight = "52.0"
 
 # TimescaleDB (via SQLx)
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "rust_decimal", "json"] }
@@ -83,17 +83,19 @@ criterion = { version = "0.5", features = ["html_reports"] }
 proptest = "1.4"
 tempfile = "3.8"
 
-[profile.release]
-lto = "fat"
-codegen-units = 1
-opt-level = 3
-debug = false
-panic = "abort"
+# Profile settings should be in workspace Cargo.toml
+# [profile.release]
+# lto = "fat"
+# codegen-units = 1
+# opt-level = 3
+# debug = false
+# panic = "abort"
 
-[[bench]]
-name = "throughput"
-harness = false
-
-[[bench]]
-name = "latency"
-harness = false
+# Benchmarks will be added later
+# [[bench]]
+# name = "throughput"
+# harness = false
+# 
+# [[bench]]
+# name = "latency"
+# harness = false
