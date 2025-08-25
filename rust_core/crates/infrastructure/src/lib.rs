@@ -28,6 +28,7 @@ pub mod mode_persistence;             // Task 0.5.2: Mode persistence and recove
 pub mod external_control;             // Task 0.5.3: External control interface - REST API with JWT auth
 pub mod position_reconciliation;      // Layer 0.8.1: Position reconciliation - Critical safety verification
 pub mod network_partition_handler;    // Layer 0.9.2: Network health monitor - Single-node external service monitoring
+pub mod statistical_circuit_breakers; // Layer 0.9.3: Statistical anomaly detection - Mathematical market breakdown detection
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -254,6 +255,22 @@ pub use network_partition_handler::{
     PartitionStatus,
     FailoverStrategy,
     NetworkEvent,
+};
+
+// Re-export statistical circuit breakers (Layer 0.9.3)
+pub use statistical_circuit_breakers::{
+    StatisticalCircuitBreaker,
+    StatisticalState,
+    StatisticalAnomaly,
+    MarketRegime,
+    SharpeMonitor,
+    SharpeTrend,
+    RegimeDetector,
+    GARCHDetector,
+    VolatilityRegime,
+    StatisticalConfig,
+    StatisticalStatus,
+    StatisticalBreakerIntegration,
 };
 
 // SIMD validation tests for Task 0.1.1

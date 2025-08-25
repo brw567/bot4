@@ -25,7 +25,8 @@ libc = "0.2"  # For CPU affinity on Linux
 # Core dependencies
 anyhow = { workspace = true }
 log = "0.4"
-rust_decimal = "1.33"
+rust_decimal = { version = "1.33", features = ["maths"] }
+rust_decimal_macros = "1.33"
 chrono = { workspace = true }
 
 # Phase 3: Stream Processing Dependencies
