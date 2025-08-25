@@ -16,7 +16,6 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use std::collections::{VecDeque, HashMap};
 use parking_lot::RwLock;
 use serde::{Serialize, Deserialize};
-use tracing::debug;
 
 // ============================================================================
 // TIMEFRAME DEFINITIONS - Multi-resolution analysis

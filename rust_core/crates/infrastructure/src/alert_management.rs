@@ -17,7 +17,7 @@ use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
 use std::cmp::Ordering as CmpOrdering;
 use parking_lot::RwLock;
 use serde::{Serialize, Deserialize};
-use tracing::{info, warn, error, debug};
+use tracing::{info, debug};
 use anyhow::{Result, bail};
 use tokio::sync::broadcast;
 

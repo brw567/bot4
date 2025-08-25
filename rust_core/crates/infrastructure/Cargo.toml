@@ -37,6 +37,9 @@ serde_json = { workspace = true }
 tokio-tungstenite = "0.21"
 futures-util = "0.3"
 
+# Task 0.7: Audit system dependencies
+sha2 = "0.10"
+
 # Workspace dependencies
 tokio = { workspace = true }
 async-trait = { workspace = true }
@@ -50,6 +53,7 @@ parking_lot = { workspace = true }
 [dev-dependencies]
 criterion = { workspace = true }
 proptest = { workspace = true }
+tempfile = "3.8"
 
 # Loom for concurrency testing
 [target.'cfg(loom)'.dependencies]

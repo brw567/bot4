@@ -22,6 +22,7 @@ pub mod panic_conditions;             // Task 0.6: Panic conditions & thresholds
 pub mod monitoring_dashboards;        // Task 0.7: Read-only monitoring dashboards - Real-time WebSocket updates
 pub mod historical_charts;            // Task 0.6: Historical performance charts - Multi-timeframe analysis
 pub mod alert_management;             // Task 0.6: Alert management interface - Priority-based queuing
+pub mod audit_system;                 // Task 0.7: Tamper-proof audit system - Immutable compliance trail
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -134,6 +135,24 @@ pub use alert_management::{
     AlertManager,
     AlertAggregator,
     AlertStatistics,
+};
+
+// Re-export audit system (Task 0.7)
+pub use audit_system::{
+    AuditEventType,
+    AuditSeverity,
+    AuditEvent,
+    AuditLog,
+    AuditManager,
+    AuditConfig,
+    AuditStatistics as AuditStats,
+    ComplianceReporter,
+    ReportType,
+    InterventionDetector,
+    InterventionAlert,
+    ForensicAnalyzer,
+    IncidentAnalysis,
+    SystemState,
 };
 
 // Re-export memory management (legacy)
