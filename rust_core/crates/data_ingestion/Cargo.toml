@@ -24,6 +24,7 @@ bytemuck = "1.14"
 # Schema Registry
 schema_registry_converter = { version = "4.0", features = ["avro", "json"] }
 apache-avro = "0.16"
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
 
 # ClickHouse
 clickhouse = { version = "0.13", features = ["native-tls"] }
@@ -57,6 +58,7 @@ crossbeam-utils = "0.8"
 parking_lot = "0.12"
 arc-swap = "1.6"
 mimalloc = { version = "0.1", default-features = false }
+lru = "0.12"
 
 # Error handling
 anyhow = "1.0"

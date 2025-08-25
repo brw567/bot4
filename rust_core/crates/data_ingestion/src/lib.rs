@@ -51,6 +51,16 @@ pub use aggregators::{
     CandleInterval,
 };
 
+pub use schema::{
+    SchemaRegistry,
+    SchemaRegistryConfig,
+    SchemaInfo,
+    SchemaType,
+    CompatibilityLevel,
+    DataContract,
+    RegistryMetrics,
+};
+
 #[cfg(test)]
 mod tests {
     use super::*;
