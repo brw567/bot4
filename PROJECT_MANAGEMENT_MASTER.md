@@ -187,12 +187,18 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 **Total: 376 hours (280 original + 96 from reviews) | Priority: HIGH | Owner: Avery**
 **Status**: 0 hours complete (0%), 376 hours remaining
 
-#### 1.1 Replace TimescaleDB Direct Ingestion (40 hours) - FROM REVIEWS
-- [ ] Implement Kafka → Parquet/ClickHouse pipeline
-- [ ] Keep TimescaleDB for aggregates only
-- [ ] Handle 100-300k events/sec (realistic target)
-- [ ] Add backpressure mechanisms
-**Deliverable**: Scalable ingestion that actually works at target throughput
+#### 1.1 High-Performance Data Ingestion with Redpanda (40 hours) - UPDATED ARCHITECTURE
+- [ ] Implement Redpanda cluster (3 nodes, RF=3) for ultra-low latency streaming
+- [ ] Market data producers with batch compression and zero-copy
+- [ ] Redpanda → Parquet/ClickHouse consumers with parallel processing
+- [ ] Keep TimescaleDB for time-series aggregates only (1m, 5m, 15m, 1h candles)
+- [ ] Handle 100-300k events/sec with <1ms p99 latency
+- [ ] Tiered storage: Hot (ClickHouse) → Warm (Parquet) → Cold (S3)
+- [ ] Backpressure via adaptive batching and consumer lag monitoring
+- [ ] Schema registry for message evolution
+**Deliverable**: Production-grade ingestion handling 300k events/sec with <1ms latency
+**Architecture Choice**: Redpanda over Kafka for 10x lower latency, no JVM, C++ performance
+**Research Applied**: LinkedIn's Kafka patterns, Uber's data platform, Jane Street's tick processing
 
 #### 1.2 LOB Record-Replay Simulator (32 hours) - FROM REVIEWS
 - [ ] Build order book playback system

@@ -273,7 +273,7 @@ Create the world's most advanced autonomous trading system that learns, adapts, 
 3. **TA Engine** - 100+ indicators, pattern recognition, multi-timeframe
 4. **Risk System** - Real-time monitoring, circuit breakers, position limits
 5. **Exchange Layer** - 20+ exchanges, WebSocket streams, smart routing
-6. **Data Pipeline** - Zero-copy parsing, TimescaleDB storage, real-time processing
+6. **Data Pipeline** - Redpanda streaming (300k events/sec), ClickHouse hot storage, TimescaleDB aggregates
 
 ---
 
@@ -518,7 +518,9 @@ performance_tools:
 ### 4.2 Infrastructure Stack
 ```yaml
 databases:
-  timeseries: TimescaleDB 2.0+
+  streaming: Redpanda 23.2+ (Kafka-compatible, 10x lower latency)
+  hot_storage: ClickHouse 23.8+ (real-time analytics)
+  timeseries: TimescaleDB 2.0+ (aggregates only)
   cache: Redis 7.0+
   document: PostgreSQL 15+ with JSONB
   
@@ -878,8 +880,8 @@ pub trait TradingStrategy: Send + Sync {
 │   │   ├── src/
 │   │   │   ├── ingestion/       # Data ingestion
 │   │   │   ├── parsing/         # Zero-copy parsing
-│   │   │   ├── storage/         # TimescaleDB
-│   │   │   ├── streaming/       # Stream processing
+│   │   │   ├── storage/         # ClickHouse + TimescaleDB
+│   │   │   ├── streaming/       # Redpanda producers/consumers
 │   │   │   └── cache.rs         # Redis caching
 │   │   └── Cargo.toml
 │   │
@@ -953,8 +955,10 @@ graph TB
     WS --> DP[Data Pipeline]
     REST --> DP
     
-    DP --> TS[TimescaleDB]
-    DP --> RD[Redis Cache]
+    DP --> RP[Redpanda Cluster]
+    RP --> CH[ClickHouse Hot]
+    RP --> TS[TimescaleDB Aggregates]
+    RP --> RD[Redis Cache]
     
     TE --> MON[Monitoring]
     MON --> PROM[Prometheus]
@@ -1338,8 +1342,12 @@ storage_layers:
     ttl: 24_hours
     access_time: <1ms
     
-  warm_data:  # Last 30 days
-    storage: TimescaleDB
+  hot_data:   # Last 1 hour
+    storage: ClickHouse
+    latency: <10ms queries
+  
+  warm_data:  # 1hr - 7 days
+    storage: Parquet files
     compression: Columnar
     partitioning: Daily
     access_time: <10ms
@@ -1351,7 +1359,7 @@ storage_layers:
     access_time: <100ms
     
   feature_store:  # ML features
-    storage: Redis + TimescaleDB
+    storage: Redis + ClickHouse
     format: Apache Arrow
     versioning: Enabled
     access_time: <5ms
@@ -1360,8 +1368,9 @@ storage_layers:
 ### 6.3 Stream Processing Pipeline
 ```rust
 pub struct StreamProcessor {
-    // Kafka-like streaming without Kafka
-    event_log: Arc<EventLog>,
+    // Redpanda for ultra-low latency streaming
+    redpanda_producer: Arc<RedpandaProducer>,
+    redpanda_consumer: Arc<RedpandaConsumer>,
     
     // Window aggregations
     windows: HashMap<Duration, WindowAggregator>,
