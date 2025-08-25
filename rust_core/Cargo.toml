@@ -10,6 +10,7 @@ members = [
     "crates/analysis",
     "crates/ml",  # Re-enabled with libtorch installed
     "crates/data_intelligence",
+    "crates/data_ingestion",  # Layer 1.1: Redpanda high-performance ingestion
 ]
 resolver = "2"
 

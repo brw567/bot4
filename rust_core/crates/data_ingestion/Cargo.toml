@@ -1,0 +1,99 @@
+[package]
+name = "data_ingestion"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Redpanda (Kafka-compatible client)
+rdkafka = { version = "0.36", features = ["cmake-build", "ssl", "gssapi", "libz", "zstd-pkg-config"] }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+tokio-stream = "0.1"
+futures = "0.3"
+async-trait = "0.1"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+rkyv = { version = "0.7", features = ["validation", "strict"] }  # Zero-copy serialization
+bytes = "1.5"
+bytemuck = "1.14"
+
+# Schema Registry
+schema_registry_converter = { version = "4.0", features = ["avro", "proto", "json"] }
+apache-avro = "0.16"
+
+# ClickHouse
+clickhouse = { version = "0.11", features = ["tokio", "compression", "native-tls"] }
+
+# Parquet
+parquet = { version = "50.0", features = ["async", "arrow", "compression"] }
+arrow = { version = "50.0", features = ["prettyprint"] }
+arrow-flight = "50.0"
+
+# TimescaleDB (via SQLx)
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "rust_decimal", "json"] }
+rust_decimal = { version = "1.33", features = ["serde"] }
+
+# S3 for tiered storage
+aws-sdk-s3 = "1.13"
+aws-config = "1.1"
+
+# Monitoring
+prometheus = { version = "0.13", features = ["process"] }
+metrics = "0.21"
+metrics-exporter-prometheus = "0.13"
+
+# Compression
+lz4_flex = "0.11"
+zstd = "0.13"
+snap = "1.1"
+
+# Memory management
+crossbeam-channel = "0.5"
+crossbeam-utils = "0.8"
+parking_lot = "0.12"
+arc-swap = "1.6"
+mimalloc = { version = "0.1", default-features = false }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Performance
+ahash = "0.8"  # Faster hasher
+dashmap = "5.5"  # Concurrent hashmap
+smallvec = "1.11"  # Stack-allocated vectors
+
+# Infrastructure integration
+infrastructure = { path = "../infrastructure" }
+types = { path = "../types" }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1.4"
+tempfile = "3.8"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+debug = false
+panic = "abort"
+
+[[bench]]
+name = "throughput"
+harness = false
+
+[[bench]]
+name = "latency"
+harness = false
