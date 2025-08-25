@@ -48,6 +48,11 @@ base64 = "0.21"
 # Task 0.5.2: Mode persistence dependencies
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "json", "sqlite"] }
 
+# Task 0.5.3: External control interface dependencies
+axum = { version = "0.7", features = ["ws"] }
+jsonwebtoken = "9.2"
+tower-http = { version = "0.5", features = ["cors", "limit"] }
+
 # Workspace dependencies
 tokio = { workspace = true }
 async-trait = { workspace = true }
