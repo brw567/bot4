@@ -943,6 +943,286 @@ mod tests {
         assert_eq!(history[1].to, ControlMode::FullAuto);
         assert_eq!(history[2].to, ControlMode::Emergency);
     }
+    
+    #[test]
+    fn test_risk_multipliers() {
+        assert_eq!(ControlMode::Manual.risk_multiplier(), 0.5);
+        assert_eq!(ControlMode::SemiAuto.risk_multiplier(), 0.75);
+        assert_eq!(ControlMode::FullAuto.risk_multiplier(), 1.0);
+        assert_eq!(ControlMode::Emergency.risk_multiplier(), 0.0);
+    }
+    
+    #[test]
+    fn test_mode_priorities() {
+        assert_eq!(ControlMode::Emergency.priority(), 3);
+        assert_eq!(ControlMode::Manual.priority(), 2);
+        assert_eq!(ControlMode::SemiAuto.priority(), 1);
+        assert_eq!(ControlMode::FullAuto.priority(), 0);
+    }
+    
+    #[test]
+    fn test_trading_permissions() {
+        assert!(!ControlMode::Manual.allows_trading());
+        assert!(ControlMode::SemiAuto.allows_trading());
+        assert!(ControlMode::FullAuto.allows_trading());
+        assert!(!ControlMode::Emergency.allows_trading());
+        
+        // All modes allow closing
+        assert!(ControlMode::Manual.allows_closing());
+        assert!(ControlMode::SemiAuto.allows_closing());
+        assert!(ControlMode::FullAuto.allows_closing());
+        assert!(ControlMode::Emergency.allows_closing());
+    }
+    
+    #[test]
+    fn test_ml_permissions() {
+        assert!(!ControlMode::Manual.allows_ml());
+        assert!(!ControlMode::SemiAuto.allows_ml());
+        assert!(ControlMode::FullAuto.allows_ml());
+        assert!(!ControlMode::Emergency.allows_ml());
+    }
+    
+    #[test]
+    fn test_execution_filtering() {
+        let manager = create_test_manager();
+        
+        // Manual mode - limited execution
+        assert!(!manager.execution_allowed("market"));
+        assert!(!manager.execution_allowed("limit"));
+        assert!(manager.execution_allowed("stop_loss"));
+        assert!(manager.execution_allowed("close"));
+        
+        // Transition to semi-auto
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        
+        // Semi-auto - trading allowed
+        assert!(manager.execution_allowed("market"));
+        assert!(manager.execution_allowed("limit"));
+        assert!(manager.execution_allowed("stop_loss"));
+        assert!(manager.execution_allowed("close"));
+    }
+    
+    #[test]
+    fn test_strategy_complexity() {
+        let manager = create_test_manager();
+        
+        assert_eq!(manager.strategy_complexity_allowed(), StrategyComplexity::Simple);
+        
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        assert_eq!(manager.strategy_complexity_allowed(), StrategyComplexity::Moderate);
+        
+        std::thread::sleep(Duration::from_secs(31));
+        manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+        assert_eq!(manager.strategy_complexity_allowed(), StrategyComplexity::Advanced);
+        
+        manager.activate_emergency("test").unwrap();
+        assert_eq!(manager.strategy_complexity_allowed(), StrategyComplexity::None);
+    }
+    
+    #[test]
+    fn test_analysis_depth() {
+        let manager = create_test_manager();
+        
+        assert_eq!(manager.analysis_depth(), AnalysisDepth::Basic);
+        
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        assert_eq!(manager.analysis_depth(), AnalysisDepth::Standard);
+        
+        std::thread::sleep(Duration::from_secs(31));
+        manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+        assert_eq!(manager.analysis_depth(), AnalysisDepth::Deep);
+        
+        manager.activate_emergency("test").unwrap();
+        assert_eq!(manager.analysis_depth(), AnalysisDepth::Minimal);
+    }
+    
+    #[test]
+    fn test_monitoring_levels() {
+        let manager = create_test_manager();
+        
+        assert_eq!(manager.monitoring_level(), MonitoringLevel::Basic);
+        
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        assert_eq!(manager.monitoring_level(), MonitoringLevel::Enhanced);
+        
+        std::thread::sleep(Duration::from_secs(31));
+        manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+        assert_eq!(manager.monitoring_level(), MonitoringLevel::Full);
+        
+        manager.activate_emergency("test").unwrap();
+        assert_eq!(manager.monitoring_level(), MonitoringLevel::Critical);
+    }
+    
+    #[test]
+    fn test_risk_limits_scaling() {
+        let manager = create_test_manager();
+        
+        // Manual mode - 50% limits
+        let limits = manager.risk_limits();
+        assert_eq!(limits.max_var, 500.0);
+        assert_eq!(limits.max_leverage, 1.5);
+        assert_eq!(limits.max_drawdown, 0.075);
+        assert_eq!(limits.concentration_limit, 0.1);
+        
+        // Full-auto - 100% limits
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        std::thread::sleep(Duration::from_secs(31));
+        manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+        
+        let limits = manager.risk_limits();
+        assert_eq!(limits.max_var, 1000.0);
+        assert_eq!(limits.max_leverage, 3.0);
+        assert_eq!(limits.max_drawdown, 0.15);
+        assert_eq!(limits.concentration_limit, 0.2);
+    }
+    
+    #[test]
+    fn test_exchange_operations() {
+        let manager = create_test_manager();
+        
+        let ops = manager.exchange_operations_allowed();
+        assert!(!ops.can_place_orders);
+        assert!(ops.can_cancel_orders);
+        assert!(!ops.can_modify_orders);
+        assert!(ops.can_request_data);
+        assert_eq!(ops.rate_limit_multiplier, 0.5);
+        
+        // Semi-auto mode
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        
+        let ops = manager.exchange_operations_allowed();
+        assert!(ops.can_place_orders);
+        assert!(ops.can_cancel_orders);
+        assert!(ops.can_modify_orders);
+        assert!(ops.can_request_data);
+        assert_eq!(ops.rate_limit_multiplier, 0.75);
+    }
+    
+    #[test]
+    fn test_data_config() {
+        let manager = create_test_manager();
+        
+        let config = manager.data_collection_config();
+        assert!(config.collect_trades);
+        assert!(config.collect_orderbook);
+        assert!(config.collect_metrics);
+        assert!(matches!(config.storage_priority, StoragePriority::Normal));
+        
+        // Emergency mode - critical priority
+        manager.activate_emergency("test").unwrap();
+        let config = manager.data_collection_config();
+        assert!(matches!(config.storage_priority, StoragePriority::Critical));
+    }
+    
+    #[test]
+    fn test_infrastructure_scaling() {
+        let manager = create_test_manager();
+        
+        let config = manager.infrastructure_config();
+        assert_eq!(config.cpu_governor, "balanced");
+        assert_eq!(config.memory_limit_mb, 4096);
+        assert_eq!(config.thread_pool_size, 4);
+        
+        // Full-auto - maximum resources
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        std::thread::sleep(Duration::from_secs(31));
+        manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+        
+        let config = manager.infrastructure_config();
+        assert_eq!(config.cpu_governor, "performance");
+        assert_eq!(config.memory_limit_mb, 8192);
+        assert_eq!(config.thread_pool_size, 16);
+    }
+    
+    #[test]
+    fn test_allowed_strategies() {
+        let manager = create_test_manager();
+        
+        let caps = manager.get_capabilities();
+        assert_eq!(caps.allowed_strategies, vec!["manual"]);
+        
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        let caps = manager.get_capabilities();
+        assert_eq!(caps.allowed_strategies, vec!["momentum", "mean_reversion"]);
+        
+        std::thread::sleep(Duration::from_secs(31));
+        manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+        let caps = manager.get_capabilities();
+        assert_eq!(caps.allowed_strategies.len(), 5);
+        assert!(caps.allowed_strategies.contains(&"ml_ensemble".to_string()));
+    }
+    
+    #[test]
+    fn test_max_position_sizing() {
+        let manager = create_test_manager();
+        
+        let caps = manager.get_capabilities();
+        assert_eq!(caps.max_position_size, 5000.0); // 10k * 0.5
+        assert_eq!(caps.max_daily_trades, 10);
+        
+        std::thread::sleep(Duration::from_secs(11));
+        manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+        let caps = manager.get_capabilities();
+        assert_eq!(caps.max_position_size, 7500.0); // 10k * 0.75
+        assert_eq!(caps.max_daily_trades, 50);
+        
+        std::thread::sleep(Duration::from_secs(31));
+        manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+        let caps = manager.get_capabilities();
+        assert_eq!(caps.max_position_size, 10000.0); // 10k * 1.0
+        assert_eq!(caps.max_daily_trades, 1000);
+    }
+    
+    #[test]
+    fn test_invalid_override_token() {
+        let manager = create_test_manager();
+        
+        let result = manager.enable_override("WRONG_TOKEN");
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid"));
+    }
+    
+    #[test]
+    fn test_same_mode_transition() {
+        let manager = create_test_manager();
+        
+        // Transition to same mode should succeed silently
+        let result = manager.request_transition(ControlMode::Manual, "same", "op");
+        assert!(result.is_ok());
+        
+        // No history entry should be added
+        let history = manager.get_history();
+        assert_eq!(history.len(), 0);
+    }
+    
+    #[test]
+    fn test_emergency_from_all_modes() {
+        // Test emergency can be activated from any mode
+        for start_mode in [ControlMode::Manual, ControlMode::SemiAuto, ControlMode::FullAuto] {
+            let manager = create_test_manager();
+            
+            if start_mode != ControlMode::Manual {
+                std::thread::sleep(Duration::from_secs(11));
+                manager.request_transition(ControlMode::SemiAuto, "test", "op").unwrap();
+                
+                if start_mode == ControlMode::FullAuto {
+                    std::thread::sleep(Duration::from_secs(31));
+                    manager.request_transition(ControlMode::FullAuto, "test", "op").unwrap();
+                }
+            }
+            
+            manager.activate_emergency("test emergency").unwrap();
+            assert_eq!(manager.current_mode(), ControlMode::Emergency);
+        }
+    }
 }
 
 // Alex: "This control mode system gives us graduated operational control"
