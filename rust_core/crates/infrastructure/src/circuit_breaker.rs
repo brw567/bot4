@@ -12,7 +12,7 @@ use crossbeam_utils::CachePadded;  // Sophia's recommendation for cache line iso
 
 /// Circuit breaker states encoded as u8 for atomic operations
 #[repr(u8)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum CircuitState {
     Closed = 0,     // Normal operation
     Open = 1,       // Circuit tripped, rejecting calls

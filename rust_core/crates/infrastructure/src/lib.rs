@@ -27,7 +27,7 @@ pub mod deployment_config;            // Task 0.5.1: Production deployment confi
 pub mod mode_persistence;             // Task 0.5.2: Mode persistence and recovery - Crash-safe state management
 pub mod external_control;             // Task 0.5.3: External control interface - REST API with JWT auth
 pub mod position_reconciliation;      // Layer 0.8.1: Position reconciliation - Critical safety verification
-pub mod network_partition_handler;    // Layer 0.9.2: Network partition handler - Split-brain prevention
+pub mod network_partition_handler;    // Layer 0.9.2: Network health monitor - Single-node external service monitoring
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -242,6 +242,18 @@ pub use rayon_enhanced::{
     EngineMetrics,
     ParallelPipeline,
     PipelineStage,
+};
+
+// Re-export network health monitor (Layer 0.9.2 - Single-node refactored)
+pub use network_partition_handler::{
+    NetworkHealthMonitor,
+    NetworkHealth,
+    ServiceHealth,
+    ServiceType,
+    ServiceCriticality,
+    PartitionStatus,
+    FailoverStrategy,
+    NetworkEvent,
 };
 
 // SIMD validation tests for Task 0.1.1
