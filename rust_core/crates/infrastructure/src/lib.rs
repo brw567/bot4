@@ -24,6 +24,7 @@ pub mod historical_charts;            // Task 0.6: Historical performance charts
 pub mod alert_management;             // Task 0.6: Alert management interface - Priority-based queuing
 pub mod audit_system;                 // Task 0.7: Tamper-proof audit system - Immutable compliance trail
 pub mod deployment_config;            // Task 0.5.1: Production deployment configuration - Multi-environment support
+pub mod mode_persistence;             // Task 0.5.2: Mode persistence and recovery - Crash-safe state management
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;

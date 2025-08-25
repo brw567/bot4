@@ -2201,6 +2201,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "sqlx",
  "tempfile",
  "thiserror 1.0.69",
  "thread_local",
