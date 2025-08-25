@@ -22,6 +22,7 @@ pub mod aggregators;
 pub mod schema;
 pub mod monitoring;
 pub mod replay;
+pub mod event_driven;
 
 // Re-export main types
 pub use producers::{
@@ -80,6 +81,19 @@ pub use replay::{
     PlaybackEngine,
     PlaybackConfig,
     ReplayResult,
+};
+
+// Layer 1.3: Event-Driven Processing exports
+pub use event_driven::{
+    EventProcessor,
+    ProcessorConfig,
+    EventPriority,
+    AdaptiveSampler,
+    SamplerConfig,
+    VolatilityRegime,
+    BucketedAggregator,
+    BucketConfig,
+    AggregateWindow,
 };
 
 #[cfg(test)]
