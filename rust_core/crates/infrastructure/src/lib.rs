@@ -29,6 +29,7 @@ pub mod external_control;             // Task 0.5.3: External control interface 
 pub mod position_reconciliation;      // Layer 0.8.1: Position reconciliation - Critical safety verification
 pub mod network_partition_handler;    // Layer 0.9.2: Network health monitor - Single-node external service monitoring
 pub mod statistical_circuit_breakers; // Layer 0.9.3: Statistical anomaly detection - Mathematical market breakdown detection
+pub mod exchange_specific_safety;     // Layer 0.9.4: Exchange-specific risk management - Per-exchange failure handling
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -253,7 +254,7 @@ pub use network_partition_handler::{
     ServiceType,
     ServiceCriticality,
     PartitionStatus,
-    FailoverStrategy,
+    FailoverStrategy as NetworkFailoverStrategy,
     NetworkEvent,
 };
 
@@ -271,6 +272,20 @@ pub use statistical_circuit_breakers::{
     StatisticalConfig,
     StatisticalStatus,
     StatisticalBreakerIntegration,
+};
+
+// Re-export exchange-specific safety (Layer 0.9.4)
+pub use exchange_specific_safety::{
+    Exchange,
+    ExchangeFailureMode,
+    ExchangeHealthStatus,
+    ExchangeRiskLimits,
+    ExchangeMonitor,
+    ExchangeSafetyCoordinator,
+    ExchangeSafetyConfig,
+    ExchangeSafetyStatus,
+    FailoverStrategy,
+    GlobalExposure,
 };
 
 // SIMD validation tests for Task 0.1.1
