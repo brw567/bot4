@@ -67,6 +67,7 @@ parking_lot = { workspace = true }
 criterion = { workspace = true }
 proptest = { workspace = true }
 tempfile = "3.8"
+rust_decimal_macros = "1.33"
 
 # Loom for concurrency testing
 [target.'cfg(loom)'.dependencies]
