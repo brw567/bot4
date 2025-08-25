@@ -1,0 +1,72 @@
+# Development Environment Configuration
+# Bot4 Trading Platform
+# Task 0.5.1 - Production Deployment Configuration
+
+environment = "Development"
+
+[app]
+name = "bot4-trading"
+version = "0.1.0"
+port = 8080
+host = "0.0.0.0"
+log_level = "debug"
+metrics_port = 9090
+health_check_port = 8081
+
+[database]
+host = "localhost"
+port = 5432
+database = "bot3trading"
+username = "bot3user"
+# password loaded from environment: BOT4_DB_PASSWORD
+pool_size = 10
+connection_timeout = 30
+ssl_mode = "disable"
+
+[redis]
+host = "localhost"
+port = 6379
+# password loaded from environment: BOT4_REDIS_PASSWORD
+database = 0
+pool_size = 10
+cluster_mode = false
+
+[monitoring]
+prometheus_enabled = true
+jaeger_enabled = false
+jaeger_endpoint = "localhost:6831"
+log_format = "pretty"
+metrics_prefix = "bot4_dev"
+
+[features]
+ml_models_enabled = false
+auto_trading_enabled = false
+advanced_analytics_enabled = true
+experimental_features_enabled = true
+paper_trading_mode = true
+
+[resources]
+max_memory_mb = 2048
+max_cpu_cores = 2.0
+max_disk_gb = 50
+max_connections = 50
+max_threads = 20
+
+# Exchange configurations (credentials from environment)
+[exchanges.binance]
+name = "binance"
+api_key = ""  # Loaded from BOT4_BINANCE_API_KEY
+api_secret = ""  # Loaded from BOT4_BINANCE_API_SECRET
+testnet = true
+ws_endpoint = "wss://testnet.binance.vision/ws"
+rest_endpoint = "https://testnet.binance.vision/api"
+rate_limit = 1200
+
+[exchanges.kraken]
+name = "kraken"
+api_key = ""  # Loaded from BOT4_KRAKEN_API_KEY
+api_secret = ""  # Loaded from BOT4_KRAKEN_API_SECRET
+testnet = true
+ws_endpoint = "wss://ws-sandbox.kraken.com"
+rest_endpoint = "https://api-sandbox.kraken.com"
+rate_limit = 15

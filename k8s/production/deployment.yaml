@@ -1,0 +1,305 @@
+# Kubernetes Deployment for Bot4 Trading Platform
+# Task 0.5.1 - Production Deployment Configuration
+# Generated from deployment_config.rs
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot4-trading
+  namespace: production
+  labels:
+    app: bot4
+    component: trading-engine
+    environment: production
+    version: v1.0.0
+spec:
+  replicas: 1  # Single instance for trading consistency
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0  # No surge to prevent double trading
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: bot4
+      component: trading-engine
+  template:
+    metadata:
+      labels:
+        app: bot4
+        component: trading-engine
+        environment: production
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: bot4-trading
+      
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        
+      # Init containers
+      initContainers:
+      - name: wait-for-db
+        image: postgres:14-alpine
+        command: ['sh', '-c', 'until pg_isready -h $DB_HOST -p $DB_PORT; do echo waiting for database; sleep 2; done;']
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: database.host
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: database.port
+              
+      # Main container
+      containers:
+      - name: trading-engine
+        image: bot4-trading:v1.0.0
+        imagePullPolicy: Always
+        
+        # Ports
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 9090
+          name: metrics
+          protocol: TCP
+        - containerPort: 8081
+          name: health
+          protocol: TCP
+          
+        # Environment variables
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: RUST_LOG
+          value: "info,bot4=debug"
+        - name: BOT4_CONFIG_PATH
+          value: "/app/config"
+          
+        # Database configuration
+        - name: BOT4_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: database.host
+        - name: BOT4_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: database.port
+        - name: BOT4_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: database.name
+        - name: BOT4_DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: database.user
+        - name: BOT4_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bot4-secrets
+              key: db_password
+              
+        # Redis configuration
+        - name: BOT4_REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: redis.host
+        - name: BOT4_REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: bot4-config
+              key: redis.port
+        - name: BOT4_REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bot4-secrets
+              key: redis_password
+              
+        # Exchange API keys
+        - name: BOT4_BINANCE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bot4-exchange-secrets
+              key: binance_api_key
+        - name: BOT4_BINANCE_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: bot4-exchange-secrets
+              key: binance_api_secret
+        - name: BOT4_KRAKEN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: bot4-exchange-secrets
+              key: kraken_api_key
+        - name: BOT4_KRAKEN_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: bot4-exchange-secrets
+              key: kraken_api_secret
+              
+        # Resource limits
+        resources:
+          limits:
+            memory: "16Gi"
+            cpu: "8"
+            ephemeral-storage: "10Gi"
+          requests:
+            memory: "8Gi"
+            cpu: "4"
+            ephemeral-storage: "5Gi"
+            
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: health
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: health
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+          
+        # Volume mounts
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+          readOnly: true
+        - name: secrets
+          mountPath: /var/run/secrets/bot4
+          readOnly: true
+        - name: vault-token
+          mountPath: /var/run/secrets/vault
+          readOnly: true
+        - name: mode-state
+          mountPath: /data/mode-state
+          
+      # Node selection
+      nodeSelector:
+        node-role.kubernetes.io/trading: "true"
+        
+      # Tolerations for dedicated nodes
+      tolerations:
+      - key: "trading"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+        
+      # Anti-affinity to spread across zones
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - bot4
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+              
+      # Volumes
+      volumes:
+      - name: config
+        configMap:
+          name: bot4-config
+          defaultMode: 0444
+      - name: secrets
+        secret:
+          secretName: bot4-secrets
+          defaultMode: 0400
+      - name: vault-token
+        secret:
+          secretName: vault-token
+          defaultMode: 0400
+      - name: mode-state
+        persistentVolumeClaim:
+          claimName: bot4-mode-state-pvc
+
+---
+# Persistent Volume Claim for mode state
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bot4-mode-state-pvc
+  namespace: production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: fast-ssd
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: bot4-trading-service
+  namespace: production
+  labels:
+    app: bot4
+    component: trading-engine
+spec:
+  type: ClusterIP
+  selector:
+    app: bot4
+    component: trading-engine
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  - name: health
+    port: 8081
+    targetPort: health
+    protocol: TCP
+
+---
+# ServiceMonitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: bot4-trading-metrics
+  namespace: production
+  labels:
+    app: bot4
+    prometheus: kube-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: bot4
+      component: trading-engine
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics

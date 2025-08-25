@@ -1,0 +1,82 @@
+# Production Environment Configuration
+# Bot4 Trading Platform
+# Task 0.5.1 - Production Deployment Configuration
+# CRITICAL: All values must be production-ready
+
+environment = "Production"
+
+[app]
+name = "bot4-trading"
+version = "1.0.0"
+port = 8080
+host = "0.0.0.0"
+log_level = "info"
+metrics_port = 9090
+health_check_port = 8081
+
+[database]
+host = "timescaledb.production.svc.cluster.local"
+port = 5432
+database = "bot4_production"
+username = "bot4_prod_user"
+# password loaded from Kubernetes secret: BOT4_DB_PASSWORD
+pool_size = 50
+connection_timeout = 10
+ssl_mode = "require"  # MANDATORY for production
+
+[redis]
+host = "redis-master.production.svc.cluster.local"
+port = 6379
+# password loaded from Kubernetes secret: BOT4_REDIS_PASSWORD
+database = 0
+pool_size = 50
+cluster_mode = true  # Production uses Redis cluster
+
+[monitoring]
+prometheus_enabled = true  # MANDATORY for production
+jaeger_enabled = true
+jaeger_endpoint = "jaeger-collector.monitoring.svc.cluster.local:6831"
+log_format = "json"
+metrics_prefix = "bot4_prod"
+
+[features]
+ml_models_enabled = true
+auto_trading_enabled = true
+advanced_analytics_enabled = true
+experimental_features_enabled = false  # NEVER in production
+paper_trading_mode = false  # Real trading in production
+
+[resources]
+max_memory_mb = 16384  # 16GB
+max_cpu_cores = 8.0
+max_disk_gb = 500
+max_connections = 200
+max_threads = 100
+
+# Exchange configurations (credentials from Vault/K8s secrets)
+[exchanges.binance]
+name = "binance"
+api_key = ""  # Loaded from Vault: BOT4_BINANCE_API_KEY
+api_secret = ""  # Loaded from Vault: BOT4_BINANCE_API_SECRET
+testnet = false  # PRODUCTION - Real money
+ws_endpoint = "wss://stream.binance.com:9443/ws"
+rest_endpoint = "https://api.binance.com/api"
+rate_limit = 1200
+
+[exchanges.kraken]
+name = "kraken"
+api_key = ""  # Loaded from Vault: BOT4_KRAKEN_API_KEY
+api_secret = ""  # Loaded from Vault: BOT4_KRAKEN_API_SECRET
+testnet = false  # PRODUCTION - Real money
+ws_endpoint = "wss://ws.kraken.com"
+rest_endpoint = "https://api.kraken.com"
+rate_limit = 15
+
+[exchanges.coinbase]
+name = "coinbase"
+api_key = ""  # Loaded from Vault: BOT4_COINBASE_API_KEY
+api_secret = ""  # Loaded from Vault: BOT4_COINBASE_API_SECRET
+testnet = false  # PRODUCTION - Real money
+ws_endpoint = "wss://ws-feed.exchange.coinbase.com"
+rest_endpoint = "https://api.exchange.coinbase.com"
+rate_limit = 10

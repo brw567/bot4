@@ -23,6 +23,7 @@ pub mod monitoring_dashboards;        // Task 0.7: Read-only monitoring dashboar
 pub mod historical_charts;            // Task 0.6: Historical performance charts - Multi-timeframe analysis
 pub mod alert_management;             // Task 0.6: Alert management interface - Priority-based queuing
 pub mod audit_system;                 // Task 0.7: Tamper-proof audit system - Immutable compliance trail
+pub mod deployment_config;            // Task 0.5.1: Production deployment configuration - Multi-environment support
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;

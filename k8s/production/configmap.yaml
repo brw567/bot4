@@ -1,0 +1,101 @@
+# Kubernetes ConfigMap for Bot4 Trading Platform
+# Task 0.5.1 - Production Deployment Configuration
+# Non-sensitive configuration values
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bot4-config
+  namespace: production
+  labels:
+    app: bot4
+    environment: production
+data:
+  # Application configuration
+  app.name: "bot4-trading"
+  app.version: "1.0.0"
+  app.port: "8080"
+  app.metrics_port: "9090"
+  app.health_port: "8081"
+  app.log_level: "info"
+  
+  # Database configuration (non-sensitive)
+  database.host: "timescaledb.production.svc.cluster.local"
+  database.port: "5432"
+  database.name: "bot4_production"
+  database.user: "bot4_prod_user"
+  database.pool_size: "50"
+  database.ssl_mode: "require"
+  
+  # Redis configuration (non-sensitive)
+  redis.host: "redis-master.production.svc.cluster.local"
+  redis.port: "6379"
+  redis.database: "0"
+  redis.pool_size: "50"
+  redis.cluster_mode: "true"
+  
+  # Monitoring configuration
+  monitoring.prometheus_enabled: "true"
+  monitoring.jaeger_enabled: "true"
+  monitoring.jaeger_endpoint: "jaeger-collector.monitoring.svc.cluster.local:6831"
+  monitoring.log_format: "json"
+  monitoring.metrics_prefix: "bot4_prod"
+  
+  # Feature flags
+  features.ml_models_enabled: "true"
+  features.auto_trading_enabled: "true"
+  features.advanced_analytics_enabled: "true"
+  features.experimental_features_enabled: "false"
+  features.paper_trading_mode: "false"
+  
+  # Risk limits
+  risk.max_position_size: "0.02"
+  risk.max_leverage: "3.0"
+  risk.max_drawdown: "0.15"
+  risk.require_stop_loss: "true"
+  
+  # Exchange endpoints
+  exchange.binance.ws_endpoint: "wss://stream.binance.com:9443/ws"
+  exchange.binance.rest_endpoint: "https://api.binance.com/api"
+  exchange.binance.testnet: "false"
+  exchange.binance.rate_limit: "1200"
+  
+  exchange.kraken.ws_endpoint: "wss://ws.kraken.com"
+  exchange.kraken.rest_endpoint: "https://api.kraken.com"
+  exchange.kraken.testnet: "false"
+  exchange.kraken.rate_limit: "15"
+  
+  exchange.coinbase.ws_endpoint: "wss://ws-feed.exchange.coinbase.com"
+  exchange.coinbase.rest_endpoint: "https://api.exchange.coinbase.com"
+  exchange.coinbase.testnet: "false"
+  exchange.coinbase.rate_limit: "10"
+
+---
+# ConfigMap for deployment scripts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bot4-scripts
+  namespace: production
+data:
+  health-check.sh: |
+    #!/bin/bash
+    # Health check script
+    curl -f http://localhost:8081/health/live || exit 1
+    curl -f http://localhost:8081/health/ready || exit 1
+    
+  pre-stop.sh: |
+    #!/bin/bash
+    # Graceful shutdown script
+    echo "Starting graceful shutdown..."
+    
+    # Switch to Emergency mode
+    curl -X POST http://localhost:8080/api/control/mode \
+      -H "Content-Type: application/json" \
+      -d '{"mode": "Emergency"}'
+    
+    # Wait for positions to close
+    sleep 30
+    
+    # Signal shutdown
+    kill -TERM 1
