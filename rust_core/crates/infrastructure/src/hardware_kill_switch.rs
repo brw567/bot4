@@ -561,19 +561,19 @@ impl HardwareKillSwitch {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use std::collections::HashMap;
     use parking_lot::Mutex;
     
     /// Mock GPIO for testing
-    struct MockGPIO {
+    pub(crate) struct MockGPIO {
         pins: Arc<Mutex<HashMap<u8, bool>>>,
         modes: Arc<Mutex<HashMap<u8, PinMode>>>,
     }
     
     impl MockGPIO {
-        fn new() -> Self {
+        pub(crate) fn new() -> Self {
             Self {
                 pins: Arc::new(Mutex::new(HashMap::new())),
                 modes: Arc::new(Mutex::new(HashMap::new())),

@@ -17,6 +17,7 @@ pub mod circuit_breaker;
 pub mod circuit_breaker_integration;  // Task 0.2: Circuit breaker integration
 pub mod emergency_coordinator;        // Emergency shutdown coordination
 pub mod hardware_kill_switch;         // Task 0.4: Hardware kill switch - IEC 60204-1 compliant
+pub mod software_control_modes;       // Task 0.5: Software control modes - 4-state operational control
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -55,6 +56,23 @@ pub use circuit_breaker::{
     Outcome,
     Clock,
     SystemClock,
+};
+
+// Re-export software control modes (Task 0.5)
+pub use software_control_modes::{
+    ControlMode,
+    ControlModeManager,
+    ControlModeEvent,
+    ModeCapabilities,
+    SystemContext,
+    TransitionRules,
+    MonitoringLevel,
+    StrategyComplexity,
+    AnalysisDepth,
+    RiskLimits,
+    ExchangeOperations,
+    DataConfig,
+    InfrastructureConfig,
 };
 
 // Re-export memory management (legacy)
