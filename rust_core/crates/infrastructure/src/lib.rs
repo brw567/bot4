@@ -20,6 +20,8 @@ pub mod hardware_kill_switch;         // Task 0.4: Hardware kill switch - IEC 60
 pub mod software_control_modes;       // Task 0.5: Software control modes - 4-state operational control
 pub mod panic_conditions;             // Task 0.6: Panic conditions & thresholds - Market anomaly detection
 pub mod monitoring_dashboards;        // Task 0.7: Read-only monitoring dashboards - Real-time WebSocket updates
+pub mod historical_charts;            // Task 0.6: Historical performance charts - Multi-timeframe analysis
+pub mod alert_management;             // Task 0.6: Alert management interface - Priority-based queuing
 pub mod memory;
 pub mod parallelization;
 pub mod runtime_optimization;
@@ -88,7 +90,7 @@ pub use panic_conditions::{
     SpreadMonitor,
     APICascadeDetector,
     PriceDivergenceMonitor,
-    AlertSeverity,
+    AlertSeverity as PanicAlertSeverity,
     SlippageAlert,
     StalenessAlert,
     SpreadAlert,
@@ -107,6 +109,31 @@ pub use monitoring_dashboards::{
     PositionSnapshot,
     RiskMetricsSnapshot,
     SystemHealthSnapshot,
+    ExtendedDashboardManager,
+};
+
+// Re-export historical charts (Task 0.6)
+pub use historical_charts::{
+    Timeframe,
+    Candle,
+    PerformanceMetrics,
+    ChartDataAggregator,
+    ChartRenderer,
+    ChartData,
+    TechnicalIndicators,
+};
+
+// Re-export alert management (Task 0.6)
+pub use alert_management::{
+    AlertSeverity,
+    AlertCategory,
+    Alert,
+    AlertBuilder,
+    AlertRule,
+    AlertCondition,
+    AlertManager,
+    AlertAggregator,
+    AlertStatistics,
 };
 
 // Re-export memory management (legacy)

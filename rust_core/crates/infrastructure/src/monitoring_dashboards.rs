@@ -684,7 +684,7 @@ impl DashboardManager {
                 // Monitor control mode
                 if let Some(ref cm) = control_modes {
                     let mode = cm.current_mode();
-                    let caps = cm.get_capabilities();
+                    let _caps = cm.get_capabilities();
                     // Could create alert if mode changes
                 }
                 
@@ -902,6 +902,115 @@ mod tests {
             }
             _ => panic!("Wrong message type"),
         }
+    }
+}
+
+// ============================================================================
+// INTEGRATION WITH HISTORICAL CHARTS AND ALERTS - DEEP DIVE COMPLETION
+// ============================================================================
+
+use crate::historical_charts::{ChartDataAggregator, ChartRenderer, Timeframe};
+use crate::alert_management::{AlertManager, Alert as SystemAlert, AlertSeverity as SystemAlertSeverity};
+
+/// Extended dashboard manager with charts and alerts
+pub struct ExtendedDashboardManager {
+    base_manager: Arc<DashboardManager>,
+    chart_aggregator: Arc<ChartDataAggregator>,
+    chart_renderer: Arc<ChartRenderer>,
+    alert_manager: Arc<AlertManager>,
+}
+
+impl ExtendedDashboardManager {
+    pub fn new() -> Self {
+        let base_manager = Arc::new(DashboardManager::new());
+        let chart_aggregator = Arc::new(ChartDataAggregator::new(0.02)); // 2% risk-free rate
+        let chart_renderer = Arc::new(ChartRenderer::new(chart_aggregator.clone()));
+        let alert_manager = Arc::new(AlertManager::new(10000, 60)); // 10k history, 60s dedup
+        
+        Self {
+            base_manager,
+            chart_aggregator,
+            chart_renderer,
+            alert_manager,
+        }
+    }
+    
+    /// Process market tick and update all systems
+    pub fn process_market_tick(&self, symbol: &str, price: f64, volume: f64, is_buy: bool) {
+        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        
+        // Update chart aggregator
+        self.chart_aggregator.process_tick(timestamp, price, volume, is_buy);
+        
+        // Check for alerts based on price movement
+        let metrics = self.chart_aggregator.calculate_metrics(Timeframe::M1);
+        if let Some(perf) = metrics {
+            // Check for significant drawdown
+            if perf.max_drawdown > 0.05 {  // 5% drawdown
+                let alert = SystemAlert::builder()
+                    .severity(SystemAlertSeverity::High)
+                    .category(crate::alert_management::AlertCategory::Drawdown)
+                    .source("ExtendedDashboard")
+                    .title(format!("Significant drawdown on {}", symbol))
+                    .message(format!("Drawdown of {:.2}% detected", perf.max_drawdown * 100.0))
+                    .detail("symbol", symbol)
+                    .detail("drawdown", format!("{:.4}", perf.max_drawdown))
+                    .suggested_action("Consider reducing position size")
+                    .suggested_action("Review risk parameters")
+                    .ttl(300)  // 5 minute TTL
+                    .build();
+                
+                let _ = self.alert_manager.raise_alert(alert);
+            }
+            
+            // Check for poor Sharpe ratio
+            if perf.sharpe_ratio < 0.5 && perf.sharpe_ratio > -10.0 {
+                let alert = SystemAlert::builder()
+                    .severity(SystemAlertSeverity::Medium)
+                    .category(crate::alert_management::AlertCategory::Strategy)
+                    .source("ExtendedDashboard")
+                    .title("Poor risk-adjusted returns")
+                    .message(format!("Sharpe ratio {:.2} below threshold", perf.sharpe_ratio))
+                    .detail("sharpe_ratio", format!("{:.4}", perf.sharpe_ratio))
+                    .detail("timeframe", format!("{:?}", Timeframe::M1))
+                    .suggested_action("Review strategy parameters")
+                    .auto_resolve(true)
+                    .ttl(600)  // 10 minute TTL
+                    .build();
+                
+                let _ = self.alert_manager.raise_alert(alert);
+            }
+        }
+    }
+    
+    /// Get chart data for display
+    pub fn get_chart_data(&self, timeframe: Timeframe, include_indicators: bool) -> crate::historical_charts::ChartData {
+        self.chart_renderer.prepare_chart_data(timeframe, include_indicators)
+    }
+    
+    /// Get active alerts for display
+    pub fn get_active_alerts(&self) -> Vec<SystemAlert> {
+        let critical = self.alert_manager.get_alerts_by_severity(SystemAlertSeverity::Critical);
+        let high = self.alert_manager.get_alerts_by_severity(SystemAlertSeverity::High);
+        let medium = self.alert_manager.get_alerts_by_severity(SystemAlertSeverity::Medium);
+        
+        // Combine and return in priority order
+        let mut alerts = Vec::new();
+        alerts.extend(critical);
+        alerts.extend(high);
+        alerts.extend(medium);
+        alerts
+    }
+    
+    /// Get performance comparison across timeframes
+    pub fn get_performance_comparison(&self) -> HashMap<Timeframe, crate::historical_charts::PerformanceMetrics> {
+        self.chart_renderer.get_performance_comparison()
+    }
+    
+    /// Clean up expired data
+    pub fn cleanup(&self) {
+        self.alert_manager.cleanup_expired();
+        // Chart aggregator auto-manages its memory
     }
 }
 
