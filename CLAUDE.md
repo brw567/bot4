@@ -14,35 +14,42 @@ The ENTIRE TEAM must complete this task before moving to the next one.
 
 ## 🔴 CRITICAL: ARCHITECTURE DOCUMENTATION REQUIREMENTS
 
+### ⚠️ SINGLE SOURCE OF TRUTH: LLM_OPTIMIZED_ARCHITECTURE.md
+**Location**: `/home/hamster/bot4/docs/LLM_OPTIMIZED_ARCHITECTURE.md`
+**This is THE ONLY architecture document - ALL others are archived!**
+
 ### MANDATORY ON EVERY COMMIT:
-1. **Update ARCHITECTURE_MASTER.md** with:
-   - New functions/methods added (with file:line)
+1. **Check LLM_OPTIMIZED_ARCHITECTURE.md FIRST** for:
+   - Existing implementations (avoid duplicates)
+   - Component contracts and interfaces
+   - Performance requirements
+   - Integration points
+
+2. **Update LLM_OPTIMIZED_ARCHITECTURE.md** with:
+   - New components added (with file:line references)
+   - Performance metrics achieved
    - Dependencies introduced
    - Data flows created
-   - Integration points modified
+   - Test coverage status
 
-2. **Update COMPLETE_CODEBASE_REGISTRY.md** with:
+3. **Update COMPLETE_CODEBASE_REGISTRY.md** with:
    - New structs, enums, traits
    - Implementation blocks
    - Public API changes
-   - Test coverage updates
+   - Exact file locations
 
-3. **Run Architecture Analysis**:
+4. **Run Validation Scripts**:
    ```bash
    python3 scripts/analyze_codebase.py
    ./scripts/check_duplicates.sh
    ```
 
-4. **Check for Duplicates** BEFORE implementing:
-   - Search COMPLETE_CODEBASE_REGISTRY.md for existing implementations
-   - Reuse existing code when possible
-   - Document why if creating similar functionality
-
 ### Architecture Update Checklist:
-- [ ] Added new functions to registry
-- [ ] Updated dependency graph
-- [ ] Documented data flows
-- [ ] Checked for duplicates
+- [ ] Checked LLM_OPTIMIZED_ARCHITECTURE.md for existing functionality
+- [ ] Updated component status in architecture doc
+- [ ] Added new functions to COMPLETE_CODEBASE_REGISTRY.md
+- [ ] Documented performance metrics
+- [ ] Checked for duplicates (158 already identified!)
 - [ ] Updated test coverage metrics
 - [ ] Linked external research used
 
@@ -364,8 +371,12 @@ Bot4 is a next-generation, fully autonomous cryptocurrency trading platform comb
 **NO SLACKING - This is MANDATORY!**
 
 **Supporting Documents:**
-4. **ARCHITECTURE.md** - Detailed technical architecture
-5. **DEVELOPMENT_RULES.md** - Development standards
+4. **DEVELOPMENT_RULES.md** - Development standards
+
+**⚠️ ARCHIVED DOCUMENTS - DO NOT USE:**
+- ~~ARCHITECTURE_MASTER.md~~ → Use LLM_OPTIMIZED_ARCHITECTURE.md
+- ~~ARCHITECTURE.md~~ → Use LLM_OPTIMIZED_ARCHITECTURE.md
+- ~~docs/MASTER_ARCHITECTURE_V3.md~~ → Use LLM_OPTIMIZED_ARCHITECTURE.md
 
 ### Task Workflow - MANDATORY PROCESS (ENHANCED V2)
 ```bash
