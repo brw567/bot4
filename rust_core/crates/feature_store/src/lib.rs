@@ -26,6 +26,8 @@ pub mod point_in_time;
 pub mod drift_detection;
 pub mod ab_testing;
 pub mod monitoring;
+pub mod game_theory;
+pub mod market_microstructure;
 
 use std::sync::Arc;
 use anyhow::{Result, Context};
@@ -69,7 +71,7 @@ impl Default for FeatureStoreConfig {
     }
 }
 
-/// Main Feature Store interface
+/// Main Feature Store interface - Enhanced with Game Theory & Microstructure
 pub struct FeatureStore {
     config: FeatureStoreConfig,
     online_store: Arc<OnlineStore>,
@@ -79,6 +81,10 @@ pub struct FeatureStore {
     drift_detector: Arc<DriftDetector>,
     ab_manager: Arc<ABTestManager>,
     monitor: Arc<monitoring::FeatureMonitor>,
+    
+    // Advanced feature calculators
+    game_theory: Arc<game_theory::GameTheoryCalculator>,
+    microstructure: Arc<market_microstructure::MicrostructureCalculator>,
 }
 
 impl FeatureStore {
@@ -130,12 +136,25 @@ impl FeatureStore {
             ).await?
         );
         
+        // Initialize advanced calculators
+        let game_theory = Arc::new(
+            game_theory::GameTheoryCalculator::new(
+                game_theory::GameTheoryConfig::default()
+            )
+        );
+        
+        let microstructure = Arc::new(
+            market_microstructure::MicrostructureCalculator::new(
+                market_microstructure::MicrostructureConfig::default()
+            )
+        );
+        
         // Start background tasks
         pipeline.start_streaming().await?;
         drift_detector.start_monitoring().await?;
         monitor.start_collection().await?;
         
-        info!("Feature Store initialized successfully");
+        info!("Feature Store initialized successfully with Game Theory & Microstructure");
         
         Ok(Self {
             config,
@@ -146,6 +165,8 @@ impl FeatureStore {
             drift_detector,
             ab_manager,
             monitor,
+            game_theory,
+            microstructure,
         })
     }
     

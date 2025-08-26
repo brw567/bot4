@@ -21,6 +21,18 @@ pub mod sinks;
 pub mod aggregators;
 pub mod schema;
 pub mod monitoring;
+
+// Re-export monitoring types
+pub use monitoring::{
+    MetricsCollector,
+    Counter,
+    Histogram,
+    register_histogram,
+    register_counter,
+    ProducerMetrics,
+    ConsumerMetrics,
+    ClickHouseMetrics,
+};
 pub mod replay;
 pub mod event_driven;
 pub mod timescale;

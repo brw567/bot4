@@ -32,8 +32,7 @@ use crate::monitoring::ClickHouseMetrics;
 // ClickHouse schema for market events
 #[derive(Debug, Clone, Row, Serialize, Deserialize)]
 pub struct MarketEventRow {
-    // Timestamp with nanosecond precision
-    #[serde(with = "clickhouse::serde::datetime64::nanos")]
+    // Timestamp - ClickHouse will handle as DateTime64
     pub timestamp: DateTime<Utc>,
     
     // Core fields
