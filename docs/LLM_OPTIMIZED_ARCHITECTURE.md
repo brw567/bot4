@@ -1,9 +1,54 @@
 # Bot4 LLM-Optimized Architecture Document
-## Version 5.1 - AUTO-ADAPTIVE GROK 3 MINI ARCHITECTURE
+## Version 6.0 - DEDUPLICATION & VERIFICATION UPDATE
 ## Format: Structured for Claude, ChatGPT, Grok, and other LLMs
-## Updated: 2024-01-22 - Performance Optimization Complete
+## Updated: 2025-08-26 - Technical Debt Crisis Identified
+## CRITICAL: 280-hour deduplication required before new features
 ## Performance Targets: CAPITAL-ADAPTIVE (25-150% APY)
 ## Cost Structure: $0.20-100/month (99% REDUCTION) + $0 Infrastructure
+
+---
+
+## 🔴 CRITICAL TECHNICAL DEBT UPDATE
+
+```yaml
+urgency: CRITICAL
+discovered: 2025-08-26
+impact: PROJECT_BLOCKING
+
+duplication_crisis:
+  order_structs: 44  # Should be 1
+  correlation_functions: 13  # Should be 1
+  var_implementations: 8  # Should be 1
+  price_types: 14  # Should be 1
+  process_event_patterns: 6  # Should be 1 event bus
+  layer_violations: 23  # Should be 0
+  
+required_action:
+  layer_1_6_deduplication:
+    hours: 160
+    weeks: 4
+    team: ALL_8_MEMBERS
+    
+  layer_1_7_verification:
+    hours: 120  
+    weeks: 3
+    team: ALL_8_MEMBERS
+    
+blocks: ALL_NEW_FEATURE_DEVELOPMENT
+
+safety_mechanisms:
+  - feature_flags
+  - parallel_validation
+  - strangler_fig_pattern
+  - 7809_existing_tests
+```
+
+**LLM AGENTS MUST**:
+1. Check for duplicates before implementing ANY new code
+2. Use canonical types from domain_types crate (after creation)
+3. Use unified mathematical_ops crate (after creation)
+4. Subscribe to event bus instead of creating process_event functions
+5. Respect layer boundaries (no cross-layer imports)
 
 ---
 
