@@ -98,19 +98,3 @@ mod tests {
         let _ = SlippageConfig::default();
     }
 }
-// Missing types that need to be defined
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderBookUpdate {
-    pub timestamp: DateTime<Utc>,
-    pub symbol: Symbol,
-    pub exchange: types::Exchange,
-    pub bids: Vec<(Price, Quantity)>,
-    pub asks: Vec<(Price, Quantity)>,
-    pub update_type: UpdateType,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum UpdateType {
-    Snapshot,
-    Delta,
-}

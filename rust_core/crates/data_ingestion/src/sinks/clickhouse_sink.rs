@@ -926,10 +926,8 @@ impl ClickHouseSink {
         info!("ClickHouse sink shutdown complete");
         Ok(())
     }
-}
-
-// Performance monitoring
     
+    // Performance monitoring
     pub fn update_latency(&self, latency_us: u64) {
         self.write_latency_us.store(latency_us, Ordering::Relaxed);
     }

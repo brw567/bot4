@@ -18,7 +18,17 @@ use anyhow::{Result, Context};
 use tracing::{debug, info, warn, instrument};
 
 use types::{Price, Quantity, Symbol};
-// TODO: use infrastructure::metrics::{MetricsCollector, register_histogram, register_counter};
+
+// Temporary metrics collector trait until infrastructure is fixed
+trait MetricsCollector: Send + Sync {
+    fn record(&self, value: f64);
+}
+
+struct NoopMetricsCollector;
+
+impl MetricsCollector for NoopMetricsCollector {
+    fn record(&self, _value: f64) {}
+}
 
 /// Window type for aggregation
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -451,9 +461,9 @@ impl BucketedAggregator {
             completed_windows: Arc::new(RwLock::new(VecDeque::with_capacity(10000))),
             windows_created: Arc::new(AtomicU64::new(0)),
             events_processed: Arc::new(AtomicU64::new(0)),
-            window_duration_histogram: register_histogram("bucket_window_duration_ms"),
-            events_per_window: register_histogram("bucket_events_per_window"),
-            compression_ratio: register_histogram("bucket_compression_ratio"),
+            window_duration_histogram: Arc::new(NoopMetricsCollector),
+            events_per_window: Arc::new(NoopMetricsCollector),
+            compression_ratio: Arc::new(NoopMetricsCollector),
         })
     }
     

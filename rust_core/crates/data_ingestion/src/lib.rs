@@ -100,7 +100,7 @@ pub use event_driven::{
 // Layer 1.4: TimescaleDB Infrastructure exports
 pub use timescale::{
     TimescaleClient,
-    TimescaleConfig,
+    TimescaleConfig as TimescaleInfraConfig,
     MarketTick,
     TradeSide as TickSide,
     OrderBookSnapshot as TimescaleOrderBook,
