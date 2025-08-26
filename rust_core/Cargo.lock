@@ -2254,6 +2254,7 @@ dependencies = [
  "metrics 0.21.1",
  "metrics-exporter-prometheus",
  "mimalloc",
+ "nalgebra 0.32.6",
  "parking_lot",
  "parquet",
  "postgres-types",

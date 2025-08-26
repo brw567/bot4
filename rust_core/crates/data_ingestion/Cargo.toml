@@ -91,6 +91,9 @@ csv-async = "1.3"
 # Additional for replay
 rust_decimal_macros = "1.33"
 
+# Data Quality dependencies
+nalgebra = "0.32"  # For Kalman filter matrices
+
 # Infrastructure integration
 infrastructure = { path = "../infrastructure" }
 types = { path = "../types" }

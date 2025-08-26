@@ -36,6 +36,7 @@ pub use monitoring::{
 pub mod replay;
 pub mod event_driven;
 pub mod timescale;
+pub mod data_quality;
 
 // Re-export main types
 pub use producers::{
@@ -127,6 +128,34 @@ pub use timescale::{
     CompressionPolicy,
     PerformanceMonitor,
     QueryStats,
+};
+
+// Layer 1.6: Data Quality & Validation exports
+pub use data_quality::{
+    DataQualityManager,
+    DataQualityConfig,
+    DataBatch,
+    DataType,
+    ValidationResult,
+    ValidationIssue,
+    IssueSeverity,
+    IssueCategory,
+    BenfordValidator,
+    BenfordAnomaly,
+    KalmanGapDetector,
+    GapEvent,
+    BackfillSystem,
+    BackfillPriority,
+    BackfillRequest,
+    CrossSourceReconciler,
+    ReconciliationResult,
+    ChangeDetector,
+    ChangePoint,
+    QualityScorer,
+    QualityMetrics,
+    QualityScore,
+    QualityMonitor,
+    QualityAlert,
 };
 
 #[cfg(test)]
