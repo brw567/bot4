@@ -18,8 +18,8 @@ use anyhow::{Result, Context};
 use tracing::{debug, info, warn, instrument};
 use statrs::statistics::Statistics;
 
-use crate::types::{Price, Quantity, Symbol};
-use infrastructure::metrics::{MetricsCollector, register_histogram, register_counter};
+use types::{Price, Quantity, Symbol};
+// TODO: use infrastructure::metrics::{MetricsCollector, register_histogram, register_counter};
 
 /// Volatility regime classification
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]

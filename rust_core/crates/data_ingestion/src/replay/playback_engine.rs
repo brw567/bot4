@@ -18,7 +18,7 @@ use tokio::time::{sleep, Instant};
 use async_trait::async_trait;
 use tracing::{info, debug, warn, instrument};
 
-use crate::types::{Price, Quantity, Symbol, Exchange};
+use types::{Price, Quantity, Symbol, Exchange};
 use crate::replay::{
     lob_simulator::{LOBSimulator, OrderBookUpdate, SimulatorConfig},
     microburst_detector::{MicroburstDetector, DetectorConfig, MicroburstEvent},

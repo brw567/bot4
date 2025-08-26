@@ -19,8 +19,8 @@ use tracing::{debug, warn, info, instrument};
 use statrs::statistics::Statistics;
 use statrs::distribution::{Normal, ContinuousCDF};
 
-use crate::types::{Price, Quantity, Symbol};
-use infrastructure::metrics::{MetricsCollector, register_counter, register_histogram};
+use types::{Price, Quantity, Symbol};
+// TODO: use infrastructure::metrics::{MetricsCollector, register_counter, register_histogram};
 
 /// Types of microburst events
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -768,7 +768,7 @@ impl MicroburstDetector {
                     
                     updates.push(OrderBookUpdate {
                         symbol: symbol.clone(),
-                        exchange: Exchange("Simulated".to_string()),
+                        exchange: types::Exchange::new("Simulated"),
                         timestamp,
                         sequence_number: i + 1,
                         update_type: UpdateType::Trade {
@@ -791,7 +791,7 @@ impl MicroburstDetector {
                     // Clear and rebuild at new price
                     updates.push(OrderBookUpdate {
                         symbol: symbol.clone(),
-                        exchange: Exchange("Simulated".to_string()),
+                        exchange: types::Exchange::new("Simulated"),
                         timestamp,
                         sequence_number: i + 1,
                         update_type: UpdateType::Clear,
@@ -801,7 +801,7 @@ impl MicroburstDetector {
                     // Add new orders at jumped price
                     updates.push(OrderBookUpdate {
                         symbol: symbol.clone(),
-                        exchange: Exchange("Simulated".to_string()),
+                        exchange: types::Exchange::new("Simulated"),
                         timestamp,
                         sequence_number: i + 2,
                         update_type: UpdateType::Add {
@@ -821,7 +821,7 @@ impl MicroburstDetector {
                     
                     updates.push(OrderBookUpdate {
                         symbol: symbol.clone(),
-                        exchange: Exchange("Simulated".to_string()),
+                        exchange: types::Exchange::new("Simulated"),
                         timestamp,
                         sequence_number: level as u64 + 1,
                         update_type: UpdateType::Cancel {
@@ -843,7 +843,7 @@ impl MicroburstDetector {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::Exchange;
+    use types::Exchange;
     use crate::replay::lob_simulator::OrderBookUpdate;
     
     #[test]

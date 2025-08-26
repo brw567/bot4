@@ -19,9 +19,9 @@ use anyhow::{Result, Context};
 use statrs::distribution::{Normal, ContinuousCDF};
 use statrs::statistics::Statistics;
 
-use crate::types::{Price, Quantity, Symbol};
+use types::{Price, Quantity, Symbol};
 use crate::replay::lob_simulator::OrderBook;
-use infrastructure::metrics::{MetricsCollector, register_histogram};
+// TODO: use infrastructure::metrics::{MetricsCollector, register_histogram};
 
 /// Slippage configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -602,7 +602,7 @@ impl AdvancedSlippageModels {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::Exchange;
+    use types::Exchange;
     use std::collections::BTreeMap;
     
     fn create_test_order_book() -> OrderBook {

@@ -19,8 +19,8 @@ use tracing::{debug, warn, error, instrument};
 use dashmap::DashMap;
 use ahash::AHashMap;
 
-use crate::types::{Price, Quantity, Symbol, Exchange};
-use infrastructure::metrics::{MetricsCollector, register_histogram, register_counter};
+use types::{Price, Quantity, Symbol, Exchange};
+// TODO: use infrastructure::metrics::{MetricsCollector, register_histogram, register_counter};
 
 /// Order book level with complete information
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -340,10 +340,10 @@ impl LOBSimulator {
         }
         
         // Update metrics
-        self.metrics.updates_processed.increment(1);
+// self.metrics.updates_processed.increment(1);
         
         // Record latency
-        self.metrics.latency_distribution.record(update.latency_ns as f64 / 1000.0);
+// self.metrics.latency_distribution.record(update.latency_ns as f64 / 1000.0);
         
         // Generate snapshot if needed
         if self.should_snapshot(&book) {
@@ -608,7 +608,7 @@ impl LOBSimulator {
                 let spread_bps = (book.spread.unwrap() / mid.0 * Decimal::from(10000))
                     .to_f64()
                     .unwrap_or(0.0);
-                self.metrics.spread_distribution.record(spread_bps);
+// self.metrics.spread_distribution.record(spread_bps);
             }
         }
         
@@ -618,7 +618,7 @@ impl LOBSimulator {
             let imbalance = ((book.total_bid_depth.0 - book.total_ask_depth.0) / total_depth)
                 .to_f64()
                 .unwrap_or(0.0);
-            self.metrics.depth_imbalance.record(imbalance);
+// self.metrics.depth_imbalance.record(imbalance);
         }
         
         Ok(())
@@ -670,7 +670,7 @@ impl LOBSimulator {
     /// Check for crossed book condition
     fn check_crossed_book(&self, book: &OrderBook) -> Result<()> {
         if book.is_crossed {
-            self.metrics.crossed_books_detected.increment(1);
+// self.metrics.crossed_books_detected.increment(1);
             warn!("Crossed book detected for {}: bid > ask", book.symbol.0);
         }
         Ok(())
@@ -701,7 +701,7 @@ impl LOBSimulator {
             .or_insert_with(|| VecDeque::with_capacity(1000))
             .push_back(snapshot);
         
-        self.metrics.snapshots_generated.increment(1);
+// self.metrics.snapshots_generated.increment(1);
         
         Ok(())
     }

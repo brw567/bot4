@@ -23,7 +23,7 @@ use csv_async::{AsyncReaderBuilder, AsyncDeserializer};
 use parquet::file::reader::{FileReader, SerializedFileReader};
 use parquet::record::{Row, RowAccessor};
 
-use crate::types::{Price, Quantity, Symbol, Exchange};
+use types::{Price, Quantity, Symbol, Exchange};
 use crate::replay::lob_simulator::{OrderBookUpdate, UpdateType, Side};
 
 /// Supported data sources

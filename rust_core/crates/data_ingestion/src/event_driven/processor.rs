@@ -22,8 +22,9 @@ use serde::{Deserialize, Serialize};
 use anyhow::{Result, Context};
 use tracing::{debug, info, warn, error, instrument};
 
-use crate::types::{Price, Quantity, Symbol};
-use infrastructure::metrics::{MetricsCollector, register_counter, register_histogram};
+use types::{Price, Quantity, Symbol};
+// TODO: Re-enable when infrastructure exports metrics module
+// use infrastructure::metrics::{MetricsCollector, register_counter, register_histogram};
 
 /// Event priority levels
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -299,7 +300,7 @@ impl EventProcessor {
         
         // Rate limiting
         if !self.rate_limiter.write().try_acquire(1) {
-            self.metrics.events_dropped.increment(1);
+// self.metrics.events_dropped.increment(1);
             return Err(anyhow::anyhow!("Rate limit exceeded"));
         }
         
@@ -324,7 +325,7 @@ impl EventProcessor {
                 Ok(id)
             }
             Err(crossbeam_channel::TrySendError::Full(_)) => {
-                self.metrics.events_dropped.increment(1);
+// self.metrics.events_dropped.increment(1);
                 
                 // Apply back-pressure if enabled
                 if self.config.enable_backpressure {

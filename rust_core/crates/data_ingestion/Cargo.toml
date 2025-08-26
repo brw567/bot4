@@ -29,10 +29,10 @@ reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
 # ClickHouse
 clickhouse = { version = "0.13", features = ["native-tls"] }
 
-# Parquet - temporarily using version 46 to avoid chrono conflict
-parquet = { version = "46.0", features = ["async", "arrow"] }
-arrow = { version = "46.0", features = ["prettyprint"] }
-arrow-flight = "46.0"
+# Parquet - Using latest stable version with chrono conflict fixed
+parquet = { version = "56.1", features = ["async", "arrow"] }
+arrow = { version = "56.1", features = ["prettyprint"] }
+arrow-flight = "56.1"
 
 # TimescaleDB (via SQLx)
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "rust_decimal", "json"] }
@@ -78,6 +78,9 @@ smallvec = "1.11"  # Stack-allocated vectors
 
 # Statistics for replay
 statrs = "0.16"
+
+# Random number generation
+rand = "0.8"
 
 # CSV support for historical data
 csv-async = "1.3"

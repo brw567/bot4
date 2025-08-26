@@ -17,7 +17,7 @@ use chrono::{DateTime, Utc, Duration};
 use serde::{Deserialize, Serialize};
 use anyhow::{Result, Context};
 
-use crate::types::{Price, Quantity, Symbol, Exchange};
+use types::{Price, Quantity, Symbol, Exchange};
 
 /// Fee structure for an exchange
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -929,25 +929,6 @@ impl ClickHouseSink {
 }
 
 // Performance monitoring
-pub struct ClickHouseMetrics {
-    throughput_events_per_sec: Arc<AtomicU64>,
-    throughput_bytes_per_sec: Arc<AtomicU64>,
-    write_latency_us: Arc<AtomicU64>,
-}
-
-impl ClickHouseMetrics {
-    pub fn new() -> Self {
-        Self {
-            throughput_events_per_sec: Arc::new(AtomicU64::new(0)),
-            throughput_bytes_per_sec: Arc::new(AtomicU64::new(0)),
-            write_latency_us: Arc::new(AtomicU64::new(0)),
-        }
-    }
-    
-    pub fn update_throughput(&self, events_per_sec: u64, bytes_per_sec: u64) {
-        self.throughput_events_per_sec.store(events_per_sec, Ordering::Relaxed);
-        self.throughput_bytes_per_sec.store(bytes_per_sec, Ordering::Relaxed);
-    }
     
     pub fn update_latency(&self, latency_us: u64) {
         self.write_latency_us.store(latency_us, Ordering::Relaxed);

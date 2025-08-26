@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use statrs::distribution::{Normal, ContinuousCDF};
 
-use crate::types::{Price, Quantity};
+use types::{Price, Quantity};
 use crate::replay::lob_simulator::OrderBook;
 
 /// Kyle's lambda - permanent price impact coefficient

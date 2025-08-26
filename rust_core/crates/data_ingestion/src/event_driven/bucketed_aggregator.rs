@@ -17,8 +17,8 @@ use serde::{Deserialize, Serialize};
 use anyhow::{Result, Context};
 use tracing::{debug, info, warn, instrument};
 
-use crate::types::{Price, Quantity, Symbol};
-use infrastructure::metrics::{MetricsCollector, register_histogram, register_counter};
+use types::{Price, Quantity, Symbol};
+// TODO: use infrastructure::metrics::{MetricsCollector, register_histogram, register_counter};
 
 /// Window type for aggregation
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
