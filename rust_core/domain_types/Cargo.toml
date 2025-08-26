@@ -1,0 +1,85 @@
+[package]
+name = "domain_types"
+version = "0.1.0"
+edition = "2021"
+authors = ["Bot4 Full Team - 360° Deep Dive Implementation"]
+
+[dependencies]
+# Core dependencies for financial types
+rust_decimal = { version = "1.35", features = ["serde", "serde-float"] }
+rust_decimal_macros = "1.35"
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+uuid = { version = "1.10", features = ["v4", "serde"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Async support
+tokio = { version = "1.40", features = ["full"] }
+async-trait = "0.1"
+
+# Performance and safety
+once_cell = "1.20"
+parking_lot = "0.12"
+dashmap = "6.0"
+
+# Validation and constraints
+validator = { version = "0.18", features = ["derive"] }
+
+# Enum utilities
+strum = { version = "0.26", features = ["derive"] }
+strum_macros = "0.26"
+
+# Feature flag support for migration
+cfg-if = "1.0"
+
+# Phantom types and compile-time safety
+static_assertions = "1.1"
+typenum = "1.17"
+
+# Tracing for debugging migrations
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[dev-dependencies]
+# Testing
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+proptest = "1.5"
+criterion = { version = "0.5", features = ["html_reports"] }
+approx = "0.5"
+
+# Test helpers
+pretty_assertions = "1.4"
+test-case = "3.1"
+
+[features]
+default = ["validation", "conversion", "parallel_validation"]
+
+# Feature flags for gradual migration
+legacy_compat = []          # Enable legacy type conversions
+validation = []             # Enable validation layers
+conversion = []             # Enable type conversions
+parallel_validation = []    # Enable parallel validation system
+phantom_currency = []       # Enable phantom type currency safety
+full_migration = [         # Enable all migration features
+    "legacy_compat",
+    "validation", 
+    "conversion",
+    "parallel_validation",
+    "phantom_currency"
+]
+
+# Performance features
+simd = []                  # SIMD optimizations
+zero_copy = []             # Zero-copy serialization
+
+[lib]
+name = "domain_types"
+path = "src/lib.rs"
+
+[[bench]]
+name = "type_benchmarks"
+harness = false
