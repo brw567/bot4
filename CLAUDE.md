@@ -3,14 +3,48 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 🏁 CURRENT TASK - ENTIRE TEAM FOCUS
-**Task**: Layer 0.1 - Hardware Kill Switch
-**Hours**: 40 total (10 research, 8 design, 16 implement, 6 test)
-**Status**: NOT STARTED
+**Task**: Layer 1.7 - Exchange Data Connectors
+**Hours**: 80 total (20 Binance, 20 Kraken, 20 Coinbase, 20 Integration)
+**Status**: NEXT PRIORITY
 **Team**: ALL 8 MEMBERS WORKING TOGETHER
-**External Research Required**: YES - GPIO, safety standards, interrupt handling
+**External Research Required**: YES - Exchange APIs, WebSocket protocols, rate limiting
 
 ### DO NOT WORK ON ANYTHING ELSE!
 The ENTIRE TEAM must complete this task before moving to the next one.
+
+## 🔴 CRITICAL: ARCHITECTURE DOCUMENTATION REQUIREMENTS
+
+### MANDATORY ON EVERY COMMIT:
+1. **Update ARCHITECTURE_MASTER.md** with:
+   - New functions/methods added (with file:line)
+   - Dependencies introduced
+   - Data flows created
+   - Integration points modified
+
+2. **Update COMPLETE_CODEBASE_REGISTRY.md** with:
+   - New structs, enums, traits
+   - Implementation blocks
+   - Public API changes
+   - Test coverage updates
+
+3. **Run Architecture Analysis**:
+   ```bash
+   python3 scripts/analyze_codebase.py
+   ./scripts/check_duplicates.sh
+   ```
+
+4. **Check for Duplicates** BEFORE implementing:
+   - Search COMPLETE_CODEBASE_REGISTRY.md for existing implementations
+   - Reuse existing code when possible
+   - Document why if creating similar functionality
+
+### Architecture Update Checklist:
+- [ ] Added new functions to registry
+- [ ] Updated dependency graph
+- [ ] Documented data flows
+- [ ] Checked for duplicates
+- [ ] Updated test coverage metrics
+- [ ] Linked external research used
 
 ## 🔴 ALEX'S MANDATORY INSTRUCTIONS - ABSOLUTE REQUIREMENTS
 
@@ -77,7 +111,7 @@ Before implementing ANY task:
 ### 🎯 NEW: 7-LAYER ARCHITECTURE - STRICT EXECUTION ORDER
 **COMBINED WITH SINGLE-TASK FOCUS:**
 
-#### CURRENT STATUS: 35% Complete | 1,880 hours remaining
+#### CURRENT STATUS: 14.4% Complete | 508/3,532 hours done | 3,024 hours remaining
 
 #### LAYER PRIORITIES (MUST COMPLETE IN ORDER):
 1. **LAYER 0: SAFETY SYSTEMS** (160h) ⚠️ 40% complete - **IMMEDIATE PRIORITY**
