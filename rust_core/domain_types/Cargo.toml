@@ -43,6 +43,10 @@ typenum = "1.17"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
+# Parallel validation
+rand = "0.8"
+rayon = { version = "1.10", optional = true }
+
 [dev-dependencies]
 # Testing
 quickcheck = "1.0"
@@ -62,7 +66,7 @@ default = ["validation", "conversion", "parallel_validation"]
 legacy_compat = []          # Enable legacy type conversions
 validation = []             # Enable validation layers
 conversion = []             # Enable type conversions
-parallel_validation = []    # Enable parallel validation system
+parallel_validation = ["rayon"]    # Enable parallel validation system with rayon
 phantom_currency = []       # Enable phantom type currency safety
 full_migration = [         # Enable all migration features
     "legacy_compat",
