@@ -2,8 +2,8 @@
 ## SINGLE SOURCE OF TRUTH - NO OTHER TASK DOCUMENTS ALLOWED
 ## Team: Full 8-Member Participation Required
 ## Last Updated: August 26, 2025
-## Status: 13.8% Complete | 3,692 Total Hours (508 Complete, 3,184 Remaining)
-## 🔴 CRITICAL: 160-hour Code Deduplication MUST complete before new features
+## Status: 13.1% Complete | 3,812 Total Hours (508 Complete, 3,304 Remaining)
+## 🔴 CRITICAL: 280-hour Deduplication + Verification MUST complete before new features
 
 ---
 
@@ -206,8 +206,8 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 ---
 
 ### LAYER 1: DATA FOUNDATION (REQUIRED FOR ALL ML/TRADING)
-**Total: 536 hours (280 original + 96 from reviews + 160 deduplication) | Priority: CRITICAL | Owner: Avery + FULL TEAM**
-**Status**: 216 hours complete (40.3%), 320 hours remaining (160 deduplication + 160 other tasks)
+**Total: 656 hours (280 original + 96 from reviews + 160 deduplication + 120 re-verification) | Priority: CRITICAL | Owner: FULL TEAM**
+**Status**: 216 hours complete (32.9%), 440 hours remaining (160 deduplication + 120 verification + 160 other tasks)
 
 #### 1.1 High-Performance Data Ingestion with Redpanda (40 hours) ✅ COMPLETE
 - [x] Implement Redpanda cluster (3 nodes, RF=3) for ultra-low latency streaming
@@ -394,7 +394,155 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 - Snapshot testing for behavior preservation
 - Gradual rollout (1% → 5% → 25% → 50% → 100%)
 
-#### 1.7 Data Quality & Validation (40 hours) ✅ COMPLETE - DEEP DIVE
+#### 1.7 COMPREHENSIVE RE-VERIFICATION & QA (120 hours) 🔍 MANDATORY POST-DEDUPLICATION
+**Priority: CRITICAL - Must validate all refactoring before proceeding**
+**Team: ALL 8 MEMBERS - 360-degree review required**
+**Timeline: 3 weeks immediately after deduplication**
+
+##### 1.7.1 Functionality Logic Verification (30 hours) - Week 1
+- [ ] Validate all mathematical functions produce identical results
+  - [ ] Compare correlation calculations (old vs new) on 10,000 test cases
+  - [ ] Verify VaR calculations match within 0.0001% tolerance
+  - [ ] Test all indicators (EMA, RSI, SMA) against historical outputs
+  - [ ] Validate Kelly sizing calculations preserve safety factors
+- [ ] Order processing logic verification
+  - [ ] Test all 44 old Order types convert correctly to canonical
+  - [ ] Verify order state machines function identically
+  - [ ] Validate exchange-specific order handling preserved
+  - [ ] Test partial fill management unchanged
+- [ ] Risk management logic validation
+  - [ ] Circuit breaker triggers at exact same thresholds
+  - [ ] Kill switch maintains <10μs response time
+  - [ ] Position limits enforced identically
+  - [ ] Stop-loss calculations unchanged
+**Deliverable**: 100% functional equivalence certified
+
+##### 1.7.2 Data Flow Analysis (30 hours) - Week 1
+- [ ] Trace all data paths from ingestion to execution
+  - [ ] WebSocket → Parser → Validator → Feature Store flow
+  - [ ] Order flow: Signal → Risk → Execution → Exchange
+  - [ ] Market data: Exchange → Ingestion → Storage → ML
+  - [ ] Event flow: All events through new event bus
+- [ ] Validate data transformation consistency
+  - [ ] Type conversions preserve precision (no data loss)
+  - [ ] Serialization/deserialization identical
+  - [ ] Message ordering preserved in event bus
+  - [ ] Timestamp precision maintained (nanosecond)
+- [ ] Cross-layer data flow verification
+  - [ ] Layer 0 safety signals propagate correctly
+  - [ ] Layer 1 data reaches all consumers
+  - [ ] No data leakage between layers
+  - [ ] Audit trail complete and unbroken
+**Deliverable**: Complete data flow map with zero inconsistencies
+
+##### 1.7.3 Performance Benchmarking (30 hours) - Week 2
+- [ ] Latency measurements across all paths
+  - [ ] Decision latency still <100μs (simple decisions)
+  - [ ] ML inference still <1 second (5 models)
+  - [ ] Order submission still <100μs
+  - [ ] Event bus publish <1μs verified
+- [ ] Throughput testing
+  - [ ] Maintain 300k events/second ingestion
+  - [ ] 1000+ orders/second with validation
+  - [ ] 6M events/second through event bus
+  - [ ] No performance regression anywhere
+- [ ] Memory and resource usage
+  - [ ] Memory usage reduced (target: -30%)
+  - [ ] CPU usage equivalent or better
+  - [ ] Binary size reduced (target: -40%)
+  - [ ] Compilation time improved (target: -50%)
+- [ ] Stress testing under load
+  - [ ] 24-hour continuous operation test
+  - [ ] Chaos engineering (random failures)
+  - [ ] Memory leak detection (Valgrind)
+  - [ ] Race condition detection (ThreadSanitizer)
+**Deliverable**: Performance report showing improvements or parity
+
+##### 1.7.4 360-Degree Code Review (40 hours) - Week 2
+- [ ] Architecture review by Alex
+  - [ ] Layer boundaries properly enforced
+  - [ ] No circular dependencies remain
+  - [ ] Clean separation of concerns
+  - [ ] SOLID principles followed
+- [ ] Mathematical correctness by Morgan
+  - [ ] All algorithms correctly implemented
+  - [ ] Numerical stability verified
+  - [ ] Edge cases handled properly
+  - [ ] Precision loss minimized
+- [ ] Code quality review by Sam
+  - [ ] No duplicate code remains
+  - [ ] Consistent coding patterns
+  - [ ] Proper error handling everywhere
+  - [ ] Documentation complete
+- [ ] Risk review by Quinn
+  - [ ] All risk checks functioning
+  - [ ] Safety mechanisms intact
+  - [ ] Limits properly enforced
+  - [ ] Emergency stops working
+- [ ] Performance review by Jordan
+  - [ ] Hot paths optimized
+  - [ ] SIMD usage appropriate
+  - [ ] Lock contention minimized
+  - [ ] Cache-friendly data structures
+- [ ] Exchange integration review by Casey
+  - [ ] All exchange handlers working
+  - [ ] Order types correctly mapped
+  - [ ] Rate limiting respected
+  - [ ] Reconnection logic solid
+- [ ] Testing review by Riley
+  - [ ] Test coverage >95%
+  - [ ] All edge cases tested
+  - [ ] Integration tests passing
+  - [ ] Performance benchmarks met
+- [ ] Data review by Avery
+  - [ ] Data integrity maintained
+  - [ ] Storage optimized
+  - [ ] Queries performant
+  - [ ] Backfill working
+**Deliverable**: Sign-off from all 8 team members
+
+##### 1.7.5 Comprehensive Testing & QA (40 hours) - Week 3
+- [ ] Unit test coverage validation
+  - [ ] 100% coverage on critical paths
+  - [ ] All 7,809 existing tests passing
+  - [ ] New tests for refactored code
+  - [ ] Property-based testing added
+- [ ] Integration testing suite
+  - [ ] End-to-end order flow tests
+  - [ ] Multi-exchange scenarios
+  - [ ] Failure recovery tests
+  - [ ] Data consistency tests
+- [ ] Regression testing
+  - [ ] Historical trade replay
+  - [ ] Backtesting results identical
+  - [ ] Known bug scenarios verified fixed
+  - [ ] Edge cases from production
+- [ ] Security and safety testing
+  - [ ] Penetration testing (basic)
+  - [ ] Fuzzing critical inputs
+  - [ ] Kill switch response time
+  - [ ] Circuit breaker triggers
+- [ ] Documentation validation
+  - [ ] Architecture docs updated
+  - [ ] API documentation current
+  - [ ] README files accurate
+  - [ ] Inline comments meaningful
+**Deliverable**: Full QA report with 100% pass rate
+
+**Success Criteria**:
+- Zero functional regressions
+- Performance maintained or improved
+- All team members approve
+- 100% test coverage maintained
+- Documentation fully updated
+
+**Risk if skipped**: 
+- Hidden bugs from refactoring
+- Performance degradation undetected
+- Data corruption possibilities
+- Production failures
+
+#### 1.8 Data Quality & Validation (40 hours) ✅ COMPLETE - DEEP DIVE
 **Previously numbered as 1.6, now renumbered due to refactoring insertion**
 - [x] Cross-source data reconciliation (Binance vs Coinbase vs Kraken)
 - [x] Gap detection and auto-backfill with Kalman filters
@@ -406,7 +554,7 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 **Research Applied**: SEC manipulation detection papers, JP Morgan quality metrics
 **Deliverable**: 99.99% data integrity with 7-layer validation
 
-#### 1.8 Exchange Data Connectors (80 hours total)
+#### 1.9 Exchange Data Connectors (80 hours total)
 **Previously numbered as 1.7, now renumbered due to refactoring insertion**
 ##### Binance Complete Integration (20 hours)
 - [ ] Futures WebSocket streams
@@ -756,17 +904,18 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 ### Critical Path (MUST complete in order):
 1. **Layer 0**: Safety Systems (160h) - BLOCKS EVERYTHING
 2. **Layer 1.6**: 🔴 CODE DEDUPLICATION (160h) - CRITICAL TECHNICAL DEBT
-3. **Layer 1**: Data Foundation (remaining 120h) - Required for ML
-4. **Layer 2**: Risk Management (180h) - Required for trading
-5. **Layer 3**: ML Pipeline (420h) - Core intelligence
-6. **Layer 4**: Trading Strategies (240h) - Revenue generation
-7. **Layer 5**: Execution Engine (200h) - Order management
-8. **Layer 7**: Integration & Testing (200h) - Validation
+3. **Layer 1.7**: 🔍 COMPREHENSIVE RE-VERIFICATION (120h) - VALIDATE ALL REFACTORING
+4. **Layer 1**: Data Foundation (remaining 120h) - Required for ML
+5. **Layer 2**: Risk Management (180h) - Required for trading
+6. **Layer 3**: ML Pipeline (420h) - Core intelligence
+7. **Layer 4**: Trading Strategies (240h) - Revenue generation
+8. **Layer 5**: Execution Engine (200h) - Order management
+9. **Layer 7**: Integration & Testing (200h) - Validation
 
-**⚠️ CRITICAL UPDATE**: Deduplication MUST complete before ANY new features to prevent:
-- 44 Order types becoming 88
-- 13 correlation functions becoming 26
-- Technical debt compounding exponentially
+**⚠️ CRITICAL UPDATE**: Deduplication + Verification (280h total) MUST complete before ANY new features:
+- Without deduplication: 44 Order types become 88
+- Without verification: Hidden bugs reach production
+- Technical debt compounds exponentially if skipped
 
 ### Parallel Work Possible:
 - Layer 6 (Infrastructure) can progress alongside Layer 3-5
@@ -787,20 +936,24 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 - **Jordan** (160h/month): Performance, Optimization, Parallelization
 - **Alex** (160h/month): Coordination, Architecture, Integration
 
-### Timeline with Full Team (UPDATED with Deduplication):
+### Timeline with Full Team (UPDATED with Deduplication + Verification):
 - **Month 1**: Layer 0 + Layer 1 start (Safety + Data)
 - **Weeks 5-8**: 🔴 DEDUPLICATION SPRINT (ALL 8 MEMBERS)
   - Week 5: Type unification (44 Order → 1)
   - Week 6: Math consolidation (31 functions → 5)
   - Week 7: Event bus (6 processors → 1)
   - Week 8: Architecture enforcement (23 violations → 0)
-- **Month 3**: Layer 1 complete + Layer 2 (Data + Risk)
-- **Month 4**: Layer 3 start (ML Pipeline)
-- **Month 5**: Layer 3 continue + Layer 4 start (ML + Strategies)
-- **Month 6**: Layer 4 + Layer 5 (Strategies + Execution)
-- **Month 7**: Layer 6 + Layer 7 (Infrastructure + Testing)
-- **Month 8-9**: Integration, Testing, Paper Trading
-- **Month 10**: Production deployment preparation
+- **Weeks 9-11**: 🔍 RE-VERIFICATION & QA (ALL 8 MEMBERS)
+  - Week 9: Functionality & Data Flow validation
+  - Week 10: Performance & 360-degree review
+  - Week 11: Comprehensive testing & sign-off
+- **Month 3-4**: Layer 1 complete + Layer 2 (Data + Risk)
+- **Month 5**: Layer 3 start (ML Pipeline)
+- **Month 6**: Layer 3 continue + Layer 4 start (ML + Strategies)
+- **Month 7**: Layer 4 + Layer 5 (Strategies + Execution)
+- **Month 8**: Layer 6 + Layer 7 (Infrastructure + Testing)
+- **Month 9-10**: Integration, Testing, Paper Trading
+- **Month 11**: Production deployment preparation
 
 ---
 
