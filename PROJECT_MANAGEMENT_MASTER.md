@@ -268,7 +268,7 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 - Batch inserts using COPY protocol for maximum throughput
 - Performance monitoring with <100ms query latency verified
 
-#### 1.2 Feature Store Implementation (80 hours)
+#### 1.5 Feature Store Implementation (80 hours)
 - [ ] Persistent feature storage with versioning
 - [ ] Online serving layer (<10ms latency)
 - [ ] Offline store for training
@@ -279,7 +279,7 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 - [ ] Integration with ML pipeline
 **Deliverable**: Centralized feature management system
 
-#### 1.3 Data Quality & Validation (40 hours)
+#### 1.6 Data Quality & Validation (40 hours)
 - [ ] Benford's Law validation for anomaly detection
 - [ ] Statistical gap detection (Kalman filters)
 - [ ] Automatic backfill system with priority queue
@@ -289,7 +289,7 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 - [ ] Continuous monitoring and alerting
 **Deliverable**: Automated data quality assurance
 
-#### 1.4 Exchange Data Connectors (80 hours total)
+#### 1.7 Exchange Data Connectors (80 hours total)
 ##### Binance Complete Integration (20 hours)
 - [ ] Futures WebSocket streams
 - [ ] Options flow data
