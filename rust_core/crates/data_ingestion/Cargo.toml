@@ -34,9 +34,12 @@ parquet = { version = "56.1", features = ["async", "arrow"] }
 arrow = { version = "56.1", features = ["prettyprint"] }
 arrow-flight = "56.1"
 
-# TimescaleDB (via SQLx)
+# TimescaleDB (via deadpool-postgres for better connection pooling)
+deadpool-postgres = "0.12"
+tokio-postgres = { version = "0.7", features = ["with-chrono-0_4", "with-serde_json-1"] }
+postgres-types = { version = "0.2", features = ["derive"] }
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "rust_decimal", "json"] }
-rust_decimal = { version = "1.33", features = ["serde"] }
+rust_decimal = { version = "1.33", features = ["serde", "db-tokio-postgres"] }
 
 # S3 for tiered storage
 aws-sdk-s3 = "1.13"

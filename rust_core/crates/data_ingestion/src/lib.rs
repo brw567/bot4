@@ -23,6 +23,7 @@ pub mod schema;
 pub mod monitoring;
 pub mod replay;
 pub mod event_driven;
+pub mod timescale;
 
 // Re-export main types
 pub use producers::{
@@ -94,6 +95,26 @@ pub use event_driven::{
     BucketedAggregator,
     BucketConfig,
     AggregateWindow,
+};
+
+// Layer 1.4: TimescaleDB Infrastructure exports
+pub use timescale::{
+    TimescaleClient,
+    TimescaleConfig,
+    MarketTick,
+    TradeSide as TickSide,
+    OrderBookSnapshot as TimescaleOrderBook,
+    ExecutionRecord,
+    OHLCVData,
+    PerformanceMetrics,
+    HypertableManager,
+    ChunkConfig,
+    AggregateManager,
+    AggregateLevel,
+    CompressionManager,
+    CompressionPolicy,
+    PerformanceMonitor,
+    QueryStats,
 };
 
 #[cfg(test)]
