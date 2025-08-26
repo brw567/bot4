@@ -2,7 +2,29 @@
 ## SINGLE SOURCE OF TRUTH - NO OTHER TASK DOCUMENTS ALLOWED
 ## Team: Full 8-Member Participation Required
 ## Last Updated: August 26, 2025
-## Status: 14.4% Complete | 3,532 Total Hours (508 Complete, 3,024 Remaining)
+## Status: 13.8% Complete | 3,692 Total Hours (508 Complete, 3,184 Remaining)
+## 🔴 CRITICAL: 160-hour Code Deduplication MUST complete before new features
+
+---
+
+## 🔴 IMMEDIATE PRIORITY: CODE DEDUPLICATION CRISIS
+
+### STOP ALL FEATURE DEVELOPMENT - TECHNICAL DEBT EMERGENCY
+**We have discovered:**
+- **158 duplicate implementations** that must be consolidated to 18
+- **44 Order struct definitions** (should be 1!)
+- **13 calculate_correlation functions** (should be 1!)
+- **23 layer architecture violations**
+
+**Impact if NOT addressed NOW:**
+- Every new feature adds MORE duplicates
+- Bug fixes must be applied 44 times instead of once
+- Development speed drops by 10x
+- Project becomes unmaintainable
+
+**ACTION REQUIRED**: All 8 team members MUST complete Layer 1.6 (Deduplication) before ANY new features.
+**Timeline**: 4 weeks starting IMMEDIATELY
+**See**: DEDUPLICATION_TASKS_MASTER.md for detailed task list
 
 ---
 
@@ -184,8 +206,8 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 ---
 
 ### LAYER 1: DATA FOUNDATION (REQUIRED FOR ALL ML/TRADING)
-**Total: 376 hours (280 original + 96 from reviews) | Priority: HIGH | Owner: Avery**
-**Status**: 216 hours complete (57.4%), 160 hours remaining
+**Total: 536 hours (280 original + 96 from reviews + 160 deduplication) | Priority: CRITICAL | Owner: Avery + FULL TEAM**
+**Status**: 216 hours complete (40.3%), 320 hours remaining (160 deduplication + 160 other tasks)
 
 #### 1.1 High-Performance Data Ingestion with Redpanda (40 hours) ✅ COMPLETE
 - [x] Implement Redpanda cluster (3 nodes, RF=3) for ultra-low latency streaming
@@ -302,7 +324,90 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
   - Netflix & Google Mesa architectures
 **Impact**: 7-layer validation pipeline ensuring 99.9% data reliability
 
-#### 1.7 Exchange Data Connectors (80 hours total)
+#### 1.6 CRITICAL ARCHITECTURE REFACTORING - CODE DEDUPLICATION (160 hours) 🔴 URGENT
+**Priority: HIGHEST - BLOCKS ALL FUTURE DEVELOPMENT**
+**Team: ALL 8 MEMBERS REQUIRED**
+**External Research**: Applied from Jane Street, LMAX, Two Sigma best practices
+
+##### 1.6.1 Type System Unification (40 hours) - Week 1
+- [ ] Create canonical types crate (domain_types)
+- [ ] Consolidate 44 Order struct definitions → 1 canonical Order
+- [ ] Consolidate 14 Price type definitions → 1 canonical Price
+- [ ] Consolidate 18 Trade struct definitions → 1 canonical Trade
+- [ ] Consolidate 6 Candle struct definitions → 1 canonical Candle
+- [ ] Consolidate 6 MarketData definitions → 1 canonical MarketData
+- [ ] Implement phantom types for currency safety (USD, BTC, ETH)
+- [ ] Add conversion traits for legacy compatibility
+- [ ] Feature flags for gradual migration (Strangler Fig pattern)
+- [ ] Parallel validation of old vs new implementations
+**Deliverable**: Single source of truth for all types, 60% code reduction
+
+##### 1.6.2 Mathematical Functions Consolidation (40 hours) - Week 2
+- [ ] Create mathematical_ops crate for all math functions
+- [ ] Consolidate calculate_correlation (13 implementations → 1)
+- [ ] Consolidate calculate_var (8 implementations → 1)
+- [ ] Consolidate calculate_kelly (2 implementations → 1)
+- [ ] Consolidate calculate_volatility (3 implementations → 1)
+- [ ] Create indicators crate for TA functions
+- [ ] Consolidate calculate_ema (4 implementations → 1)
+- [ ] Consolidate calculate_rsi (4 implementations → 1)
+- [ ] Consolidate calculate_sma (3 implementations → 1)
+- [ ] SIMD optimization preservation with runtime detection
+**Deliverable**: Single implementation per function, 30% faster compilation
+
+##### 1.6.3 Event Bus & Processing Unification (40 hours) - Week 3
+- [ ] Create event_bus crate with LMAX Disruptor pattern
+- [ ] Consolidate process_event (6 implementations → 1 event bus)
+- [ ] Implement ring buffer with 65,536 event capacity
+- [ ] Add event sourcing for replay capability
+- [ ] Consolidate place_order (6 implementations → 1)
+- [ ] Consolidate cancel_order (8 implementations → 1)
+- [ ] Consolidate update_position (5 implementations → 1)
+- [ ] Consolidate get_balance (6 implementations → 1)
+- [ ] Consolidate validate_order (4 implementations → 1)
+- [ ] Parallel run validation for safety
+**Deliverable**: Unified event system, <1μs publish latency
+
+##### 1.6.4 Layer Architecture Enforcement (40 hours) - Week 4
+- [ ] Fix 23 cross-layer dependency violations
+- [ ] Implement compile-time layer checking with phantom types
+- [ ] Create abstraction boundaries between layers
+- [ ] Remove circular dependencies (risk ↔ ml)
+- [ ] Implement dependency injection for layer communication
+- [ ] Add Layer0Component through Layer6Component traits
+- [ ] Create enforcement macros for build-time validation
+- [ ] Document and enforce layer rules
+- [ ] Performance validation (maintain <100μs latency)
+- [ ] Multi-level rollback strategy testing
+**Deliverable**: Clean architecture with zero violations
+
+**Impact of NOT doing this**: 
+- 10x slower development
+- 5x more bugs
+- Unmaintainable codebase
+- Project failure risk
+
+**Safety Mechanisms**:
+- Feature flags for instant rollback
+- Parallel run validation
+- 7,809 existing tests as safety net
+- Snapshot testing for behavior preservation
+- Gradual rollout (1% → 5% → 25% → 50% → 100%)
+
+#### 1.7 Data Quality & Validation (40 hours) ✅ COMPLETE - DEEP DIVE
+**Previously numbered as 1.6, now renumbered due to refactoring insertion**
+- [x] Cross-source data reconciliation (Binance vs Coinbase vs Kraken)
+- [x] Gap detection and auto-backfill with Kalman filters
+- [x] Market manipulation detection (spoofing, layering, wash)
+- [x] Benford's Law validator for fraud detection
+- [x] Statistical regime change detection (CUSUM + PELT)
+- [x] Data quality scoring and confidence metrics
+- [x] Real-time alerting on data anomalies
+**Research Applied**: SEC manipulation detection papers, JP Morgan quality metrics
+**Deliverable**: 99.99% data integrity with 7-layer validation
+
+#### 1.8 Exchange Data Connectors (80 hours total)
+**Previously numbered as 1.7, now renumbered due to refactoring insertion**
 ##### Binance Complete Integration (20 hours)
 - [ ] Futures WebSocket streams
 - [ ] Options flow data
@@ -650,12 +755,18 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 
 ### Critical Path (MUST complete in order):
 1. **Layer 0**: Safety Systems (160h) - BLOCKS EVERYTHING
-2. **Layer 1**: Data Foundation (280h) - Required for ML
-3. **Layer 2**: Risk Management (180h) - Required for trading
-4. **Layer 3**: ML Pipeline (420h) - Core intelligence
-5. **Layer 4**: Trading Strategies (240h) - Revenue generation
-6. **Layer 5**: Execution Engine (200h) - Order management
-7. **Layer 7**: Integration & Testing (200h) - Validation
+2. **Layer 1.6**: 🔴 CODE DEDUPLICATION (160h) - CRITICAL TECHNICAL DEBT
+3. **Layer 1**: Data Foundation (remaining 120h) - Required for ML
+4. **Layer 2**: Risk Management (180h) - Required for trading
+5. **Layer 3**: ML Pipeline (420h) - Core intelligence
+6. **Layer 4**: Trading Strategies (240h) - Revenue generation
+7. **Layer 5**: Execution Engine (200h) - Order management
+8. **Layer 7**: Integration & Testing (200h) - Validation
+
+**⚠️ CRITICAL UPDATE**: Deduplication MUST complete before ANY new features to prevent:
+- 44 Order types becoming 88
+- 13 correlation functions becoming 26
+- Technical debt compounding exponentially
 
 ### Parallel Work Possible:
 - Layer 6 (Infrastructure) can progress alongside Layer 3-5
@@ -676,15 +787,20 @@ Build a **FULLY AUTONOMOUS** cryptocurrency trading platform that:
 - **Jordan** (160h/month): Performance, Optimization, Parallelization
 - **Alex** (160h/month): Coordination, Architecture, Integration
 
-### Timeline with Full Team:
+### Timeline with Full Team (UPDATED with Deduplication):
 - **Month 1**: Layer 0 + Layer 1 start (Safety + Data)
-- **Month 2**: Layer 1 complete + Layer 2 (Data + Risk)
-- **Month 3**: Layer 3 start (ML Pipeline)
-- **Month 4**: Layer 3 continue + Layer 4 start (ML + Strategies)
-- **Month 5**: Layer 4 + Layer 5 (Strategies + Execution)
-- **Month 6**: Layer 6 + Layer 7 (Infrastructure + Testing)
-- **Month 7-8**: Integration, Testing, Paper Trading
-- **Month 9**: Production deployment preparation
+- **Weeks 5-8**: 🔴 DEDUPLICATION SPRINT (ALL 8 MEMBERS)
+  - Week 5: Type unification (44 Order → 1)
+  - Week 6: Math consolidation (31 functions → 5)
+  - Week 7: Event bus (6 processors → 1)
+  - Week 8: Architecture enforcement (23 violations → 0)
+- **Month 3**: Layer 1 complete + Layer 2 (Data + Risk)
+- **Month 4**: Layer 3 start (ML Pipeline)
+- **Month 5**: Layer 3 continue + Layer 4 start (ML + Strategies)
+- **Month 6**: Layer 4 + Layer 5 (Strategies + Execution)
+- **Month 7**: Layer 6 + Layer 7 (Infrastructure + Testing)
+- **Month 8-9**: Integration, Testing, Paper Trading
+- **Month 10**: Production deployment preparation
 
 ---
 
