@@ -1,0 +1,33 @@
+[package]
+name = "abstractions"
+version = "0.1.0"
+edition = "2021"
+authors = ["Bot4 Full Team - DEEP DIVE Implementation"]
+description = "Cross-layer abstraction traits for dependency inversion"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.40", features = ["full"] }
+async-trait = "0.1"
+
+# Domain types
+domain_types = { path = "../domain_types" }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error handling  
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.10", features = ["v4", "serde"] }
+
+# Decimal math
+rust_decimal = "1.33"
+
+[lib]
+name = "abstractions"
+path = "src/lib.rs"

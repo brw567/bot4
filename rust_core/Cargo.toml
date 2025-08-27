@@ -4,6 +4,8 @@ members = [
     "domain_types",  # Layer 1.6.1: Canonical type system - DEEP DIVE implementation
     "mathematical_ops",  # Layer 1.6.2: Consolidated math functions - DEEP DIVE implementation
     "event_bus",  # Layer 1.6.3: LMAX Disruptor event bus - DEEP DIVE implementation
+    "layer_enforcement",  # Layer 1.6.4: Compile-time layer checking - DEEP DIVE implementation
+    "abstractions",  # Layer 1.6.4: Cross-layer abstractions - DEEP DIVE implementation
     "crates/infrastructure",
     "crates/trading_engine",
     "crates/risk_engine",
