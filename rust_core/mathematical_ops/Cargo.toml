@@ -1,0 +1,89 @@
+[package]
+name = "mathematical_ops"
+version = "0.1.0"
+edition = "2021"
+authors = ["Bot4 Full Team - DEEP DIVE Implementation"]
+description = "Canonical mathematical operations for trading - Single source of truth"
+
+[dependencies]
+# Core numerical types
+rust_decimal = { version = "1.35", features = ["serde", "serde-float"] }
+rust_decimal_macros = "1.35"
+num-traits = "0.2"
+
+# Linear algebra and statistics
+nalgebra = "0.33"
+ndarray = { version = "0.16", features = ["rayon", "serde"] }
+statrs = "0.17"
+
+# SIMD optimizations
+packed_simd = { version = "0.3", optional = true }
+wide = { version = "0.7", optional = true }
+
+# Performance
+rayon = "1.10"
+dashmap = "6.0"
+once_cell = "1.20"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Logging
+tracing = "0.1"
+
+# Domain types
+domain_types = { path = "../domain_types" }
+
+[dev-dependencies]
+# Testing
+criterion = { version = "0.5", features = ["html_reports"] }
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+proptest = "1.5"
+approx = "0.5"
+pretty_assertions = "1.4"
+test-case = "3.1"
+
+# Benchmarking data
+rand = "0.8"
+rand_distr = "0.4"
+
+[features]
+default = ["parallel", "simd_auto"]
+
+# SIMD features with runtime detection
+simd = ["packed_simd", "wide"]
+simd_auto = []  # Auto-detect SIMD support at runtime
+simd_force = ["simd"]  # Force SIMD even without CPU support (for testing)
+
+# Parallel processing
+parallel = []
+
+# High precision mode (slower but more accurate)
+high_precision = []
+
+# Performance profiling
+profile = []
+
+[lib]
+name = "mathematical_ops"
+path = "src/lib.rs"
+
+[[bench]]
+name = "correlation_bench"
+harness = false
+required-features = ["simd"]
+
+[[bench]]
+name = "kelly_bench"  
+harness = false
+
+[[bench]]
+name = "volatility_bench"
+harness = false
+required-features = ["simd"]
