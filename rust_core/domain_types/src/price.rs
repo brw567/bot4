@@ -15,6 +15,7 @@
 //! - IEEE 754 floating point issues in finance
 
 use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::fmt;
@@ -74,7 +75,7 @@ pub struct Price {
 
 impl Price {
     /// Maximum allowed price value (1 trillion)
-    pub const MAX: Decimal = Decimal::from_parts(1_000_000_000_000, 0, 0, false, 0);
+    pub const MAX: Decimal = Decimal::from_parts(1_000_000_000, 0, 0, false, 0);
     
     /// Minimum price tick (smallest price movement)
     pub const MIN_TICK: Decimal = Decimal::from_parts(1, 0, 0, false, 8); // 0.00000001

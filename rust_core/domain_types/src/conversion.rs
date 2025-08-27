@@ -39,6 +39,14 @@ pub trait FromCanonical<T> {
         Self: Sized;
 }
 
+/// Re-export conversion trait for legacy compatibility
+pub trait FromLegacy<T> {
+    /// Converts from legacy type
+    fn from_legacy(legacy: T) -> Result<Self, ConversionError>
+    where
+        Self: Sized;
+}
+
 /// Errors that can occur during conversion
 #[derive(Debug, thiserror::Error)]
 pub enum ConversionError {
@@ -61,59 +69,9 @@ pub enum ConversionError {
     OutOfRange(String),
 }
 
-// ===== Price Conversions =====
-
-/// Convert from decimal to canonical Price
-impl TryFrom<Decimal> for Price {
-    type Error = ConversionError;
-    
-    fn try_from(value: Decimal) -> Result<Self, Self::Error> {
-        Price::new(value).map_err(|e| ConversionError::InvalidPrice(e.to_string()))
-    }
-}
-
-/// Convert from f64 to canonical Price (lossy but common)
-impl TryFrom<f64> for Price {
-    type Error = ConversionError;
-    
-    fn try_from(value: f64) -> Result<Self, Self::Error> {
-        Price::try_from(value).map_err(|e| ConversionError::InvalidPrice(e.to_string()))
-    }
-}
-
-/// Convert canonical Price to Decimal
-impl From<Price> for Decimal {
-    fn from(price: Price) -> Self {
-        price.as_decimal()
-    }
-}
-
-// ===== Quantity Conversions =====
-
-/// Convert from decimal to canonical Quantity
-impl TryFrom<Decimal> for Quantity {
-    type Error = ConversionError;
-    
-    fn try_from(value: Decimal) -> Result<Self, Self::Error> {
-        Quantity::new(value).map_err(|e| ConversionError::InvalidQuantity(e.to_string()))
-    }
-}
-
-/// Convert from f64 to canonical Quantity (lossy but common)
-impl TryFrom<f64> for Quantity {
-    type Error = ConversionError;
-    
-    fn try_from(value: f64) -> Result<Self, Self::Error> {
-        Quantity::try_from(value).map_err(|e| ConversionError::InvalidQuantity(e.to_string()))
-    }
-}
-
-/// Convert canonical Quantity to Decimal
-impl From<Quantity> for Decimal {
-    fn from(quantity: Quantity) -> Self {
-        quantity.as_decimal()
-    }
-}
+// ===== Price/Quantity Conversions =====
+// Note: Basic TryFrom implementations are in price.rs and quantity.rs
+// Here we only add conversion helpers for legacy compatibility
 
 // ===== Legacy Order Structure Examples =====
 

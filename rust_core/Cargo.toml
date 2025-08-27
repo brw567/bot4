@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "bot4-main",
+    "domain_types",  # Layer 1.6.1: Canonical type system - DEEP DIVE implementation
     "crates/infrastructure",
     "crates/trading_engine",
     "crates/risk_engine",

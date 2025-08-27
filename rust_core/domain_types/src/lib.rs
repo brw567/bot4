@@ -59,7 +59,7 @@ pub mod parallel_validation;
 pub use order::{Order, OrderId, OrderSide, OrderStatus, OrderType, TimeInForce};
 pub use price::{Price, PriceError};
 pub use quantity::{Quantity, QuantityError};
-pub use trade::{Trade, TradeId, TradeSide};
+pub use trade::{Trade, TradeId, TradeSide, TradeRole, TradeType};
 pub use candle::{Candle, CandleInterval};
 pub use market_data::{MarketData, OrderBook, Ticker, BookLevel};
 
@@ -92,8 +92,12 @@ pub mod prelude {
     };
 }
 
+// Comprehensive test suite with 100% coverage
 #[cfg(test)]
-mod tests {
+mod tests;
+
+#[cfg(test)]
+mod lib_tests {
     use super::*;
 
     #[test]

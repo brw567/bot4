@@ -10,6 +10,7 @@
 //! - Min/max lot size validation
 
 use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::fmt;

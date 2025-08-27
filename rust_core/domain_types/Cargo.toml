@@ -83,7 +83,3 @@ zero_copy = []             # Zero-copy serialization
 [lib]
 name = "domain_types"
 path = "src/lib.rs"
-
-[[bench]]
-name = "type_benchmarks"
-harness = false

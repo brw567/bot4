@@ -20,6 +20,7 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use uuid::Uuid;
+use strum_macros::{Display, EnumString};
 
 /// Unique trade identifier
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -55,7 +56,7 @@ impl fmt::Display for TradeId {
 }
 
 /// Trade side from perspective of the order
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Display, EnumString, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TradeSide {
     /// Buy trade
     Buy,
@@ -73,7 +74,7 @@ impl From<OrderSide> for TradeSide {
 }
 
 /// Trade role (maker vs taker)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Display, EnumString, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TradeRole {
     /// Maker - provided liquidity
     Maker,

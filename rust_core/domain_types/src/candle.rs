@@ -18,6 +18,7 @@ use crate::{Price, Quantity};
 use chrono::{DateTime, Duration, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 use std::fmt;
 use strum_macros::{Display, EnumString};
 
