@@ -3,6 +3,7 @@ members = [
     "bot4-main",
     "domain_types",  # Layer 1.6.1: Canonical type system - DEEP DIVE implementation
     "mathematical_ops",  # Layer 1.6.2: Consolidated math functions - DEEP DIVE implementation
+    "event_bus",  # Layer 1.6.3: LMAX Disruptor event bus - DEEP DIVE implementation
     "crates/infrastructure",
     "crates/trading_engine",
     "crates/risk_engine",

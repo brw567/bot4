@@ -1,0 +1,74 @@
+[package]
+name = "event_bus"
+version = "0.1.0"
+edition = "2021"
+authors = ["Bot4 Full Team - DEEP DIVE Implementation"]
+description = "Ultra-low latency event bus using LMAX Disruptor pattern"
+
+[dependencies]
+# Core async runtime
+tokio = { version = "1.40", features = ["full", "parking_lot"] }
+async-trait = "0.1"
+
+# Lock-free data structures
+crossbeam = { version = "0.8", features = ["crossbeam-channel", "crossbeam-queue"] }
+crossbeam-utils = "0.8"
+parking_lot = "0.12"
+dashmap = "6.0"
+arc-swap = "1.7"
+
+# Ring buffer and atomics
+ringbuf = "0.4"
+atomic = "0.5"
+cache-padded = "1.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive", "rc"] }
+serde_json = "1.0"
+bincode = "1.3"
+bytes = "1.5"
+
+# Event sourcing
+uuid = { version = "1.10", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Domain types
+domain_types = { path = "../domain_types" }
+rust_decimal = "1.33"
+
+# Metrics and monitoring
+metrics = "0.23"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+log = "0.4"
+
+# Memory management
+mimalloc = { version = "0.1", optional = true }
+jemalloc-sys = { version = "0.3", optional = true }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1.5"
+quickcheck = "1.0"
+test-case = "3.1"
+pretty_assertions = "1.4"
+rand = "0.8"
+tempfile = "3.8"
+
+[features]
+default = ["std", "mimalloc"]
+std = []
+mimalloc = ["dep:mimalloc"]
+jemalloc = ["dep:jemalloc-sys"]
+simd = []
+profile = []
+
+[lib]
+name = "event_bus"
+path = "src/lib.rs"
