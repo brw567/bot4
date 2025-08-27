@@ -74,16 +74,8 @@ profile = []
 name = "mathematical_ops"
 path = "src/lib.rs"
 
-[[bench]]
-name = "correlation_bench"
-harness = false
-required-features = ["simd"]
-
-[[bench]]
-name = "kelly_bench"  
-harness = false
-
-[[bench]]
-name = "volatility_bench"
-harness = false
-required-features = ["simd"]
+# Benchmarks will be added later
+# [[bench]]
+# name = "correlation_bench"
+# harness = false
+# required-features = ["simd"]
