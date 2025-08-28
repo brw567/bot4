@@ -1,3 +1,19 @@
+use domain_types::market_data::MarketData;
+use domain_types::order::OrderError;
+pub use domain_types::position_canonical::{Position, PositionId, PositionSide, PositionStatus};
+
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // Comprehensive Object Pools - Nexus Priority 1 Optimization
 // Team: Jordan (Performance Lead) + Sam (Architecture) + Full Team
 // Implements 1M+ pre-allocated objects for zero-allocation hot paths
@@ -14,8 +30,6 @@ use std::collections::HashMap;
 // TRADING OBJECT DEFINITIONS
 // ============================================================================
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct Order {
     pub id: u64,
     pub symbol: String,
     pub side: OrderSide,
@@ -27,14 +41,14 @@ pub struct Order {
     pub status: OrderStatus,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+
 pub enum OrderSide {
     #[default]
     Buy,
     Sell,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+
 pub enum OrderType {
     #[default]
     Market,
@@ -44,7 +58,7 @@ pub enum OrderType {
     PostOnly,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+
 pub enum OrderStatus {
     #[default]
     Pending,
@@ -55,7 +69,7 @@ pub enum OrderStatus {
     Rejected,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub struct Signal {
     pub symbol: String,
     pub strength: f64,
@@ -66,7 +80,7 @@ pub struct Signal {
     pub metadata: HashMap<String, f64>,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub enum SignalType {
     #[default]
     Long,
@@ -75,8 +89,9 @@ pub enum SignalType {
     ClosePosition,
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct MarketData {
+
+// REMOVED: Using canonical domain_types::market_data::MarketData
+// pub struct MarketData {
     pub symbol: String,
     pub bid: Decimal,
     pub ask: Decimal,
@@ -88,19 +103,9 @@ pub struct MarketData {
     pub ask_size: Decimal,
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct Position {
-    pub symbol: String,
-    pub quantity: Decimal,
-    pub entry_price: Decimal,
-    pub current_price: Decimal,
-    pub unrealized_pnl: Decimal,
-    pub realized_pnl: Decimal,
-    pub opened_at: i64,
-    pub last_updated: i64,
-}
 
-#[derive(Debug, Clone, Default)]
+
+
 pub struct RiskCheck {
     pub order_id: u64,
     pub passed: bool,
@@ -110,7 +115,7 @@ pub struct RiskCheck {
     pub timestamp: i64,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub struct ExecutionReport {
     pub order_id: u64,
     pub exec_id: String,
@@ -121,7 +126,7 @@ pub struct ExecutionReport {
     pub exchange: String,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub struct Feature {
     pub name: String,
     pub values: Vec<f64>,
@@ -129,7 +134,7 @@ pub struct Feature {
     pub window_size: usize,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub struct MLInference {
     pub model_id: String,
     pub predictions: Vec<f64>,
@@ -225,7 +230,7 @@ impl PoolRegistry {
     }
 }
 
-#[derive(Debug)]
+
 pub struct GlobalPoolStats {
     pub orders: crate::zero_copy::PoolStats,
     pub signals: crate::zero_copy::PoolStats,

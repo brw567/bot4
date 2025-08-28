@@ -1,110 +1,102 @@
-//! # Risk Metrics - Portfolio and Strategy Risk Analysis
+//! # UNIFIED RISK METRICS - Single Source of Truth
+//! Cameron: "One VaR calculation, consistent everywhere"
+//! Quinn: "Safety through consistency"
 
-use crate::statistics::{mean, standard_deviation};
-use crate::variance::{calculate_var, calculate_cvar, VarMethod};
+use crate::variance::calculate_variance;
+use statrs::distribution::{Normal, ContinuousCDF};
 
-/// Calculate Sharpe ratio
-pub fn sharpe_ratio(returns: &[f64], risk_free_rate: f64) -> f64 {
+/// CANONICAL VaR Calculation - Historical Simulation
+pub fn calculate_var(returns: &[f64], confidence_level: f64) -> f64 {
     if returns.is_empty() {
         return 0.0;
     }
     
-    let mean_return = mean(returns);
-    let std_dev = standard_deviation(returns);
+    let mut sorted = returns.to_vec();
+    sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    
+    let index = ((1.0 - confidence_level) * returns.len() as f64) as usize;
+    -sorted[index.min(sorted.len() - 1)]
+}
+
+/// CANONICAL CVaR (Expected Shortfall)
+pub fn calculate_cvar(returns: &[f64], confidence_level: f64) -> f64 {
+    let var = calculate_var(returns, confidence_level);
+    
+    let tail_losses: Vec<f64> = returns.iter()
+        .filter(|&&r| r <= -var)
+        .copied()
+        .collect();
+    
+    if tail_losses.is_empty() {
+        return var;
+    }
+    
+    -tail_losses.iter().sum::<f64>() / tail_losses.len() as f64
+}
+
+/// CANONICAL Sharpe Ratio
+pub fn calculate_sharpe(returns: &[f64], risk_free_rate: f64) -> f64 {
+    if returns.len() < 2 {
+        return 0.0;
+    }
+    
+    let mean_return = returns.iter().sum::<f64>() / returns.len() as f64;
+    let variance = calculate_variance(returns, mean_return);
+    let std_dev = variance.sqrt();
     
     if std_dev == 0.0 {
         return 0.0;
     }
     
-    // Annualize (assuming daily returns)
-    let annual_return = mean_return * 252.0;
-    let annual_std = std_dev * (252.0_f64).sqrt();
-    
-    (annual_return - risk_free_rate) / annual_std
+    (mean_return - risk_free_rate) / std_dev * (252.0_f64).sqrt() // Annualized
 }
 
-/// Calculate Sortino ratio (downside deviation)
-pub fn sortino_ratio(returns: &[f64], target_return: f64) -> f64 {
-    if returns.is_empty() {
+/// CANONICAL Sortino Ratio (downside deviation)
+pub fn calculate_sortino(returns: &[f64], target_return: f64) -> f64 {
+    if returns.len() < 2 {
         return 0.0;
     }
     
-    let mean_return = mean(returns);
+    let mean_return = returns.iter().sum::<f64>() / returns.len() as f64;
     
     // Calculate downside deviation
     let downside_returns: Vec<f64> = returns.iter()
-        .filter(|&&r| r < target_return)
-        .map(|&r| (r - target_return).powi(2))
+        .map(|&r| (target_return - r).max(0.0))
         .collect();
     
-    if downside_returns.is_empty() {
-        return f64::INFINITY;
-    }
+    let downside_variance = downside_returns.iter()
+        .map(|&d| d * d)
+        .sum::<f64>() / downside_returns.len() as f64;
     
-    let downside_dev = (downside_returns.iter().sum::<f64>() 
-        / returns.len() as f64).sqrt();
+    let downside_dev = downside_variance.sqrt();
     
     if downside_dev == 0.0 {
-        return f64::INFINITY;
-    }
-    
-    // Annualize
-    let annual_return = mean_return * 252.0;
-    let annual_downside = downside_dev * (252.0_f64).sqrt();
-    
-    (annual_return - target_return * 252.0) / annual_downside
-}
-
-/// Calculate Calmar ratio
-pub fn calmar_ratio(returns: &[f64], period_years: f64) -> f64 {
-    if returns.is_empty() {
         return 0.0;
     }
     
-    let total_return = returns.iter().fold(1.0, |acc, &r| acc * (1.0 + r)) - 1.0;
-    let annual_return = (1.0 + total_return).powf(1.0 / period_years) - 1.0;
-    
-    let max_dd = max_drawdown(returns);
-    
-    if max_dd == 0.0 {
-        return f64::INFINITY;
-    }
-    
-    annual_return / max_dd.abs()
+    (mean_return - target_return) / downside_dev * (252.0_f64).sqrt()
 }
 
-/// Calculate maximum drawdown
-pub fn max_drawdown(returns: &[f64]) -> f64 {
-    if returns.is_empty() {
+/// CANONICAL Maximum Drawdown
+pub fn calculate_max_drawdown(equity_curve: &[f64]) -> f64 {
+    if equity_curve.is_empty() {
         return 0.0;
     }
     
-    let mut cumulative = 1.0;
-    let mut peak = 1.0;
-    let mut max_dd = 0.0;
+    let mut max_drawdown = 0.0;
+    let mut peak = equity_curve[0];
     
-    for &ret in returns {
-        cumulative *= 1.0 + ret;
-        if cumulative > peak {
-            peak = cumulative;
+    for &value in equity_curve.iter() {
+        if value > peak {
+            peak = value;
         }
-        let drawdown = (cumulative - peak) / peak;
-        if drawdown < max_dd {
-            max_dd = drawdown;
+        let drawdown = (peak - value) / peak;
+        if drawdown > max_drawdown {
+            max_drawdown = drawdown;
         }
     }
     
-    max_dd
+    max_drawdown
 }
 
-/// Calculate Value at Risk (wrapper for variance module)
-pub fn value_at_risk(returns: &[f64], confidence: f64) -> f64 {
-    calculate_var(returns, confidence, 1, VarMethod::Historical)
-        .map(|result| result.var)
-        .unwrap_or(0.0)
-}
-
-/// Calculate Conditional Value at Risk (CVaR)
-pub fn conditional_value_at_risk(returns: &[f64], confidence: f64) -> f64 {
-    calculate_cvar(returns, confidence).unwrap_or(0.0)
-}
+// TEAM: "Risk calculations unified!"

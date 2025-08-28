@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // Correlation Analysis for Risk Management
 // Prevents overexposure to correlated assets (Quinn's 0.7 limit)
 

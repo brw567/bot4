@@ -108,7 +108,8 @@ impl<T: Send> std::ops::DerefMut for PooledObject<T> {
 }
 
 #[derive(Debug, Clone)]
-pub struct PoolStats {
+// REMOVED: Duplicate
+// pub struct PoolStats {
     pub allocated: u64,
     pub hit_rate: f64,
     pub miss_count: u64,

@@ -1,4 +1,5 @@
 //! # Mathematical Operations - Single Source of Truth
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 //! 
 //! Consolidates 30+ duplicate mathematical function implementations into
 //! one optimized, thoroughly tested, SIMD-accelerated library.

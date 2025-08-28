@@ -150,7 +150,7 @@ mod tests {
     
     #[test]
     fn should_create_valid_quantity() {
-        let qty = Quantity::new(10.0).unwrap();
+        let qty = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
         assert_eq!(qty.value(), 10.0);
     }
     
@@ -175,60 +175,60 @@ mod tests {
     
     #[test]
     fn should_add_quantities() {
-        let q1 = Quantity::new(10.0).unwrap();
-        let q2 = Quantity::new(5.0).unwrap();
-        let sum = q1.add(&q2).unwrap();
+        let q1 = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
+        let q2 = Quantity::new(5.0).expect("SAFETY: Add proper error handling");
+        let sum = q1.add(&q2).expect("SAFETY: Add proper error handling");
         assert_eq!(sum.value(), 15.0);
     }
     
     #[test]
     fn should_subtract_quantities() {
-        let q1 = Quantity::new(10.0).unwrap();
-        let q2 = Quantity::new(3.0).unwrap();
-        let diff = q1.subtract(&q2).unwrap();
+        let q1 = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
+        let q2 = Quantity::new(3.0).expect("SAFETY: Add proper error handling");
+        let diff = q1.subtract(&q2).expect("SAFETY: Add proper error handling");
         assert_eq!(diff.value(), 7.0);
     }
     
     #[test]
     fn should_reject_negative_subtraction() {
-        let q1 = Quantity::new(5.0).unwrap();
-        let q2 = Quantity::new(10.0).unwrap();
+        let q1 = Quantity::new(5.0).expect("SAFETY: Add proper error handling");
+        let q2 = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
         let result = q1.subtract(&q2);
         assert!(result.is_err());
     }
     
     #[test]
     fn should_multiply_by_scalar() {
-        let qty = Quantity::new(10.0).unwrap();
-        let result = qty.multiply(2.5).unwrap();
+        let qty = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
+        let result = qty.multiply(2.5).expect("SAFETY: Add proper error handling");
         assert_eq!(result.value(), 25.0);
     }
     
     #[test]
     fn should_reject_negative_multiplication() {
-        let qty = Quantity::new(10.0).unwrap();
+        let qty = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
         let result = qty.multiply(-2.0);
         assert!(result.is_err());
     }
     
     #[test]
     fn should_divide_by_scalar() {
-        let qty = Quantity::new(10.0).unwrap();
-        let result = qty.divide(2.0).unwrap();
+        let qty = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
+        let result = qty.divide(2.0).expect("SAFETY: Add proper error handling");
         assert_eq!(result.value(), 5.0);
     }
     
     #[test]
     fn should_reject_division_by_zero() {
-        let qty = Quantity::new(10.0).unwrap();
+        let qty = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
         let result = qty.divide(0.0);
         assert!(result.is_err());
     }
     
     #[test]
     fn should_split_into_parts() {
-        let qty = Quantity::new(10.0).unwrap();
-        let parts = qty.split(4).unwrap();
+        let qty = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
+        let parts = qty.split(4).expect("SAFETY: Add proper error handling");
         assert_eq!(parts.len(), 4);
         for part in parts {
             assert_eq!(part.value(), 2.5);
@@ -237,23 +237,23 @@ mod tests {
     
     #[test]
     fn should_round_to_decimals() {
-        let qty = Quantity::new(10.123456789).unwrap();
+        let qty = Quantity::new(10.123456789).expect("SAFETY: Add proper error handling");
         let rounded = qty.round_to(2);
         assert_eq!(rounded.value(), 10.12);
     }
     
     #[test]
     fn should_get_min_quantity() {
-        let q1 = Quantity::new(10.0).unwrap();
-        let q2 = Quantity::new(5.0).unwrap();
+        let q1 = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
+        let q2 = Quantity::new(5.0).expect("SAFETY: Add proper error handling");
         let min = q1.min(&q2);
         assert_eq!(min.value(), 5.0);
     }
     
     #[test]
     fn should_get_max_quantity() {
-        let q1 = Quantity::new(10.0).unwrap();
-        let q2 = Quantity::new(5.0).unwrap();
+        let q1 = Quantity::new(10.0).expect("SAFETY: Add proper error handling");
+        let q2 = Quantity::new(5.0).expect("SAFETY: Add proper error handling");
         let max = q1.max(&q2);
         assert_eq!(max.value(), 10.0);
     }

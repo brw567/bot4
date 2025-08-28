@@ -1,3 +1,5 @@
+pub use domain_types::candle::{Candle, CandleError};
+
 // HISTORICAL PERFORMANCE CHARTS - Task 0.6 Completion
 // Full Team Implementation with External Research
 // Team: All 8 members collaborating
@@ -81,18 +83,6 @@ impl Timeframe {
 /// OHLCV candle data structure
 /// Morgan: "OHLCV is fundamental for all technical analysis"
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Candle {
-    pub timestamp: u64,
-    pub open: f64,
-    pub high: f64,
-    pub low: f64,
-    pub close: f64,
-    pub volume: f64,
-    pub trades: u32,
-    pub vwap: f64,  // Volume-weighted average price
-    pub bid_volume: f64,
-    pub ask_volume: f64,
-}
 
 impl Candle {
     /// Create new candle from tick
@@ -146,7 +136,8 @@ impl Candle {
 /// Performance metrics for a timeframe
 /// Quinn: "Must calculate risk-adjusted returns for auto-tuning"
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PerformanceMetrics {
+// REMOVED: Duplicate
+// pub struct PerformanceMetrics {
     pub timeframe: Timeframe,
     pub timestamp: u64,
     pub returns: f64,

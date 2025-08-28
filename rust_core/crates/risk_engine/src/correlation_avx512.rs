@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // AVX512 Optimized Correlation Analysis
 // Nexus Enhancement: Upgrade from AVX2 (f64x4) to AVX512 (f64x8)
 // Expected speedup: 4-6x total (2x from wider vectors)

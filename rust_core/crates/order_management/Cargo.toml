@@ -5,6 +5,7 @@ edition.workspace = true
 authors.workspace = true
 
 [dependencies]
+domain_types = { path = "../../domain_types" }
 # Core dependencies
 infrastructure = { path = "../infrastructure" }
 

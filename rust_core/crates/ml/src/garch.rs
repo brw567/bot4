@@ -230,7 +230,7 @@ impl GARCH {
     }
     
     /// Calculate Value at Risk using GARCH volatility
-    pub fn calculate_var(&self, 
+    pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, 
                          position_value: f64, 
                          current_vol: f64, 
                          confidence: f64) -> f64 {
@@ -259,7 +259,7 @@ impl GARCH {
     
     /// AVX-512 optimized variance calculation (Jordan's contribution)
     #[target_feature(enable = "avx512f")]
-    unsafe fn calculate_variance_avx512(&self, residuals: &[f64], h: &mut [f64]) {
+    unsafe use mathematical_ops::risk_metrics::calculate_var; // fn calculate_variance_avx512(&self, residuals: &[f64], h: &mut [f64]) {
         let omega_vec = _mm512_set1_pd(self.omega);
         let alpha_vec = _mm512_set1_pd(self.alpha);
         let beta_vec = _mm512_set1_pd(self.beta);

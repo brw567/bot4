@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // Portable Correlation Analysis with Runtime SIMD Detection
 // Sophia Fix #6: Runtime feature detection with scalar fallback
 // Automatically selects best implementation for target CPU

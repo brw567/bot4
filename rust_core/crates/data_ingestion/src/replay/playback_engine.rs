@@ -1,3 +1,5 @@
+pub use domain_types::position_canonical::{Position, PositionId, PositionSide, PositionStatus};
+
 // Playback Engine - Orchestrates LOB replay and backtesting
 // DEEP DIVE: Complete backtesting framework with realistic market simulation
 //
@@ -198,13 +200,6 @@ pub enum SignalUrgency {
 
 /// Position tracking
 #[derive(Debug, Clone)]
-pub struct Position {
-    pub symbol: Symbol,
-    pub quantity: Decimal,
-    pub average_price: Price,
-    pub unrealized_pnl: Decimal,
-    pub realized_pnl: Decimal,
-}
 
 /// Main playback engine
 pub struct PlaybackEngine {

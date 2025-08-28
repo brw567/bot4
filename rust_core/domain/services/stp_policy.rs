@@ -18,6 +18,7 @@ use crate::domain::value_objects::Symbol;
 /// Quinn: "Each has different risk implications"
 /// Sam: "We need to support all for flexibility"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum STPPolicy {
     /// Cancel the incoming new order (most conservative)
     /// Quinn: "Safest option - preserves existing orders"
@@ -46,6 +47,7 @@ pub enum STPPolicy {
 
 /// STP Service - Collaborative Implementation
 /// Alex: "This is critical infrastructure, everyone review"
+#[derive(Debug, Clone)]
 pub struct STPService {
     /// Active orders by symbol
     /// Avery: "Using RwLock for read-heavy workload"
@@ -316,6 +318,7 @@ impl STPService {
 /// STP Action to take
 /// Team consensus on action types
 #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum STPAction {
     /// Allow order to proceed
     Allow,
@@ -347,6 +350,7 @@ pub enum STPAction {
 
 /// Metrics snapshot
 #[derive(Debug, Serialize)]
+#[derive(Debug, Clone)]
 pub struct STPMetricsSnapshot {
     pub checks_performed: u64,
     pub violations_prevented: u64,

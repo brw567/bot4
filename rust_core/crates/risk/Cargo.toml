@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+domain_types = { path = "../../domain_types" }
 # Core dependencies
 anyhow = "1.0"
 thiserror = "1.0"

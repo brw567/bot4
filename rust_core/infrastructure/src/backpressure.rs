@@ -11,6 +11,7 @@ use async_trait::async_trait;
 
 /// Backpressure policy types
 #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum BackpressurePolicy {
     /// Drop new messages when queue is full
     DropNewest,
@@ -48,6 +49,7 @@ pub enum BackpressurePolicy {
 }
 
 /// Backpressure manager for controlling flow
+#[derive(Debug, Clone)]
 pub struct BackpressureManager {
     policy: BackpressurePolicy,
     
@@ -279,6 +281,7 @@ impl BackpressureManager {
 }
 
 /// Result of backpressure check
+#[derive(Debug, Clone)]
 pub enum BackpressureResult {
     /// Accept the message
     Accept,
@@ -300,6 +303,7 @@ pub enum BackpressureResult {
 }
 
 #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct BackpressureMetrics {
     pub queue_depth: u64,
     pub queue_capacity: usize,
@@ -311,6 +315,7 @@ pub struct BackpressureMetrics {
 }
 
 /// Adaptive backpressure controller
+#[derive(Debug, Clone)]
 pub struct AdaptiveBackpressure {
     managers: Vec<Arc<BackpressureManager>>,
     
@@ -363,6 +368,7 @@ impl AdaptiveBackpressure {
 }
 
 #[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum GlobalAction {
     Normal,
     SlowDown(f64),  // Fraction of normal rate

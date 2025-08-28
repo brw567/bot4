@@ -1,3 +1,16 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // Bot4 Object Pools - Zero Allocation Hot Paths
 // Day 2 Sprint - Critical Component
 // Owner: Jordan
@@ -5,7 +18,6 @@
 
 use super::metrics::{metrics, PoolType};
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use crossbeam::queue::ArrayQueue;
 use thread_local::ThreadLocal;
 use std::cell::RefCell;
@@ -41,8 +53,6 @@ pub struct TickPool {
 }
 
 // Domain objects
-#[derive(Debug, Clone)]
-pub struct Order {
     pub id: u64,
     pub symbol: String,  // Keep for compatibility
     pub symbol_id: u32,  // FAST: Use this in hot paths instead of String
@@ -52,13 +62,13 @@ pub struct Order {
     pub timestamp: u64,
 }
 
-#[derive(Debug, Clone)]
+
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
-#[derive(Debug, Clone)]
+
 pub struct Signal {
     pub id: u64,
     pub symbol: String,  // Keep for compatibility
@@ -68,14 +78,14 @@ pub struct Signal {
     pub timestamp: u64,
 }
 
-#[derive(Debug, Clone, Copy)]
+
 pub enum SignalType {
     Buy,
     Sell,
     Hold,
 }
 
-#[derive(Debug, Clone)]
+
 pub struct Tick {
     pub symbol: String,
     pub bid: f64,
@@ -392,8 +402,9 @@ pub fn initialize_all_pools() {
 }
 
 /// Get pool statistics for monitoring
-#[derive(Debug, Clone)]
-pub struct PoolStats {
+
+// REMOVED: Duplicate
+// pub struct PoolStats {
     pub order_allocated: usize,
     pub order_returned: usize,
     pub order_pressure: f64,

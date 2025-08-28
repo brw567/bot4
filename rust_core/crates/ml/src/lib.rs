@@ -22,6 +22,7 @@ pub mod features;  // Microstructure features
 pub mod validation;  // Purged CV and leakage prevention
 pub mod calibration;  // Isotonic probability calibration
 pub mod garch;  // GARCH volatility modeling - Nexus Priority 2
+pub mod feature_store;  // Production-grade Feature Store - Blake: Critical for ML pipeline
 
 // Re-export main types
 pub use feature_engine::{
@@ -41,6 +42,12 @@ pub use training::{
     TrainingPipeline,
     TrainingConfig,
     TrainingResult,
+};
+
+pub use feature_store::{
+    FeatureStore, FeatureStoreConfig, FeatureStoreError,
+    FeatureKey, FeatureValue, FeatureMetadata,
+    IngestionRequest, FeatureServingLayer,
 };
 
 pub use models::{

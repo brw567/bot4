@@ -9,6 +9,7 @@ use anyhow::Result;
 
 /// Ultra-fast SIMD decision engine
 /// Jordan: "Every nanosecond counts! We need <50ns or we're not competitive!"
+#[derive(Debug, Clone)]
 pub struct SimdDecisionEngine {
     // Pre-allocated aligned buffers for SIMD operations
     ml_features: AlignedBuffer<f64>,
@@ -29,6 +30,7 @@ pub struct SimdDecisionEngine {
 
 /// 64-byte aligned buffer for optimal SIMD performance
 #[repr(align(64))]
+#[derive(Debug, Clone)]
 pub struct AlignedBuffer<T> {
     data: Vec<T>,
 }
@@ -360,6 +362,7 @@ impl SimdDecisionEngine {
 
 /// Ultra-fast decision result
 #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct FastDecision {
     pub action: TradeAction,
     pub confidence: f64,
@@ -370,6 +373,7 @@ pub struct FastDecision {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum TradeAction {
     Buy,
     Sell,
@@ -378,6 +382,7 @@ pub enum TradeAction {
 
 /// Performance statistics
 #[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PerformanceStats {
     pub decision_count: u64,
     pub avg_latency_ns: u64,

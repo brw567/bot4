@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // MACRO ECONOMIC CORRELATOR - DEEP DIVE IMPLEMENTATION  
 // Team: FULL TEAM - NO SIMPLIFICATIONS!
 // Alex: "Correlate EVERY macro indicator with crypto movements!"
@@ -58,7 +59,7 @@ impl MacroEconomicCorrelator {
     }
     
     /// Calculate correlation between crypto and macro indicator
-    pub fn calculate_correlation(&self, crypto_data: &[f64], macro_data: &[f64]) -> f64 {
+    pub use mathematical_ops::unified_calculations::calculate_correlation; // fn calculate_correlation(&self, crypto_data: &[f64], macro_data: &[f64]) -> f64 {
         if crypto_data.len() != macro_data.len() || crypto_data.is_empty() {
             return 0.0;
         }

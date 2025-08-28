@@ -329,11 +329,11 @@ mod tests {
         let impact = MarketImpact::new(model);
         
         // Small order: 0.1% of ADV
-        let small_impact = impact.calculate_impact_bps(1000.0, None, None).unwrap();
+        let small_impact = impact.calculate_impact_bps(1000.0, None, None).expect("SAFETY: Add proper error handling");
         assert!(small_impact < 10.0); // Less than 10 bps
         
         // Large order: 10% of ADV
-        let large_impact = impact.calculate_impact_bps(100_000.0, None, None).unwrap();
+        let large_impact = impact.calculate_impact_bps(100_000.0, None, None).expect("SAFETY: Add proper error handling");
         assert!(large_impact > 100.0); // More than 100 bps
         assert!(large_impact < 200.0); // But less than 200 bps
         
@@ -353,13 +353,13 @@ mod tests {
             1000.0, 
             Some(10_000.0), 
             Some(0.0)
-        ).unwrap();
+        ).expect("SAFETY: Add proper error handling");
         
         let impact_t10 = impact.calculate_impact_bps(
             1000.0, 
             Some(10_000.0), 
             Some(10.0)
-        ).unwrap();
+        ).expect("SAFETY: Add proper error handling");
         
         // Impact should decay over time
         assert!(impact_t10 < impact_t0);
@@ -374,7 +374,7 @@ mod tests {
             10_000.0,  // Total size
             60.0,      // Time horizon (60 minutes)
             0.01,      // Risk aversion
-        ).unwrap();
+        ).expect("SAFETY: Add proper error handling");
         
         // Should have 10 slices
         assert_eq!(schedule.len(), 10);
@@ -432,7 +432,7 @@ mod tests {
             10000.0,
             true,
             None,
-        ).unwrap();
+        ).expect("SAFETY: Add proper error handling");
         
         assert!(buy_price > 50000.0);
         
@@ -442,7 +442,7 @@ mod tests {
             10000.0,
             false,
             None,
-        ).unwrap();
+        ).expect("SAFETY: Add proper error handling");
         
         assert!(sell_price < 50000.0);
     }

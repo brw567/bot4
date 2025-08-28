@@ -344,25 +344,25 @@ mod tests {
     use crate::domain::entities::{OrderSide, TimeInForce};
     
     fn create_test_oco() -> OcoOrder {
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         
         // Buy OCO: Limit buy at 49000, stop buy at 51000
         let limit_order = Order::limit(
             symbol.clone(),
             OrderSide::Buy,
-            Price::new(49000.0).unwrap(),
-            Quantity::new(1.0).unwrap(),
+            Price::new(49000.0).expect("SAFETY: Add proper error handling"),
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
             TimeInForce::GTC,
         );
         
         let stop_order = Order::stop_market(
             symbol,
             OrderSide::Buy,
-            Price::new(51000.0).unwrap(), // Stop trigger price
-            Quantity::new(1.0).unwrap(),
+            Price::new(51000.0).expect("SAFETY: Add proper error handling"), // Stop trigger price
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
         );
         
-        OcoOrder::new(limit_order, stop_order, OcoSemantics::default()).unwrap()
+        OcoOrder::new(limit_order, stop_order, OcoSemantics::default()).expect("SAFETY: Add proper error handling")
     }
     
     #[tokio::test]
@@ -377,11 +377,11 @@ mod tests {
         let oco = create_test_oco();
         
         // Trigger limit leg
-        oco.handle_trigger(OcoLeg::Limit).await.unwrap();
+        oco.handle_trigger(OcoLeg::Limit).await.expect("SAFETY: Add proper error handling");
         
         assert_eq!(oco.state().await, OcoState::Triggered { winning_leg: OcoLeg::Limit });
-        assert_eq!(oco.get_winning_order().await.unwrap().id(), oco.limit_order().id());
-        assert_eq!(oco.get_cancelled_order().await.unwrap().id(), oco.stop_order().id());
+        assert_eq!(oco.get_winning_order().await.expect("SAFETY: Add proper error handling").id(), oco.limit_order().id());
+        assert_eq!(oco.get_cancelled_order().await.expect("SAFETY: Add proper error handling").id(), oco.stop_order().id());
     }
     
     #[tokio::test]
@@ -389,29 +389,29 @@ mod tests {
         let mut semantics = OcoSemantics::default();
         semantics.partial_fill_cancels_sibling = true;
         
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         let limit_order = Order::limit(
             symbol.clone(),
             OrderSide::Buy,
-            Price::new(49000.0).unwrap(),
-            Quantity::new(1.0).unwrap(),
+            Price::new(49000.0).expect("SAFETY: Add proper error handling"),
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
             TimeInForce::GTC,
         );
         
         let stop_order = Order::stop_market(
             symbol,
             OrderSide::Buy,
-            Price::new(51000.0).unwrap(),
-            Quantity::new(1.0).unwrap(),
+            Price::new(51000.0).expect("SAFETY: Add proper error handling"),
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
         );
         
-        let oco = OcoOrder::new(limit_order, stop_order, semantics).unwrap();
+        let oco = OcoOrder::new(limit_order, stop_order, semantics).expect("SAFETY: Add proper error handling");
         
         // Partial fill should trigger cancellation
         let should_cancel = oco.handle_partial_fill(
             OcoLeg::Limit, 
-            Quantity::new(0.5).unwrap()
-        ).await.unwrap();
+            Quantity::new(0.5).expect("SAFETY: Add proper error handling")
+        ).await.expect("SAFETY: Add proper error handling");
         
         assert!(should_cancel);
         assert_eq!(oco.state().await, OcoState::Triggered { winning_leg: OcoLeg::Limit });
@@ -422,51 +422,51 @@ mod tests {
         let mut semantics = OcoSemantics::default();
         semantics.priority = OcoPriority::Timestamp;
         
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         let limit_order = Order::limit(
             symbol.clone(),
             OrderSide::Buy,
-            Price::new(49000.0).unwrap(),
-            Quantity::new(1.0).unwrap(),
+            Price::new(49000.0).expect("SAFETY: Add proper error handling"),
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
             TimeInForce::GTC,
         );
         
         let stop_order = Order::stop_market(
             symbol,
             OrderSide::Buy,
-            Price::new(51000.0).unwrap(),
-            Quantity::new(1.0).unwrap(),
+            Price::new(51000.0).expect("SAFETY: Add proper error handling"),
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
         );
         
-        let oco = OcoOrder::new(limit_order, stop_order, semantics).unwrap();
+        let oco = OcoOrder::new(limit_order, stop_order, semantics).expect("SAFETY: Add proper error handling");
         
         let now = Utc::now();
         let limit_time = now;
         let stop_time = now + chrono::Duration::milliseconds(1);
         
         // Limit triggered first by timestamp
-        let winner = oco.handle_simultaneous_trigger(limit_time, stop_time).await.unwrap();
+        let winner = oco.handle_simultaneous_trigger(limit_time, stop_time).await.expect("SAFETY: Add proper error handling");
         assert_eq!(winner, OcoLeg::Limit);
     }
     
     #[tokio::test]
     async fn test_oco_validation() {
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         
         // Invalid: limit price above stop price for buy order
         let limit_order = Order::limit(
             symbol.clone(),
             OrderSide::Buy,
-            Price::new(52000.0).unwrap(), // Above stop price
-            Quantity::new(1.0).unwrap(),
+            Price::new(52000.0).expect("SAFETY: Add proper error handling"), // Above stop price
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
             TimeInForce::GTC,
         );
         
         let stop_order = Order::stop_market(
             symbol,
             OrderSide::Buy,
-            Price::new(51000.0).unwrap(),
-            Quantity::new(1.0).unwrap(),
+            Price::new(51000.0).expect("SAFETY: Add proper error handling"),
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
         );
         
         let result = OcoOrder::new(limit_order, stop_order, OcoSemantics::default());

@@ -125,7 +125,8 @@ impl<T: Send> std::ops::DerefMut for PoolGuard<T> {
 }
 
 #[derive(Debug, Clone)]
-pub struct PoolStats {
+// REMOVED: Duplicate
+// pub struct PoolStats {
     pub capacity: usize,
     pub allocated: usize,
     pub hits: u64,

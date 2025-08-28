@@ -106,4 +106,5 @@ mod lib_tests {
         let _ = CANONICAL_TYPES_VERSION;
         assert_eq!(CANONICAL_TYPES_VERSION, "1.0.0");
     }
-}
+}pub mod risk_limits;
+pub use risk_limits::RiskLimits;

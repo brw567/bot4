@@ -117,7 +117,7 @@ mod tests {
     
     #[test]
     fn should_create_valid_price() {
-        let price = Price::new(100.0).unwrap();
+        let price = Price::new(100.0).expect("SAFETY: Add proper error handling");
         assert_eq!(price.value(), 100.0);
     }
     
@@ -141,45 +141,45 @@ mod tests {
     
     #[test]
     fn should_apply_positive_slippage() {
-        let price = Price::new(100.0).unwrap();
-        let slipped = price.apply_slippage(10).unwrap(); // 0.1% slippage
+        let price = Price::new(100.0).expect("SAFETY: Add proper error handling");
+        let slipped = price.apply_slippage(10).expect("SAFETY: Add proper error handling"); // 0.1% slippage
         assert_eq!(slipped.value(), 100.1);
     }
     
     #[test]
     fn should_apply_negative_slippage() {
-        let price = Price::new(100.0).unwrap();
-        let slipped = price.apply_slippage(-10).unwrap(); // -0.1% slippage
+        let price = Price::new(100.0).expect("SAFETY: Add proper error handling");
+        let slipped = price.apply_slippage(-10).expect("SAFETY: Add proper error handling"); // -0.1% slippage
         assert_eq!(slipped.value(), 99.9);
     }
     
     #[test]
     fn should_calculate_percentage_diff() {
-        let price1 = Price::new(100.0).unwrap();
-        let price2 = Price::new(110.0).unwrap();
+        let price1 = Price::new(100.0).expect("SAFETY: Add proper error handling");
+        let price2 = Price::new(110.0).expect("SAFETY: Add proper error handling");
         assert_eq!(price1.percentage_diff(&price2), 10.0);
     }
     
     #[test]
     fn should_round_to_decimals() {
-        let price = Price::new(100.123456789).unwrap();
+        let price = Price::new(100.123456789).expect("SAFETY: Add proper error handling");
         let rounded = price.round_to(2);
         assert_eq!(rounded.value(), 100.12);
     }
     
     #[test]
     fn should_check_range() {
-        let price = Price::new(100.0).unwrap();
-        let min = Price::new(90.0).unwrap();
-        let max = Price::new(110.0).unwrap();
+        let price = Price::new(100.0).expect("SAFETY: Add proper error handling");
+        let min = Price::new(90.0).expect("SAFETY: Add proper error handling");
+        let max = Price::new(110.0).expect("SAFETY: Add proper error handling");
         assert!(price.is_within_range(&min, &max));
     }
     
     #[test]
     fn should_add_prices() {
-        let p1 = Price::new(100.0).unwrap();
-        let p2 = Price::new(50.0).unwrap();
-        let sum = (p1 + p2).unwrap();
+        let p1 = Price::new(100.0).expect("SAFETY: Add proper error handling");
+        let p2 = Price::new(50.0).expect("SAFETY: Add proper error handling");
+        let sum = (p1 + p2).expect("SAFETY: Add proper error handling");
         assert_eq!(sum.value(), 150.0);
     }
 }

@@ -171,7 +171,7 @@ impl SharpeMonitor {
     }
     
     /// Calculate Sharpe ratio from returns window
-    fn calculate_sharpe(&self) -> Result<Decimal> {
+    use mathematical_ops::risk_metrics::calculate_sharpe; // fn calculate_sharpe(&self) -> Result<Decimal> {
         if self.returns_window.is_empty() {
             return Ok(Decimal::ZERO);
         }
@@ -590,7 +590,7 @@ impl GARCHDetector {
     }
     
     /// Calculate Value at Risk using GARCH volatility
-    pub fn calculate_var(&self, confidence_level: f64) -> f64 {
+    pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, confidence_level: f64) -> f64 {
         // VaR = -μ + σ * z_α
         // For 95% confidence, z = 1.645
         // For 99% confidence, z = 2.326

@@ -1,3 +1,7 @@
+//! Using canonical Trade from domain_types
+pub use domain_types::trade::{Trade, TradeId, TradeError};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
 // PORTFOLIO MANAGER - REAL-TIME PORTFOLIO STATE MANAGEMENT
 // Team: Avery (Data) + Quinn (Risk) + Full Team Collaboration
 // CRITICAL: NO HARDCODED VALUES - FULL DYNAMIC MANAGEMENT
@@ -61,18 +65,6 @@ pub struct CorrelationMatrix {
 
 /// Trade record for history
 #[derive(Debug, Clone)]
-pub struct Trade {
-    pub id: uuid::Uuid,
-    pub symbol: String,
-    pub side: Side,
-    pub quantity: Quantity,
-    pub entry_price: Price,
-    pub exit_price: Option<Price>,
-    pub pnl: Option<Decimal>,
-    pub entry_time: u64,
-    pub exit_time: Option<u64>,
-    pub fees: Decimal,
-}
 
 impl PortfolioManager {
     /// Create new portfolio manager with REAL initial state

@@ -562,7 +562,7 @@ impl MonteCarloEngine {
     }
     
     /// Calculate Sharpe ratio
-    fn calculate_sharpe_ratio(&self, returns: &[f64]) -> f64 {
+    use mathematical_ops::risk_metrics::calculate_sharpe; // fn calculate_sharpe_ratio(&self, returns: &[f64]) -> f64 {
         if returns.is_empty() {
             return 0.0;
         }
@@ -601,7 +601,7 @@ impl MonteCarloEngine {
     }
     
     /// Calculate Value at Risk
-    fn calculate_var(&self, returns: &[f64], confidence: f64) -> f64 {
+    use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, returns: &[f64], confidence: f64) -> f64 {
         let mut sorted = returns.to_vec();
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
         
@@ -928,7 +928,8 @@ pub struct StrategyValidation {
 
 /// Risk assessment metrics
 #[derive(Debug, Clone)]
-pub struct RiskMetrics {
+// REMOVED: Duplicate
+// pub struct RiskMetrics {
     pub tail_var_99: f64,
     pub tail_cvar_99: f64,
     pub max_drawdown_99: f64,

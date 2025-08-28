@@ -13,7 +13,8 @@ use tracing::error;
 
 /// Risk metrics snapshot
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RiskMetrics {
+// REMOVED: Duplicate
+// pub struct RiskMetrics {
     // P&L metrics
     pub total_pnl: Decimal,
     pub daily_pnl: Decimal,

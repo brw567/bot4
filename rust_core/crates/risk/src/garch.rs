@@ -523,7 +523,7 @@ impl GARCHModel {
     }
     
     /// Get Value at Risk (VaR) at given confidence level
-    pub fn calculate_var(&self, confidence: f64, horizon: usize) -> f64 {
+    pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, confidence: f64, horizon: usize) -> f64 {
         let forecasts = self.forecast(horizon);
         let cumulative_vol = forecasts.iter()
             .map(|v| v.powi(2))

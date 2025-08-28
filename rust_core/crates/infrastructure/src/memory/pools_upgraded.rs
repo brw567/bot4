@@ -1,10 +1,22 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // Bot4 Object Pools - PRODUCTION SCALE (1M+ Objects)
 // Full Team Upgrade Implementation
 // Lead: Jordan | Contributors: All Team Members
 // Target: Zero-allocation with 1M+ pre-allocated objects
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
 use crossbeam::queue::ArrayQueue;
 use thread_local::ThreadLocal;
 use std::cell::RefCell;
@@ -230,7 +242,7 @@ impl<T: Send> GenericPool<T> {
 // POOL STATISTICS - Avery's Monitoring
 // ============================================================================
 
-#[derive(Debug, Clone)]
+
 pub struct PoolStats {
     pub name: String,
     pub capacity: usize,
@@ -248,8 +260,6 @@ pub struct PoolStats {
 // DOMAIN OBJECTS - Casey & Sam's Definitions
 // ============================================================================
 
-#[derive(Debug, Clone, Default)]
-pub struct Order {
     pub id: u64,
     pub symbol: String,
     pub side: OrderSide,
@@ -261,7 +271,7 @@ pub struct Order {
     pub exchange_order_id: Option<String>,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub struct Signal {
     pub id: u64,
     pub source: String,
@@ -274,7 +284,7 @@ pub struct Signal {
     pub features: Vec<f64>,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub struct Tick {
     pub symbol: String,
     pub bid: f64,
@@ -286,18 +296,11 @@ pub struct Tick {
     pub exchange: String,
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct Fill {
-    pub order_id: u64,
-    pub price: f64,
-    pub quantity: f64,
-    pub fee: f64,
-    pub timestamp: u64,
-    // Quinn: "Risk tracking"
-    pub pnl: Option<f64>,
-}
 
-#[derive(Debug, Clone, Default)]
+// Using canonical Fill from domain_types
+use domain_types::order::Fill;
+
+
 pub struct Event {
     pub id: u64,
     pub event_type: EventType,
@@ -308,14 +311,14 @@ pub struct Event {
     pub source: String,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub enum OrderSide {
     #[default]
     Buy,
     Sell,
 }
 
-#[derive(Debug, Clone, Default)]
+
 pub enum EventType {
     #[default]
     OrderPlaced,

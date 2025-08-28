@@ -1,3 +1,6 @@
+pub use domain_types::candle::{Candle, CandleError};
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
+
 // Bot4 Feature Engineering - Technical Indicators with SIMD
 // Owner: Morgan | Reviewer: Jordan (Performance), Quinn (Risk)
 // Phase 3: ML Integration
@@ -13,14 +16,6 @@ use thiserror::Error;
 /// SIMD-accelerated indicator engine for 100+ technical indicators
 // Core data structures
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct Candle {
-    pub timestamp: i64,
-    pub open: f64,
-    pub high: f64,
-    pub low: f64,
-    pub close: f64,
-    pub volume: f64,
-}
 
 #[derive(Debug, Clone, Default)]
 pub struct IndicatorParams {

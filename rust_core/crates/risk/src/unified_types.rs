@@ -1,3 +1,16 @@
+use domain_types::market_data::MarketData;
+//! Module uses canonical Position type from domain_types
+//! Cameron: "Single source of truth for Position struct"
+
+pub use domain_types::position_canonical::{
+    Position, PositionId, PositionSide, PositionStatus,
+    PositionError, PositionUpdate
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type PositionResult<T> = Result<T, PositionError>;
+
 // Unified Type System - Solving API Mismatch Problem
 // Team: Sam (Architecture) + Jordan (Performance) + Full Team
 // CRITICAL: All components MUST use these types for communication
@@ -17,7 +30,8 @@ use std::fmt;
 
 /// Unified Price type - ALWAYS use this for prices
 /// Sam: "No more f32 vs Decimal confusion!"
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub struct Price(Decimal);
 
 impl Price {
@@ -56,7 +70,8 @@ impl Price {
 }
 
 /// Unified Quantity type - for position sizes, volumes
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub struct Quantity(Decimal);
 
 impl Quantity {
@@ -85,7 +100,8 @@ impl Quantity {
 
 /// Unified Percentage type - for returns, volatility, etc.
 /// Jordan: "Percentages should be 0.01 for 1%, not 1.0!"
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub struct Percentage(f64);
 
 impl Percentage {
@@ -126,8 +142,10 @@ impl Percentage {
 
 /// Risk Metrics - unified structure for all risk calculations
 /// Quinn: "Everything in one place, properly typed!"
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RiskMetrics {
+
+#[derive(Debug, Clone)]
+// REMOVED: Duplicate
+// pub struct RiskMetrics {
     pub position_size: Quantity,
     pub confidence: Percentage,
     pub expected_return: Percentage,
@@ -159,8 +177,10 @@ impl Default for RiskMetrics {
 
 /// Market Data - unified structure for price/volume data
 /// Casey: "Consistent data format for all exchanges!"
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MarketData {
+
+#[derive(Debug, Clone)]
+// REMOVED: Using canonical domain_types::market_data::MarketData
+// pub struct MarketData {
     pub symbol: String,
     pub timestamp: u64,
     pub bid: Price,
@@ -186,8 +206,6 @@ impl MarketData {
 
 /// Position - unified position representation
 /// Morgan: "Track everything needed for ML features!"
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Position {
     pub symbol: String,
     pub side: Side,
     pub quantity: Quantity,
@@ -223,7 +241,8 @@ impl Position {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum Side {
     Long,
     Short,
@@ -231,7 +250,8 @@ pub enum Side {
 
 /// Trading Signal - unified signal format
 /// Alex: "All strategies output this format!"
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub struct TradingSignal {
     pub timestamp: u64,
     pub symbol: String,
@@ -248,7 +268,8 @@ pub struct TradingSignal {
     pub take_profit: Option<Price>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum SignalAction {
     Buy,
     Sell,
@@ -259,7 +280,8 @@ pub enum SignalAction {
 }
 
 /// Order - unified order representation
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub struct UnifiedOrder {
     pub id: uuid::Uuid,
     pub symbol: String,
@@ -274,7 +296,8 @@ pub struct UnifiedOrder {
     pub post_only: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum OrderType {
     Market,
     Limit,
@@ -284,7 +307,8 @@ pub enum OrderType {
     TakeProfitLimit,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum TimeInForce {
     GTC,  // Good Till Cancel
     IOC,  // Immediate or Cancel

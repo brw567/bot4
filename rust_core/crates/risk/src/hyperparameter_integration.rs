@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // Hyperparameter Integration System - DEEP DIVE WITH NO SIMPLIFICATIONS
 // Team: Alex (Lead) + Full Team Deep Collaboration
 // CRITICAL: Integrate optimization into ALL beneficial components
@@ -568,7 +569,7 @@ pub struct OptimizationStats {
 }
 
 /// Calculate Pearson correlation coefficient
-fn calculate_correlation(x: &[f64], y: &[f64]) -> f64 {
+use mathematical_ops::unified_calculations::calculate_correlation; // fn calculate_correlation(x: &[f64], y: &[f64]) -> f64 {
     if x.len() != y.len() || x.is_empty() {
         return 0.0;
     }

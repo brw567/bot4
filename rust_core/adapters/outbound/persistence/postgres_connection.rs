@@ -153,7 +153,8 @@ impl DatabaseConnectionPool {
 
 /// Pool statistics
 #[derive(Debug)]
-pub struct PoolStats {
+// REMOVED: Duplicate
+// pub struct PoolStats {
     pub connections: u32,
     pub idle_connections: usize,
     pub max_connections: u32,

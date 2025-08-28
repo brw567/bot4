@@ -1,3 +1,16 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // MEMORY SAFETY OVERHAUL - Full Team Implementation
 // Task 0.1: Fix memory pool leaks and add proper cleanup
 // Team: All 8 members collaborating
@@ -9,7 +22,6 @@
 // - mimalloc paper on thread-local caching
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, AtomicBool, AtomicU64, Ordering};
 use crossbeam::queue::ArrayQueue;
 use crossbeam::epoch::{self, Atomic, Shared};
 use thread_local::ThreadLocal;
@@ -220,7 +232,7 @@ impl MemoryStats {
     }
 }
 
-#[derive(Debug, Clone)]
+
 struct MemoryStatsSnapshot {
     total_allocated: u64,
     total_freed: u64,
@@ -271,7 +283,7 @@ struct GarbageList<T: Send + Sync + 'static> {
 unsafe impl<T: Send + Sync + 'static> Send for GarbageList<T> {}
 unsafe impl<T: Send + Sync + 'static> Sync for GarbageList<T> {}
 
-#[derive(Clone)]
+
 pub struct PoolConfig {
     name: String,
     capacity: usize,
@@ -566,8 +578,9 @@ impl<T: Default + Send + Sync + 'static> Drop for SafeObjectPool<T> {
 // POOL STATISTICS
 // ============================================================================
 
-#[derive(Debug, Clone)]
-pub struct PoolStats {
+
+// REMOVED: Duplicate
+// pub struct PoolStats {
     pub name: String,
     pub capacity: usize,
     pub allocations: u64,
@@ -623,8 +636,6 @@ pub fn create_tick_pool() -> Arc<SafeObjectPool<Tick>> {
 // ============================================================================
 
 /// Order with string reuse optimization
-#[derive(Debug, Clone)]
-pub struct Order {
     pub id: u64,
     pub symbol_id: u32,  // Use ID instead of String
     pub side: OrderSide,
@@ -662,14 +673,14 @@ impl Order {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 /// Signal with optimized memory layout
-#[derive(Debug, Clone)]
+
 pub struct Signal {
     pub id: u64,
     pub symbol_id: u32,
@@ -694,7 +705,7 @@ impl Default for Signal {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+
 pub enum SignalType {
     Buy,
     Sell,
@@ -702,7 +713,7 @@ pub enum SignalType {
 }
 
 /// Market tick with minimal allocations
-#[derive(Debug, Clone)]
+
 pub struct Tick {
     pub symbol_id: u32,
     pub bid: f64,

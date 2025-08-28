@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // OVERFITTING PREVENTION SYSTEM - CRITICAL FOR SURVIVAL!
 // Team: Riley (Lead) + Morgan - NO FALSE SIGNALS, NO CURVE FITTING!
 // Target: Robust strategies that work in production, not just backtests
@@ -12,6 +13,7 @@ use nalgebra::{DMatrix, DVector};
 use crate::{DataError, Result};
 
 /// Master overfitting prevention system
+#[derive(Debug, Clone)]
 pub struct OverfittingPreventionSystem {
     // Validation strategies
     walk_forward_validator: Arc<RwLock<WalkForwardValidator>>,
@@ -33,6 +35,7 @@ pub struct OverfittingPreventionSystem {
     config: OverfittingConfig,
 }
 
+#[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
 pub struct OverfittingConfig {
     // Validation parameters
@@ -896,6 +899,7 @@ impl OverfittingPreventionSystem {
 // Output structures
 
 #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct CorrelationValidation {
     pub stable_correlations: Vec<CorrelationAssessment>,
     pub unstable_correlations: Vec<CorrelationAssessment>,
@@ -904,6 +908,7 @@ pub struct CorrelationValidation {
     pub warnings: Vec<String>,
 }
 
+#[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
 pub struct CorrelationAssessment {
     pub pair: (String, String),
@@ -919,6 +924,7 @@ pub struct CorrelationAssessment {
 }
 
 #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct WalkForwardResults {
     pub windows: Vec<WalkForwardWindow>,
     pub average_in_sample_sharpe: f64,
@@ -928,6 +934,7 @@ pub struct WalkForwardResults {
     pub confidence: f64,
 }
 
+#[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
 pub struct PurgedKFoldResults {
     pub folds: Vec<PurgedFold>,
@@ -939,6 +946,7 @@ pub struct PurgedKFoldResults {
 }
 
 #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct RobustnessResults {
     pub noise_performances: Vec<(f64, Performance)>,
     pub robustness_score: f64,
@@ -946,6 +954,7 @@ pub struct RobustnessResults {
     pub max_acceptable_noise: f64,
 }
 
+#[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
 pub struct MonteCarloResults {
     pub confidence_intervals: ConfidenceIntervals,

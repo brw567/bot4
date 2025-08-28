@@ -1,3 +1,7 @@
+//! Using canonical Trade from domain_types
+pub use domain_types::trade::{Trade, TradeId, TradeError};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
 // COMPLETE TRADING TYPES - Full Implementation with NO SHORTCUTS
 // Team: Full 8-member collaboration with external research
 // References:
@@ -16,6 +20,7 @@ use chrono::{DateTime, Utc};
 /// Enhanced Trading Signal with complete trade management
 /// Morgan: "Every signal must have risk parameters defined!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct EnhancedTradingSignal {
     // Core signal data
     pub timestamp: u64,
@@ -54,6 +59,7 @@ pub struct EnhancedTradingSignal {
 /// Complete Execution Algorithm enum with all trading strategies
 /// Casey: "Every market condition needs its optimal execution!"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum ExecutionAlgorithm {
     // Time-based algorithms
     TWAP,           // Time-Weighted Average Price
@@ -152,6 +158,7 @@ impl ExecutionAlgorithm {
 /// Market sentiment data from multiple sources
 /// Avery: "Aggregate sentiment from all available sources!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct SentimentData {
     pub timestamp: DateTime<Utc>,
     
@@ -196,6 +203,7 @@ impl SentimentData {
 /// Enhanced Order Book with complete market microstructure
 /// Casey: "Order book tells you everything about short-term direction!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct EnhancedOrderBook {
     pub bids: Vec<OrderLevel>,
     pub asks: Vec<OrderLevel>,
@@ -210,6 +218,7 @@ pub struct EnhancedOrderBook {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct OrderLevel {
     pub price: Price,
     pub quantity: Quantity,
@@ -217,21 +226,16 @@ pub struct OrderLevel {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Trade {
-    pub price: Price,
-    pub quantity: Quantity,
-    pub side: TradeSide,
-    pub timestamp: u64,
-    pub aggressive: bool,  // Was taker/aggressive
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum TradeSide {
     Buy,
     Sell,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct OrderFlow {
     pub buy_volume: f64,
     pub sell_volume: f64,
@@ -244,6 +248,7 @@ pub struct OrderFlow {
 
 /// Complete Market Data with all required fields
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct CompleteMarketData {
     pub symbol: String,
     pub timestamp: u64,
@@ -275,6 +280,7 @@ pub struct CompleteMarketData {
 
 /// Time in Force for orders
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum TimeInForce {
     GTC,    // Good Till Cancelled
     IOC,    // Immediate or Cancel
@@ -286,6 +292,7 @@ pub enum TimeInForce {
 
 /// Market Regime detection
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum MarketRegime {
     Trending,
     RangeB
@@ -300,6 +307,7 @@ pub enum MarketRegime {
 
 /// Signal Action types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum SignalAction {
     Buy,
     Sell,
@@ -318,6 +326,7 @@ pub enum SignalAction {
 
 /// Market Conditions for execution cost calculation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct MarketConditions {
     pub spread_bps: f64,
     pub taker_fee_bps: f64,
@@ -331,6 +340,7 @@ pub struct MarketConditions {
 
 /// Backtest metrics for signal validation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct BacktestMetrics {
     pub total_trades: u32,
     pub win_rate: f64,
@@ -344,6 +354,7 @@ pub struct BacktestMetrics {
 
 /// Asset classification for risk management
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum AssetClass {
     Crypto,
     CryptoAlt,      // Altcoins
@@ -385,6 +396,7 @@ impl AssetClass {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct RiskParameters {
     pub max_position: Percentage,
     pub max_leverage: f64,
@@ -405,6 +417,7 @@ impl Default for RiskParameters {
 
 /// Optimization strategy for hyperparameter tuning
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum OptimizationStrategy {
     GridSearch,
     RandomSearch,
@@ -417,6 +430,7 @@ pub enum OptimizationStrategy {
 
 /// Optimization direction
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum OptimizationDirection {
     Maximize,
     Minimize,

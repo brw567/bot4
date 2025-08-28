@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // OPTIMIZE: Hyperparameter Optimization with Bayesian Methods (Optuna-style)
 // Team: Alex (Lead) + Morgan + Jordan + Quinn + Riley + Full Team
 // NO SIMPLIFICATIONS - FULL AUTO-TUNING IMPLEMENTATION
@@ -1797,7 +1798,7 @@ pub struct ConvergenceAnalysis {
 }
 
 // Helper function
-fn calculate_correlation(x: &[f64], y: &[f64]) -> f64 {
+use mathematical_ops::unified_calculations::calculate_correlation; // fn calculate_correlation(x: &[f64], y: &[f64]) -> f64 {
     if x.len() != y.len() || x.is_empty() {
         return 0.0;
     }

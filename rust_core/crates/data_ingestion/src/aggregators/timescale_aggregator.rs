@@ -1,3 +1,5 @@
+pub use domain_types::candle::{Candle, CandleError};
+
 use anyhow::{Result, Context};
 use sqlx::{PgPool, PgConnection, Pool, Postgres, Row};
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
@@ -177,23 +179,6 @@ impl CandleInterval {
 
 /// Real-time candle data
 #[derive(Debug, Clone)]
-pub struct Candle {
-    pub timestamp: DateTime<Utc>,
-    pub exchange: String,
-    pub symbol: String,
-    pub interval: CandleInterval,
-    pub open: Decimal,
-    pub high: Decimal,
-    pub low: Decimal,
-    pub close: Decimal,
-    pub volume: Decimal,
-    pub quote_volume: Decimal,  // Volume in quote currency (e.g., USDT)
-    pub trades_count: i64,
-    pub buy_volume: Decimal,
-    pub sell_volume: Decimal,
-    pub vwap: Option<Decimal>,
-    pub twap: Option<Decimal>,  // Time-weighted average price
-}
 
 /// Volume profile level
 #[derive(Debug, Clone)]

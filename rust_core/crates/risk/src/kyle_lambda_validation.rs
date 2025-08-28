@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // DEEP DIVE: Kyle's Lambda Validation
 // Team: Alex (Lead) + Morgan + Quinn + Full Team
 // NO SIMPLIFICATIONS - FULL VALIDATION
@@ -351,7 +352,7 @@ impl KyleLambdaValidator {
         )
     }
     
-    fn calculate_correlation(&self, x: &[f64], y: &[f64]) -> f64 {
+    use mathematical_ops::unified_calculations::calculate_correlation; // fn calculate_correlation(&self, x: &[f64], y: &[f64]) -> f64 {
         let n = x.len() as f64;
         let sum_x: f64 = x.iter().sum();
         let sum_y: f64 = y.iter().sum();

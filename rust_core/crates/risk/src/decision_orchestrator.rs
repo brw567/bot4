@@ -1,3 +1,5 @@
+pub use domain_types::market_data::{OrderBook, OrderBookLevel, OrderBookUpdate};
+
 // UNIFIED DECISION ORCHESTRATOR - Combines ML + TA + Risk
 // Team: FULL TEAM COLLABORATION - NO SIMPLIFICATIONS!
 // Alex: "This is the BRAIN - it must combine EVERYTHING!"
@@ -6,6 +8,8 @@
 // Casey: "Market microstructure aware"
 
 use crate::unified_types::*;
+// TEAM CONSENSUS: Using canonical Order from domain_types (replaces local duplicate)
+use domain_types::order_enhanced::{Order as CanonicalOrder, OrderId, OrderSide, OrderType};
 use crate::kelly_sizing::KellySizer;
 use crate::clamps::RiskClampSystem;
 use crate::auto_tuning::AutoTuningSystem;
@@ -800,18 +804,10 @@ pub struct TAIndicators {
 
 /// Order book structure
 #[derive(Debug, Clone)]
-pub struct OrderBook {
-    pub bids: Vec<Order>,
-    pub asks: Vec<Order>,
-    pub timestamp: u64,
-}
 
-/// Order in the book
-#[derive(Debug, Clone)]
-pub struct Order {
-    pub price: Price,
-    pub quantity: Quantity,
-}
+// REMOVED: Duplicate Order struct
+// Now using canonical Order from domain_types
+// Migration completed by Team (2025-08-28)
 
 /// Sentiment data
 #[derive(Debug, Clone)]

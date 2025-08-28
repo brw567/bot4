@@ -1,3 +1,7 @@
+//! Using canonical Trade from domain_types
+pub use domain_types::trade::{Trade, TradeId, TradeError};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
 // Market Microstructure Features - Advanced Order Flow Analysis
 // DEEP DIVE: Ultra-low latency microstructure signals
 //
@@ -751,12 +755,6 @@ impl MicrostructureCalculator {
 
 /// Trade data
 #[derive(Debug, Clone)]
-pub struct Trade {
-    pub timestamp: DateTime<Utc>,
-    pub price: f64,
-    pub volume: f64,
-    pub is_buy: bool,
-}
 
 /// Quote data
 #[derive(Debug, Clone)]

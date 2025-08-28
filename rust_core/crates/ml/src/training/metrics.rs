@@ -345,7 +345,7 @@ impl MetricsCalculator {
     }
     
     /// Calculate Value at Risk
-    fn calculate_var(&self, returns: &Array1<f64>, confidence: f64) -> f64 {
+    use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, returns: &Array1<f64>, confidence: f64) -> f64 {
         let mut sorted_returns: Vec<f64> = returns.to_vec();
         sorted_returns.sort_by(|a, b| a.partial_cmp(b).unwrap());
         

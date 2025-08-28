@@ -1,3 +1,6 @@
+use domain_types::risk_limits::RiskLimits;
+pub use domain_types::position_canonical::{Position, PositionId, PositionSide, PositionStatus};
+
 //! # Trading Operations - Consolidated Trading Functions
 //! 
 //! Consolidates 30+ duplicate trading operation implementations into
@@ -142,28 +145,29 @@ pub enum PositionOperationType {
 }
 
 /// Risk limits for validation
-#[derive(Debug, Clone)]
-pub struct RiskLimits {
-    pub max_position_size: f64,
-    pub max_order_value: f64,
-    pub max_leverage: f64,
-    pub min_order_size: f64,
-    pub max_daily_loss: f64,
-    pub position_limit_per_symbol: usize,
-}
-
-impl Default for RiskLimits {
-    fn default() -> Self {
-        Self {
-            max_position_size: 0.02,  // 2% of portfolio
-            max_order_value: 10_000.0,
-            max_leverage: 3.0,
-            min_order_size: 10.0,
-            max_daily_loss: 0.05,  // 5% daily loss limit
-            position_limit_per_symbol: 3,
-        }
-    }
-}
+// REMOVED: Using canonical domain_types::RiskLimits
+// #[derive(Debug, Clone)]
+// pub struct RiskLimits {
+//     pub max_position_size: f64,
+//     pub max_order_value: f64,
+//     pub max_leverage: f64,
+//     pub min_order_size: f64,
+//     pub max_daily_loss: f64,
+//     pub position_limit_per_symbol: usize,
+// }
+// 
+// impl Default for RiskLimits {
+//     fn default() -> Self {
+//         Self {
+//             max_position_size: 0.02,  // 2% of portfolio
+//             max_order_value: 10_000.0,
+//             max_leverage: 3.0,
+//             min_order_size: 10.0,
+//             max_daily_loss: 0.05,  // 5% daily loss limit
+//             position_limit_per_symbol: 3,
+//         }
+//     }
+// }
 
 /// Trading context for operations
 pub struct TradingContext {
@@ -181,15 +185,6 @@ pub struct TradingContext {
 
 /// Position information
 #[derive(Debug, Clone)]
-pub struct Position {
-    pub symbol: String,
-    pub quantity: Quantity,
-    pub average_price: Price,
-    pub unrealized_pnl: f64,
-    pub realized_pnl: f64,
-    pub opened_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-}
 
 /// Exchange connection stub
 #[derive(Debug, Clone)]

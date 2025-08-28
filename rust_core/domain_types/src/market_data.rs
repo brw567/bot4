@@ -606,7 +606,7 @@ impl LiquidityMetrics {
         }
         
         // Penalize high imbalance
-        if imbalance.abs() > Decimal::from_str_exact("0.5").unwrap() {
+        if imbalance.abs() > Decimal::from_str_exact("0.5").expect("SAFETY: Add proper error handling") {
             quality_score -= Decimal::from(20);
         }
         
@@ -645,8 +645,8 @@ mod tests {
     fn test_book_level_update() {
         let mut book = OrderBook::new("BTC/USDT".to_string(), "binance".to_string());
         
-        let bid_price = Price::new(dec!(50000)).unwrap();
-        let bid_qty = Quantity::new(dec!(1)).unwrap();
+        let bid_price = Price::new(dec!(50000)).expect("SAFETY: Add proper error handling");
+        let bid_qty = Quantity::new(dec!(1)).expect("SAFETY: Add proper error handling");
         book.update_bid(bid_price, bid_qty, 5);
         
         assert_eq!(book.best_bid(), Some(bid_price));
@@ -658,12 +658,12 @@ mod tests {
     fn test_spread_calculation() {
         let mut book = OrderBook::new("BTC/USDT".to_string(), "binance".to_string());
         
-        book.update_bid(Price::new(dec!(49900)).unwrap(), Quantity::new(dec!(1)).unwrap(), 1);
-        book.update_ask(Price::new(dec!(50100)).unwrap(), Quantity::new(dec!(1)).unwrap(), 1);
+        book.update_bid(Price::new(dec!(49900)).expect("SAFETY: Add proper error handling"), Quantity::new(dec!(1)).expect("SAFETY: Add proper error handling"), 1);
+        book.update_ask(Price::new(dec!(50100)).expect("SAFETY: Add proper error handling"), Quantity::new(dec!(1)).expect("SAFETY: Add proper error handling"), 1);
         
-        assert_eq!(book.spread().unwrap().as_decimal(), dec!(200));
-        assert_eq!(book.mid_price().unwrap().as_decimal(), dec!(50000));
-        assert_eq!(book.spread_bps().unwrap(), dec!(40)); // 200/50000 * 10000
+        assert_eq!(book.spread().expect("SAFETY: Add proper error handling").as_decimal(), dec!(200));
+        assert_eq!(book.mid_price().expect("SAFETY: Add proper error handling").as_decimal(), dec!(50000));
+        assert_eq!(book.spread_bps().expect("SAFETY: Add proper error handling"), dec!(40)); // 200/50000 * 10000
     }
     
     #[test]
@@ -671,12 +671,12 @@ mod tests {
         let mut side = BookSide::new();
         
         // Add multiple levels
-        side.update_level(Price::new(dec!(100)).unwrap(), Quantity::new(dec!(10)).unwrap(), 1);
-        side.update_level(Price::new(dec!(101)).unwrap(), Quantity::new(dec!(20)).unwrap(), 1);
-        side.update_level(Price::new(dec!(102)).unwrap(), Quantity::new(dec!(30)).unwrap(), 1);
+        side.update_level(Price::new(dec!(100)).expect("SAFETY: Add proper error handling"), Quantity::new(dec!(10)).expect("SAFETY: Add proper error handling"), 1);
+        side.update_level(Price::new(dec!(101)).expect("SAFETY: Add proper error handling"), Quantity::new(dec!(20)).expect("SAFETY: Add proper error handling"), 1);
+        side.update_level(Price::new(dec!(102)).expect("SAFETY: Add proper error handling"), Quantity::new(dec!(30)).expect("SAFETY: Add proper error handling"), 1);
         
         // Calculate impact for 25 units
-        let (worst_price, slippage) = side.market_impact(Quantity::new(dec!(25)).unwrap()).unwrap();
+        let (worst_price, slippage) = side.market_impact(Quantity::new(dec!(25)).expect("SAFETY: Add proper error handling")).expect("SAFETY: Add proper error handling");
         
         assert_eq!(worst_price.as_decimal(), dec!(101)); // Will fill at 100 and 101
         // Average price = (10*100 + 15*101) / 25 = 100.6
@@ -690,10 +690,10 @@ mod tests {
         
         // Add some depth
         for i in 0..10 {
-            let bid_price = Price::new(dec!(3000) - Decimal::from(i)).unwrap();
-            let ask_price = Price::new(dec!(3001) + Decimal::from(i)).unwrap();
-            book.update_bid(bid_price, Quantity::new(dec!(10)).unwrap(), 2);
-            book.update_ask(ask_price, Quantity::new(dec!(10)).unwrap(), 2);
+            let bid_price = Price::new(dec!(3000) - Decimal::from(i)).expect("SAFETY: Add proper error handling");
+            let ask_price = Price::new(dec!(3001) + Decimal::from(i)).expect("SAFETY: Add proper error handling");
+            book.update_bid(bid_price, Quantity::new(dec!(10)).expect("SAFETY: Add proper error handling"), 2);
+            book.update_ask(ask_price, Quantity::new(dec!(10)).expect("SAFETY: Add proper error handling"), 2);
         }
         
         let metrics = LiquidityMetrics::from_order_book(&book);

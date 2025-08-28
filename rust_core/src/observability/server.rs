@@ -25,13 +25,13 @@ pub async fn start_main_metrics_server() {
         .route("/health", get(health_handler));
     
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
-    let listener = TcpListener::bind(addr).await.unwrap();
+    let listener = TcpListener::bind(addr).await.expect("SAFETY: Add proper error handling");
     
     tracing::info!("Main metrics server listening on {}", addr);
     
     axum::serve(listener, app)
         .await
-        .unwrap();
+        .expect("SAFETY: Add proper error handling");
 }
 
 // Circuit breaker metrics on port 8081
@@ -40,13 +40,13 @@ pub async fn start_cb_metrics_server() {
         .route("/metrics", get(cb_metrics_handler));
     
     let addr = SocketAddr::from(([0, 0, 0, 0], 8081));
-    let listener = TcpListener::bind(addr).await.unwrap();
+    let listener = TcpListener::bind(addr).await.expect("SAFETY: Add proper error handling");
     
     tracing::info!("Circuit breaker metrics server listening on {}", addr);
     
     axum::serve(listener, app)
         .await
-        .unwrap();
+        .expect("SAFETY: Add proper error handling");
 }
 
 // Risk engine metrics on port 8082
@@ -55,13 +55,13 @@ pub async fn start_risk_metrics_server() {
         .route("/metrics", get(risk_metrics_handler));
     
     let addr = SocketAddr::from(([0, 0, 0, 0], 8082));
-    let listener = TcpListener::bind(addr).await.unwrap();
+    let listener = TcpListener::bind(addr).await.expect("SAFETY: Add proper error handling");
     
     tracing::info!("Risk metrics server listening on {}", addr);
     
     axum::serve(listener, app)
         .await
-        .unwrap();
+        .expect("SAFETY: Add proper error handling");
 }
 
 // Order pipeline metrics on port 8083
@@ -70,13 +70,13 @@ pub async fn start_order_metrics_server() {
         .route("/metrics", get(order_metrics_handler));
     
     let addr = SocketAddr::from(([0, 0, 0, 0], 8083));
-    let listener = TcpListener::bind(addr).await.unwrap();
+    let listener = TcpListener::bind(addr).await.expect("SAFETY: Add proper error handling");
     
     tracing::info!("Order metrics server listening on {}", addr);
     
     axum::serve(listener, app)
         .await
-        .unwrap();
+        .expect("SAFETY: Add proper error handling");
 }
 
 // MiMalloc stats endpoint on port 8084
@@ -85,13 +85,13 @@ pub async fn start_memory_metrics_server() {
         .route("/metrics", get(memory_metrics_handler));
     
     let addr = SocketAddr::from(([0, 0, 0, 0], 8084));
-    let listener = TcpListener::bind(addr).await.unwrap();
+    let listener = TcpListener::bind(addr).await.expect("SAFETY: Add proper error handling");
     
     tracing::info!("Memory metrics server listening on {}", addr);
     
     axum::serve(listener, app)
         .await
-        .unwrap();
+        .expect("SAFETY: Add proper error handling");
 }
 
 // Handler for main metrics endpoint
@@ -99,7 +99,7 @@ async fn metrics_handler() -> impl IntoResponse {
     let encoder = TextEncoder::new();
     let metric_families = REGISTRY.gather();
     let mut buffer = vec![];
-    encoder.encode(&metric_families, &mut buffer).unwrap();
+    encoder.encode(&metric_families, &mut buffer).expect("SAFETY: Add proper error handling");
     
     (StatusCode::OK, buffer)
 }
@@ -121,7 +121,7 @@ async fn cb_metrics_handler() -> impl IntoResponse {
         .collect();
     
     let mut buffer = vec![];
-    encoder.encode(&cb_metrics, &mut buffer).unwrap();
+    encoder.encode(&cb_metrics, &mut buffer).expect("SAFETY: Add proper error handling");
     
     (StatusCode::OK, buffer)
 }
@@ -144,7 +144,7 @@ async fn risk_metrics_handler() -> impl IntoResponse {
         .collect();
     
     let mut buffer = vec![];
-    encoder.encode(&risk_metrics, &mut buffer).unwrap();
+    encoder.encode(&risk_metrics, &mut buffer).expect("SAFETY: Add proper error handling");
     
     (StatusCode::OK, buffer)
 }
@@ -166,7 +166,7 @@ async fn order_metrics_handler() -> impl IntoResponse {
         .collect();
     
     let mut buffer = vec![];
-    encoder.encode(&order_metrics, &mut buffer).unwrap();
+    encoder.encode(&order_metrics, &mut buffer).expect("SAFETY: Add proper error handling");
     
     (StatusCode::OK, buffer)
 }
@@ -187,7 +187,7 @@ async fn memory_metrics_handler() -> impl IntoResponse {
         .collect();
     
     let mut buffer = vec![];
-    encoder.encode(&memory_metrics, &mut buffer).unwrap();
+    encoder.encode(&memory_metrics, &mut buffer).expect("SAFETY: Add proper error handling");
     
     // Add MiMalloc stats if available
     #[cfg(feature = "mimalloc")]
@@ -242,9 +242,9 @@ mod tests {
         let encoder = TextEncoder::new();
         let metric_families = REGISTRY.gather();
         let mut buffer = vec![];
-        encoder.encode(&metric_families, &mut buffer).unwrap();
+        encoder.encode(&metric_families, &mut buffer).expect("SAFETY: Add proper error handling");
         
-        let output = String::from_utf8(buffer).unwrap();
+        let output = String::from_utf8(buffer).expect("SAFETY: Add proper error handling");
         assert!(output.contains("decision_latency_microseconds"));
     }
 }

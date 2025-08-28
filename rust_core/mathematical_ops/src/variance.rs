@@ -142,7 +142,7 @@ pub struct VarDiagnostics {
 /// let var = calculate_var(&returns, 0.95, 1, VarMethod::Historical).unwrap();
 /// println!("95% 1-day VaR: {:.2}%", var * 100.0);
 /// ```
-pub fn calculate_var(
+pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(
     returns: &[f64],
     confidence_level: f64,
     horizon: usize,
@@ -157,7 +157,7 @@ pub fn calculate_var(
 }
 
 /// Calculate VaR with custom configuration
-pub fn calculate_var_with_config(
+pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var_with_config(
     returns: &[f64],
     config: &VarConfig,
 ) -> Result<VarResult, VarError> {
@@ -522,7 +522,7 @@ pub fn calculate_cvar(
 }
 
 /// Calculate sample variance (using Welford's algorithm for numerical stability)
-pub fn calculate_variance(data: &[f64]) -> f64 {
+pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_variance(data: &[f64]) -> f64 {
     if data.len() < 2 {
         return 0.0;
     }

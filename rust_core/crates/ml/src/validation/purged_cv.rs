@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // Purged Walk-Forward Cross-Validation (López de Prado)
 // Morgan (ML Lead) + Riley (Testing)
 // CRITICAL: Prevents temporal leakage (Sophia #2)
@@ -263,7 +264,7 @@ impl LeakageSentinel {
     }
     
     /// Calculate Sharpe ratio
-    fn calculate_sharpe(&self, predictions: &Array1<f32>, labels: &Array1<f32>) -> f64 {
+    use mathematical_ops::risk_metrics::calculate_sharpe; // fn calculate_sharpe(&self, predictions: &Array1<f32>, labels: &Array1<f32>) -> f64 {
         let returns: Vec<f64> = predictions.iter()
             .zip(labels.iter())
             .map(|(p, l)| (*p * *l) as f64)

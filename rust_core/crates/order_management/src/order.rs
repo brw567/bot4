@@ -1,5 +1,16 @@
-// Order types and structures
-// Designed for exchange-agnostic order handling with precise decimal math
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
@@ -9,8 +20,6 @@ use uuid::Uuid;
 use strum_macros::{Display, EnumString};
 
 /// Unique order identifier
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct OrderId(pub Uuid);
 
 impl Default for OrderId {
     fn default() -> Self {
@@ -31,7 +40,7 @@ impl fmt::Display for OrderId {
 }
 
 /// Order side (buy or sell)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
+
 #[serde(rename_all = "UPPERCASE")]
 pub enum OrderSide {
     Buy,
@@ -48,7 +57,7 @@ impl OrderSide {
 }
 
 /// Order type
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
+
 #[serde(rename_all = "UPPERCASE")]
 pub enum OrderType {
     Market,
@@ -76,7 +85,7 @@ impl OrderType {
 }
 
 /// Time in force for orders
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
+
 pub enum TimeInForce {
     /// Good Till Cancelled
     GTC,
@@ -91,8 +100,6 @@ pub enum TimeInForce {
 }
 
 /// Complete order structure
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Order {
     // Identity
     pub id: OrderId,
     pub client_order_id: String,
@@ -276,7 +283,7 @@ impl Order {
 }
 
 
-#[derive(Debug, thiserror::Error)]
+
 pub enum OrderValidationError {
     #[error("Invalid quantity: {0}")]
     InvalidQuantity(String),
@@ -298,8 +305,6 @@ pub enum OrderValidationError {
 }
 
 /// Order update event
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderUpdate {
     pub order_id: OrderId,
     pub exchange_order_id: Option<String>,
     pub filled_quantity: Decimal,
@@ -309,8 +314,6 @@ pub struct OrderUpdate {
 }
 
 /// Order fill information
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderFill {
     pub order_id: OrderId,
     pub fill_id: String,
     pub quantity: Decimal,

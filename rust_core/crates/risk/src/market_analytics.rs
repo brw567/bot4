@@ -1,4 +1,6 @@
+use domain_types::candle::Candle;
 // Market Analytics Engine - REAL-TIME CALCULATIONS
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 // Team: Jordan (Performance) + Morgan (ML) + Quinn (Risk) + Full Team
 // CRITICAL: NO SIMPLIFICATIONS - FULL CALCULATIONS
 // References:
@@ -46,14 +48,6 @@ struct PriceHistory {
 }
 
 #[derive(Clone, Debug)]
-pub struct Candle {
-    pub timestamp: u64,
-    pub open: Price,
-    pub high: Price,
-    pub low: Price,
-    pub close: Price,
-    pub volume: Quantity,
-}
 
 #[derive(Clone, Debug)]
 pub struct Tick {
@@ -463,7 +457,7 @@ impl TechnicalAnalysis {
         }
     }
     
-    fn calculate_ema(&self, prices: &[f64], period: usize) -> f64 {
+    use mathematical_ops::unified_calculations::calculate_ema; // fn calculate_ema(&self, prices: &[f64], period: usize) -> f64 {
         if prices.len() < period {
             return 0.0;
         }
@@ -502,7 +496,7 @@ impl TechnicalAnalysis {
         }
     }
     
-    fn calculate_rsi(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+    use mathematical_ops::unified_calculations::calculate_rsi; // fn calculate_rsi(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
         if candles.len() < period + 1 {
             return 50.0;
         }
@@ -663,7 +657,7 @@ impl TechnicalAnalysis {
         }
     }
     
-    fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+    use mathematical_ops::unified_calculations::calculate_atr; // fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
         if candles.len() < period + 1 {
             return 0.0;
         }
@@ -1482,7 +1476,7 @@ impl PerformanceCalculator {
     }
     
     /// Calculate Sharpe ratio
-    pub fn calculate_sharpe(&self) -> f64 {
+    pub use mathematical_ops::risk_metrics::calculate_sharpe; // fn calculate_sharpe(&self) -> f64 {
         if self.returns.len() < 2 {
             return 0.0;
         }
@@ -1827,7 +1821,7 @@ impl MarketAnalytics {
     
     /// Calculate ATR (Average True Range) for specific period
     /// Wilder's ATR formula for volatility measurement
-    pub fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+    pub use mathematical_ops::unified_calculations::calculate_atr; // fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
         if candles.len() < period + 1 {
             return 0.0;
         }

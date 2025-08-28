@@ -1,4 +1,5 @@
 //! # Technical Indicators - Consolidated Implementation
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 //! 
 //! Replaces 11+ duplicate indicator implementations with optimized versions.
 //! Includes EMA (4→1), RSI (4→1), SMA (3→1), and additional indicators.

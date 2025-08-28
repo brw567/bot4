@@ -1,4 +1,5 @@
 // ML COMPLETE IMPLEMENTATION - DEEP DIVE WITH FULL FUNCTIONALITY
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 // Team: Morgan (ML Lead) + Full Team Collaboration
 // References:
 // - "Probabilistic Outputs for Support Vector Machines" - Platt (1999)
@@ -37,7 +38,7 @@ pub trait MarketAnalyticsExt {
     fn get_stochastic(&mut self, period: usize) -> f64;
     fn get_obv(&mut self) -> f64;
     fn get_obv_ma(&mut self, period: usize) -> f64;
-    fn calculate_rsi(&mut self, period: usize) -> f64;
+    use mathematical_ops::unified_calculations::calculate_rsi; // fn calculate_rsi(&mut self, period: usize) -> f64;
     fn calculate_macd(&mut self) -> (f64, f64, f64);
     fn calculate_bollinger_bands(&mut self, period: usize, std_dev: f64) -> (f64, f64, f64);
 }
@@ -357,7 +358,7 @@ impl MarketAnalyticsExt for MarketAnalytics {
     /// Calculate Relative Strength Index (RSI)
     /// RSI = 100 - (100 / (1 + RS))
     /// RS = Average Gain / Average Loss
-    fn calculate_rsi(&mut self, period: usize) -> f64 {
+    use mathematical_ops::unified_calculations::calculate_rsi; // fn calculate_rsi(&mut self, period: usize) -> f64 {
         if self.price_history.len() < period + 1 {
             return 50.0; // Neutral when insufficient data
         }
@@ -745,7 +746,7 @@ impl SHAPCalculator {
 }
 
 impl MarketAnalytics {
-    fn calculate_ema(&self, period: usize) -> f64 {
+    use mathematical_ops::unified_calculations::calculate_ema; // fn calculate_ema(&self, period: usize) -> f64 {
         if self.price_history.len() < period {
             return *self.price_history.last().unwrap_or(&0.0);
         }
@@ -760,7 +761,7 @@ impl MarketAnalytics {
         ema
     }
     
-    fn calculate_ema_of_series(&self, series: &VecDeque<f64>, period: usize) -> f64 {
+    use mathematical_ops::unified_calculations::calculate_ema; // fn calculate_ema_of_series(&self, series: &VecDeque<f64>, period: usize) -> f64 {
         if series.len() < period {
             return *series.back().unwrap_or(&0.0);
         }

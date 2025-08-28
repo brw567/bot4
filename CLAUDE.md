@@ -1,7 +1,8 @@
-# CLAUDE.md v3.0 - PROJECT MANAGER COORDINATED SYSTEM
-## Enhanced Multi-Agent Trading Platform with Strict Quality Enforcement
-## Date: 2025-08-27
+# CLAUDE.md v4.1 - PROJECT MANAGER COORDINATED SYSTEM
+## Enhanced Multi-Agent Trading Platform with Living Documentation
+## Date: 2025-08-28
 ## Status: MANDATORY - Supersedes all previous instructions
+## Key Update: Comprehensive documentation requirements (arc42 + C4)
 
 ---
 
@@ -82,41 +83,206 @@ performance_metrics:
     - documentation_updates == 0: "Immediate correction required"
 ```
 
-### 3. MANDATORY DOCUMENTATION PROTOCOL
+### 3. MANDATORY DOCUMENTATION PROTOCOL - ENHANCED V4.1
 ```yaml
+documentation_philosophy:
+  principle: "Living Documentation - Evolves with Code"
+  standard: "arc42 + C4 Model + Data Flows"
+  enforcement: "NO code changes without doc updates"
+
+before_writing_code:
+  MUST_document:
+    - Component purpose and responsibilities
+    - Input/output data structures with types
+    - Processing logic and algorithms
+    - Dependencies (compile-time and runtime)
+    - API contracts (internal and external)
+    - Performance requirements (latency, throughput)
+    - Error conditions and recovery strategies
+
+during_implementation:
+  continuously_update:
+    - Data flow diagrams (what goes where)
+    - Sequence diagrams (interaction order)
+    - State machines (valid transitions)
+    - Memory layout (cache optimization)
+    - Configuration parameters
+
 after_every_task:
   required_updates:
     1_architecture_doc:
-      file: /docs/LLM_OPTIMIZED_ARCHITECTURE.md
+      file: /docs/MASTER_ARCHITECTURE.md
       updates:
-        - New components added
-        - Integration points modified
-        - Performance metrics updated
-        - External research citations
+        - Low-level implementation details
+        - Data flows with latency annotations
+        - Component interactions (sequence diagrams)
+        - Dependency graphs
+        - API contracts
+        - State machines
+        - Error recovery matrix
+        - Performance characteristics
+        - Memory layouts
+        - Configuration parameters
     
     2_project_management:
       file: PROJECT_MANAGEMENT_MASTER.md
       updates:
         - Task status changed
-        - Hours logged
-        - Blockers identified
-        - Next steps defined
+        - Hours logged with breakdown
+        - Blockers identified with impact
+        - Next steps with dependencies
+        - Research citations added
     
-    3_shared_context:
+    3_component_documentation:
+      location: "Adjacent to code (module level)"
+      format: |
+        /// MODULE: <name>
+        /// PURPOSE: <clear description>
+        /// 
+        /// LOGIC FLOW:
+        /// 1. <step with data transformation>
+        /// 2. <step with decision point>
+        /// 
+        /// DATA STRUCTURES:
+        /// Input: <Type with fields>
+        /// Output: <Type with fields>
+        /// 
+        /// DEPENDENCIES:
+        /// - <module>: <what it provides>
+        /// 
+        /// PERFORMANCE:
+        /// - Latency: <p50, p99>
+        /// - Throughput: <ops/sec>
+        /// 
+        /// ERROR HANDLING:
+        /// - <error>: <recovery>
+    
+    4_shared_context:
       file: .mcp/shared_context.json
       updates:
-        - Current task state
-        - Agent assignments
-        - Quality metrics
-        - Research findings
+        - Current implementation details
+        - Data flow changes
+        - Dependency updates
+        - Performance measurements
+        - Research findings applied
+
+documentation_quality_gates:
+  blocking_criteria:
+    - Missing data flow documentation
+    - No sequence diagrams for interactions
+    - Undefined error handling
+    - No performance requirements
+    - Missing dependency mapping
+    - Incomplete state machines
+    - No API contracts
+  
+  review_checklist:
+    - [ ] Purpose clearly stated?
+    - [ ] Data flows documented?
+    - [ ] Dependencies mapped?
+    - [ ] API contracts defined?
+    - [ ] Error handling specified?
+    - [ ] Performance requirements stated?
+    - [ ] State machines complete?
+    - [ ] Configuration documented?
+    - [ ] Tests verify documentation?
+```
+
+---
+
+## 📋 MANDATORY DEVELOPMENT WORKFLOW
+
+### COMPLETE WORKFLOW FOR EVERY TASK
+```yaml
+phase_1_understanding:
+  duration: "25% of task time"
+  activities:
+    1_load_context:
+      - Read MASTER_ARCHITECTURE.md for system overview
+      - Check ARCHITECTURE_DOCUMENTATION_STANDARD.md for doc requirements
+      - Review relevant component documentation
+      - Identify all dependencies and interactions
     
-    4_agent_learnings:
-      file: /docs/AGENT_LEARNINGS.md
-      updates:
-        - What worked well
-        - What failed and why
-        - External resources that helped
-        - Patterns to replicate
+    2_research_external:
+      - Find 3+ academic papers on the topic
+      - Review production implementations (GitHub)
+      - Check latest best practices (2024-2025)
+      - Document findings in shared context
+    
+    3_document_design:
+      - Create/update data flow diagrams
+      - Draw sequence diagrams for interactions
+      - Define API contracts
+      - Specify error handling
+      - Set performance targets
+
+phase_2_implementation:
+  duration: "25% of task time"
+  activities:
+    1_write_documentation_first:
+      - Document component purpose
+      - Define input/output structures
+      - Describe processing logic
+      - Map dependencies
+    
+    2_implement_with_updates:
+      - Write code following documentation
+      - Update docs if design changes
+      - Add inline documentation
+      - Create unit tests
+    
+    3_verify_consistency:
+      - Code matches documentation?
+      - All flows documented?
+      - Dependencies accurate?
+      - Performance measured?
+
+phase_3_validation:
+  duration: "25% of task time"
+  activities:
+    1_test_coverage:
+      - Unit tests: 100% required
+      - Integration tests: Critical paths
+      - Performance tests: Meet targets
+      - Documentation tests: Examples work
+    
+    2_peer_review:
+      - Code review by 3+ agents
+      - Documentation review
+      - Performance validation
+      - Security check
+
+phase_4_documentation:
+  duration: "25% of task time"
+  activities:
+    1_update_architecture:
+      - MASTER_ARCHITECTURE.md: Add implementation details
+      - Component docs: Final state
+      - API docs: Complete contracts
+      - Performance docs: Actual measurements
+    
+    2_update_project:
+      - PROJECT_MANAGEMENT_MASTER.md: Task complete
+      - Hours logged with breakdown
+      - Learnings documented
+      - Next tasks identified
+    
+    3_knowledge_sharing:
+      - Update shared context
+      - Document patterns discovered
+      - Share research findings
+      - Create examples
+
+workflow_enforcement:
+  automated_checks:
+    - pre-commit: Documentation exists?
+    - ci-pipeline: Docs match code?
+    - merge-gate: All docs updated?
+  
+  manual_checks:
+    - PM review: Quality sufficient?
+    - Architect review: Design sound?
+    - Expert review: Domain correct?
 ```
 
 ---

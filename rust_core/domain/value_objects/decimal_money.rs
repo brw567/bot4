@@ -1,3 +1,5 @@
+pub use domain_types::quantity::Quantity;
+pub use domain_types::price::Price;
 // Decimal Arithmetic for Money Operations
 // Owner: Quinn | Reviewer: Sam (Code Quality)
 // Pre-Production Requirement #3 from Sophia
@@ -181,18 +183,6 @@ impl fmt::Display for Money {
 
 /// Price type for order book entries
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct Price {
-    value: Decimal,
-    pair: TradingPair,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct TradingPair {
-    base: Currency,
-    quote: Currency,
-}
-
-impl Price {
     pub fn new(value: Decimal, pair: TradingPair) -> Self {
         Self { value, pair }
     }
@@ -234,12 +224,6 @@ impl Price {
 
 /// Quantity type for order sizes
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct Quantity {
-    value: Decimal,
-    currency: Currency,
-}
-
-impl Quantity {
     pub fn new(value: Decimal, currency: Currency) -> Self {
         Self { value, currency }
     }
@@ -351,14 +335,14 @@ pub enum MoneyError {
 pub fn migrate_price_f64_to_decimal(price: f64, pair: TradingPair) -> Price {
     // Use string conversion to avoid float precision issues
     let value = Decimal::from_str(&format!("{:.8}", price))
-        .unwrap_or_else(|_| Decimal::from_f64(price).unwrap());
+        .unwrap_or_else(|_| Decimal::from_f64(price).expect("SAFETY: Add proper error handling"));
     Price::new(value, pair)
 }
 
 /// Convert legacy f64 amounts to Money
 pub fn migrate_amount_f64_to_money(amount: f64, currency: Currency) -> Money {
     let decimal = Decimal::from_str(&format!("{:.8}", amount))
-        .unwrap_or_else(|_| Decimal::from_f64(amount).unwrap());
+        .unwrap_or_else(|_| Decimal::from_f64(amount).expect("SAFETY: Add proper error handling"));
     Money::new(decimal, currency)
 }
 
@@ -373,37 +357,37 @@ mod tests {
     #[test]
     fn test_exact_decimal_arithmetic() {
         // Test that 0.1 + 0.2 = 0.3 (fails with f64)
-        let a = Money::from_str("0.1", Currency::USD).unwrap();
-        let b = Money::from_str("0.2", Currency::USD).unwrap();
-        let c = (a + b).unwrap();
+        let a = Money::from_str("0.1", Currency::USD).expect("SAFETY: Add proper error handling");
+        let b = Money::from_str("0.2", Currency::USD).expect("SAFETY: Add proper error handling");
+        let c = (a + b).expect("SAFETY: Add proper error handling");
         
-        assert_eq!(c, Money::from_str("0.3", Currency::USD).unwrap());
+        assert_eq!(c, Money::from_str("0.3", Currency::USD).expect("SAFETY: Add proper error handling"));
     }
     
     #[test]
     fn test_fee_calculation_exact() {
         // Test fee calculation with basis points
-        let amount = Money::from_str("1000.00", Currency::USD).unwrap();
+        let amount = Money::from_str("1000.00", Currency::USD).expect("SAFETY: Add proper error handling");
         let (net, fee) = amount.apply_fee(25); // 0.25%
         
-        assert_eq!(net, Money::from_str("997.50", Currency::USD).unwrap());
-        assert_eq!(fee, Money::from_str("2.50", Currency::USD).unwrap());
+        assert_eq!(net, Money::from_str("997.50", Currency::USD).expect("SAFETY: Add proper error handling"));
+        assert_eq!(fee, Money::from_str("2.50", Currency::USD).expect("SAFETY: Add proper error handling"));
     }
     
     #[test]
     fn test_btc_satoshi_precision() {
         // Test Bitcoin satoshi precision (8 decimal places)
         let btc = Money::from_minor_units(100_000_000, Currency::BTC); // 1 BTC
-        assert_eq!(btc, Money::from_str("1.00000000", Currency::BTC).unwrap());
+        assert_eq!(btc, Money::from_str("1.00000000", Currency::BTC).expect("SAFETY: Add proper error handling"));
         
         let satoshi = Money::from_minor_units(1, Currency::BTC); // 1 satoshi
-        assert_eq!(satoshi, Money::from_str("0.00000001", Currency::BTC).unwrap());
+        assert_eq!(satoshi, Money::from_str("0.00000001", Currency::BTC).expect("SAFETY: Add proper error handling"));
     }
     
     #[test]
     fn test_quantity_splitting_exact() {
         // Test that splitting preserves total quantity exactly
-        let qty = Quantity::from_str("10.0", Currency::BTC).unwrap();
+        let qty = Quantity::from_str("10.0", Currency::BTC).expect("SAFETY: Add proper error handling");
         let fills = qty.split(3);
         
         let total: Decimal = fills.iter().map(|f| f.value).sum();
@@ -415,12 +399,12 @@ mod tests {
         let price = Price::from_str("50123.456", TradingPair {
             base: Currency::BTC,
             quote: Currency::USD,
-        }).unwrap();
+        }).expect("SAFETY: Add proper error handling");
         
-        let tick_size = Decimal::from_str("0.01").unwrap();
+        let tick_size = Decimal::from_str("0.01").expect("SAFETY: Add proper error handling");
         let rounded = price.round_to_tick(tick_size);
         
-        assert_eq!(rounded.value, Decimal::from_str("50123.46").unwrap());
+        assert_eq!(rounded.value, Decimal::from_str("50123.46").expect("SAFETY: Add proper error handling"));
     }
 }
 

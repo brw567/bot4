@@ -1,3 +1,4 @@
+use domain_types::risk_limits::RiskLimits;
 // PRODUCTION DEPLOYMENT CONFIGURATION - Task 0.5.1
 // Full Team Implementation with External Research
 // Team: All 8 members collaborating
@@ -101,13 +102,14 @@ impl Environment {
 }
 
 /// Risk limits per environment
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RiskLimits {
-    pub max_position_size: f64,
-    pub max_leverage: f64,
-    pub max_drawdown: f64,
-    pub require_stop_loss: bool,
-}
+// REMOVED: Using canonical domain_types::RiskLimits
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// pub struct RiskLimits {
+//     pub max_position_size: f64,
+//     pub max_leverage: f64,
+//     pub max_drawdown: f64,
+//     pub require_stop_loss: bool,
+// }
 
 // ============================================================================
 // SECRET MANAGEMENT

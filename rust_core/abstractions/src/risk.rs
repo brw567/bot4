@@ -1,3 +1,4 @@
+use domain_types::risk_limits::RiskLimits;
 //! # Risk Layer Abstractions (Layer 2)
 //!
 //! Abstractions that risk layer provides for higher layers to use.
@@ -44,7 +45,8 @@ pub trait RiskAssessment: Send + Sync {
 
 /// Risk metrics result
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RiskMetrics {
+// REMOVED: Duplicate
+// pub struct RiskMetrics {
     /// Value at Risk
     pub var_95: Decimal,
     /// Conditional VaR
@@ -60,19 +62,20 @@ pub struct RiskMetrics {
 }
 
 /// Risk limits configuration
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RiskLimits {
-    /// Maximum position size as % of portfolio
-    pub max_position_size_pct: f64,
-    /// Maximum leverage
-    pub max_leverage: f64,
-    /// Maximum drawdown allowed
-    pub max_drawdown_pct: f64,
-    /// Maximum correlation between positions
-    pub max_correlation: f64,
-    /// Daily loss limit
-    pub daily_loss_limit: Decimal,
-}
+// REMOVED: Using canonical domain_types::RiskLimits
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// pub struct RiskLimits {
+//     /// Maximum position size as % of portfolio
+//     pub max_position_size_pct: f64,
+//     /// Maximum leverage
+//     pub max_leverage: f64,
+//     /// Maximum drawdown allowed
+//     pub max_drawdown_pct: f64,
+//     /// Maximum correlation between positions
+//     pub max_correlation: f64,
+//     /// Daily loss limit
+//     pub daily_loss_limit: Decimal,
+// }
 
 /// Stop loss management abstraction
 #[async_trait]

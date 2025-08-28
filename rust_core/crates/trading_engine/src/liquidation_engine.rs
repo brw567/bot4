@@ -1,3 +1,15 @@
+//! Module uses canonical Position type from domain_types
+//! Cameron: "Single source of truth for Position struct"
+
+pub use domain_types::position_canonical::{
+    Position, PositionId, PositionSide, PositionStatus,
+    PositionError, PositionUpdate
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type PositionResult<T> = Result<T, PositionError>;
+
 // Liquidation Engine - Emergency Position Unwinding
 // Team: Quinn (Risk Lead) + Sam (Code) + Casey (Exchange)
 // CRITICAL: Orderly liquidation to minimize losses in crisis
@@ -18,8 +30,6 @@ use tokio::sync::{mpsc, broadcast};
 use serde::{Serialize, Deserialize};
 
 /// Position to be liquidated
-#[derive(Debug, Clone)]
-pub struct Position {
     pub id: String,
     pub symbol: String,
     pub side: PositionSide,
@@ -33,14 +43,14 @@ pub struct Position {
     pub leverage: f64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum PositionSide {
     Long,
     Short,
 }
 
 /// Liquidation urgency level
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+
 pub enum LiquidationUrgency {
     Normal,      // Orderly unwinding
     Elevated,    // Faster execution needed
@@ -49,7 +59,7 @@ pub enum LiquidationUrgency {
 }
 
 /// Liquidation strategy
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum LiquidationStrategy {
     Market,           // Immediate market orders
     TWAP,            // Time-weighted average price
@@ -60,7 +70,7 @@ pub enum LiquidationStrategy {
 }
 
 /// Liquidation order
-#[derive(Debug, Clone)]
+
 pub struct LiquidationOrder {
     pub id: String,
     pub position_id: String,
@@ -75,14 +85,14 @@ pub struct LiquidationOrder {
     pub status: LiquidationStatus,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 /// Order slice for partial execution
-#[derive(Debug, Clone)]
+
 pub struct OrderSlice {
     pub slice_id: String,
     pub quantity: Decimal,
@@ -93,7 +103,7 @@ pub struct OrderSlice {
     pub status: SliceStatus,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum SliceStatus {
     Pending,
     Executing,
@@ -102,7 +112,7 @@ pub enum SliceStatus {
     Failed,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum LiquidationStatus {
     Planning,
     Executing,
@@ -112,7 +122,7 @@ pub enum LiquidationStatus {
 }
 
 /// Market conditions for adaptive liquidation
-#[derive(Debug, Clone)]
+
 pub struct MarketConditions {
     pub liquidity_score: f64,      // 0-1, higher is better
     pub volatility: f64,           // Current volatility
@@ -152,7 +162,7 @@ pub struct LiquidationEngine {
 }
 
 /// Execution request to exchange
-#[derive(Debug, Clone)]
+
 pub struct ExecutionRequest {
     pub order_id: String,
     pub symbol: String,
@@ -164,14 +174,14 @@ pub struct ExecutionRequest {
     pub time_in_force: TimeInForce,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum OrderType {
     Market,
     Limit,
     StopLoss,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum TimeInForce {
     IOC,  // Immediate or cancel
     FOK,  // Fill or kill
@@ -179,7 +189,7 @@ pub enum TimeInForce {
 }
 
 /// Liquidation event for monitoring
-#[derive(Debug, Clone)]
+
 pub enum LiquidationEvent {
     Started {
         position_id: String,
@@ -201,7 +211,7 @@ pub enum LiquidationEvent {
 }
 
 /// Liquidation configuration
-#[derive(Debug, Clone)]
+
 pub struct LiquidationConfig {
     pub max_single_order_pct: f64,        // Max % of daily volume
     pub twap_duration_seconds: i64,       // TWAP execution window
@@ -587,7 +597,7 @@ impl LiquidationEngine {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct LiquidationStatistics {
     pub total_liquidations: u64,
     pub active_liquidations: usize,

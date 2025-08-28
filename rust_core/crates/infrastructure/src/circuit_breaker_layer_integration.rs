@@ -1,3 +1,27 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Position type from domain_types
+//! Cameron: "Single source of truth for Position struct"
+
+pub use domain_types::position_canonical::{
+    Position, PositionId, PositionSide, PositionStatus,
+    PositionError, PositionUpdate
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type PositionResult<T> = Result<T, PositionError>;
+
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // CIRCUIT BREAKER FULL LAYER INTEGRATION - Task 0.2 COMPLETE
 // Full Team Deep Dive Implementation - NO SHORTCUTS!
 // Team: All 8 members with 360-degree analysis
@@ -9,7 +33,6 @@
 // - "Adaptive Markets Hypothesis" - Lo (2017)
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, AtomicU64, AtomicU32, Ordering};
 use std::time::{Duration, Instant};
 use std::collections::{HashMap, VecDeque};
 use parking_lot::RwLock;
@@ -32,6 +55,7 @@ use crate::circuit_breaker_integration::{
 
 /// Infrastructure layer circuit breakers
 /// Jordan: "Protect the foundation - memory, CPU, network"
+#[derive(Debug, Clone)]
 pub struct InfrastructureCircuitBreakers {
     /// Memory pressure breaker
     memory_breaker: Arc<AdaptiveCircuitBreaker>,
@@ -73,7 +97,7 @@ struct AdaptiveCircuitBreaker {
     false_positive_rate: Arc<RwLock<f64>>,
 }
 
-#[derive(Clone)]
+
 struct PerformancePoint {
     timestamp: Instant,
     value: f64,
@@ -142,6 +166,7 @@ impl InfrastructureCircuitBreakers {
 
 /// Data layer circuit breakers
 /// Avery: "Protect data integrity and flow"
+#[derive(Debug, Clone)]
 pub struct DataLayerCircuitBreakers {
     /// Data quality breaker
     quality_breaker: Arc<DataQualityBreaker>,
@@ -277,6 +302,7 @@ impl DataLayerCircuitBreakers {
 
 /// Exchange layer circuit breakers
 /// Casey: "Protect exchange connections and order flow"
+#[derive(Debug, Clone)]
 pub struct ExchangeLayerCircuitBreakers {
     /// Per-exchange breakers
     exchange_breakers: Arc<DashMap<String, ExchangeBreaker>>,
@@ -305,7 +331,7 @@ struct ExchangeBreaker {
     state: Arc<RwLock<ExchangeCircuitState>>,
 }
 
-#[derive(Clone)]
+
 enum ExchangeCircuitState {
     Healthy,
     Degraded { since: Instant, errors: u32 },
@@ -323,7 +349,7 @@ struct RejectionRateBreaker {
     current_rate: Arc<RwLock<f64>>,
 }
 
-#[derive(Clone)]
+
 struct OrderOutcome {
     timestamp: Instant,
     accepted: bool,
@@ -377,6 +403,7 @@ impl ExchangeLayerCircuitBreakers {
 
 /// Risk layer circuit breakers (extends basic implementation)
 /// Quinn: "Every risk calculation must be bulletproof"
+#[derive(Debug, Clone)]
 pub struct RiskLayerCircuitBreakers {
     /// Base risk breakers
     base: Arc<CircuitBreakerHub>,
@@ -418,7 +445,7 @@ struct CorrelationBreakdownDetector {
 
 impl RiskLayerCircuitBreakers {
     /// Calculate VaR with full protection
-    pub async fn calculate_var(&self, portfolio: &Portfolio) -> Result<f64, RiskCalculationError> {
+    pub async use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, portfolio: &Portfolio) -> Result<f64, RiskCalculationError> {
         // Check portfolio heat first
         let heat = self.calculate_portfolio_heat(portfolio);
         if heat > self.heat_breaker.max_heat {
@@ -485,6 +512,7 @@ impl RiskLayerCircuitBreakers {
 
 /// Analysis layer circuit breakers
 /// Morgan: "Protect ML inference and TA calculations"
+#[derive(Debug, Clone)]
 pub struct AnalysisLayerCircuitBreakers {
     /// ML inference breaker
     ml_breaker: Arc<MLInferenceBreaker>,
@@ -572,6 +600,7 @@ impl AnalysisLayerCircuitBreakers {
 
 /// Strategy layer circuit breakers
 /// Alex: "Strategies must adapt to market conditions"
+#[derive(Debug, Clone)]
 pub struct StrategyLayerCircuitBreakers {
     /// Strategy performance tracker
     performance_tracker: Arc<StrategyPerformanceTracker>,
@@ -597,7 +626,7 @@ struct StrategyPerformanceTracker {
     underperformers: Arc<RwLock<Vec<String>>>,
 }
 
-#[derive(Clone)]
+
 struct StrategyPerformance {
     trades: u64,
     wins: u64,
@@ -654,6 +683,7 @@ ound) => true,
 
 /// Execution layer circuit breakers
 /// Casey: "Smart execution with market impact protection"
+#[derive(Debug, Clone)]
 pub struct ExecutionLayerCircuitBreakers {
     /// Slippage monitor
     slippage_monitor: Arc<SlippageMonitor>,
@@ -679,7 +709,7 @@ struct SlippageMonitor {
     adaptive_threshold: Arc<RwLock<f64>>,
 }
 
-#[derive(Clone)]
+
 struct SlippagePoint {
     timestamp: Instant,
     expected_price: f64,
@@ -747,6 +777,7 @@ impl ExecutionLayerCircuitBreakers {
 
 /// Monitoring layer circuit breakers
 /// Riley: "Complete observability with predictive alerts"
+#[derive(Debug, Clone)]
 pub struct MonitoringLayerCircuitBreakers {
     /// Alert fatigue preventer
     alert_manager: Arc<AlertFatiguePreventer>,
@@ -851,7 +882,7 @@ struct GameTheoryOptimizer {
     rl_optimizer: Arc<RLThresholdOptimizer>,
 }
 
-#[derive(Clone)]
+
 struct PayoffMatrix {
     /// Payoff for true positive (correctly tripped)
     tp_payoff: f64,
@@ -980,6 +1011,7 @@ impl BayesianThresholdOptimizer {
 
 /// Auto-tuning system for all circuit breakers
 /// Alex: "Continuous adaptation to market conditions"
+#[derive(Debug, Clone)]
 pub struct CircuitBreakerAutoTuner {
     /// Market regime detector
     regime_detector: Arc<MarketRegimeDetector>,
@@ -997,7 +1029,7 @@ pub struct CircuitBreakerAutoTuner {
     last_update: Arc<RwLock<Instant>>,
 }
 
-#[derive(Clone)]
+
 struct ThresholdAdjustments {
     toxicity_multiplier: f64,
     latency_multiplier: f64,
@@ -1078,6 +1110,7 @@ impl CircuitBreakerAutoTuner {
 // SUPPORTING TYPES
 // ============================================================================
 
+
 #[derive(Debug, Clone)]
 pub struct InfrastructureMetrics {
     pub memory_usage_pct: f64,
@@ -1086,6 +1119,7 @@ pub struct InfrastructureMetrics {
     pub disk_iops: f64,
     pub thread_pool_usage: f64,
 }
+
 
 #[derive(Debug, Clone)]
 pub struct MarketTick {
@@ -1098,18 +1132,15 @@ pub struct MarketTick {
     pub latency_ms: u64,
 }
 
+
 #[derive(Debug, Clone)]
 pub struct Portfolio {
     pub positions: Vec<Position>,
     pub capital: f64,
 }
 
-#[derive(Debug, Clone)]
-pub struct Position {
-    pub symbol: String,
-    pub size: f64,
-    pub current_price: f64,
-}
+
+
 
 #[derive(Debug, Clone)]
 pub struct Features {
@@ -1118,12 +1149,14 @@ pub struct Features {
     pub technical_features: Vec<f64>,
 }
 
+
 #[derive(Debug, Clone)]
 pub struct Prediction {
     pub action: TradingAction,
     pub confidence: f64,
     pub expected_return: f64,
 }
+
 
 #[derive(Debug, Clone)]
 pub enum TradingAction {
@@ -1132,6 +1165,7 @@ pub enum TradingAction {
     Hold,
 }
 
+
 #[derive(Debug, Clone)]
 pub struct MarketState {
     pub volatility: f64,
@@ -1139,7 +1173,8 @@ pub struct MarketState {
     pub trend: f64,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+
+#[derive(Debug, Clone)]
 pub enum MarketRegime {
     Normal,
     Trending,
@@ -1148,14 +1183,13 @@ pub enum MarketRegime {
     Crisis,
 }
 
-#[derive(Debug, Clone)]
-pub struct Order {
     pub id: String,
     pub symbol: String,
     pub quantity: f64,
     pub price: f64,
     pub order_type: OrderType,
 }
+
 
 #[derive(Debug, Clone)]
 pub enum OrderType {
@@ -1164,13 +1198,9 @@ pub enum OrderType {
     Stop,
 }
 
-#[derive(Debug, Clone)]
-pub struct Fill {
-    pub order_id: String,
-    pub price: f64,
-    pub quantity: f64,
-    pub timestamp: Instant,
-}
+
+// Using canonical Fill from domain_types
+use domain_types::order::Fill;
 
 // Error types omitted for brevity - would include all layer-specific errors
 

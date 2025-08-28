@@ -1,3 +1,5 @@
+pub use domain_types::candle::{Candle, CandleError};
+
 // ARIMA Model Integration Tests
 // FULL TEAM COLLABORATION - All 8 Members Contributing
 // Owner: Riley (Testing) with full team support
@@ -356,14 +358,6 @@ fn test_end_to_end_ml_pipeline() {
 // ============================================================================
 
 #[derive(Debug, Clone)]
-struct Candle {
-    timestamp: DateTime<Utc>,
-    open: f64,
-    high: f64,
-    low: f64,
-    close: f64,
-    volume: f64,
-}
 
 fn load_btc_historical_data() -> Vec<Candle> {
     // Casey: In production, load from exchange API or database

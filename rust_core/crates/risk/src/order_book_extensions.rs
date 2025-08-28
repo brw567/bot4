@@ -1,3 +1,5 @@
+pub use domain_types::trade::{Trade, TradeId, TradeError};
+
 // ORDER BOOK EXTENSIONS - Complete Missing Methods
 // Team: Full collaboration to complete all data pipes
 
@@ -20,12 +22,6 @@ pub trait OrderBookExtensions {
 }
 
 #[derive(Debug, Clone)]
-pub struct Trade {
-    pub price: f64,
-    pub volume: f64,
-    pub is_buy: bool,
-    pub timestamp: u64,
-}
 
 impl OrderBookExtensions for OrderBook {
     /// Calculate total bid volume

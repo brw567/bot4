@@ -1,3 +1,7 @@
+//! Using canonical Trade from domain_types
+pub use domain_types::trade::{Trade, TradeId, TradeError};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
 // DATA INTELLIGENCE LAYER - DEEP DIVE IMPLEMENTATION
 // Team: FULL TEAM - NO SIMPLIFICATIONS!
 // Alex: "We need EVERY data source integrated with ZERO-COPY and SIMD!"
@@ -296,13 +300,6 @@ pub struct OrderBookDepth {
 }
 
 #[derive(Debug, Clone)]
-pub struct Trade {
-    pub timestamp: DateTime<Utc>,
-    pub price: Decimal,
-    pub size: Decimal,
-    pub side: TradeSide,
-    pub is_liquidation: bool,
-}
 
 #[derive(Debug, Clone)]
 pub enum TradeSide {

@@ -119,7 +119,7 @@ impl GARCHModel {
     
     /// AVX-512 optimized variance calculation
     /// Jordan: "Processing 16 values simultaneously!"
-    unsafe fn calculate_variance_avx512(
+    unsafe use mathematical_ops::risk_metrics::calculate_var; // fn calculate_variance_avx512(
         &self,
         returns: &[f32],
         sigma2: &mut [f32]
@@ -168,7 +168,7 @@ impl GARCHModel {
     }
     
     /// Scalar fallback for non-AVX512 systems
-    fn calculate_variance_scalar(
+    use mathematical_ops::risk_metrics::calculate_var; // fn calculate_variance_scalar(
         &self,
         returns: &[f32],
         sigma2: &mut [f32]
@@ -418,7 +418,7 @@ impl GARCHModel {
     
     /// Dynamic VaR calculation using GARCH volatility
     /// Quinn: "Essential for risk management!"
-    pub fn calculate_var(&self, confidence: f32, position: f32) -> f32 {
+    pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, confidence: f32, position: f32) -> f32 {
         let vol_forecast = self.forecast(1)[0];
         
         // Use Student's t distribution for fat tails

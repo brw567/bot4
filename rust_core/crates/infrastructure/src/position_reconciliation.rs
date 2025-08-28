@@ -1,3 +1,25 @@
+use domain_types::order::OrderError;
+//! Position Reconciliation Module - Layer 0.8.1
+//! Module uses canonical Position type from domain_types
+//! Cameron: "Single source of truth for Position struct"
+
+use domain_types::order::{Order, OrderId, OrderStatus, OrderType};
+
+pub use domain_types::position_canonical::{
+    Position, PositionId, PositionSide, PositionStatus,
+    PositionError, PositionUpdate
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type PositionResult<T> = Result<T, PositionError>;
+
+// Avery: "Single source of truth for Order struct"
+
+// Order types are already imported above
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // POSITION RECONCILIATION MODULE - Layer 0.8.1
 // Full Team Implementation with External Research
 // Team: All 8 members collaborating
@@ -29,6 +51,7 @@ use crate::mode_persistence::ModePersistenceManager;
 // ============================================================================
 
 /// Simple circuit breaker for reconciliation
+
 #[derive(Debug, Clone)]
 pub struct CircuitBreaker {
     name: String,
@@ -73,64 +96,17 @@ impl CircuitBreaker {
 
 /// Represents a position on an exchange
 /// Quinn: "Must capture ALL aspects of exposure"
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Position {
-    /// Exchange identifier
-    pub exchange: String,
-    
-    /// Trading symbol (e.g., "BTC/USDT")
-    pub symbol: String,
-    
-    /// Position side (Long/Short)
-    pub side: PositionSide,
-    
-    /// Position size (base currency)
-    pub size: Decimal,
-    
-    /// Entry price
-    pub entry_price: Decimal,
-    
-    /// Current mark price
-    pub mark_price: Option<Decimal>,
-    
-    /// Unrealized P&L
-    pub unrealized_pnl: Option<Decimal>,
-    
-    /// Realized P&L
-    pub realized_pnl: Decimal,
-    
-    /// Margin used
-    pub margin: Decimal,
-    
-    /// Leverage
-    pub leverage: Decimal,
-    
-    /// Liquidation price
-    pub liquidation_price: Option<Decimal>,
-    
-    /// Position ID from exchange
-    pub exchange_position_id: String,
-    
-    /// Last update time
-    pub last_updated: DateTime<Utc>,
-    
-    /// Position status
-    pub status: PositionStatus,
-    
-    /// Associated orders
-    pub open_orders: Vec<String>,
-    
-    /// Risk metrics
-    pub risk_metrics: RiskMetrics,
-}
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+
+
+#[derive(Debug, Clone)]
 pub enum PositionSide {
     Long,
     Short,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+
+#[derive(Debug, Clone)]
 pub enum PositionStatus {
     Open,
     Closing,
@@ -140,8 +116,10 @@ pub enum PositionStatus {
 }
 
 /// Risk metrics for a position
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct RiskMetrics {
+
+#[derive(Debug, Clone)]
+// REMOVED: Duplicate
+// pub struct RiskMetrics {
     /// Value at Risk (95% confidence)
     pub var_95: Decimal,
     
@@ -164,7 +142,8 @@ pub struct RiskMetrics {
 
 /// Reconciliation report after comparing states
 /// Alex: "Complete visibility into discrepancies"
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub struct ReconciliationReport {
     /// Timestamp of reconciliation
     pub timestamp: DateTime<Utc>,
@@ -198,7 +177,8 @@ pub struct ReconciliationReport {
 }
 
 /// Types of discrepancies
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum Discrepancy {
     /// Position exists on exchange but not internally
     MissingInternal {
@@ -252,7 +232,8 @@ pub enum Discrepancy {
     },
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+
+#[derive(Debug, Clone)]
 pub enum Severity {
     Critical,  // Requires immediate action
     High,      // Significant risk
@@ -260,7 +241,8 @@ pub enum Severity {
     Low,       // Minor issue
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+
+#[derive(Debug, Clone)]
 pub enum ReconciliationStatus {
     /// All positions match perfectly
     FullyReconciled,
@@ -276,7 +258,8 @@ pub enum ReconciliationStatus {
 }
 
 /// Risk assessment from reconciliation
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct RiskAssessment {
     /// Overall risk level
     pub risk_level: RiskLevel,
@@ -297,7 +280,8 @@ pub struct RiskAssessment {
     pub recommended_mode: ControlMode,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+
+#[derive(Debug, Clone)]
 pub enum RiskLevel {
     Extreme,   // Force Emergency mode
     High,      // Downgrade to Manual
@@ -306,7 +290,8 @@ pub enum RiskLevel {
 }
 
 /// Recommended actions based on reconciliation
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum RecommendedAction {
     /// Force emergency mode
     ForceEmergency(String),
@@ -365,24 +350,16 @@ pub trait ExchangeConnector: Send + Sync {
 }
 
 /// Order information
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Order {
-    pub id: String,
-    pub symbol: String,
-    pub side: OrderSide,
-    pub order_type: OrderType,
-    pub size: Decimal,
-    pub price: Option<Decimal>,
-    pub status: OrderStatus,
-}
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum OrderType {
     Market,
     Limit,
@@ -390,7 +367,8 @@ pub enum OrderType {
     StopLimit,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum OrderStatus {
     Pending,
     Open,
@@ -405,6 +383,7 @@ pub enum OrderStatus {
 
 /// Main reconciliation engine
 /// Morgan: "Mathematical precision in state verification"
+#[derive(Debug, Clone)]
 pub struct PositionReconciliationEngine {
     /// Exchange connectors
     exchanges: HashMap<String, Arc<dyn ExchangeConnector>>,
@@ -432,6 +411,7 @@ pub struct PositionReconciliationEngine {
 }
 
 /// Reconciliation configuration
+
 #[derive(Debug, Clone)]
 pub struct ReconciliationConfig {
     /// Maximum acceptable size discrepancy (percentage)
@@ -475,7 +455,8 @@ impl Default for ReconciliationConfig {
 }
 
 /// Reconciliation events
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+#[derive(Debug, Clone)]
 pub enum ReconciliationEvent {
     Started(DateTime<Utc>),
     Completed(ReconciliationReport),
@@ -1017,6 +998,7 @@ impl PositionReconciliationEngine {
 
 /// Automated reconciliation scheduler
 /// Riley: "Continuous verification at configurable intervals"
+#[derive(Debug, Clone)]
 pub struct ReconciliationScheduler {
     engine: Arc<PositionReconciliationEngine>,
     interval: Duration,

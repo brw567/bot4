@@ -769,7 +769,8 @@ pub struct OHLCVData {
 
 /// Performance metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PerformanceMetrics {
+// REMOVED: Duplicate
+// pub struct PerformanceMetrics {
     pub events_per_second: f64,
     pub avg_latency_us: f64,
     pub p95_latency_us: f64,

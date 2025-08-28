@@ -6,6 +6,7 @@ authors.workspace = true
 description.workspace = true
 
 [dependencies]
+domain_types = { path = "../../domain_types" }
 # Core dependencies
 anyhow = "1.0"
 async-trait = "0.1"

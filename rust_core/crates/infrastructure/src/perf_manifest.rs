@@ -580,17 +580,9 @@ impl PerfManifest {
     }
 }
 
-// Placeholder types for benchmarking
-#[derive(Debug)]
-struct Order {
-    id: uuid::Uuid,
-    symbol: String,
-    side: OrderSide,
-    order_type: OrderType,
-    price: f64,
-    quantity: f64,
-    timestamp: chrono::DateTime<chrono::Utc>,
-}
+// Using canonical Order from domain_types for benchmarking
+use domain_types::order::{Order as CanonicalOrder};
+type Order = CanonicalOrder;
 
 #[derive(Debug)]
 enum OrderSide { Buy, Sell }

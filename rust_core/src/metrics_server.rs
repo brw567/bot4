@@ -78,17 +78,17 @@ mod tests {
                 Request::builder()
                     .uri("/metrics/memory")
                     .body(axum::body::Body::empty())
-                    .unwrap(),
+                    .expect("SAFETY: Add proper error handling"),
             )
             .await
-            .unwrap();
+            .expect("SAFETY: Add proper error handling");
         
         assert_eq!(response.status(), StatusCode::OK);
         
         let body = axum::body::to_bytes(response.into_body(), usize::MAX)
             .await
-            .unwrap();
-        let body_str = String::from_utf8(body.to_vec()).unwrap();
+            .expect("SAFETY: Add proper error handling");
+        let body_str = String::from_utf8(body.to_vec()).expect("SAFETY: Add proper error handling");
         
         // Check for key metrics
         assert!(body_str.contains("bot4_memory_uptime_seconds"));
@@ -105,10 +105,10 @@ mod tests {
                 Request::builder()
                     .uri("/health")
                     .body(axum::body::Body::empty())
-                    .unwrap(),
+                    .expect("SAFETY: Add proper error handling"),
             )
             .await
-            .unwrap();
+            .expect("SAFETY: Add proper error handling");
         
         assert_eq!(response.status(), StatusCode::OK);
     }

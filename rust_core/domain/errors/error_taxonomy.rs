@@ -1,3 +1,4 @@
+use domain_types::order::OrderError;
 // Complete Error Taxonomy for Exchange/Venue Errors
 // Owner: Sam | Reviewer: Casey (Exchange Integration)
 // Pre-Production Requirement #4 from Sophia

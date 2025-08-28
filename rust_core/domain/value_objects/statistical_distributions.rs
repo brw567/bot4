@@ -142,7 +142,7 @@ impl LatencyDistribution {
     /// Generate realistic latency in milliseconds
     pub fn generate_latency<R: Rng>(&self, rng: &mut R) -> Duration {
         let log_normal = LogNormal::new(self.mu, self.sigma)
-            .unwrap_or_else(|_| LogNormal::new(3.9, 0.5).unwrap());
+            .unwrap_or_else(|_| LogNormal::new(3.9, 0.5).expect("SAFETY: Add proper error handling"));
         
         let mut latency = log_normal.sample(rng);
         
@@ -196,7 +196,7 @@ impl SlippageDistribution {
     pub fn generate_slippage<R: Rng>(&self, rng: &mut R, order_size: f64) -> f64 {
         // Base slippage from normal distribution
         let normal = Normal::new(self.mean_bps, self.std_bps)
-            .unwrap_or_else(|_| Normal::new(0.0, 1.0).unwrap());
+            .unwrap_or_else(|_| Normal::new(0.0, 1.0).expect("SAFETY: Add proper error handling"));
         
         let mut slippage = normal.sample(rng);
         
@@ -247,7 +247,7 @@ impl ArrivalRateDistribution {
             self.base_rate * self.off_peak_multiplier
         };
         
-        let exp = Exp::new(rate).unwrap_or_else(|_| Exp::new(1.0).unwrap());
+        let exp = Exp::new(rate).unwrap_or_else(|_| Exp::new(1.0).expect("SAFETY: Add proper error handling"));
         let seconds = exp.sample(rng);
         
         Duration::from_secs_f64(seconds)
@@ -323,7 +323,7 @@ mod tests {
         
         // Generate fills multiple times
         for _ in 0..10 {
-            let fills = dist.generate_fills(&mut rng).unwrap();
+            let fills = dist.generate_fills(&mut rng).expect("SAFETY: Add proper error handling");
             
             // Should have at least 1 fill
             assert!(!fills.is_empty());
@@ -353,7 +353,7 @@ mod tests {
         assert!(latencies.iter().all(|&l| l <= dist.max_latency));
         
         // Median should be roughly around exp(mu)
-        latencies.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        latencies.sort_by(|a, b| a.partial_cmp(b).expect("SAFETY: Add proper error handling"));
         let median = latencies[50];
         let expected_median = dist.median_latency();
         

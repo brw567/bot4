@@ -258,7 +258,7 @@ impl ValidationFilters {
     /// Create filters for BTC/USDT (example)
     pub fn btc_usdt() -> Self {
         Self {
-            symbol: Symbol::new("BTC/USDT").unwrap(),
+            symbol: Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling"),
             price_filter: PriceFilter {
                 min_price: 1.0,
                 max_price: 1_000_000.0,
@@ -473,10 +473,10 @@ mod tests {
         
         // Create a test order
         let order = Order::limit(
-            Symbol::new("BTC/USDT").unwrap(),
+            Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling"),
             OrderSide::Buy,
-            Price::new(50000.0).unwrap(),
-            Quantity::new(0.001).unwrap(),
+            Price::new(50000.0).expect("SAFETY: Add proper error handling"),
+            Quantity::new(0.001).expect("SAFETY: Add proper error handling"),
             crate::domain::entities::TimeInForce::GTC,
         );
         

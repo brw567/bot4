@@ -1,4 +1,5 @@
 // AVX-512 Hot Path Verification Test
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 // Team: Jordan (Performance) & Full Team
 // Purpose: Verify AVX-512 is actually being used in hot paths
 

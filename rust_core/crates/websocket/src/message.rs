@@ -1,3 +1,4 @@
+use domain_types::market_data::MarketData;
 // Message Types for WebSocket Communication
 // Supports multiple exchange formats with zero-copy deserialization where possible
 
@@ -32,7 +33,8 @@ pub struct UnsubscribeMessage {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MarketData {
+// REMOVED: Using canonical domain_types::market_data::MarketData
+// pub struct MarketData {
     pub symbol: String,
     pub timestamp: DateTime<Utc>,
     pub data_type: MarketDataType,

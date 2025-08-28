@@ -1,3 +1,5 @@
+pub use domain_types::market_data::{OrderBook, OrderBookLevel, OrderBookUpdate};
+
 // LOB Simulator - Core Order Book Reconstruction and Simulation
 // DEEP DIVE: Full order book dynamics with L3 data support
 //
@@ -76,33 +78,6 @@ pub enum UpdateType {
 
 /// Complete order book state at a point in time
 #[derive(Debug, Clone)]
-pub struct OrderBook {
-    pub symbol: Symbol,
-    pub exchange: Exchange,
-    pub timestamp: DateTime<Utc>,
-    pub sequence_number: u64,
-    
-    // Price levels stored in sorted order
-    pub bids: BTreeMap<Decimal, OrderBookLevel>,  // Descending order
-    pub asks: BTreeMap<Decimal, OrderBookLevel>,  // Ascending order
-    
-    // Order tracking for L3 data
-    pub orders: HashMap<u64, OrderInfo>,
-    
-    // Market state
-    pub is_crossed: bool,
-    pub is_locked: bool,
-    pub last_trade_price: Option<Price>,
-    pub last_trade_quantity: Option<Quantity>,
-    
-    // Statistics
-    pub total_bid_depth: Quantity,
-    pub total_ask_depth: Quantity,
-    pub spread: Option<Decimal>,
-    pub mid_price: Option<Price>,
-    pub weighted_mid_price: Option<Price>,
-    pub micro_price: Option<Price>,  // Microprice with queue position
-}
 
 /// Individual order information for L3 reconstruction
 #[derive(Debug, Clone)]

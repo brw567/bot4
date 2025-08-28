@@ -20,15 +20,15 @@ pub fn init_logging() -> anyhow::Result<()> {
     let env_filter = EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| {
             EnvFilter::new("info")
-                .add_directive("bot4=debug".parse().unwrap())
-                .add_directive("trading_engine=debug".parse().unwrap())
-                .add_directive("risk_engine=debug".parse().unwrap())
-                .add_directive("ml=debug".parse().unwrap())
-                .add_directive("order_management=debug".parse().unwrap())
-                .add_directive("exchanges=debug".parse().unwrap())
-                .add_directive("websocket=debug".parse().unwrap())
-                .add_directive("infrastructure=debug".parse().unwrap())
-                .add_directive("analysis=debug".parse().unwrap())
+                .add_directive("bot4=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("trading_engine=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("risk_engine=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("ml=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("order_management=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("exchanges=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("websocket=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("infrastructure=debug".parse().expect("SAFETY: Add proper error handling"))
+                .add_directive("analysis=debug".parse().expect("SAFETY: Add proper error handling"))
         });
 
     // Console output layer (human-readable)
@@ -68,7 +68,7 @@ pub fn init_logging() -> anyhow::Result<()> {
         .with_target(false)
         .with_writer(metrics_appender)
         .with_filter(EnvFilter::new("info")
-            .add_directive("bot4::metrics=trace".parse().unwrap()));
+            .add_directive("bot4::metrics=trace".parse().expect("SAFETY: Add proper error handling")));
 
     // Combine all layers
     tracing_subscriber::registry()

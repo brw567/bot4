@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // SIMD-Optimized Correlation Analysis
 // Nexus Recommendation: 3x speedup for correlation matrices
 // Uses packed_simd2 for production-ready SIMD operations

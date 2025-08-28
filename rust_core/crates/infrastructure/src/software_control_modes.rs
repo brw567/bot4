@@ -1,3 +1,4 @@
+use domain_types::risk_limits::RiskLimits;
 // SOFTWARE CONTROL MODES - Task 0.5
 // Full Team Implementation with External Research
 // Team: All 8 members collaborating
@@ -735,13 +736,14 @@ pub enum AnalysisDepth {
     Deep,
 }
 
-#[derive(Debug, Clone)]
-pub struct RiskLimits {
-    pub max_var: f64,
-    pub max_leverage: f64,
-    pub max_drawdown: f64,
-    pub concentration_limit: f64,
-}
+// REMOVED: Using canonical domain_types::RiskLimits
+// #[derive(Debug, Clone)]
+// pub struct RiskLimits {
+//     pub max_var: f64,
+//     pub max_leverage: f64,
+//     pub max_drawdown: f64,
+//     pub concentration_limit: f64,
+// }
 
 #[derive(Debug, Clone)]
 pub struct ExchangeOperations {

@@ -1,3 +1,15 @@
+//! Module uses canonical Position type from domain_types
+//! Cameron: "Single source of truth for Position struct"
+
+pub use domain_types::position_canonical::{
+    Position, PositionId, PositionSide, PositionStatus,
+    PositionError, PositionUpdate
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type PositionResult<T> = Result<T, PositionError>;
+
 // Comprehensive 8-Layer Risk Clamp System
 // Quinn (Risk Lead) + Sam (Implementation)
 // CRITICAL: Sophia Requirement #4 - Multiple safety layers
@@ -23,7 +35,7 @@ const CRISIS_REDUCTION: f32 = 0.3;  // Reduce to 30% in crisis
 /// Comprehensive Risk Clamp System
 /// 8 sequential layers of risk control to prevent catastrophic losses
 /// Quinn: "Each layer is independent - if ANY triggers, position is reduced!"
-#[derive(Debug, Clone)]
+
 pub struct RiskClampSystem {
     // Risk parameters
     config: ClampConfig,
@@ -48,7 +60,7 @@ pub struct RiskClampSystem {
     clamp_triggers: Arc<RwLock<ClampMetrics>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct ClampConfig {
     /// Target volatility (e.g., 20% annualized)
     pub vol_target: f32,
@@ -77,8 +89,6 @@ impl Default for ClampConfig {
     }
 }
 
-#[derive(Debug, Clone)]
-struct Position {
     #[allow(dead_code)]  // Used in future features
     symbol: String,
     size: f32,
@@ -89,7 +99,7 @@ struct Position {
     pnl: f32,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+
 struct CrisisIndicators {
     vix_spike: bool,
     volume_surge: bool,
@@ -97,7 +107,7 @@ struct CrisisIndicators {
     bid_ask_spread_widening: f32,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+
 pub struct ClampMetrics {
     pub vol_clamps: u64,
     pub var_clamps: u64,

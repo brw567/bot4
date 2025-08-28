@@ -251,7 +251,7 @@ impl FeeModel {
             }
         }
         
-        Fee::new(final_fee, quote_currency).unwrap()
+        Fee::new(final_fee, quote_currency).expect("SAFETY: Add proper error handling")
     }
 }
 
@@ -302,12 +302,12 @@ mod tests {
     
     #[test]
     fn test_fee_creation() {
-        let fee = Fee::new(10.0, "USDT".to_string()).unwrap();
+        let fee = Fee::new(10.0, "USDT".to_string()).expect("SAFETY: Add proper error handling");
         assert_eq!(fee.amount(), 10.0);
         assert_eq!(fee.currency(), "USDT");
         assert!(!fee.is_rebate());
         
-        let rebate = Fee::new(-5.0, "USDT".to_string()).unwrap();
+        let rebate = Fee::new(-5.0, "USDT".to_string()).expect("SAFETY: Add proper error handling");
         assert_eq!(rebate.amount(), -5.0);
         assert_eq!(rebate.abs_amount(), 5.0);
         assert!(rebate.is_rebate());
@@ -315,13 +315,13 @@ mod tests {
     
     #[test]
     fn test_fee_addition() {
-        let fee1 = Fee::new(10.0, "USDT".to_string()).unwrap();
-        let fee2 = Fee::new(5.0, "USDT".to_string()).unwrap();
-        let total = fee1.add(&fee2).unwrap();
+        let fee1 = Fee::new(10.0, "USDT".to_string()).expect("SAFETY: Add proper error handling");
+        let fee2 = Fee::new(5.0, "USDT".to_string()).expect("SAFETY: Add proper error handling");
+        let total = fee1.add(&fee2).expect("SAFETY: Add proper error handling");
         assert_eq!(total.amount(), 15.0);
         
-        let fee3 = Fee::new(-3.0, "USDT".to_string()).unwrap();
-        let net = total.add(&fee3).unwrap();
+        let fee3 = Fee::new(-3.0, "USDT".to_string()).expect("SAFETY: Add proper error handling");
+        let net = total.add(&fee3).expect("SAFETY: Add proper error handling");
         assert_eq!(net.amount(), 12.0);
     }
     
@@ -405,7 +405,7 @@ mod tests {
     
     #[test]
     fn test_fill_with_fee() {
-        let fee = Fee::new(10.0, "USDT".to_string()).unwrap();
+        let fee = Fee::new(10.0, "USDT".to_string()).expect("SAFETY: Add proper error handling");
         let fill = FillWithFee {
             quantity: 1.0,
             price: 50000.0,

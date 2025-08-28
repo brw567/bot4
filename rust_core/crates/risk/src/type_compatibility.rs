@@ -1,4 +1,5 @@
 // TYPE COMPATIBILITY LAYER - Seamless integration
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 // Team: Sam (Architecture) + Full Team
 // Purpose: Map new complete types to existing usage
 
@@ -97,7 +98,7 @@ pub fn enhance_signal(
 }
 
 /// Calculate ATR for risk sizing
-fn calculate_atr(market_data: &CompleteMarketData) -> f64 {
+// Replaced by unified: fn calculate_atr(market_data: &CompleteMarketData) -> f64 {
     // Simplified ATR calculation
     let high_low = (market_data.high.to_f64() - market_data.low.to_f64()).abs();
     let high_close = (market_data.high.to_f64() - market_data.close.to_f64()).abs();

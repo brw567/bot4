@@ -252,7 +252,7 @@ mod tests {
     
     #[tokio::test]
     async fn test_optimized_runtime() {
-        let runtime = OptimizedRuntime::new().unwrap();
+        let runtime = OptimizedRuntime::new().expect("SAFETY: Add proper error handling");
         
         // Test spawning tasks
         let handle = runtime.spawn(async {
@@ -260,7 +260,7 @@ mod tests {
             42
         });
         
-        let result = handle.await.unwrap();
+        let result = handle.await.expect("SAFETY: Add proper error handling");
         assert_eq!(result, 42);
     }
 }

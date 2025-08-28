@@ -218,7 +218,8 @@ impl DCCGarch {
 }
 
 /// Helper function to calculate correlation
-fn calculate_correlation(x: &Array1<f64>, y: &Array1<f64>) -> f64 {
+// REPLACED: use mathematical_ops::correlation::calculate_correlation
+// fn calculate_correlation(x: &Array1<f64>, y: &Array1<f64>) -> f64 {
     let n = x.len() as f64;
     let mean_x = x.mean().unwrap();
     let mean_y = y.mean().unwrap();

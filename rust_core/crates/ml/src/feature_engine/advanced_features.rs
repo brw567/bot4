@@ -1,3 +1,5 @@
+pub use domain_types::market_data::{OrderBook, OrderBookLevel, OrderBookUpdate};
+
 // Advanced Feature Engineering with Full Optimizations
 // Team Lead: Avery (Data) with FULL TEAM Collaboration
 // Date: January 18, 2025
@@ -1220,14 +1222,6 @@ pub struct TimeSeriesData {
 }
 
 #[derive(Debug, Clone)]
-pub struct OrderBook {
-    pub best_bid: f64,
-    pub best_ask: f64,
-    pub bid_volumes: Vec<f64>,
-    pub ask_volumes: Vec<f64>,
-    pub last_price: f64,
-    pub last_volume: f64,
-}
 
 #[derive(Debug, Clone)]
 enum FFTAggregation {

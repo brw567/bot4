@@ -1,3 +1,16 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // OPTIMAL EXECUTION ALGORITHMS - TWAP/VWAP/POV WITH GAME THEORY
 // Team: Casey (Exchange Integration) + Jordan (Performance) + Full Team
 // CRITICAL: Minimize market impact while maximizing fill quality
@@ -9,7 +22,6 @@
 // - Obizhaeva & Wang (2013): "Optimal Trading Strategy and Supply/Demand Dynamics"
 
 use crate::unified_types::*;
-use crate::order_book_analytics::OrderBookAnalytics;
 use crate::profit_extractor::ExtendedMarketData;
 use crate::decision_orchestrator::ExecutionResult;
 use rust_decimal::Decimal;
@@ -44,7 +56,7 @@ pub struct OptimalExecutionEngine {
 }
 
 /// Execution plan for an order
-#[derive(Debug, Clone)]
+
 pub struct ExecutionPlan {
     pub order_id: uuid::Uuid,
     pub symbol: String,
@@ -60,7 +72,7 @@ pub struct ExecutionPlan {
 }
 
 /// Single execution slice (child order)
-#[derive(Debug, Clone)]
+
 pub struct ExecutionSlice {
     pub timestamp: u64,
     pub quantity: Quantity,
@@ -72,7 +84,7 @@ pub struct ExecutionSlice {
 }
 
 /// Execution algorithm types
-#[derive(Debug, Clone, PartialEq)]
+
 pub enum ExecutionAlgorithm {
     TWAP,      // Time-Weighted Average Price
     VWAP,      // Volume-Weighted Average Price  
@@ -736,7 +748,7 @@ impl OptimalExecutionEngine {
 }
 
 /// Execution performance metrics
-#[derive(Debug, Clone)]
+
 pub struct ExecutionMetrics {
     pub total_slippage: Decimal,
     pub avg_fill_quality: f64,
@@ -746,8 +758,6 @@ pub struct ExecutionMetrics {
 }
 
 /// Order for execution
-#[derive(Debug, Clone)]
-pub struct Order {
     pub id: uuid::Uuid,
     pub symbol: String,
     pub side: Side,
@@ -758,7 +768,7 @@ pub struct Order {
     pub risk_limit: Option<Decimal>,
 }
 
-#[derive(Debug, Clone)]
+
 pub enum OrderType {
     Market,
     Limit,
@@ -767,7 +777,7 @@ pub enum OrderType {
 }
 
 /// Volume profile for VWAP
-#[derive(Debug, Clone)]
+
 pub struct VolumeProfile {
     pub timestamp: u64,
     pub total_volume: f64,

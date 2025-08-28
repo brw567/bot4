@@ -1,3 +1,4 @@
+use domain_types::risk_limits::RiskLimits;
 // Risk Limits Configuration
 // Quinn's immutable rules - these are NOT suggestions
 
@@ -6,14 +7,15 @@ use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
 
 /// Master risk limits configuration
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
-pub struct RiskLimits {
-    pub position_limits: PositionLimits,
-    pub loss_limits: LossLimits,
-    pub exposure_limits: ExposureLimits,
-    pub correlation_limits: CorrelationLimits,
-}
+// REMOVED: Using canonical domain_types::RiskLimits
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// #[derive(Default)]
+// pub struct RiskLimits {
+//     pub position_limits: PositionLimits,
+//     pub loss_limits: LossLimits,
+//     pub exposure_limits: ExposureLimits,
+//     pub correlation_limits: CorrelationLimits,
+// }
 
 
 /// Position-specific limits

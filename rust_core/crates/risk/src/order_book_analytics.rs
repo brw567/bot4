@@ -1,3 +1,7 @@
+//! Using canonical Trade from domain_types
+pub use domain_types::trade::{Trade, TradeId, TradeError};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
 // ORDER BOOK ANALYTICS WITH GAME THEORY - NO SIMPLIFICATIONS!
 // Team: Casey (Lead) + Morgan (ML) + Quinn (Risk) + Full Team
 // References:
@@ -77,13 +81,6 @@ pub struct PriceLevel {
 
 /// Executed trade
 #[derive(Debug, Clone)]
-pub struct Trade {
-    pub timestamp: u64,
-    pub price: Decimal,
-    pub quantity: Decimal,
-    pub aggressor_side: Side,  // Who crossed the spread
-    pub trade_id: String,
-}
 
 // Using Side from unified_types (Long/Short)
 

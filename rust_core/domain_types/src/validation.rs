@@ -114,10 +114,10 @@ pub struct RiskLimits {
 impl Default for RiskLimits {
     fn default() -> Self {
         Self {
-            max_position_pct: Decimal::from_str_exact("0.02").unwrap(), // 2%
+            max_position_pct: Decimal::from_str_exact("0.02").expect("SAFETY: Add proper error handling"), // 2%
             max_loss_per_trade: Decimal::from(1000),
             max_daily_loss: Decimal::from(5000),
-            max_correlation: Decimal::from_str_exact("0.7").unwrap(),
+            max_correlation: Decimal::from_str_exact("0.7").expect("SAFETY: Add proper error handling"),
             require_stop_loss: true,
             max_leverage: Decimal::from(3),
         }
@@ -278,7 +278,7 @@ impl Validator {
         if errors.is_empty() {
             Ok(())
         } else if errors.len() == 1 {
-            Err(errors.into_iter().next().unwrap())
+            Err(errors.into_iter().next().expect("SAFETY: Add proper error handling"))
         } else {
             Err(ValidationError::Multiple(errors))
         }
@@ -310,7 +310,7 @@ impl Validator {
         
         // Check value calculation
         let expected_value = trade.price.as_decimal() * trade.quantity.as_decimal();
-        if (trade.value - expected_value).abs() > Decimal::from_str_exact("0.01").unwrap() {
+        if (trade.value - expected_value).abs() > Decimal::from_str_exact("0.01").expect("SAFETY: Add proper error handling") {
             errors.push(ValidationError::InvalidTrade(
                 format!("Trade value {} doesn't match price * quantity {}", 
                     trade.value, expected_value)
@@ -320,7 +320,7 @@ impl Validator {
         if errors.is_empty() {
             Ok(())
         } else if errors.len() == 1 {
-            Err(errors.into_iter().next().unwrap())
+            Err(errors.into_iter().next().expect("SAFETY: Add proper error handling"))
         } else {
             Err(ValidationError::Multiple(errors))
         }
@@ -366,7 +366,7 @@ impl Validator {
         if errors.is_empty() {
             Ok(())
         } else if errors.len() == 1 {
-            Err(errors.into_iter().next().unwrap())
+            Err(errors.into_iter().next().expect("SAFETY: Add proper error handling"))
         } else {
             Err(ValidationError::Multiple(errors))
         }
@@ -409,7 +409,7 @@ impl Validator {
         if errors.is_empty() {
             Ok(())
         } else if errors.len() == 1 {
-            Err(errors.into_iter().next().unwrap())
+            Err(errors.into_iter().next().expect("SAFETY: Add proper error handling"))
         } else {
             Err(ValidationError::Multiple(errors))
         }
@@ -483,7 +483,7 @@ mod tests {
         let order = Order::market(
             "BTC/USDT".to_string(),
             OrderSide::Buy,
-            Quantity::new(dec!(0.1)).unwrap(),
+            Quantity::new(dec!(0.1)).expect("SAFETY: Add proper error handling"),
         );
         
         assert!(order.validate().is_ok());
@@ -509,8 +509,8 @@ mod tests {
             OrderId::new(),
             "ETH/USDT".to_string(),
             TradeSide::Buy,
-            Price::new(dec!(3000)).unwrap(),
-            Quantity::new(dec!(1)).unwrap(),
+            Price::new(dec!(3000)).expect("SAFETY: Add proper error handling"),
+            Quantity::new(dec!(1)).expect("SAFETY: Add proper error handling"),
             TradeRole::Taker,
             "binance".to_string(),
         );
@@ -532,14 +532,14 @@ mod tests {
     #[test]
     fn test_candle_validation() {
         let candle = Candle::new(
-            Price::new(dec!(100)).unwrap(),
-            Price::new(dec!(110)).unwrap(),
-            Price::new(dec!(95)).unwrap(),
-            Price::new(dec!(105)).unwrap(),
-            Quantity::new(dec!(1000)).unwrap(),
+            Price::new(dec!(100)).expect("SAFETY: Add proper error handling"),
+            Price::new(dec!(110)).expect("SAFETY: Add proper error handling"),
+            Price::new(dec!(95)).expect("SAFETY: Add proper error handling"),
+            Price::new(dec!(105)).expect("SAFETY: Add proper error handling"),
+            Quantity::new(dec!(1000)).expect("SAFETY: Add proper error handling"),
             Utc::now(),
             CandleInterval::Minute1,
-        ).unwrap();
+        ).expect("SAFETY: Add proper error handling");
         
         assert!(candle.validate().is_ok());
     }

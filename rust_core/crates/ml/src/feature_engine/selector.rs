@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // Feature Selection Implementation
 // Team: Morgan (Lead), Quinn (Validation), Riley (Testing)
 // Phase 3 - Feature Selection
@@ -327,7 +328,7 @@ impl FeatureSelector {
     }
     
     /// Calculate feature variances
-    fn calculate_variances(&mut self, data: &[Vec<f64>], n_features: usize) -> Result<()> {
+    use mathematical_ops::risk_metrics::calculate_var; // fn calculate_variances(&mut self, data: &[Vec<f64>], n_features: usize) -> Result<()> {
         self.variances = vec![0.0; n_features];
         let n_samples = data.len() as f64;
         

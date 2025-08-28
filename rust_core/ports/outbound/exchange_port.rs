@@ -1,3 +1,7 @@
+pub use domain_types::market_data::{OrderBook, OrderBookLevel, OrderBookUpdate};
+
+pub use domain_types::trade::{Trade, TradeId, TradeError};
+
 // Port: Exchange Interface
 // Defines the contract for exchange interactions
 // Owner: Casey | Reviewer: Sam
@@ -19,22 +23,9 @@ pub struct OrderBookLevel {
 
 /// Order book snapshot
 #[derive(Debug, Clone)]
-pub struct OrderBook {
-    pub symbol: Symbol,
-    pub bids: Vec<OrderBookLevel>,
-    pub asks: Vec<OrderBookLevel>,
-    pub timestamp: u64,
-}
 
 /// Trade/tick data
 #[derive(Debug, Clone)]
-pub struct Trade {
-    pub symbol: Symbol,
-    pub price: Price,
-    pub quantity: Quantity,
-    pub is_buyer_maker: bool,
-    pub timestamp: u64,
-}
 
 /// Balance information
 #[derive(Debug, Clone)]

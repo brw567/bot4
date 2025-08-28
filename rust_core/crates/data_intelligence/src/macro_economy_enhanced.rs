@@ -1,3 +1,4 @@
+use mathematical_ops::correlation::calculate_correlation;
 // MACRO ECONOMY CORRELATION ENGINE - DEEP DIVE IMPLEMENTATION
 // Team: Quinn (Lead) + Morgan - EXTRACTING ALPHA FROM MACRO-CRYPTO CORRELATIONS!
 // Target: Real-time correlation tracking with regime detection

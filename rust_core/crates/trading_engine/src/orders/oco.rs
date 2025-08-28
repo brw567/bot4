@@ -1,3 +1,16 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // One-Cancels-Other (OCO) Order Management System
 // Casey (Exchange Lead) + Quinn (Risk) + Sam (Architecture)
 // CRITICAL: Sophia Requirement #5 - Complex order types
@@ -13,7 +26,7 @@ use async_trait::async_trait;
 
 /// OCO Order Group - Two orders linked where one cancels the other
 /// Casey: "Essential for bracket orders and stop-loss with profit targets!"
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct OCOGroup {
     pub group_id: Uuid,
     pub primary_order: Order,
@@ -24,7 +37,7 @@ pub struct OCOGroup {
     pub metadata: OCOMetadata,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+
 pub enum OCOLinkType {
     /// Standard OCO - either order fills, other cancels
     Standard,
@@ -45,7 +58,7 @@ pub enum OCOLinkType {
     },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+
 pub enum OCOStatus {
     Active,
     PartiallyFilled,
@@ -55,7 +68,7 @@ pub enum OCOStatus {
     Expired,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct OCOMetadata {
     pub strategy: String,
     pub risk_limit: f64,
@@ -66,7 +79,7 @@ pub struct OCOMetadata {
     pub post_only: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+
 pub enum TimeInForce {
     GTC,  // Good Till Cancelled
     IOC,  // Immediate or Cancel
@@ -76,8 +89,6 @@ pub enum TimeInForce {
 }
 
 /// Individual Order within OCO
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Order {
     pub order_id: Uuid,
     pub symbol: String,
     pub side: OrderSide,
@@ -92,13 +103,13 @@ pub struct Order {
     pub timestamp: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+
 pub enum OrderType {
     Market,
     Limit,
@@ -108,7 +119,7 @@ pub enum OrderType {
     Iceberg { display_size: f64 },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+
 pub enum OrderStatus {
     Pending,
     New,
@@ -157,15 +168,13 @@ pub trait ExchangeConnector: Send + Sync {
     async fn get_order_status(&self, order_id: Uuid) -> Result<OrderStatus, ExchangeError>;
 }
 
-#[derive(Debug, Clone)]
-pub struct OrderModification {
     pub new_price: Option<f64>,
     pub new_quantity: Option<f64>,
     pub new_stop_price: Option<f64>,
 }
 
 /// Performance metrics for OCO operations
-#[derive(Debug, Default)]
+
 struct OCOMetrics {
     total_groups_created: u64,
     successful_fills: u64,
@@ -175,7 +184,7 @@ struct OCOMetrics {
     slippage_stats: SlippageStats,
 }
 
-#[derive(Debug, Default)]
+
 struct SlippageStats {
     positive_slippage: f64,
     negative_slippage: f64,
@@ -524,7 +533,7 @@ impl OCOManager {
 }
 
 /// OCO Error types
-#[derive(Debug, thiserror::Error)]
+
 pub enum OCOError {
     #[error("Risk validation failed: {0}")]
     RiskValidation(RiskError),
@@ -542,7 +551,7 @@ pub enum OCOError {
     OrderAlreadyLinked,
 }
 
-#[derive(Debug, thiserror::Error)]
+
 pub enum RiskError {
     #[error("Position limit exceeded")]
     PositionLimitExceeded,
@@ -554,7 +563,7 @@ pub enum RiskError {
     RiskLimitExceeded,
 }
 
-#[derive(Debug, thiserror::Error)]
+
 pub enum ExchangeError {
     #[error("Connection error")]
     ConnectionError,

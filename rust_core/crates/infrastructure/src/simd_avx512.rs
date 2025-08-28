@@ -1,4 +1,5 @@
 // AVX-512 SIMD Optimizations for Hot Paths
+use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 // Team: Jordan (Performance) & Morgan (ML)
 // Target: Intel Xeon Gold 6242 with AVX-512 support
 // Performance: 16 floats or 8 doubles per instruction

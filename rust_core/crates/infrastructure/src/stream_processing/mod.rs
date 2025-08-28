@@ -60,6 +60,7 @@ const MODEL_PREDICTIONS_STREAM: &str = "stream:model:predictions";
 
 /// Stream message types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum StreamMessage {
     // Market data - Casey
     MarketTick {
@@ -107,6 +108,7 @@ pub enum StreamMessage {
 
 /// Signal actions
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum SignalAction {
     Buy,
     Sell,
@@ -116,6 +118,7 @@ pub enum SignalAction {
 
 /// Risk event types - Quinn's specification
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum RiskEventType {
     PositionLimitExceeded,
     DrawdownThreshold,
@@ -126,6 +129,7 @@ pub enum RiskEventType {
 
 /// Risk severity levels
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum RiskSeverity {
     Low,
     Medium,
@@ -134,6 +138,7 @@ pub enum RiskSeverity {
 }
 
 /// Stream processor configuration
+#[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
 pub struct StreamConfig {
     pub redis_url: String,
@@ -164,6 +169,7 @@ impl Default for StreamConfig {
 // ============================================================================
 
 /// Main stream processing engine
+#[derive(Debug, Clone)]
 pub struct StreamProcessor {
     // Redis connections
     redis_conn: Arc<RwLock<ConnectionManager>>,
@@ -195,6 +201,7 @@ pub struct StreamProcessor {
 
 /// Stream processing metrics - Riley's design
 #[derive(Debug, Default)]
+#[derive(Debug, Clone)]
 pub struct StreamMetrics {
     pub messages_processed: std::sync::atomic::AtomicU64,
     pub messages_failed: std::sync::atomic::AtomicU64,

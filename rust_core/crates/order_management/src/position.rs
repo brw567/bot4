@@ -1,3 +1,15 @@
+//! Module uses canonical Position type from domain_types
+//! Cameron: "Single source of truth for Position struct"
+
+pub use domain_types::position_canonical::{
+    Position, PositionId, PositionSide, PositionStatus,
+    PositionError, PositionUpdate
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type PositionResult<T> = Result<T, PositionError>;
+
 // Position Management and P&L Calculation
 // Tracks open positions and calculates real-time P&L
 
@@ -14,8 +26,6 @@ use uuid::Uuid;
 use crate::order::{Order, OrderId, OrderSide};
 
 /// Position identifier
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct PositionId(pub Uuid);
 
 impl Default for PositionId {
     fn default() -> Self {
@@ -36,8 +46,6 @@ impl std::fmt::Display for PositionId {
 }
 
 /// Position tracking
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Position {
     pub id: PositionId,
     pub symbol: String,
     pub side: OrderSide,

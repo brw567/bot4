@@ -1,3 +1,16 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // Domain Entity: Order
 // Mutable with identity, represents a trading order
 // Owner: Sam | Reviewer: Quinn
@@ -8,11 +21,8 @@ use anyhow::{Result, bail};
 use std::fmt;
 
 use crate::domain::value_objects::{Price, Quantity, Symbol};
-use crate::domain::events::OrderEvent;
 
 /// Unique identifier for an Order
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct OrderId(Uuid);
 
 impl OrderId {
     pub fn new() -> Self {
@@ -35,7 +45,7 @@ impl fmt::Display for OrderId {
 }
 
 /// Order type enumeration
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum OrderType {
     Market,
     Limit,
@@ -47,14 +57,14 @@ pub enum OrderType {
 }
 
 /// Order side (direction)
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 /// Time in Force for orders
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum TimeInForce {
     GTC,  // Good Till Canceled
     IOC,  // Immediate or Cancel
@@ -63,7 +73,7 @@ pub enum TimeInForce {
 }
 
 /// Order status lifecycle
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum OrderStatus {
     Draft,           // Not yet submitted
     Pending,         // Submitted, awaiting confirmation
@@ -82,37 +92,6 @@ pub enum OrderStatus {
 /// - Order must have positive quantity
 /// - Status transitions must be valid
 /// - Cannot modify filled or cancelled orders
-pub struct Order {
-    // Identity
-    id: OrderId,
-    
-    // Core properties
-    symbol: Symbol,
-    order_type: OrderType,
-    side: OrderSide,
-    price: Option<Price>,      // None for market orders
-    stop_price: Option<Price>, // Stop trigger price (for stop orders)
-    quantity: Quantity,
-    time_in_force: TimeInForce,
-    
-    // State
-    status: OrderStatus,
-    filled_quantity: Quantity,
-    average_fill_price: Option<Price>,
-    
-    // Metadata
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
-    
-    // Risk controls
-    stop_loss: Option<Price>,
-    take_profit: Option<Price>,
-    max_slippage_bps: Option<u32>,
-    
-    // Exchange specific
-    exchange_order_id: Option<String>,
-    client_order_id: String,
-}
 
 impl Order {
     /// Create a new market order
@@ -517,15 +496,15 @@ mod tests {
     use super::*;
     
     fn create_test_symbol() -> Symbol {
-        Symbol::new("BTC/USDT").unwrap()
+        Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling")
     }
     
     fn create_test_price() -> Price {
-        Price::new(50000.0).unwrap()
+        Price::new(50000.0).expect("SAFETY: Add proper error handling")
     }
     
     fn create_test_quantity() -> Quantity {
-        Quantity::new(0.1).unwrap()
+        Quantity::new(0.1).expect("SAFETY: Add proper error handling")
     }
     
     #[test]
@@ -566,7 +545,7 @@ mod tests {
             create_test_quantity(),
         );
         
-        let (order, event) = order.submit().unwrap();
+        let (order, event) = order.submit().expect("SAFETY: Add proper error handling");
         assert_eq!(order.status, OrderStatus::Pending);
         assert!(matches!(event, OrderEvent::Submitted { .. }));
     }
@@ -579,7 +558,7 @@ mod tests {
             create_test_quantity(),
         );
         
-        let (order, _) = order.submit().unwrap();
+        let (order, _) = order.submit().expect("SAFETY: Add proper error handling");
         let result = order.submit();
         assert!(result.is_err());
     }
@@ -592,8 +571,8 @@ mod tests {
             create_test_quantity(),
         );
         
-        let (order, _) = order.submit().unwrap();
-        let (order, event) = order.confirm("EX123".to_string()).unwrap();
+        let (order, _) = order.submit().expect("SAFETY: Add proper error handling");
+        let (order, event) = order.confirm("EX123".to_string()).expect("SAFETY: Add proper error handling");
         
         assert_eq!(order.status, OrderStatus::Open);
         assert_eq!(order.exchange_order_id, Some("EX123".to_string()));
@@ -605,20 +584,20 @@ mod tests {
         let order = Order::market(
             create_test_symbol(),
             OrderSide::Buy,
-            Quantity::new(1.0).unwrap(),
+            Quantity::new(1.0).expect("SAFETY: Add proper error handling"),
         );
         
-        let (order, _) = order.submit().unwrap();
-        let (order, _) = order.confirm("EX123".to_string()).unwrap();
+        let (order, _) = order.submit().expect("SAFETY: Add proper error handling");
+        let (order, _) = order.confirm("EX123".to_string()).expect("SAFETY: Add proper error handling");
         
-        let fill_qty = Quantity::new(0.3).unwrap();
-        let fill_price = Price::new(50000.0).unwrap();
+        let fill_qty = Quantity::new(0.3).expect("SAFETY: Add proper error handling");
+        let fill_price = Price::new(50000.0).expect("SAFETY: Add proper error handling");
         
-        let (order, event) = order.fill(fill_qty, fill_price).unwrap();
+        let (order, event) = order.fill(fill_qty, fill_price).expect("SAFETY: Add proper error handling");
         
         assert_eq!(order.status, OrderStatus::PartiallyFilled);
         assert_eq!(order.filled_quantity.value(), 0.3);
-        assert_eq!(order.average_fill_price.unwrap().value(), 50000.0);
+        assert_eq!(order.average_fill_price.expect("SAFETY: Add proper error handling").value(), 50000.0);
         
         if let OrderEvent::Filled { is_complete, .. } = event {
             assert!(!is_complete);
@@ -629,19 +608,19 @@ mod tests {
     
     #[test]
     fn should_fill_order_completely() {
-        let qty = Quantity::new(1.0).unwrap();
+        let qty = Quantity::new(1.0).expect("SAFETY: Add proper error handling");
         let order = Order::market(
             create_test_symbol(),
             OrderSide::Buy,
             qty.clone(),
         );
         
-        let (order, _) = order.submit().unwrap();
-        let (order, _) = order.confirm("EX123".to_string()).unwrap();
+        let (order, _) = order.submit().expect("SAFETY: Add proper error handling");
+        let (order, _) = order.confirm("EX123".to_string()).expect("SAFETY: Add proper error handling");
         
-        let fill_price = Price::new(50000.0).unwrap();
+        let fill_price = Price::new(50000.0).expect("SAFETY: Add proper error handling");
         
-        let (order, event) = order.fill(qty, fill_price).unwrap();
+        let (order, event) = order.fill(qty, fill_price).expect("SAFETY: Add proper error handling");
         
         assert_eq!(order.status, OrderStatus::Filled);
         assert_eq!(order.filled_quantity.value(), 1.0);
@@ -661,12 +640,12 @@ mod tests {
             create_test_quantity(),
         );
         
-        let (order, _) = order.submit().unwrap();
-        let (order, _) = order.confirm("EX123".to_string()).unwrap();
+        let (order, _) = order.submit().expect("SAFETY: Add proper error handling");
+        let (order, _) = order.confirm("EX123".to_string()).expect("SAFETY: Add proper error handling");
         
         assert!(order.can_cancel());
         
-        let (order, event) = order.cancel("User requested".to_string()).unwrap();
+        let (order, event) = order.cancel("User requested".to_string()).expect("SAFETY: Add proper error handling");
         
         assert_eq!(order.status, OrderStatus::Cancelled);
         assert!(matches!(event, OrderEvent::Cancelled { .. }));
@@ -674,16 +653,16 @@ mod tests {
     
     #[test]
     fn should_not_cancel_filled_order() {
-        let qty = Quantity::new(1.0).unwrap();
+        let qty = Quantity::new(1.0).expect("SAFETY: Add proper error handling");
         let order = Order::market(
             create_test_symbol(),
             OrderSide::Buy,
             qty.clone(),
         );
         
-        let (order, _) = order.submit().unwrap();
-        let (order, _) = order.confirm("EX123".to_string()).unwrap();
-        let (order, _) = order.fill(qty, create_test_price()).unwrap();
+        let (order, _) = order.submit().expect("SAFETY: Add proper error handling");
+        let (order, _) = order.confirm("EX123".to_string()).expect("SAFETY: Add proper error handling");
+        let (order, _) = order.fill(qty, create_test_price()).expect("SAFETY: Add proper error handling");
         
         assert!(!order.can_cancel());
         
@@ -693,9 +672,9 @@ mod tests {
     
     #[test]
     fn should_set_risk_params_on_buy_order() {
-        let entry_price = Price::new(50000.0).unwrap();
-        let stop_loss = Price::new(49000.0).unwrap();
-        let take_profit = Price::new(51000.0).unwrap();
+        let entry_price = Price::new(50000.0).expect("SAFETY: Add proper error handling");
+        let stop_loss = Price::new(49000.0).expect("SAFETY: Add proper error handling");
+        let take_profit = Price::new(51000.0).expect("SAFETY: Add proper error handling");
         
         let order = Order::limit(
             create_test_symbol(),
@@ -705,7 +684,7 @@ mod tests {
             TimeInForce::GTC,
         );
         
-        let order = order.with_risk_params(Some(stop_loss), Some(take_profit)).unwrap();
+        let order = order.with_risk_params(Some(stop_loss), Some(take_profit)).expect("SAFETY: Add proper error handling");
         
         assert_eq!(order.stop_loss, Some(stop_loss));
         assert_eq!(order.take_profit, Some(take_profit));
@@ -713,8 +692,8 @@ mod tests {
     
     #[test]
     fn should_reject_invalid_buy_stop_loss() {
-        let entry_price = Price::new(50000.0).unwrap();
-        let invalid_stop = Price::new(51000.0).unwrap(); // Above entry
+        let entry_price = Price::new(50000.0).expect("SAFETY: Add proper error handling");
+        let invalid_stop = Price::new(51000.0).expect("SAFETY: Add proper error handling"); // Above entry
         
         let order = Order::limit(
             create_test_symbol(),

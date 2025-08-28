@@ -306,7 +306,8 @@ pub struct FailureEvent {
 }
 
 #[derive(Debug, Clone)]
-pub struct PerformanceMetrics {
+// REMOVED: Duplicate
+// pub struct PerformanceMetrics {
     /// Average latency in milliseconds
     pub avg_latency_ms: f64,
     

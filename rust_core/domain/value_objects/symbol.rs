@@ -170,7 +170,7 @@ mod tests {
     
     #[test]
     fn should_create_symbol_with_slash() {
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         assert_eq!(symbol.base(), "BTC");
         assert_eq!(symbol.quote(), "USDT");
         assert_eq!(symbol.as_str(), "BTC/USDT");
@@ -178,35 +178,35 @@ mod tests {
     
     #[test]
     fn should_create_symbol_with_dash() {
-        let symbol = Symbol::new("ETH-USD").unwrap();
+        let symbol = Symbol::new("ETH-USD").expect("SAFETY: Add proper error handling");
         assert_eq!(symbol.base(), "ETH");
         assert_eq!(symbol.quote(), "USD");
     }
     
     #[test]
     fn should_create_symbol_with_underscore() {
-        let symbol = Symbol::new("XRP_USDC").unwrap();
+        let symbol = Symbol::new("XRP_USDC").expect("SAFETY: Add proper error handling");
         assert_eq!(symbol.base(), "XRP");
         assert_eq!(symbol.quote(), "USDC");
     }
     
     #[test]
     fn should_parse_combined_symbol() {
-        let symbol = Symbol::new("BTCUSDT").unwrap();
+        let symbol = Symbol::new("BTCUSDT").expect("SAFETY: Add proper error handling");
         assert_eq!(symbol.base(), "BTC");
         assert_eq!(symbol.quote(), "USDT");
     }
     
     #[test]
     fn should_normalize_to_uppercase() {
-        let symbol = Symbol::new("btc/usdt").unwrap();
+        let symbol = Symbol::new("btc/usdt").expect("SAFETY: Add proper error handling");
         assert_eq!(symbol.base(), "BTC");
         assert_eq!(symbol.quote(), "USDT");
     }
     
     #[test]
     fn should_create_from_parts() {
-        let symbol = Symbol::from_parts("ETH", "BTC").unwrap();
+        let symbol = Symbol::from_parts("ETH", "BTC").expect("SAFETY: Add proper error handling");
         assert_eq!(symbol.base(), "ETH");
         assert_eq!(symbol.quote(), "BTC");
     }
@@ -228,7 +228,7 @@ mod tests {
     
     #[test]
     fn should_convert_to_exchange_formats() {
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         
         assert_eq!(symbol.to_exchange_format("binance"), "BTCUSDT");
         assert_eq!(symbol.to_exchange_format("kraken"), "BTC/USDT");
@@ -237,25 +237,25 @@ mod tests {
     
     #[test]
     fn should_identify_stablecoin_pairs() {
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         assert!(symbol.is_stablecoin_pair());
         
-        let symbol = Symbol::new("ETH/BTC").unwrap();
+        let symbol = Symbol::new("ETH/BTC").expect("SAFETY: Add proper error handling");
         assert!(!symbol.is_stablecoin_pair());
     }
     
     #[test]
     fn should_identify_fiat_pairs() {
-        let symbol = Symbol::new("BTC/USD").unwrap();
+        let symbol = Symbol::new("BTC/USD").expect("SAFETY: Add proper error handling");
         assert!(symbol.is_fiat_pair());
         
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         assert!(!symbol.is_fiat_pair());
     }
     
     #[test]
     fn should_create_inverse_symbol() {
-        let symbol = Symbol::new("BTC/USDT").unwrap();
+        let symbol = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
         let inverse = symbol.inverse();
         
         assert_eq!(inverse.base(), "USDT");
@@ -265,9 +265,9 @@ mod tests {
     
     #[test]
     fn should_implement_equality() {
-        let s1 = Symbol::new("BTC/USDT").unwrap();
-        let s2 = Symbol::new("btc/usdt").unwrap();
-        let s3 = Symbol::new("ETH/USDT").unwrap();
+        let s1 = Symbol::new("BTC/USDT").expect("SAFETY: Add proper error handling");
+        let s2 = Symbol::new("btc/usdt").expect("SAFETY: Add proper error handling");
+        let s3 = Symbol::new("ETH/USDT").expect("SAFETY: Add proper error handling");
         
         assert_eq!(s1, s2);
         assert_ne!(s1, s3);

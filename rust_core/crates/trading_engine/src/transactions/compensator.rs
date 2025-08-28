@@ -1,3 +1,15 @@
+//! Module uses canonical Position type from domain_types
+//! Cameron: "Single source of truth for Position struct"
+
+pub use domain_types::position_canonical::{
+    Position, PositionId, PositionSide, PositionStatus,
+    PositionError, PositionUpdate
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type PositionResult<T> = Result<T, PositionError>;
+
 // Compensating Transaction Handlers - FULL Implementation
 // Task 2.4: Complete compensation logic for all transaction types
 // Team: Casey (Exchange) + Quinn (Risk) + Avery (Data)
@@ -375,7 +387,7 @@ impl CompensatingTransaction for NoOpCompensator {
 
 // Helper structs and functions
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
 pub enum OrderStatus {
     Open,
     PartiallyFilled { filled_quantity: Decimal, remaining: Decimal },
@@ -460,12 +472,6 @@ impl PositionManager {
     }
 }
 
-struct Position {
-    id: Uuid,
-    symbol: String,
-    quantity: Decimal,
-    average_price: Decimal,
-}
 
 struct AccountManager;
 impl AccountManager {

@@ -1,3 +1,16 @@
+use domain_types::order::OrderError;
+//! Module uses canonical Order type from domain_types
+//! Avery: "Single source of truth for Order struct"
+
+pub use domain_types::order::{
+    Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
+    OrderError, Fill, FillId
+};
+pub use domain_types::{Price, Quantity, Symbol, Exchange};
+
+// Re-export for backward compatibility
+pub type OrderResult<T> = Result<T, OrderError>;
+
 // Fee & Slippage Modeling - Realistic Market Microstructure
 // Owner: Casey | Reviewer: Quinn (Risk), Sophia (Trading)
 // Reference: "Optimal Trading Strategies" - Kissell & Glantz
@@ -6,7 +19,7 @@ use rust_decimal::Decimal;
 use std::collections::HashMap;
 
 /// Comprehensive fee structure per exchange
-#[derive(Debug, Clone)]
+
 pub struct FeeStructure {
     pub exchange: String,
     pub maker_fee_bps: Decimal,     // Negative = rebate
@@ -14,7 +27,7 @@ pub struct FeeStructure {
     pub tier: TradingTier,
 }
 
-#[derive(Debug, Clone)]
+
 pub enum TradingTier {
     Tier1 { volume_30d: Decimal },  // >$100M
     Tier2 { volume_30d: Decimal },  // $50-100M
@@ -24,7 +37,7 @@ pub enum TradingTier {
 }
 
 /// Market impact model - Square root law
-#[derive(Debug)]
+
 pub struct MarketImpactModel {
     /// γ coefficient (typically 0.1-0.3 for crypto)
     gamma: f64,
@@ -75,7 +88,7 @@ impl MarketImpactModel {
 }
 
 /// Queue position model for limit orders
-#[derive(Debug)]
+
 pub struct QueueModel {
     /// Average queue size at best bid/ask
     avg_queue_size: f64,
@@ -136,8 +149,6 @@ pub struct LOBSimulator {
     queue_model: QueueModel,
 }
 
-#[derive(Debug, Clone)]
-pub struct OrderBookSnapshot {
     pub timestamp: i64,
     pub bids: Vec<(f64, f64)>,  // (price, size)
     pub asks: Vec<(f64, f64)>,
@@ -373,8 +384,6 @@ impl LOBSimulator {
     }
 }
 
-#[derive(Debug)]
-pub struct Order {
     pub side: Side,
     pub quantity: f64,
     pub price: f64,
@@ -383,20 +392,20 @@ pub struct Order {
     pub expected_mid: Option<f64>,
 }
 
-#[derive(Debug)]
+
 pub enum Side {
     Buy,
     Sell,
 }
 
-#[derive(Debug)]
+
 pub enum OrderType {
     Market,
     Limit,
     PostOnly,
 }
 
-#[derive(Debug)]
+
 pub struct ExecutionResult {
     pub filled_quantity: f64,
     pub average_price: f64,

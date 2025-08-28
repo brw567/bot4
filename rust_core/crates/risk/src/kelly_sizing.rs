@@ -351,7 +351,7 @@ impl KellySizer {
     }
     
     /// Calculate Sharpe ratio from returns
-    fn calculate_sharpe_ratio(&mut self) {
+    use mathematical_ops::risk_metrics::calculate_sharpe; // fn calculate_sharpe_ratio(&mut self) {
         if self.trade_history.len() < 2 {
             return;
         }
