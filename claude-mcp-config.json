@@ -1,0 +1,76 @@
+{
+  "mcpServers": {
+    "bot4-coordinator": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-coordinator", "/usr/local/bin/coordinator"],
+      "env": {
+        "RUST_LOG": "info"
+      }
+    },
+    "bot4-architect": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-architect", "/usr/local/bin/architect-agent"],
+      "env": {
+        "AGENT_TYPE": "architect",
+        "MCP_MODE": "stdio"
+      }
+    },
+    "bot4-riskquant": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-riskquant", "/usr/local/bin/riskquant-agent"],
+      "env": {
+        "AGENT_TYPE": "riskquant",
+        "MCP_MODE": "stdio",
+        "MAX_KELLY": "0.25"
+      }
+    },
+    "bot4-mlengineer": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-mlengineer", "/usr/local/bin/mlengineer-agent"],
+      "env": {
+        "AGENT_TYPE": "mlengineer",
+        "MCP_MODE": "stdio"
+      }
+    },
+    "bot4-exchangespec": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-exchangespec", "/usr/local/bin/exchangespec-agent"],
+      "env": {
+        "AGENT_TYPE": "exchangespec",
+        "MCP_MODE": "stdio"
+      }
+    },
+    "bot4-infraengineer": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-infraengineer", "/usr/local/bin/infraengineer-agent"],
+      "env": {
+        "AGENT_TYPE": "infraengineer",
+        "MCP_MODE": "stdio"
+      }
+    },
+    "bot4-qualitygate": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-qualitygate", "/usr/local/bin/qualitygate-agent"],
+      "env": {
+        "AGENT_TYPE": "qualitygate",
+        "MCP_MODE": "stdio"
+      }
+    },
+    "bot4-integrationvalidator": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-integrationvalidator", "/usr/local/bin/integrationvalidator-agent"],
+      "env": {
+        "AGENT_TYPE": "integrationvalidator",
+        "MCP_MODE": "stdio"
+      }
+    },
+    "bot4-complianceauditor": {
+      "command": "docker",
+      "args": ["exec", "-i", "bot4-complianceauditor", "/usr/local/bin/complianceauditor-agent"],
+      "env": {
+        "AGENT_TYPE": "complianceauditor",
+        "MCP_MODE": "stdio"
+      }
+    }
+  }
+}

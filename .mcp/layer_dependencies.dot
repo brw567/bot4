@@ -1,0 +1,36 @@
+digraph LayerDependencies {
+    rankdir=BT;
+    node [shape=box, style=filled];
+    
+    // Define layers
+    "Layer 0: Infrastructure" [fillcolor=lightblue];
+    "Layer 1: Data" [fillcolor=lightgreen];
+    "Layer 2: Risk" [fillcolor=yellow];
+    "Layer 3: ML" [fillcolor=orange];
+    "Layer 4: Strategies" [fillcolor=pink];
+    "Layer 5: Execution" [fillcolor=lightgray];
+    "Layer 6: Integration" [fillcolor=purple, fontcolor=white];
+    
+    // Allowed dependencies (bottom-up)
+    "Layer 1: Data" -> "Layer 0: Infrastructure";
+    "Layer 2: Risk" -> "Layer 0: Infrastructure";
+    "Layer 2: Risk" -> "Layer 1: Data";
+    "Layer 3: ML" -> "Layer 0: Infrastructure";
+    "Layer 3: ML" -> "Layer 1: Data";
+    "Layer 3: ML" -> "Layer 2: Risk";
+    "Layer 4: Strategies" -> "Layer 0: Infrastructure";
+    "Layer 4: Strategies" -> "Layer 1: Data";
+    "Layer 4: Strategies" -> "Layer 2: Risk";
+    "Layer 4: Strategies" -> "Layer 3: ML";
+    "Layer 5: Execution" -> "Layer 0: Infrastructure";
+    "Layer 5: Execution" -> "Layer 1: Data";
+    "Layer 5: Execution" -> "Layer 2: Risk";
+    "Layer 5: Execution" -> "Layer 3: ML";
+    "Layer 5: Execution" -> "Layer 4: Strategies";
+    "Layer 6: Integration" -> "Layer 0: Infrastructure";
+    "Layer 6: Integration" -> "Layer 1: Data";
+    "Layer 6: Integration" -> "Layer 2: Risk";
+    "Layer 6: Integration" -> "Layer 3: ML";
+    "Layer 6: Integration" -> "Layer 4: Strategies";
+    "Layer 6: Integration" -> "Layer 5: Execution";
+}

@@ -1,0 +1,187 @@
+{
+  "version": "1.0",
+  "protocol": "MCP",
+  "transport": {
+    "type": "stdio",
+    "encoding": "json-rpc-2.0"
+  },
+  "agents": [
+    {
+      "id": "architect",
+      "name": "Architect",
+      "type": "specialist",
+      "server": {
+        "command": "npx",
+        "args": ["@bot4/architect-server"],
+        "env": {
+          "AGENT_TYPE": "architect",
+          "MCP_DEBUG": "true"
+        }
+      },
+      "capabilities": {
+        "tools": ["ast_parser", "duplication_detector", "dependency_graph"],
+        "resources": ["architecture_docs", "duplicate_registry"],
+        "prompts": ["decompose_task", "check_duplicates", "enforce_layers"]
+      }
+    },
+    {
+      "id": "risk_quant",
+      "name": "RiskQuant",
+      "type": "specialist",
+      "server": {
+        "command": "python3",
+        "args": ["-m", "bot4.agents.risk_quant"],
+        "env": {
+          "AGENT_TYPE": "risk_quant",
+          "MAX_KELLY": "0.25"
+        }
+      },
+      "capabilities": {
+        "tools": ["kelly_calculator", "var_calculator", "monte_carlo"],
+        "resources": ["risk_metrics", "position_limits"],
+        "prompts": ["calculate_risk", "validate_position", "check_limits"]
+      }
+    },
+    {
+      "id": "ml_engineer",
+      "name": "MLEngineer",
+      "type": "specialist",
+      "server": {
+        "command": "python3",
+        "args": ["-m", "bot4.agents.ml_engineer"],
+        "env": {
+          "AGENT_TYPE": "ml_engineer",
+          "MODEL_REGISTRY": "./ml_runs"
+        }
+      },
+      "capabilities": {
+        "tools": ["feature_selector", "cross_validator", "model_trainer"],
+        "resources": ["feature_store", "model_registry"],
+        "prompts": ["select_features", "train_model", "prevent_overfitting"]
+      }
+    },
+    {
+      "id": "exchange_spec",
+      "name": "ExchangeSpec",
+      "type": "specialist",
+      "server": {
+        "command": "npx",
+        "args": ["@bot4/exchange-server"],
+        "env": {
+          "AGENT_TYPE": "exchange_spec",
+          "LATENCY_TARGET": "100"
+        }
+      },
+      "capabilities": {
+        "tools": ["websocket_monitor", "order_simulator", "rate_limiter"],
+        "resources": ["exchange_configs", "api_limits"],
+        "prompts": ["validate_order", "check_rate_limits", "optimize_routing"]
+      }
+    },
+    {
+      "id": "infra_engineer",
+      "name": "InfraEngineer",
+      "type": "specialist",
+      "server": {
+        "command": "npx",
+        "args": ["@bot4/infra-server"],
+        "env": {
+          "AGENT_TYPE": "infra_engineer",
+          "PERF_TARGET": "100"
+        }
+      },
+      "capabilities": {
+        "tools": ["memory_profiler", "simd_optimizer", "perf_analyzer"],
+        "resources": ["performance_metrics", "cpu_features"],
+        "prompts": ["profile_memory", "optimize_simd", "analyze_latency"]
+      }
+    },
+    {
+      "id": "quality_gate",
+      "name": "QualityGate",
+      "type": "validator",
+      "server": {
+        "command": "npx",
+        "args": ["@bot4/quality-server"],
+        "env": {
+          "AGENT_TYPE": "quality_gate",
+          "COVERAGE_TARGET": "100"
+        }
+      },
+      "capabilities": {
+        "tools": ["coverage_analyzer", "duplication_checker", "clippy"],
+        "resources": ["quality_metrics", "coverage_reports"],
+        "prompts": ["check_coverage", "validate_quality", "enforce_standards"]
+      }
+    },
+    {
+      "id": "integration_validator",
+      "name": "IntegrationValidator",
+      "type": "validator",
+      "server": {
+        "command": "npx",
+        "args": ["@bot4/integration-server"],
+        "env": {
+          "AGENT_TYPE": "integration_validator"
+        }
+      },
+      "capabilities": {
+        "tools": ["integration_tester", "contract_validator", "chaos_engine"],
+        "resources": ["integration_tests", "api_contracts"],
+        "prompts": ["test_integration", "validate_contracts", "run_chaos"]
+      }
+    },
+    {
+      "id": "compliance_auditor",
+      "name": "ComplianceAuditor",
+      "type": "validator",
+      "server": {
+        "command": "python3",
+        "args": ["-m", "bot4.agents.compliance_auditor"],
+        "env": {
+          "AGENT_TYPE": "compliance_auditor"
+        }
+      },
+      "capabilities": {
+        "tools": ["audit_logger", "compliance_checker", "signature_verifier"],
+        "resources": ["audit_logs", "compliance_rules"],
+        "prompts": ["audit_changes", "verify_compliance", "sign_deployment"]
+      }
+    }
+  ],
+  "shared_context": {
+    "path": ".mcp/shared_context.json",
+    "update_frequency": "real-time",
+    "persistence": "redis://localhost:6379/1"
+  },
+  "message_queue": {
+    "type": "redis",
+    "host": "localhost",
+    "port": 6379,
+    "db": 1,
+    "pubsub_channel": "bot4_agents"
+  },
+  "quality_gates": {
+    "pre_implementation": {
+      "checks": [
+        "no_duplicates",
+        "architecture_approved",
+        "design_consensus"
+      ],
+      "blocking": true
+    },
+    "post_implementation": {
+      "checks": [
+        "test_coverage_100",
+        "no_todos",
+        "performance_maintained"
+      ],
+      "blocking": true
+    }
+  },
+  "monitoring": {
+    "metrics_endpoint": "http://localhost:9090/metrics",
+    "log_level": "info",
+    "trace_sampling": 0.1
+  }
+}

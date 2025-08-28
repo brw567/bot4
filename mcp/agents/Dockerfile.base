@@ -1,0 +1,58 @@
+# Base Dockerfile for Rust MCP agents
+# Multi-stage build for optimal size and security
+
+FROM rust:1.75-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    musl-dev \
+    openssl-dev \
+    pkgconfig \
+    protobuf-dev \
+    clang \
+    llvm
+
+# Set up working directory
+WORKDIR /build
+
+# Copy Cargo files first for better caching
+COPY Cargo.toml Cargo.lock ./
+
+# Build dependencies only (for caching)
+RUN mkdir src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build --release && \
+    rm -rf src
+
+# Copy actual source code
+COPY src ./src
+
+# Build the release binary
+RUN cargo build --release
+
+# Runtime stage - minimal image
+FROM alpine:3.19
+
+# Install runtime dependencies only
+RUN apk add --no-cache \
+    ca-certificates \
+    openssl \
+    libgcc \
+    && adduser -D -u 1000 agent
+
+# Copy binary from builder
+COPY --from=builder /build/target/release/bot4-agent-* /usr/local/bin/agent
+
+# Set up runtime environment
+ENV RUST_LOG=info
+ENV RUST_BACKTRACE=1
+
+# Security: Drop capabilities
+USER agent
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD ["/usr/local/bin/agent", "--health-check"] || exit 1
+
+# Default command
+CMD ["/usr/local/bin/agent"]

@@ -1,0 +1,94 @@
+services:
+  # Coordinator Agent
+  coordinator:
+    image: mcp-coordinator:latest
+    container_name: mcp-coordinator
+    command: ["coordinator"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # Architect Agent  
+  architect:
+    image: mcp-architect:latest
+    container_name: mcp-architect
+    command: ["architect"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # RiskQuant Agent
+  riskquant:
+    image: mcp-riskquant:latest
+    container_name: mcp-riskquant
+    command: ["riskquant"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # MLEngineer Agent
+  mlengineer:
+    image: mcp-mlengineer:latest
+    container_name: mcp-mlengineer
+    command: ["mlengineer"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # ExchangeSpec Agent
+  exchangespec:
+    image: mcp-exchangespec:latest
+    container_name: mcp-exchangespec
+    command: ["exchangespec"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # InfraEngineer Agent
+  infraengineer:
+    image: mcp-infraengineer:latest
+    container_name: mcp-infraengineer
+    command: ["infraengineer"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # QualityGate Agent
+  qualitygate:
+    image: mcp-qualitygate:latest
+    container_name: mcp-qualitygate
+    command: ["qualitygate"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # IntegrationValidator Agent
+  integrationvalidator:
+    image: mcp-integrationvalidator:latest
+    container_name: mcp-integrationvalidator
+    command: ["integrationvalidator"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+  # ComplianceAuditor Agent
+  complianceauditor:
+    image: mcp-complianceauditor:latest
+    container_name: mcp-complianceauditor
+    command: ["complianceauditor"]
+    stdin_open: true
+    tty: true
+    networks:
+      - bot4-network
+
+networks:
+  bot4-network:
+    driver: bridge

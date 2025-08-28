@@ -1,0 +1,34 @@
+{
+  "last_refresh": "2025-08-27T23:13:48+00:00",
+  "system_state": {
+    "git_branch": "main",
+    "last_commit": "74e528e9 feat(architecture): Task 1.6.4 COMPLETE - Layer Architecture Enforcement",
+    "working_directory": "/home/hamster/bot4"
+  },
+  "agents_active": {
+    "Architect": true,
+    "RiskQuant": true,
+    "MLEngineer": true,
+    "ExchangeSpec": true,
+    "InfraEngineer": true,
+    "QualityGate": true,
+    "IntegrationValidator": true,
+    "ComplianceAuditor": true
+  },
+  "current_focus": {
+    "task": "Context refresh and system alignment",
+    "priority": "P0",
+    "deadline": "immediate"
+  },
+  "quality_gates": {
+    "test_coverage_required": 100,
+    "research_citations_minimum": 5,
+    "documentation_mandatory": true,
+    "fake_implementations_allowed": 0
+  },
+  "research_required": {
+    "papers_minimum": 5,
+    "production_references": 3,
+    "external_sources": ["ArXiv", "Google Scholar", "GitHub", "Jane Street", "Two Sigma"]
+  }
+}

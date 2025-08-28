@@ -1,0 +1,212 @@
+services:
+  # Message broker for inter-agent communication
+  redis:
+    image: redis:7-alpine
+    container_name: bot4-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - bot4-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # PostgreSQL for persistence
+  postgres:
+    image: postgres:15-alpine
+    container_name: bot4-postgres
+    environment:
+      POSTGRES_DB: bot4trading
+      POSTGRES_USER: bot4user
+      POSTGRES_PASSWORD: bot4pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../sql:/docker-entrypoint-initdb.d:ro
+    networks:
+      - bot4-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bot4user -d bot4trading"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MCP Coordinator - Central hub for agent communication
+  coordinator:
+    build: ./coordinator
+    image: bot4-mcp-coordinator:latest
+    container_name: bot4-coordinator
+    ports:
+      - "8000:8000"
+    environment:
+      RUST_LOG: info
+      REDIS_URL: redis://redis:6379
+      POSTGRES_URL: postgresql://bot4user:bot4pass@postgres:5432/bot4trading
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - bot4-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Architect Agent - System design and deduplication
+  architect-agent:
+    build: ./agents/architect
+    image: bot4-architect:latest
+    container_name: bot4-architect
+    ports:
+      - "8080:8080"
+    environment:
+      RUST_LOG: info
+      REDIS_URL: redis://redis:6379
+      WORKSPACE_PATH: /workspace
+      MCP_PORT: 8080
+    volumes:
+      - ../rust_core:/workspace:ro
+      - ../.mcp:/mcp:rw
+    depends_on:
+      - coordinator
+    networks:
+      - bot4-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # RiskQuant Agent - Risk calculations and position sizing
+  riskquant-agent:
+    build: ./agents/riskquant
+    image: bot4-riskquant:latest
+    container_name: bot4-riskquant
+    ports:
+      - "8081:8081"
+    environment:
+      RUST_LOG: info
+      REDIS_URL: redis://redis:6379
+      MAX_KELLY: "0.25"
+      MAX_POSITION_SIZE: "0.02"
+      MCP_PORT: 8081
+    volumes:
+      - ../.mcp:/mcp:rw
+    depends_on:
+      - coordinator
+    networks:
+      - bot4-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # MLEngineer Agent - Machine learning and feature engineering
+  mlengineer-agent:
+    build: ./agents/mlengineer
+    image: bot4-mlengineer:latest
+    container_name: bot4-mlengineer
+    ports:
+      - "8082:8082"
+    environment:
+      RUST_LOG: info
+      REDIS_URL: redis://redis:6379
+      MODEL_CACHE_SIZE: "100"
+      FEATURE_STORE_PATH: /feature_store
+      MCP_PORT: 8082
+    volumes:
+      - ml_data:/feature_store
+      - ../.mcp:/mcp:rw
+    depends_on:
+      - coordinator
+    networks:
+      - bot4-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ExchangeSpec Agent - Exchange connectivity and order management
+  exchangespec-agent:
+    build: ./agents/exchangespec
+    image: bot4-exchangespec:latest
+    container_name: bot4-exchangespec
+    ports:
+      - "8083:8083"
+    environment:
+      RUST_LOG: info
+      REDIS_URL: redis://redis:6379
+      MAX_RECONNECT_ATTEMPTS: "5"
+      BINANCE_TESTNET: "true"
+      MCP_PORT: 8083
+    volumes:
+      - ../.mcp:/mcp:rw
+    depends_on:
+      - coordinator
+    networks:
+      - bot4-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # InfraEngineer Agent (placeholder - to be implemented)
+  infraengineer-agent:
+    image: alpine:latest
+    container_name: bot4-infraengineer
+    ports:
+      - "8084:8084"
+    command: ["sh", "-c", "echo 'InfraEngineer agent placeholder' && sleep infinity"]
+    networks:
+      - bot4-network
+
+  # QualityGate Agent (placeholder - to be implemented)
+  qualitygate-agent:
+    image: alpine:latest
+    container_name: bot4-qualitygate
+    ports:
+      - "8085:8085"
+    command: ["sh", "-c", "echo 'QualityGate agent placeholder' && sleep infinity"]
+    networks:
+      - bot4-network
+
+  # IntegrationValidator Agent (placeholder - to be implemented)
+  integrationvalidator-agent:
+    image: alpine:latest
+    container_name: bot4-integrationvalidator
+    ports:
+      - "8086:8086"
+    command: ["sh", "-c", "echo 'IntegrationValidator agent placeholder' && sleep infinity"]
+    networks:
+      - bot4-network
+
+  # ComplianceAuditor Agent (placeholder - to be implemented)
+  complianceauditor-agent:
+    image: alpine:latest
+    container_name: bot4-complianceauditor
+    ports:
+      - "8087:8087"
+    command: ["sh", "-c", "echo 'ComplianceAuditor agent placeholder' && sleep infinity"]
+    networks:
+      - bot4-network
+
+networks:
+  bot4-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+  postgres_data:
+  ml_data:

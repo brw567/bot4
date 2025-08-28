@@ -1,0 +1,81 @@
+[package]
+name = "bot4-integrationvalidator"
+version = "1.0.0"
+edition = "2021"
+authors = ["Bot4 Team"]
+
+[dependencies]
+# MCP SDK
+rmcp = { version = "0.2", features = ["server", "transport"] }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+
+# Web framework
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+hyper = "0.14"
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+
+# Contract testing
+pact_consumer = "1.1"
+pact_verifier = "1.1"
+openapi = { version = "1.0", features = ["v3"] }
+jsonschema = "0.17"
+
+# WebSocket testing
+tokio-tungstenite = "0.20"
+futures-util = "0.3"
+
+# gRPC testing
+tonic = "0.10"
+prost = "0.12"
+
+# Database testing
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "sqlite"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+toml = "0.8"
+
+# Redis
+redis = { version = "0.24", features = ["tokio-comp", "connection-manager"] }
+
+# File system
+walkdir = "2.4"
+glob = "0.3"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Metrics
+prometheus = "0.13"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Utils
+uuid = { version = "1.6", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1.10"
+dashmap = "5.5"
+
+[dev-dependencies]
+tempfile = "3.8"
+mockito = "1.2"
+wiremock = "0.5"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+
+[[bin]]
+name = "integrationvalidator-agent"
+path = "src/main.rs"

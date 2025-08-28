@@ -1,0 +1,374 @@
+# AGENT_COMMUNICATION_PROTOCOL.yaml
+# Multi-Agent Collaboration Framework for Bot4
+# Version: 1.0
+# Date: 2025-08-27
+
+---
+
+protocol:
+  name: Bot4 Multi-Agent Communication Protocol (B4-MACP)
+  version: 1.0
+  transport: Model Context Protocol (MCP)
+  encoding: JSON-RPC 2.0
+  
+---
+
+## AGENT REGISTRY
+
+agents:
+  - id: architect
+    name: Architect
+    type: specialist
+    tools: [ast_parser, dependency_graph, duplication_detector, rust_analyzer]
+    veto_domains: [architecture, duplications, layer_violations]
+    
+  - id: risk_quant
+    name: RiskQuant
+    type: specialist
+    tools: [monte_carlo, var_calculator, kelly_optimizer, garch_model]
+    veto_domains: [risk_limits, position_sizing, stop_loss]
+    
+  - id: ml_engineer
+    name: MLEngineer
+    type: specialist
+    tools: [pytorch, feature_selector, cross_validator, model_versioning]
+    veto_domains: [overfitting, feature_engineering]
+    
+  - id: exchange_spec
+    name: ExchangeSpec
+    type: specialist
+    tools: [websocket_debugger, order_simulator, latency_profiler, rate_limiter]
+    veto_domains: [exchange_limits, rate_limiting]
+    
+  - id: infra_engineer
+    name: InfraEngineer
+    type: specialist
+    tools: [perf, valgrind, simd_optimizer, memory_profiler]
+    veto_domains: [performance, memory_safety]
+    
+  - id: quality_gate
+    name: QualityGate
+    type: validator
+    tools: [coverage_analyzer, sonarqube, duplication_checker, clippy]
+    blocking_power: true
+    
+  - id: integration_validator
+    name: IntegrationValidator
+    type: validator
+    tools: [integration_tester, contract_validator, chaos_engine, load_tester]
+    blocking_power: true
+    
+  - id: compliance_auditor
+    name: ComplianceAuditor
+    type: validator
+    tools: [audit_logger, compliance_checker, report_generator, signature_verifier]
+    blocking_power: true
+
+---
+
+## COLLABORATION PATTERNS
+
+patterns:
+  
+  task_initialization:
+    trigger: new_task_assigned
+    sequence:
+      1: architect.analyze_and_decompose()
+      2: architect.check_for_duplicates()
+      3: architect.broadcast_to_all_agents()
+      4: all_agents.acknowledge_and_prepare()
+    timeout: 5_minutes
+    
+  analysis_phase:
+    trigger: task_decomposed
+    parallel_execution:
+      - risk_quant.analyze_risk_implications()
+      - ml_engineer.analyze_ml_requirements()
+      - exchange_spec.analyze_exchange_constraints()
+      - infra_engineer.analyze_performance_impact()
+    aggregation: architect.collect_analyses()
+    timeout: 30_minutes
+    
+  design_consensus:
+    trigger: analyses_complete
+    sequence:
+      1: architect.present_design_options()
+      2: all_agents.review_and_comment()
+      3: all_agents.vote_on_approach()
+      4: architect.verify_consensus()
+    consensus_threshold: 5/8
+    veto_override_threshold: 7/8
+    timeout: 15_minutes
+    
+  implementation:
+    trigger: design_approved
+    sequence:
+      1: primary_implementer.begin_coding()
+      2: reviewing_agents.real_time_review()
+      3: reviewing_agents.suggest_improvements()
+      4: primary_implementer.incorporate_feedback()
+    review_frequency: every_30_lines
+    
+  validation:
+    trigger: implementation_complete
+    sequence:
+      1: quality_gate.validate_quality()
+      2: integration_validator.test_integration()
+      3: compliance_auditor.audit_compliance()
+      4: all_validators.sign_off()
+    blocking: any_validator_can_block
+    
+---
+
+## MESSAGE FORMATS
+
+message_schema:
+  base_message:
+    id: uuid
+    timestamp: iso8601
+    from_agent: agent_id
+    to_agents: [agent_ids] | "all"
+    type: message_type
+    priority: critical | high | normal | low
+    content: {}
+    
+message_types:
+  
+  TASK_ANNOUNCEMENT:
+    content:
+      task_id: string
+      description: string
+      estimated_hours: number
+      dependencies: [task_ids]
+      
+  ANALYSIS_RESULT:
+    content:
+      findings: [string]
+      risks: [string]
+      recommendations: [string]
+      blockers: [string]
+      
+  DESIGN_PROPOSAL:
+    content:
+      approach: string
+      rationale: string
+      pros: [string]
+      cons: [string]
+      alternatives: [approach]
+      
+  REVIEW_COMMENT:
+    content:
+      file: string
+      line: number
+      severity: critical | major | minor
+      issue: string
+      suggestion: string
+      
+  CONSENSUS_VOTE:
+    content:
+      proposal_id: string
+      vote: approve | reject | abstain
+      rationale: string
+      conditions: [string]
+      
+  VETO:
+    content:
+      target: proposal_id | implementation_id
+      reason: string
+      domain: veto_domain
+      requirements_to_proceed: [string]
+      
+  STATUS_UPDATE:
+    content:
+      task_id: string
+      phase: analysis | design | implementation | validation
+      progress_percent: number
+      blockers: [string]
+      eta_minutes: number
+
+---
+
+## SHARED CONTEXT MANAGEMENT
+
+shared_context:
+  location: .mcp/shared_context.json
+  
+  structure:
+    current_sprint:
+      tasks: [task_status]
+      
+    task_status:
+      id: string
+      phase: string
+      assigned_to: [agent_ids]
+      progress: number
+      blockers: [string]
+      
+    decisions:
+      - timestamp: iso8601
+        decision: string
+        votes: {agent_id: vote}
+        rationale: string
+        
+    discovered_issues:
+      duplications: [file:line]
+      layer_violations: [from:to]
+      performance_regressions: [metric:value]
+      
+    metrics:
+      test_coverage: number
+      duplication_percent: number
+      latency_us: number
+      memory_mb: number
+      
+  update_protocol:
+    - updates via atomic operations only
+    - all agents subscribe to changes
+    - changes trigger notifications
+    - history maintained for audit
+
+---
+
+## ESCALATION PROCEDURES
+
+escalation:
+  
+  no_consensus:
+    after_rounds: 3
+    action: request_external_review
+    external_reviewer: sophia_chatgpt | nexus_grok
+    
+  veto_issued:
+    allows_override: true
+    override_threshold: 7/8
+    must_document: rationale_for_override
+    
+  deadline_approaching:
+    at_percent: 75
+    action: parallel_implementation
+    merge_strategy: best_of_parallel
+    
+  critical_bug_found:
+    immediate: halt_all_work
+    priority: fix_before_continue
+    owner: agent_who_found
+    reviewers: all_other_agents
+
+---
+
+## QUALITY GATES
+
+quality_requirements:
+  
+  pre_implementation:
+    - no_duplicates_exist
+    - architecture_approved
+    - design_consensus_achieved
+    - dependencies_available
+    
+  during_implementation:
+    - real_time_review_active
+    - no_todos_or_placeholders
+    - tests_written_first
+    - documentation_parallel
+    
+  post_implementation:
+    - test_coverage: 100%
+    - performance_maintained: true
+    - integration_verified: true
+    - documentation_complete: true
+    
+  pre_merge:
+    - all_validators_approved
+    - no_outstanding_vetos
+    - external_review_passed
+    - audit_trail_complete
+
+---
+
+## PERFORMANCE MONITORING
+
+monitoring:
+  
+  agent_metrics:
+    - response_time_ms
+    - decisions_per_hour
+    - review_thoroughness_score
+    - false_positive_rate
+    
+  collaboration_metrics:
+    - time_to_consensus_minutes
+    - veto_frequency
+    - implementation_cycles
+    - defect_escape_rate
+    
+  system_metrics:
+    - tasks_completed_per_week
+    - duplication_rate
+    - layer_violation_rate
+    - test_coverage_percent
+
+---
+
+## IMPLEMENTATION CHECKLIST
+
+setup:
+  1: Install MCP server for each agent
+  2: Configure agent tools and permissions
+  3: Initialize shared context
+  4: Set up message routing
+  5: Configure quality gates
+  6: Enable monitoring
+  7: Test communication pathways
+  8: Verify veto mechanisms
+  9: Test escalation procedures
+  10: Run collaboration drill
+
+---
+
+## AGENT TOOL CONFIGURATIONS
+
+architect_tools:
+  ast_parser:
+    command: ast-grep
+    languages: [rust, typescript]
+    patterns_file: .ast-patterns.yaml
+    
+  duplication_detector:
+    command: ./scripts/check_duplicates.sh
+    threshold: 0.8
+    ignore_patterns: [tests/*, benches/*]
+    
+risk_quant_tools:
+  kelly_optimizer:
+    max_fraction: 0.25
+    confidence_interval: 0.95
+    
+  var_calculator:
+    methods: [historical, parametric, monte_carlo]
+    confidence_levels: [0.95, 0.99]
+    
+ml_engineer_tools:
+  model_versioning:
+    backend: mlflow
+    tracking_uri: ./ml_runs
+    
+  feature_selector:
+    methods: [mutual_info, lasso, random_forest]
+    
+exchange_spec_tools:
+  rate_limiter:
+    binance: 1200/min
+    kraken: 60/sec
+    coinbase: 10/sec
+    
+infra_engineer_tools:
+  memory_profiler:
+    tool: valgrind
+    flags: --leak-check=full --track-origins=yes
+    
+  simd_optimizer:
+    targets: [avx512, avx2, sse42]
+    fallback: scalar
+
+---

@@ -1,6 +1,7 @@
-# Bot4 Trading Platform - Master Architecture V2
+# Bot4 Trading Platform - Master Architecture V4
 ## Complete System Specification with All Gaps Addressed
-## Date: August 16, 2025 | Version: 2.0
+## Date: August 27, 2025 | Version: 4.0 | **SINGLE SOURCE OF TRUTH**
+## Project Manager: Karl (Full enforcement authority)
 
 ---
 
@@ -8,7 +9,15 @@
 
 This is the complete, gap-free architecture for Bot4, incorporating all discoveries from our comprehensive analysis. Every component, data flow, and risk factor has been considered.
 
-### Key Improvements in V2:
+### ⚠️ CRITICAL STATUS UPDATE (Aug 27, 2025)
+- **Architecture Design**: 99% complete ✅
+- **Implementation Progress**: 14.8% complete (564/3,812 hours) ⚠️
+- **Duplication Crisis**: 166 duplicates detected (BLOCKING) 🚨
+- **MCP Infrastructure**: Deployed today (9 agents operational) ✅
+- **Governance**: Karl appointed Project Manager with veto power ✅
+- **CPU-Only Mode**: MANDATORY - No GPU dependencies allowed ✅
+
+### Key Improvements in V4 (includes V2 & V3):
 - ✅ Complete fee management system
 - ✅ Funding rate optimization
 - ✅ Liquidation prevention
@@ -17,8 +26,55 @@ This is the complete, gap-free architecture for Bot4, incorporating all discover
 - ✅ Tax optimization
 - ✅ Regulatory compliance
 - ✅ Data quality validation
+- ✅ **MCP Multi-Agent System (9 agents)**
+- ✅ **CPU-only optimization (no GPU)**
+- ✅ **Deduplication enforcement**
+- ✅ **Research-driven development (5 papers/feature)**
+- ✅ **Karl's PM governance structure**
 
 ---
+
+## 🤖 MCP MULTI-AGENT ARCHITECTURE (NEW IN V4)
+
+### Agent Roster (Docker Deployed)
+```yaml
+agents:
+  Karl: Project Manager - Full veto power, enforcement authority
+  Avery: Data Engineer - TimescaleDB, ingestion, validation
+  Blake: ML Engineer - XGBoost, LSTM, reinforcement learning
+  Cameron: TA Specialist - 50+ indicators, Ichimoku, Elliott
+  Drew: Risk Manager - VaR, Kelly, circuit breakers
+  Ellis: Trading Engine - <50ns decisions, SIMD optimization
+  Morgan: Exchange Gateway - WebSocket, order management
+  Quinn: Safety Officer - Kill switch, compliance, audit
+  Skyler: Performance Engineer - Zero allocation, profiling
+
+communication:
+  protocol: MCP (Model Context Protocol)
+  shared_context: /.mcp/shared_context.json
+  consensus_requirement: 5/9 agents
+  veto_power: Karl (PM), Quinn (Safety)
+```
+
+### Agent Communication Protocol
+```yaml
+message_types:
+  ANALYSIS_REQUEST: Request specialist analysis
+  DESIGN_PROPOSAL: Propose implementation
+  REVIEW_FINDING: Report issues
+  VETO: Block with rationale (Karl/Quinn only)
+  CONSENSUS_VOTE: Democratic decision
+  CONTEXT_UPDATE: Sync shared state
+
+example_flow:
+  1. Karl assigns task to team
+  2. Specialists analyze in parallel
+  3. Design proposals submitted
+  4. Consensus vote (5/9 required)
+  5. Implementation with real-time review
+  6. Quinn validates safety
+  7. Karl approves deployment
+```
 
 ## 📊 SYSTEM ARCHITECTURE OVERVIEW
 
@@ -849,8 +905,138 @@ monitoring: CONFIGURED
 
 ---
 
-*Document Version: 3.0*  
-*Date: August 24, 2025*  
-*Status: 99% COMPLETE - READY FOR PRODUCTION*  
-*Approved By: All 8 Team Members*
-*Latest Achievement: <50ns Decision Latency ACHIEVED*
+---
+
+## 🔍 DEDUPLICATION ENFORCEMENT (CRITICAL)
+
+### Current Crisis
+```yaml
+duplicate_count: 166 implementations
+impact: 10x performance degradation
+examples:
+  - 44 Order struct definitions
+  - 32 calculate_pnl functions
+  - 28 WebSocket managers
+  - 18 risk calculators
+  - 15 MA implementations
+  - 29 miscellaneous
+
+resolution:
+  immediate: HALT all new features
+  sprint: 160-hour deduplication
+  enforcement: Compile-time checking
+  prevention: Single source of truth
+```
+
+### Prevention Mechanisms
+```rust
+// MANDATORY trait for all components
+pub trait NoDuplication {
+    fn canonical_location() -> &'static str;
+    fn check_uniqueness() -> Result<(), DuplicationError>;
+}
+
+// Build-time enforcement
+#[cfg(not(test))]
+compile_error!("Duplication check failed - see build log");
+```
+
+## 🎓 RESEARCH REQUIREMENTS (MANDATORY)
+
+### Minimum Citations Per Feature
+```yaml
+per_feature_minimum: 5 academic papers
+acceptable_sources:
+  - Google Scholar
+  - arXiv
+  - SSRN
+  - IEEE
+  - ACM
+  - Nature/Science
+  
+required_elements:
+  - Mathematical proof
+  - Performance analysis
+  - Real-world validation
+  - Edge case handling
+  - Failure modes
+
+example:
+  feature: "Kelly Criterion Position Sizing"
+  papers:
+    1. Kelly (1956) - Original criterion
+    2. Thorp (1969) - Practical application
+    3. MacLean et al (2010) - Capital growth
+    4. Vince (1990) - Optimal f
+    5. Ziemba (2003) - Drawdown properties
+```
+
+## 🖥️ CPU-ONLY OPTIMIZATION (MANDATORY)
+
+### No GPU Dependencies
+```yaml
+forbidden:
+  - CUDA
+  - cuDNN
+  - PyTorch GPU ops
+  - TensorFlow GPU
+  - Any GPU acceleration
+
+required:
+  - CPU-only builds
+  - SIMD optimization (AVX2/AVX-512)
+  - Multi-threading (Rayon)
+  - Zero-allocation hot paths
+  - Cache-friendly layouts
+
+performance_targets:
+  decision_latency: <50ns (ACHIEVED)
+  ml_inference: <1ms (CPU-only)
+  ta_calculation: <10μs
+  risk_check: <100ns
+```
+
+## ✅ SINGLE SOURCE OF TRUTH POLICY
+
+### Documentation Hierarchy
+```yaml
+canonical_documents:
+  project_management: /PROJECT_MANAGEMENT_MASTER.md
+  architecture: /docs/MASTER_ARCHITECTURE.md  # THIS FILE
+  layer_spec: /docs/LLM_OPTIMIZED_ARCHITECTURE.md
+  
+enforcement:
+  - NO alternative versions
+  - NO local copies
+  - NO team-specific forks
+  - ALL updates to master docs only
+  - Karl reviews all changes
+```
+
+### Violation Penalties
+```yaml
+violations:
+  creating_duplicate_docs:
+    penalty: Task rejection
+    resolution: Merge to master
+    
+  ignoring_master_docs:
+    penalty: Work invalidated
+    resolution: Redo with correct spec
+    
+  not_updating_master:
+    penalty: Changes reverted
+    resolution: Update master first
+```
+
+---
+
+*Document Version: 4.0*  
+*Date: August 27, 2025*  
+*Status:*
+  - *Architecture Design: 99% COMPLETE*
+  - *Implementation: 14.8% COMPLETE (564/3,812 hours)*
+  - *Blocking Issue: 166 DUPLICATES*
+*Approved By: Karl (PM) + All 9 Agents*
+*Latest Achievement: MCP Infrastructure Deployed*
+*Next Priority: DEDUPLICATION SPRINT*

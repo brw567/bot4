@@ -1,0 +1,59 @@
+[package]
+name = "bot4-agent-mlengineer"
+version = "1.0.0"
+edition = "2021"
+authors = ["Bot4 Team"]
+
+[dependencies]
+# MCP SDK
+rmcp = { version = "0.2", features = ["server", "transport", "docker"] }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+
+# Redis
+redis = { version = "0.24", features = ["tokio-comp"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# ML and numerical
+ndarray = { version = "0.15", features = ["rayon"] }
+ndarray-stats = "0.5"
+ndarray-rand = "0.14"
+statrs = "0.16"
+linfa = "0.7"
+linfa-trees = "0.7"
+linfa-nn = "0.7"
+smartcore = "0.3"
+
+# Technical indicators
+ta = "0.5"
+
+# Time series
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Utils
+uuid = { version = "1.6", features = ["v4", "serde"] }
+rayon = "1.8"
+rand = "0.8"
+
+[features]
+default = ["server", "transport", "docker"]
+server = []
+transport = []
+docker = []
