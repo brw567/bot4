@@ -108,3 +108,7 @@ mod lib_tests {
     }
 }pub mod risk_limits;
 pub use risk_limits::RiskLimits;
+
+pub mod canonical_types;
+pub use canonical_types::*;
+pub use canonical_types::calculations::*;

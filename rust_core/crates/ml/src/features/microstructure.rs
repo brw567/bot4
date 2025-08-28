@@ -11,7 +11,8 @@ use chrono::{DateTime, Utc};
 
 /// Tick data for microstructure calculations
 #[derive(Debug, Clone)]
-pub struct Tick {
+// REMOVED: use domain_types::Tick
+// pub struct Tick {
     pub timestamp: DateTime<Utc>,
     pub price: f64,
     pub volume: f64,

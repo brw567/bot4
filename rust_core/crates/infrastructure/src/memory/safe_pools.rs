@@ -681,7 +681,8 @@ pub enum OrderSide {
 
 /// Signal with optimized memory layout
 
-pub struct Signal {
+// REMOVED: use domain_types::Signal
+// pub struct Signal {
     pub id: u64,
     pub symbol_id: u32,
     pub signal_type: SignalType,
@@ -714,7 +715,8 @@ pub enum SignalType {
 
 /// Market tick with minimal allocations
 
-pub struct Tick {
+// REMOVED: use domain_types::Tick
+// pub struct Tick {
     pub symbol_id: u32,
     pub bid: f64,
     pub ask: f64,

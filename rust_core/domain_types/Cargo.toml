@@ -28,6 +28,9 @@ dashmap = "6.0"
 # Validation and constraints
 validator = { version = "0.18", features = ["derive"] }
 
+# Numerical computation for canonical calculations
+ndarray = "0.15"
+
 # Enum utilities
 strum = { version = "0.26", features = ["derive"] }
 strum_macros = "0.26"

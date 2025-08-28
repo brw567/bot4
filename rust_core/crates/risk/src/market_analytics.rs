@@ -50,7 +50,8 @@ struct PriceHistory {
 #[derive(Clone, Debug)]
 
 #[derive(Clone, Debug)]
-pub struct Tick {
+// REMOVED: use domain_types::Tick
+// pub struct Tick {
     pub timestamp: u64,
     pub price: Price,
     pub volume: Quantity,

@@ -2554,6 +2554,7 @@ dependencies = [
  "chrono",
  "criterion",
  "dashmap 6.1.0",
+ "ndarray 0.15.6",
  "once_cell",
  "parking_lot",
  "pretty_assertions",

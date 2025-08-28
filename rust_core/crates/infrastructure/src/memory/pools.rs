@@ -69,7 +69,8 @@ pub enum OrderSide {
 }
 
 
-pub struct Signal {
+// REMOVED: use domain_types::Signal
+// pub struct Signal {
     pub id: u64,
     pub symbol: String,  // Keep for compatibility
     pub symbol_id: u32,  // FAST: Use this in hot paths instead of String
@@ -86,7 +87,8 @@ pub enum SignalType {
 }
 
 
-pub struct Tick {
+// REMOVED: use domain_types::Tick
+// pub struct Tick {
     pub symbol: String,
     pub bid: f64,
     pub ask: f64,

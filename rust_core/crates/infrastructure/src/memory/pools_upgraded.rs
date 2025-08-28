@@ -272,7 +272,8 @@ pub struct PoolStats {
 }
 
 
-pub struct Signal {
+// REMOVED: use domain_types::Signal
+// pub struct Signal {
     pub id: u64,
     pub source: String,
     pub symbol: String,
@@ -285,7 +286,8 @@ pub struct Signal {
 }
 
 
-pub struct Tick {
+// REMOVED: use domain_types::Tick
+// pub struct Tick {
     pub symbol: String,
     pub bid: f64,
     pub ask: f64,

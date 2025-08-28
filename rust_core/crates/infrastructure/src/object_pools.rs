@@ -70,7 +70,8 @@ pub enum OrderStatus {
 }
 
 
-pub struct Signal {
+// REMOVED: use domain_types::Signal
+// pub struct Signal {
     pub symbol: String,
     pub strength: f64,
     pub signal_type: SignalType,

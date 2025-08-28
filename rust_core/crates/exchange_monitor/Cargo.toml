@@ -1,0 +1,18 @@
+[package]
+name = "exchange_monitor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.40", features = ["full"] }
+futures = "0.3"
+dashmap = "5.5"
+parking_lot = "0.12"
+crossbeam = "0.8"
+mimalloc = "0.1"  # High-performance allocator
+simba = "0.8"     # SIMD operations
+packed_simd_2 = "0.3"  # AVX-512 support
+zerocopy = "0.7"  # Zero-copy serialization
+rkyv = "0.7"      # Zero-copy deserialization
+bytes = "1.5"
+domain_types = { path = "../domain_types" }
