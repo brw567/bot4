@@ -40,6 +40,7 @@ pub trait TradingOperation: Send + Sync {
 
 /// Operation result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OperationResult {
     OrderPlaced { order_id: String, timestamp: DateTime<Utc> },
     OrderCancelled { order_id: String },
@@ -50,6 +51,7 @@ pub enum OperationResult {
 
 /// Operation errors
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum OperationError {
     #[error("Validation failed: {0}")]
     ValidationFailed(#[from] ValidationError),
@@ -78,6 +80,7 @@ pub enum OperationError {
 
 /// Validation errors
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum ValidationError {
     #[error("Invalid price: {0}")]
     InvalidPrice(String),
@@ -103,6 +106,7 @@ pub enum ValidationError {
 
 /// Order operation (place, cancel, update)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderOperation {
     pub operation_type: OrderOperationType,
     pub order: Option<Order>,
@@ -111,6 +115,7 @@ pub struct OrderOperation {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderOperationType {
     Place,
     Cancel,
@@ -119,15 +124,23 @@ pub enum OrderOperationType {
 
 /// Order updates
 #[derive(Debug, Clone)]
-pub struct OrderUpdate {
-    pub price: Option<Price>,
-    pub quantity: Option<Quantity>,
-    pub stop_loss: Option<Price>,
-    pub take_profit: Option<Price>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+// pub struct OrderUpdate {
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub price: Option<Price>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub quantity: Option<Quantity>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub stop_loss: Option<Price>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub take_profit: Option<Price>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+// }
 
 /// Position operation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PositionOperation {
     pub symbol: String,
     pub operation_type: PositionOperationType,
@@ -136,6 +149,7 @@ pub struct PositionOperation {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum PositionOperationType {
     Open,
     Close,
@@ -170,6 +184,7 @@ pub enum PositionOperationType {
 // }
 
 /// Trading context for operations
+/// TODO: Add docs
 pub struct TradingContext {
     /// Current positions
     pub positions: Arc<RwLock<HashMap<String, Position>>>,
@@ -188,6 +203,7 @@ pub struct TradingContext {
 
 /// Exchange connection stub
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeConnection {
     pub name: String,
     pub connected: bool,
@@ -365,6 +381,7 @@ pub async fn get_balance(
 }
 
 /// Validate order - consolidates 4 implementations
+/// TODO: Add docs
 pub fn validate_order(
     order: &Order,
     risk_limits: &RiskLimits,

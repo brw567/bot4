@@ -32,6 +32,7 @@ use crate::replay::{
 
 /// Playback configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PlaybackConfig {
     /// Playback speed multiplier (1.0 = realtime, 10.0 = 10x speed)
     pub speed_multiplier: f64,
@@ -83,6 +84,7 @@ impl Default for PlaybackConfig {
 
 /// Playback speed control
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum PlaybackSpeed {
     /// As fast as possible
     Maximum,
@@ -96,6 +98,7 @@ pub enum PlaybackSpeed {
 
 /// Simulation event types
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SimulationEvent {
     /// Order book update
     BookUpdate(OrderBookUpdate),
@@ -127,6 +130,7 @@ pub enum SimulationEvent {
 
 /// Event sequence for replay
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EventSequence {
     pub events: VecDeque<SimulationEvent>,
     pub start_time: DateTime<Utc>,
@@ -136,6 +140,7 @@ pub struct EventSequence {
 
 /// Replay result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ReplayResult {
     pub events_processed: u64,
     pub events_skipped: u64,
@@ -148,6 +153,7 @@ pub struct ReplayResult {
 
 /// Simulation statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SimulationStats {
     pub timestamp: DateTime<Utc>,
     pub events_processed: u64,
@@ -180,7 +186,9 @@ pub trait TradingStrategy: Send + Sync {
 
 /// Trading signal from strategy
 #[derive(Debug, Clone)]
-pub struct StrategySignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate StrategySignal - use canonical_types::TradingSignal
+// pub struct StrategySignal {
     pub symbol: Symbol,
     pub side: TradeSide,
     pub quantity: Quantity,
@@ -191,6 +199,7 @@ pub struct StrategySignal {
 
 /// Signal urgency levels
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum SignalUrgency {
     Low,
     Medium,
@@ -202,6 +211,7 @@ pub enum SignalUrgency {
 #[derive(Debug, Clone)]
 
 /// Main playback engine
+/// TODO: Add docs
 pub struct PlaybackEngine {
     config: Arc<PlaybackConfig>,
     lob_simulator: Arc<LOBSimulator>,

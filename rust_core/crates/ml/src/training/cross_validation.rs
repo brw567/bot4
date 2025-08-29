@@ -28,6 +28,7 @@ pub trait ValidationStrategy: Send + Sync {
 // ============================================================================
 
 /// Time series cross-validation with gap
+/// TODO: Add docs
 pub struct TimeSeriesSplit {
     n_splits: usize,
     test_size: Option<usize>,
@@ -114,6 +115,7 @@ impl ValidationStrategy for TimeSeriesSplit {
 // ============================================================================
 
 /// Purged K-Fold with embargo for financial data
+/// TODO: Add docs
 pub struct PurgedKFold {
     n_splits: usize,
     purge_gap: usize,
@@ -188,6 +190,7 @@ impl ValidationStrategy for PurgedKFold {
 // ============================================================================
 
 /// Combinatorial purged cross-validation for path-dependent strategies
+/// TODO: Add docs
 pub struct CombinatorialPurgedCV {
     n_splits: usize,
     n_test_splits: usize,
@@ -295,6 +298,7 @@ impl ValidationStrategy for CombinatorialPurgedCV {
 // ============================================================================
 
 /// Walk-forward analysis for production deployment
+/// TODO: Add docs
 pub struct WalkForwardAnalysis {
     train_window: usize,
     test_window: usize,
@@ -358,6 +362,7 @@ impl ValidationStrategy for WalkForwardAnalysis {
 // ============================================================================
 
 /// Main cross-validation executor
+/// TODO: Add docs
 pub struct CrossValidator {
     strategy: Box<dyn ValidationStrategy>,
     scoring_metrics: Vec<String>,
@@ -502,6 +507,7 @@ impl CrossValidator {
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FoldResult {
     pub fold_idx: usize,
     pub train_size: usize,
@@ -510,6 +516,7 @@ pub struct FoldResult {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CVResults {
     pub fold_results: Vec<FoldResult>,
     pub aggregated_metrics: HashMap<String, f64>,

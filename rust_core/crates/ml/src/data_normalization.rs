@@ -14,6 +14,7 @@ use std::collections::VecDeque;
 /// Robust normalization methods for crypto market data
 /// Morgan: "Crypto markets have extreme outliers - we MUST handle them!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum NormalizationMethod {
     /// Standard normalization (vulnerable to outliers)
     StandardScaler,
@@ -39,12 +40,14 @@ pub enum NormalizationMethod {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum QuantileOutput {
     Uniform,
     Normal,
 }
 
 /// Robust data normalizer for cryptocurrency markets
+/// TODO: Add docs
 pub struct RobustNormalizer {
     method: NormalizationMethod,
     

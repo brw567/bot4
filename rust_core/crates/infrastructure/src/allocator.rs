@@ -15,6 +15,7 @@ use mimalloc::MiMalloc;
 static GLOBAL: MiMalloc = MiMalloc;
 
 /// MiMalloc configuration for optimal trading performance
+/// TODO: Add docs
 pub fn configure_mimalloc() {
     // These would be set via environment variables in production:
     // MIMALLOC_LARGE_OS_PAGES=1      - Use large pages for better TLB performance

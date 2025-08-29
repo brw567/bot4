@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum NewsError {
     #[error("API error: {0}")]
     ApiError(String),
@@ -23,6 +24,7 @@ pub enum NewsError {
 pub type Result<T> = std::result::Result<T, NewsError>;
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct NewsConfig {
     pub sources: Vec<String>,
     pub min_relevance_score: f64,
@@ -44,12 +46,14 @@ impl Default for NewsConfig {
 }
 
 /// News Sentiment Processor - analyzes news for market sentiment
+/// TODO: Add docs
 pub struct NewsSentimentProcessor {
     config: NewsConfig,
     sentiment_cache: Arc<RwLock<HashMap<String, SentimentScore>>>,
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SentimentScore {
     pub positive: f64,
     pub negative: f64,

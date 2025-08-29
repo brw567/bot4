@@ -32,6 +32,7 @@ pub use retry::{RetryPolicy, RetryManager, CircuitBreaker, CircuitBreakerConfig}
 
 /// Transaction types in our trading system
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum TransactionType {
     OrderPlacement {
         order_id: Uuid,
@@ -71,12 +72,14 @@ pub enum TransactionType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum FeeType {
     Maker,
     Taker,
@@ -86,6 +89,7 @@ pub enum FeeType {
 
 /// Transaction status following SAGA pattern
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum TransactionStatus {
     /// Transaction has been initiated but not yet started
     Pending,
@@ -105,6 +109,7 @@ pub enum TransactionStatus {
 
 /// Represents a single transaction in the system
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Transaction {
     /// Unique identifier for idempotency
     pub id: Uuid,
@@ -183,6 +188,7 @@ impl Transaction {
 }
 
 /// Transaction Manager - Orchestrates SAGA pattern
+/// TODO: Add docs
 pub struct TransactionManager {
     /// Write-Ahead Log for durability
     wal: Arc<WriteAheadLog>,
@@ -201,6 +207,7 @@ pub struct TransactionManager {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TransactionEvent {
     Started(Uuid),
     Committed(Uuid),
@@ -210,6 +217,7 @@ pub enum TransactionEvent {
 }
 
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct TransactionMetrics {
     pub total_transactions: u64,
     pub successful_transactions: u64,

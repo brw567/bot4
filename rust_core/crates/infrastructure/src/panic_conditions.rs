@@ -31,6 +31,7 @@ use crate::hardware_kill_switch::HardwareKillSwitch;
 /// Configurable thresholds for panic detection
 /// Quinn: "Based on analysis of 100+ market anomaly events"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PanicThresholds {
     /// Slippage multiplier vs expected (Knight Capital: 4x normal)
     pub slippage_multiplier: f64,           // Default: 3.0x
@@ -79,6 +80,7 @@ impl Default for PanicThresholds {
 
 /// Detects abnormal slippage in order execution
 /// Casey: "Slippage is the canary in the coal mine"
+/// TODO: Add docs
 pub struct SlippageDetector {
     /// Expected slippage model
     expected_model: Arc<RwLock<SlippageModel>>,
@@ -136,6 +138,7 @@ struct ExecutionRecord {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -287,19 +290,20 @@ impl SlippageDetector {
 
 /// Monitors quote freshness across symbols
 /// Avery: "Stale quotes lead to bad decisions"
-pub struct QuoteStalenessMonitor {
-    /// Last quote timestamps by symbol
-    last_quotes: Arc<RwLock<HashMap<String, Instant>>>,
-    
-    /// Staleness threshold
-    threshold_ms: u64,
-    
-    /// Stale symbols
-    stale_symbols: Arc<RwLock<Vec<String>>>,
-    
-    /// Alert counter
-    staleness_alerts: Arc<AtomicU64>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct QuoteStalenessMonitor {
+// ELIMINATED:     /// Last quote timestamps by symbol
+// ELIMINATED:     last_quotes: Arc<RwLock<HashMap<String, Instant>>>,
+// ELIMINATED:     
+// ELIMINATED:     /// Staleness threshold
+// ELIMINATED:     threshold_ms: u64,
+// ELIMINATED:     
+// ELIMINATED:     /// Stale symbols
+// ELIMINATED:     stale_symbols: Arc<RwLock<Vec<String>>>,
+// ELIMINATED:     
+// ELIMINATED:     /// Alert counter
+// ELIMINATED:     staleness_alerts: Arc<AtomicU64>,
+// ELIMINATED: }
 
 impl QuoteStalenessMonitor {
     pub fn new(threshold_ms: u64) -> Self {
@@ -360,6 +364,7 @@ impl QuoteStalenessMonitor {
 
 /// Monitors bid-ask spread for blow-outs
 /// Jordan: "Wide spreads = expensive trading"
+/// TODO: Add docs
 pub struct SpreadMonitor {
     /// Normal spread statistics by symbol
     normal_spreads: Arc<RwLock<HashMap<String, SpreadStats>>>,
@@ -491,6 +496,7 @@ impl SpreadMonitor {
 
 /// Detects cascading API failures
 /// Casey: "API failures cascade quickly across exchanges"
+/// TODO: Add docs
 pub struct APICascadeDetector {
     /// Error counts by exchange
     error_counts: Arc<RwLock<HashMap<String, ErrorStats>>>,
@@ -611,6 +617,7 @@ impl APICascadeDetector {
 
 /// Monitors price divergence across exchanges
 /// Morgan: "Large divergence indicates market dislocation"
+/// TODO: Add docs
 pub struct PriceDivergenceMonitor {
     /// Prices by exchange and symbol
     prices: Arc<RwLock<HashMap<(String, String), PricePoint>>>,
@@ -718,6 +725,7 @@ impl PriceDivergenceMonitor {
 
 /// Coordinates all panic condition monitors
 /// Alex: "This is our market anomaly detection system"
+/// TODO: Add docs
 pub struct PanicDetector {
     /// Configuration thresholds
     thresholds: PanicThresholds,
@@ -743,6 +751,7 @@ pub struct PanicDetector {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum PanicEvent {
     SlippageDetected(SlippageAlert),
     StalenessDetected(Vec<StalenessAlert>),
@@ -754,6 +763,7 @@ pub enum PanicEvent {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PanicCondition {
     pub timestamp: Instant,
     pub triggers: Vec<String>,
@@ -957,6 +967,7 @@ impl PanicDetector {
 // ============================================================================
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+/// TODO: Add docs
 pub enum AlertSeverity {
     None,
     Low,
@@ -966,6 +977,7 @@ pub enum AlertSeverity {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SlippageAlert {
     pub symbol: String,
     pub actual_bps: f64,
@@ -975,6 +987,7 @@ pub struct SlippageAlert {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StalenessAlert {
     pub symbol: String,
     pub age_ms: u64,
@@ -983,6 +996,7 @@ pub struct StalenessAlert {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SpreadAlert {
     pub symbol: String,
     pub current_bps: f64,
@@ -992,6 +1006,7 @@ pub struct SpreadAlert {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CascadeAlert {
     pub failing_exchanges: Vec<String>,
     pub average_error_rate: f64,
@@ -999,6 +1014,7 @@ pub struct CascadeAlert {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DivergenceAlert {
     pub symbol: String,
     pub max_divergence_pct: f64,

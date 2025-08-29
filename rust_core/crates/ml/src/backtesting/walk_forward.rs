@@ -16,27 +16,29 @@ use crate::training::convergence_monitor::{ConvergenceMonitor, ConvergenceConfig
 
 /// Walk-Forward Analysis Framework
 /// Morgan: "The ONLY way to avoid look-ahead bias in time series!"
-pub struct WalkForwardAnalysis {
-    /// Configuration
-    config: WalkForwardConfig,
-    
-    /// Cross-validation splitter
-    cv_splitter: PurgedWalkForwardCV,
-    
-    /// Performance tracker
-    performance: Vec<WindowPerformance>,
-    
-    /// Model parameters for each window
-    optimized_params: Vec<OptimizedParameters>,
-    
-    /// Convergence monitors for each window
-    convergence_monitors: Vec<ConvergenceMonitor>,
-    
-    /// Statistical tests
-    statistical_validator: StatisticalValidator,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct WalkForwardAnalysis {
+// ELIMINATED:     /// Configuration
+// ELIMINATED:     config: WalkForwardConfig,
+// ELIMINATED:     
+// ELIMINATED:     /// Cross-validation splitter
+// ELIMINATED:     cv_splitter: PurgedWalkForwardCV,
+// ELIMINATED:     
+// ELIMINATED:     /// Performance tracker
+// ELIMINATED:     performance: Vec<WindowPerformance>,
+// ELIMINATED:     
+// ELIMINATED:     /// Model parameters for each window
+// ELIMINATED:     optimized_params: Vec<OptimizedParameters>,
+// ELIMINATED:     
+// ELIMINATED:     /// Convergence monitors for each window
+// ELIMINATED:     convergence_monitors: Vec<ConvergenceMonitor>,
+// ELIMINATED:     
+// ELIMINATED:     /// Statistical tests
+// ELIMINATED:     statistical_validator: StatisticalValidator,
+// ELIMINATED: }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct WalkForwardConfig {
     /// Number of walk-forward windows
     pub n_windows: usize,
@@ -87,6 +89,7 @@ impl Default for WalkForwardConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct WindowPerformance {
     pub window_id: usize,
     pub train_start: usize,
@@ -105,6 +108,7 @@ pub struct WindowPerformance {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OptimizedParameters {
     pub window_id: usize,
     pub parameters: HashMap<String, f64>,
@@ -526,18 +530,19 @@ impl StatisticalValidator {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WalkForwardResults {
-    pub window_performance: Vec<WindowPerformance>,
-    pub avg_out_sample_sharpe: f64,
-    pub sharpe_consistency: f64,
-    pub avg_overfitting_score: f64,
-    pub total_return: f64,
-    pub max_drawdown: f64,
-    pub profitable_windows: usize,
-    pub total_windows: usize,
-    pub statistical_significance: f64,
-    pub recommendation: String,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct WalkForwardResults {
+// ELIMINATED:     pub window_performance: Vec<WindowPerformance>,
+// ELIMINATED:     pub avg_out_sample_sharpe: f64,
+// ELIMINATED:     pub sharpe_consistency: f64,
+// ELIMINATED:     pub avg_overfitting_score: f64,
+// ELIMINATED:     pub total_return: f64,
+// ELIMINATED:     pub max_drawdown: f64,
+// ELIMINATED:     pub profitable_windows: usize,
+// ELIMINATED:     pub total_windows: usize,
+// ELIMINATED:     pub statistical_significance: f64,
+// ELIMINATED:     pub recommendation: String,
+// ELIMINATED: }
 
 /// Trait for trading models
 #[async_trait::async_trait]

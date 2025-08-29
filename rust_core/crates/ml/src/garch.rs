@@ -21,6 +21,7 @@ use serde::{Serialize, Deserialize};
 /// - β = GARCH coefficient (beta)
 /// - ε²ₜ₋₁ = squared residual from previous period
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GARCH {
     /// Constant term (ω > 0)
     pub omega: f64,
@@ -389,6 +390,7 @@ fn gamma(x: f64) -> f64 {
 // ============================================================================
 
 /// Ljung-Box test for autocorrelation in residuals
+/// TODO: Add docs
 pub fn ljung_box_test(residuals: &[f64], lags: usize) -> f64 {
     let n = residuals.len() as f64;
     let mut q_stat = 0.0;
@@ -421,6 +423,7 @@ fn autocorrelation(series: &[f64], lag: usize) -> f64 {
 }
 
 /// ARCH test for heteroskedasticity (simplified)
+/// TODO: Add docs
 pub fn arch_test(residuals: &[f64], lags: usize) -> f64 {
     let squared: Vec<f64> = residuals.iter().map(|r| r.powi(2)).collect();
     let n = squared.len();

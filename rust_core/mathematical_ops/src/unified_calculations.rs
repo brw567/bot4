@@ -13,6 +13,7 @@ pub use calc_var as calculate_var;
 pub use calc_corr as calculate_correlation;
 
 // ATR calculation - consolidate all versions
+/// TODO: Add docs
 pub fn calculate_atr(highs: &[f64], lows: &[f64], closes: &[f64], period: usize) -> Option<f64> {
     if highs.len() < period || lows.len() < period || closes.len() < period {
         return None;
@@ -43,12 +44,14 @@ pub fn calculate_atr(highs: &[f64], lows: &[f64], closes: &[f64], period: usize)
 }
 
 // MACD calculation - consolidate all versions
-pub struct MACDResult {
-    pub macd_line: f64,
-    pub signal_line: f64,
-    pub histogram: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct MACDResult {
+// ELIMINATED:     pub macd_line: f64,
+// ELIMINATED:     pub signal_line: f64,
+// ELIMINATED:     pub histogram: f64,
+// ELIMINATED: }
 
+/// TODO: Add docs
 pub fn calculate_macd(prices: &[f64], fast: usize, slow: usize, signal: usize) -> Option<MACDResult> {
     if prices.len() < slow {
         return None;
@@ -71,12 +74,14 @@ pub fn calculate_macd(prices: &[f64], fast: usize, slow: usize, signal: usize) -
 }
 
 // Bollinger Bands - single implementation
-pub struct BollingerBands {
-    pub upper: f64,
-    pub middle: f64,
-    pub lower: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct BollingerBands {
+// ELIMINATED:     pub upper: f64,
+// ELIMINATED:     pub middle: f64,
+// ELIMINATED:     pub lower: f64,
+// ELIMINATED: }
 
+/// TODO: Add docs
 pub fn calculate_bollinger_bands(prices: &[f64], period: usize, std_dev: f64) -> Option<BollingerBands> {
     if prices.len() < period {
         return None;

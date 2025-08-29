@@ -9,6 +9,7 @@ use crate::domain::value_objects::{Price, Quantity, Symbol};
 
 /// Price filter for order validation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PriceFilter {
     /// Minimum allowed price
     pub min_price: f64,
@@ -61,6 +62,7 @@ impl Default for PriceFilter {
 
 /// Lot size filter for quantity validation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LotSizeFilter {
     /// Minimum order quantity
     pub min_qty: f64,
@@ -131,6 +133,7 @@ impl Default for LotSizeFilter {
 
 /// Notional filter (minimum order value)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct NotionalFilter {
     /// Minimum notional value (price * quantity)
     pub min_notional: f64,
@@ -172,6 +175,7 @@ impl Default for NotionalFilter {
 
 /// Percent price filter (protects against fat finger trades)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PercentPriceFilter {
     /// Maximum percentage above average price
     pub up_percent: f64,
@@ -223,6 +227,7 @@ impl Default for PercentPriceFilter {
 
 /// Ice berg order filter
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct IcebergFilter {
     /// Maximum number of iceberg parts
     pub max_parts: u32,
@@ -232,6 +237,7 @@ pub struct IcebergFilter {
 
 /// Maximum orders filter
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MaxOrdersFilter {
     /// Maximum number of open orders per symbol
     pub max_open_orders: u32,
@@ -241,6 +247,7 @@ pub struct MaxOrdersFilter {
 
 /// Comprehensive validation filters for a trading pair
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ValidationFilters {
     pub symbol: Symbol,
     pub price_filter: PriceFilter,
@@ -352,6 +359,7 @@ impl ValidationFilters {
 
 /// Exchange-specific error codes
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ExchangeErrorCode {
     FilterFailure { code: i32 },        // -1013
     TooManyOrders { code: i32 },        // -1015

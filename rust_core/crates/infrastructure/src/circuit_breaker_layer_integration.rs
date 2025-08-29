@@ -1,3 +1,5 @@
+use domain_types::MarketState;
+use domain_types::Portfolio;
 use domain_types::order::OrderError;
 //! Module uses canonical Position type from domain_types
 //! Cameron: "Single source of truth for Position struct"
@@ -56,6 +58,7 @@ use crate::circuit_breaker_integration::{
 /// Infrastructure layer circuit breakers
 /// Jordan: "Protect the foundation - memory, CPU, network"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct InfrastructureCircuitBreakers {
     /// Memory pressure breaker
     memory_breaker: Arc<AdaptiveCircuitBreaker>,
@@ -167,6 +170,7 @@ impl InfrastructureCircuitBreakers {
 /// Data layer circuit breakers
 /// Avery: "Protect data integrity and flow"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DataLayerCircuitBreakers {
     /// Data quality breaker
     quality_breaker: Arc<DataQualityBreaker>,
@@ -303,6 +307,7 @@ impl DataLayerCircuitBreakers {
 /// Exchange layer circuit breakers
 /// Casey: "Protect exchange connections and order flow"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeLayerCircuitBreakers {
     /// Per-exchange breakers
     exchange_breakers: Arc<DashMap<String, ExchangeBreaker>>,
@@ -404,6 +409,7 @@ impl ExchangeLayerCircuitBreakers {
 /// Risk layer circuit breakers (extends basic implementation)
 /// Quinn: "Every risk calculation must be bulletproof"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RiskLayerCircuitBreakers {
     /// Base risk breakers
     base: Arc<CircuitBreakerHub>,
@@ -513,6 +519,7 @@ impl RiskLayerCircuitBreakers {
 /// Analysis layer circuit breakers
 /// Morgan: "Protect ML inference and TA calculations"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AnalysisLayerCircuitBreakers {
     /// ML inference breaker
     ml_breaker: Arc<MLInferenceBreaker>,
@@ -601,6 +608,7 @@ impl AnalysisLayerCircuitBreakers {
 /// Strategy layer circuit breakers
 /// Alex: "Strategies must adapt to market conditions"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StrategyLayerCircuitBreakers {
     /// Strategy performance tracker
     performance_tracker: Arc<StrategyPerformanceTracker>,
@@ -684,6 +692,7 @@ ound) => true,
 /// Execution layer circuit breakers
 /// Casey: "Smart execution with market impact protection"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExecutionLayerCircuitBreakers {
     /// Slippage monitor
     slippage_monitor: Arc<SlippageMonitor>,
@@ -778,6 +787,7 @@ impl ExecutionLayerCircuitBreakers {
 /// Monitoring layer circuit breakers
 /// Riley: "Complete observability with predictive alerts"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MonitoringLayerCircuitBreakers {
     /// Alert fatigue preventer
     alert_manager: Arc<AlertFatiguePreventer>,
@@ -1012,6 +1022,7 @@ impl BayesianThresholdOptimizer {
 /// Auto-tuning system for all circuit breakers
 /// Alex: "Continuous adaptation to market conditions"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CircuitBreakerAutoTuner {
     /// Market regime detector
     regime_detector: Arc<MarketRegimeDetector>,
@@ -1112,6 +1123,7 @@ impl CircuitBreakerAutoTuner {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct InfrastructureMetrics {
     pub memory_usage_pct: f64,
     pub cpu_usage_pct: f64,
@@ -1122,19 +1134,13 @@ pub struct InfrastructureMetrics {
 
 
 #[derive(Debug, Clone)]
-pub struct MarketTick {
-    pub exchange: String,
-    pub symbol: String,
-    pub bid: f64,
-    pub ask: f64,
-    pub volume: f64,
-    pub timestamp: Instant,
-    pub latency_ms: u64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MarketTick - use domain_types::market_data::MarketTick
 
 
 #[derive(Debug, Clone)]
-pub struct Portfolio {
+// ELIMINATED: use domain_types::Portfolio
+// pub struct Portfolio {
     pub positions: Vec<Position>,
     pub capital: f64,
 }
@@ -1143,6 +1149,7 @@ pub struct Portfolio {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Features {
     pub price_features: Vec<f64>,
     pub volume_features: Vec<f64>,
@@ -1151,14 +1158,21 @@ pub struct Features {
 
 
 #[derive(Debug, Clone)]
-pub struct Prediction {
-    pub action: TradingAction,
-    pub confidence: f64,
-    pub expected_return: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+// pub struct Prediction {
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub action: TradingAction,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub confidence: f64,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub expected_return: f64,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+// }
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TradingAction {
     Buy,
     Sell,
@@ -1167,7 +1181,8 @@ pub enum TradingAction {
 
 
 #[derive(Debug, Clone)]
-pub struct MarketState {
+// ELIMINATED: use domain_types::MarketState
+// pub struct MarketState {
     pub volatility: f64,
     pub volume: f64,
     pub trend: f64,
@@ -1175,6 +1190,7 @@ pub struct MarketState {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Normal,
     Trending,
@@ -1192,6 +1208,7 @@ pub enum MarketRegime {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,

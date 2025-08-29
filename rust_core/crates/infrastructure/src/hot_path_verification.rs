@@ -9,6 +9,7 @@ use std::sync::atomic::AtomicU64;
 use std::time::Instant;
 
 /// Verifies zero allocations in hot paths
+/// TODO: Add docs
 pub struct HotPathValidator {
     /// Allocation count before test
     initial_allocs: usize,
@@ -56,11 +57,17 @@ impl HotPathValidator {
 
 /// Validation report
 #[derive(Debug)]
-pub struct ValidationReport {
-    pub path_name: String,
-    pub allocations: usize,
-    pub validated: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+// pub struct ValidationReport {
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub path_name: String,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub allocations: usize,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub validated: bool,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+// }
 
 /// Critical hot paths that must have zero allocations
 pub mod critical_paths {
@@ -159,6 +166,7 @@ pub mod critical_paths {
 }
 
 /// Benchmark hot paths to verify latency
+/// TODO: Add docs
 pub fn benchmark_hot_paths() -> BenchmarkResults {
     const ITERATIONS: u32 = 100000;
     let mut results = BenchmarkResults::default();
@@ -183,6 +191,7 @@ pub fn benchmark_hot_paths() -> BenchmarkResults {
 }
 
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct BenchmarkResults {
     pub order_processing_ns: u64,
     pub signal_processing_ns: u64,

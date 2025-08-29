@@ -1,3 +1,4 @@
+use domain_types::FeatureVector;
 // Online Feature Store - Redis-based for <1ms latency
 // DEEP DIVE: Sub-millisecond serving for HFT requirements
 
@@ -17,18 +18,19 @@ use arrow::record_batch::RecordBatch;
 
 /// Redis configuration for online store
 #[derive(Debug, Clone, Deserialize)]
-pub struct RedisConfig {
-    pub urls: Vec<String>,
-    pub cluster_mode: bool,
-    pub connection_pool_size: usize,
-    pub max_connections: usize,
-    pub timeout_ms: u64,
-    pub retry_attempts: u32,
-    pub ttl_seconds: u64, // Feature TTL in Redis
-    pub cache_size: usize, // Local LRU cache size
-    pub compression: bool,
-    pub pipeline_size: usize,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct RedisConfig {
+// ELIMINATED:     pub urls: Vec<String>,
+// ELIMINATED:     pub cluster_mode: bool,
+// ELIMINATED:     pub connection_pool_size: usize,
+// ELIMINATED:     pub max_connections: usize,
+// ELIMINATED:     pub timeout_ms: u64,
+// ELIMINATED:     pub retry_attempts: u32,
+// ELIMINATED:     pub ttl_seconds: u64, // Feature TTL in Redis
+// ELIMINATED:     pub cache_size: usize, // Local LRU cache size
+// ELIMINATED:     pub compression: bool,
+// ELIMINATED:     pub pipeline_size: usize,
+// ELIMINATED: }
 
 impl Default for RedisConfig {
     fn default() -> Self {
@@ -49,7 +51,8 @@ impl Default for RedisConfig {
 
 /// Feature vector for serving
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FeatureVector {
+// ELIMINATED: use domain_types::FeatureVector
+// pub struct FeatureVector {
     pub entity_id: String,
     pub features: Vec<f64>,
     pub feature_names: Vec<String>,
@@ -86,6 +89,7 @@ impl FeatureVector {
 }
 
 /// Online feature store with Redis backend
+/// TODO: Add docs
 pub struct OnlineStore {
     config: RedisConfig,
     client: Option<Client>,
@@ -432,6 +436,7 @@ impl OnlineStore {
 
 /// Performance statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OnlineStoreStats {
     pub hit_rate: f64,
     pub total_requests: u64,

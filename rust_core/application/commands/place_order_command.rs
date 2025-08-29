@@ -32,6 +32,7 @@ pub trait Command: Send + Sync {
 }
 
 /// Place order command - encapsulates order placement logic
+/// TODO: Add docs
 pub struct PlaceOrderCommand {
     order: Order,
     exchange: Arc<dyn ExchangePort>,
@@ -170,6 +171,7 @@ impl Command for PlaceOrderCommand {
 }
 
 /// Cancel order command
+/// TODO: Add docs
 pub struct CancelOrderCommand {
     order_id: OrderId,
     reason: String,
@@ -248,6 +250,7 @@ impl Command for CancelOrderCommand {
 }
 
 /// Batch order command - place multiple orders
+/// TODO: Add docs
 pub struct BatchOrderCommand {
     orders: Vec<Order>,
     stop_on_error: bool,

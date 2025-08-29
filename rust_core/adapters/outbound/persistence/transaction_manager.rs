@@ -15,26 +15,28 @@ use tracing::{info, warn, error};
 
 /// Transaction manager ensuring ACID properties
 /// Avery: "Without proper transactions, we WILL have data corruption!"
-pub struct TransactionManager {
-    pool: Arc<PgPool>,
-    
-    /// Semaphore for connection limiting
-    connection_semaphore: Arc<Semaphore>,
-    
-    /// Transaction timeout
-    default_timeout: Duration,
-    
-    /// Retry configuration
-    retry_config: RetryConfig,
-    
-    /// Metrics
-    metrics: Arc<RwLock<TransactionMetrics>>,
-    
-    /// Deadlock detector
-    deadlock_detector: Arc<DeadlockDetector>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct TransactionManager {
+// ELIMINATED:     pool: Arc<PgPool>,
+// ELIMINATED:     
+// ELIMINATED:     /// Semaphore for connection limiting
+// ELIMINATED:     connection_semaphore: Arc<Semaphore>,
+// ELIMINATED:     
+// ELIMINATED:     /// Transaction timeout
+// ELIMINATED:     default_timeout: Duration,
+// ELIMINATED:     
+// ELIMINATED:     /// Retry configuration
+// ELIMINATED:     retry_config: RetryConfig,
+// ELIMINATED:     
+// ELIMINATED:     /// Metrics
+// ELIMINATED:     metrics: Arc<RwLock<TransactionMetrics>>,
+// ELIMINATED:     
+// ELIMINATED:     /// Deadlock detector
+// ELIMINATED:     deadlock_detector: Arc<DeadlockDetector>,
+// ELIMINATED: }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RetryConfig {
     pub max_retries: u32,
     pub initial_backoff: Duration,
@@ -373,6 +375,7 @@ impl DeadlockDetector {
 }
 
 /// Distributed transaction coordinator (2PC)
+/// TODO: Add docs
 pub struct DistributedTransactionCoordinator {
     participants: Vec<Arc<dyn TransactionParticipant>>,
     timeout: Duration,

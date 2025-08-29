@@ -12,6 +12,7 @@ use sha2::{Sha256, Digest};
 
 /// Bounded idempotency manager with LRU eviction and time-wheel cleanup
 /// Sophia's requirement: Prevent memory unbounded growth
+/// TODO: Add docs
 pub struct BoundedIdempotencyManager {
     // Primary cache with DashMap for lock-free reads
     cache: Arc<DashMap<String, IdempotencyEntry>>,
@@ -33,6 +34,7 @@ pub struct BoundedIdempotencyManager {
 }
 
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct IdempotencyEntry {
     pub order_id: String,
     pub request_hash: String,
@@ -42,6 +44,7 @@ pub struct IdempotencyEntry {
 }
 
 /// Time-wheel for efficient TTL-based cleanup
+/// TODO: Add docs
 pub struct TimeWheel {
     buckets: Vec<Mutex<Vec<(String, Instant)>>>,
     bucket_duration: Duration,
@@ -263,6 +266,7 @@ impl TimeWheel {
 
 /// Self-Trade Prevention policies (Sophia's requirement #2)
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub enum StpPolicy {
     /// Cancel the newer order
     CancelNew,
@@ -277,6 +281,7 @@ pub enum StpPolicy {
     DecrementBoth,
 }
 
+/// TODO: Add docs
 pub struct StpManager {
     // Track orders by account
     orders_by_account: Arc<DashMap<AccountId, Vec<OrderId>>>,
@@ -345,6 +350,7 @@ impl StpManager {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub enum StpResult {
     NoSelfTrade,
     CancelNew(OrderId),

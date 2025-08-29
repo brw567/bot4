@@ -1,3 +1,4 @@
+use domain_types::CircuitBreaker;
 // Retry Logic with Exponential Backoff and Jitter
 // Team: Casey (Exchange) + Jordan (Performance) + Sam (Code Quality)
 // CRITICAL: Handle transient failures gracefully
@@ -19,6 +20,7 @@ use chrono::{DateTime, Utc};
 
 /// Retry errors
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum RetryError<E> {
     #[error("Maximum retries ({max}) exceeded")]
     MaxRetriesExceeded { max: u32, last_error: E },
@@ -52,6 +54,7 @@ pub trait RetryableError: std::error::Error {
 
 /// Retry policy configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RetryPolicy {
     /// Maximum number of retry attempts
     pub max_retries: u32,
@@ -155,7 +158,8 @@ enum CircuitState {
 }
 
 /// Circuit breaker for preventing cascading failures
-pub struct CircuitBreaker {
+// ELIMINATED: use domain_types::CircuitBreaker
+// pub struct CircuitBreaker {
     state: Arc<parking_lot::RwLock<CircuitState>>,
     failurecount: Arc<AtomicU32>,
     successcount: Arc<AtomicU32>,
@@ -250,6 +254,7 @@ impl CircuitBreaker {
 }
 
 /// Retry executor with backoff and circuit breaker
+/// TODO: Add docs
 pub struct RetryExecutor {
     policy: RetryPolicy,
     circuit_breaker: Option<CircuitBreaker>,
@@ -378,6 +383,7 @@ impl RetryExecutor {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RetryStats {
     pub total_attempts: u64,
     pub total_failures: u64,
@@ -385,6 +391,7 @@ pub struct RetryStats {
 }
 
 /// Retry guard for automatic retry on drop (for cleanup operations)
+/// TODO: Add docs
 pub struct RetryGuard<F, Fut, E> 
 where
     F: Fn() -> Fut + Send + Sync + 'static,

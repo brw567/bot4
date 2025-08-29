@@ -10,7 +10,9 @@ use chrono::{DateTime, Utc};
 
 /// Idempotency entry tracking
 #[derive(Debug, Clone)]
-pub struct IdempotencyEntry {
+/// TODO: Add docs
+// ELIMINATED: IdempotencyEntry - Enhanced with Distributed cache, TTL
+// pub struct IdempotencyEntry {
     /// The exchange order ID returned
     pub exchange_order_id: String,
     /// When this entry was created
@@ -23,6 +25,7 @@ pub struct IdempotencyEntry {
 
 /// Manager for idempotent operations
 /// Ensures client_order_id deduplication to prevent double orders
+/// TODO: Add docs
 pub struct IdempotencyManager {
     /// Cache of client_order_id -> exchange_order_id mappings
     entries: Arc<DashMap<String, IdempotencyEntry>>,
@@ -208,6 +211,7 @@ impl IdempotencyManager {
 
 /// Statistics about idempotency cache
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct IdempotencyStats {
     pub total_entries: usize,
     pub total_hits: u64,
@@ -217,6 +221,7 @@ pub struct IdempotencyStats {
 }
 
 /// Hash an order request for validation
+/// TODO: Add docs
 pub fn hash_order_request(
     symbol: &str,
     side: &str,

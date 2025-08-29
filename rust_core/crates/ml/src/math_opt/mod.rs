@@ -32,6 +32,7 @@ use crate::simd::gemm_avx512;
 
 /// Strassen's matrix multiplication - Morgan & Jordan
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StrassenMultiplier {
     threshold: usize,  // Switch to conventional below this size
     use_simd: bool,
@@ -201,6 +202,7 @@ impl StrassenMultiplier {
 // ============================================================================
 
 /// Randomized SVD for fast approximation
+/// TODO: Add docs
 pub struct RandomizedSVD {
     rank: usize,
     oversampling: usize,
@@ -337,6 +339,7 @@ use ndarray::Array1;
 
 /// Compressed Sparse Row matrix format
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct CSRMatrix {
     pub values: Vec<f64>,
     pub col_indices: Vec<usize>,
@@ -466,6 +469,7 @@ impl CSRMatrix {
 // ============================================================================
 
 /// FFT-based convolution for O(n log n) complexity
+/// TODO: Add docs
 pub struct FFTConvolution {
     planner: FftPlanner<f64>,
 }
@@ -609,6 +613,7 @@ impl FFTConvolution {
 // ============================================================================
 
 /// Kahan summation for numerical stability
+/// TODO: Add docs
 pub struct KahanSum {
     sum: f64,
     c: f64,  // Compensation for lost digits

@@ -16,6 +16,7 @@ use std::cmp::Ordering;
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ParameterType {
     Continuous { min: f64, max: f64, log_scale: bool },
     Integer { min: i64, max: i64 },
@@ -23,12 +24,14 @@ pub enum ParameterType {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SearchSpace {
     parameters: HashMap<String, ParameterType>,
     constraints: Vec<Constraint>,
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum Constraint {
     LessThan(String, String),
     GreaterThan(String, String),
@@ -168,13 +171,14 @@ impl SearchSpace {
 
 /// Trial result for optimization
 #[derive(Debug, Clone)]
-pub struct Trial {
-    pub id: usize,
-    pub params: HashMap<String, f64>,
-    pub value: f64,
-    pub duration_ms: u64,
-    pub metadata: HashMap<String, String>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct Trial {
+// ELIMINATED:     pub id: usize,
+// ELIMINATED:     pub params: HashMap<String, f64>,
+// ELIMINATED:     pub value: f64,
+// ELIMINATED:     pub duration_ms: u64,
+// ELIMINATED:     pub metadata: HashMap<String, String>,
+// ELIMINATED: }
 
 impl PartialEq for Trial {
     fn eq(&self, other: &Self) -> bool {
@@ -197,6 +201,7 @@ impl Ord for Trial {
 }
 
 /// Gaussian Process surrogate model
+/// TODO: Add docs
 pub struct GaussianProcess {
     kernel: KernelType,
     noise: f64,
@@ -205,6 +210,7 @@ pub struct GaussianProcess {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum KernelType {
     RBF { length_scale: f64 },
     Matern { nu: f64, length_scale: f64 },
@@ -305,6 +311,7 @@ impl GaussianProcess {
 
 /// Acquisition function for next point selection
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum AcquisitionFunction {
     UCB { beta: f64 },           // Upper Confidence Bound
     EI { xi: f64 },              // Expected Improvement
@@ -369,6 +376,7 @@ impl AcquisitionFunction {
 }
 
 /// Main Bayesian optimizer
+/// TODO: Add docs
 pub struct BayesianOptimizer {
     search_space: SearchSpace,
     gp: GaussianProcess,
@@ -485,6 +493,7 @@ impl BayesianOptimizer {
 // ============================================================================
 
 /// Grid search optimizer
+/// TODO: Add docs
 pub struct GridSearchOptimizer {
     search_space: SearchSpace,
     grid_points: Vec<HashMap<String, f64>>,
@@ -529,6 +538,7 @@ impl GridSearchOptimizer {
 }
 
 /// Random search optimizer
+/// TODO: Add docs
 pub struct RandomSearchOptimizer {
     search_space: SearchSpace,
     n_trials: usize,

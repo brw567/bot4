@@ -134,6 +134,7 @@ pub trait PortfolioRiskManager: Send + Sync {
 
 /// Stress test scenario
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct StressScenario {
     /// Scenario name
     pub name: String,
@@ -147,6 +148,7 @@ pub struct StressScenario {
 
 /// Stress test result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct StressTestResult {
     /// Scenario name
     pub scenario: String,
@@ -202,6 +204,7 @@ pub trait AdverseSelectionDetector: Send + Sync {
 
 /// Adverse selection metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AdverseSelectionMetrics {
     /// Timestamp
     pub timestamp: DateTime<Utc>,

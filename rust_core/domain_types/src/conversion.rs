@@ -15,15 +15,9 @@
 //! 3. Gradually replace legacy types with canonical
 //! 4. Remove conversions once migration complete
 
-use crate::{Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce};
-use crate::{Price, PriceError, Quantity, QuantityError};
-use crate::{Trade, TradeId, TradeSide, TradeRole};
-use crate::{Candle, CandleInterval};
-use crate::{OrderBook, BookLevel, Ticker};
+use crate::{OrderSide, OrderType, OrderStatus};
+use crate::CandleInterval;
 
-use rust_decimal::Decimal;
-use std::convert::{TryFrom, TryInto};
-use chrono::{DateTime, Utc};
 
 /// Trait for converting from legacy types to canonical
 pub trait ToCanonical<T> {
@@ -49,6 +43,7 @@ pub trait FromLegacy<T> {
 
 /// Errors that can occur during conversion
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum ConversionError {
     #[error("Invalid price value: {0}")]
     InvalidPrice(String),
@@ -180,6 +175,7 @@ impl ToCanonical<Order> for legacy_exchange::LegacyExchangeOrder {
 // ===== Generic Conversion Helpers =====
 
 /// Converts a string side to OrderSide
+/// TODO: Add docs
 pub fn parse_order_side(side: &str) -> Result<OrderSide, ConversionError> {
     match side.to_uppercase().as_str() {
         "BUY" | "BID" | "LONG" => Ok(OrderSide::Buy),
@@ -192,6 +188,7 @@ pub fn parse_order_side(side: &str) -> Result<OrderSide, ConversionError> {
 }
 
 /// Converts a string type to OrderType
+/// TODO: Add docs
 pub fn parse_order_type(order_type: &str) -> Result<OrderType, ConversionError> {
     match order_type.to_uppercase().as_str() {
         "MARKET" => Ok(OrderType::Market),
@@ -209,6 +206,7 @@ pub fn parse_order_type(order_type: &str) -> Result<OrderType, ConversionError> 
 }
 
 /// Converts a string status to OrderStatus  
+/// TODO: Add docs
 pub fn parse_order_status(status: &str) -> Result<OrderStatus, ConversionError> {
     match status.to_uppercase().as_str() {
         "DRAFT" | "NEW" | "PENDING_NEW" => Ok(OrderStatus::Draft),
@@ -226,6 +224,7 @@ pub fn parse_order_status(status: &str) -> Result<OrderStatus, ConversionError> 
 }
 
 /// Converts string interval to CandleInterval
+/// TODO: Add docs
 pub fn parse_candle_interval(interval: &str) -> Result<CandleInterval, ConversionError> {
     match interval {
         "1s" => Ok(CandleInterval::Second1),
@@ -256,6 +255,7 @@ pub fn parse_candle_interval(interval: &str) -> Result<CandleInterval, Conversio
 // ===== Batch Conversion Utilities =====
 
 /// Converts a vector of legacy types to canonical
+/// TODO: Add docs
 pub fn batch_convert<L, C, F>(legacy_items: Vec<L>, converter: F) -> Result<Vec<C>, Vec<ConversionError>>
 where
     F: Fn(L) -> Result<C, ConversionError>,
@@ -279,6 +279,7 @@ where
 
 /// Parallel conversion for large datasets
 #[cfg(feature = "parallel_validation")]
+/// TODO: Add docs
 pub fn parallel_batch_convert<L, C, F>(legacy_items: Vec<L>, converter: F) -> Result<Vec<C>, Vec<ConversionError>>
 where
     L: Send,

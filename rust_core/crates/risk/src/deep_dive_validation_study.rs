@@ -458,12 +458,19 @@ pub mod microstructure_validation {
 
 /// Validation report structure
 #[derive(Debug, Clone)]
-pub struct ValidationReport {
-    system_name: String,
-    checks: Vec<ValidationCheck>,
-    passed: usize,
-    failed: usize,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+// pub struct ValidationReport {
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     system_name: String,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     checks: Vec<ValidationCheck>,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     passed: usize,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     failed: usize,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+// }
 
 #[derive(Debug, Clone)]
 struct ValidationCheck {
@@ -515,6 +522,7 @@ impl ValidationReport {
 }
 
 /// Master validation function - runs ALL deep dive studies
+/// TODO: Add docs
 pub fn run_all_validations() {
     println!("╔══════════════════════════════════════════════════════════╗");
     println!("║     DEEP DIVE VALIDATION STUDY - ACADEMIC RIGOR         ║");

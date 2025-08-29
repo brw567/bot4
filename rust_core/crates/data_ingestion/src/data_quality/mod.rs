@@ -1,3 +1,4 @@
+use domain_types::ValidationResult;
 // Layer 1.6: Data Quality & Validation Implementation
 // DEEP DIVE - Production-ready data integrity assurance
 //
@@ -47,6 +48,7 @@ pub use monitoring::{QualityMonitor, AlertSeverity, QualityAlert};
 
 /// Configuration for data quality system
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct DataQualityConfig {
     pub benford_config: benford::BenfordConfig,
     pub kalman_config: kalman_filter::KalmanConfig,
@@ -82,6 +84,7 @@ impl Default for DataQualityConfig {
 }
 
 /// Main Data Quality Manager - orchestrates all validation
+/// TODO: Add docs
 pub struct DataQualityManager {
     config: DataQualityConfig,
     
@@ -458,6 +461,7 @@ impl DataQualityManager {
 
 /// Data batch for validation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DataBatch {
     pub symbol: String,
     pub data_type: DataType,
@@ -469,6 +473,7 @@ pub struct DataBatch {
 
 /// Types of data being validated
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum DataType {
     Price,
     Volume,
@@ -480,7 +485,8 @@ pub enum DataType {
 
 /// Validation result
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ValidationResult {
+// ELIMINATED: use domain_types::ValidationResult
+// pub struct ValidationResult {
     pub timestamp: DateTime<Utc>,
     pub symbol: String,
     pub data_type: DataType,
@@ -492,6 +498,7 @@ pub struct ValidationResult {
 
 /// Validation issue details
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ValidationIssue {
     pub severity: IssueSeverity,
     pub category: IssueCategory,
@@ -501,6 +508,7 @@ pub struct ValidationIssue {
 
 /// Issue severity levels
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum IssueSeverity {
     Low,
     Medium,
@@ -540,6 +548,7 @@ impl IssueSeverity {
 
 /// Issue categories
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum IssueCategory {
     StatisticalAnomaly,
     DataGap,
@@ -551,6 +560,7 @@ pub enum IssueCategory {
 
 /// Applied corrections
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Correction {
     pub correction_type: CorrectionType,
     pub description: String,
@@ -559,6 +569,7 @@ pub struct Correction {
 
 /// Types of corrections
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum CorrectionType {
     Backfill,
     Interpolation,
@@ -568,6 +579,7 @@ pub enum CorrectionType {
 
 /// Batch validation result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct BatchValidationResult {
     pub total_items: usize,
     pub valid_items: usize,
@@ -578,6 +590,7 @@ pub struct BatchValidationResult {
 
 /// Current quality status for a symbol
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct QualityStatus {
     pub symbol: String,
     pub current_score: Option<QualityScore>,
@@ -588,6 +601,7 @@ pub struct QualityStatus {
 
 /// Validation statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ValidationStatistics {
     pub total_validations: u64,
     pub failed_validations: u64,

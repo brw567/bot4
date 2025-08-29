@@ -10,6 +10,7 @@ use crossbeam::queue::{ArrayQueue, SegQueue};
 
 /// Single Producer Single Consumer ring buffer
 /// Optimal for market data feed -> strategy pipeline
+/// TODO: Add docs
 pub struct SpscRing<T> {
     buffer: Arc<ArrayQueue<T>>,
     cached_size: usize,
@@ -69,6 +70,7 @@ impl<T> SpscRing<T> {
 
 /// Multi Producer Multi Consumer ring buffer
 /// For control plane and non-critical paths
+/// TODO: Add docs
 pub struct MpmcRing<T> {
     buffer: Arc<ArrayQueue<T>>,
     cached_size: usize,
@@ -121,6 +123,7 @@ impl<T> MpmcRing<T> {
 }
 
 /// Unbounded MPMC queue for non-critical paths
+/// TODO: Add docs
 pub struct UnboundedQueue<T> {
     queue: Arc<SegQueue<T>>,
 }
@@ -162,6 +165,7 @@ impl<T> UnboundedQueue<T> {
 }
 
 /// Specialized tick data ring for market data
+/// TODO: Add docs
 pub struct TickRing {
     ring: SpscRing<super::pools::Tick>,
     dropped: AtomicUsize,
@@ -213,6 +217,7 @@ impl TickRing {
 }
 
 /// Order queue for order management
+/// TODO: Add docs
 pub struct OrderQueue {
     ring: MpmcRing<super::pools::Order>,
     rejected: AtomicUsize,

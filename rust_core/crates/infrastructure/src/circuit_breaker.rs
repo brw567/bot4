@@ -13,6 +13,7 @@ use crossbeam_utils::CachePadded;  // Sophia's recommendation for cache line iso
 /// Circuit breaker states encoded as u8 for atomic operations
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum CircuitState {
     Closed = 0,     // Normal operation
     Open = 1,       // Circuit tripped, rejecting calls
@@ -32,6 +33,7 @@ impl From<u8> for CircuitState {
 
 /// Configuration for circuit breaker behavior
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CircuitConfig {
     // Window configuration
     pub rolling_window: Duration,
@@ -52,7 +54,9 @@ pub struct CircuitConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GlobalTripConditions {
+/// TODO: Add docs
+// ELIMINATED: GlobalTripConditions - Enhanced with Unified with CircuitBreaker
+// pub struct GlobalTripConditions {
     pub component_open_ratio: f32,  // e.g., 0.5 = trip if 50% components open
     pub min_components: u32,        // minimum components before ratio applies
 }
@@ -95,16 +99,18 @@ pub trait Clock: Send + Sync {
 }
 
 /// System clock for production
-pub struct SystemClock;
-
-impl Clock for SystemClock {
-    fn now(&self) -> Instant {
-        Instant::now()
-    }
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct SystemClock;
+// ELIMINATED: 
+// ELIMINATED: impl Clock for SystemClock {
+// ELIMINATED:     fn now(&self) -> Instant {
+// ELIMINATED:         Instant::now()
+// ELIMINATED:     }
+// ELIMINATED: }
 
 /// Test clock for deterministic testing
 #[cfg(test)]
+/// TODO: Add docs
 pub struct FakeClock {
     current: std::sync::Mutex<Instant>,
 }
@@ -132,6 +138,7 @@ impl Clock for FakeClock {
 
 /// Errors that can occur in circuit breaker operations
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum CircuitError {
     #[error("Circuit is open")]
     Open,
@@ -154,12 +161,14 @@ pub enum CircuitError {
 
 /// Call outcome for recording results
 #[derive(Debug, Copy, Clone)]
+/// TODO: Add docs
 pub enum Outcome {
     Success,
     Failure,
 }
 
 /// RAII guard for calls (addresses issue #4)
+/// TODO: Add docs
 pub struct CallGuard {
     breaker: Arc<ComponentBreaker>,
     _component: String,  // Stored for future debugging use
@@ -202,6 +211,7 @@ impl Drop for CallGuard {
 }
 
 /// Permission to make a call
+/// TODO: Add docs
 pub enum Permit {
     Allowed(CallGuard),
     Rejected(CircuitError),
@@ -209,6 +219,7 @@ pub enum Permit {
 
 /// Component-level circuit breaker
 /// Sophia Fix #1: Using CachePadded to prevent false sharing on hot atomics
+/// TODO: Add docs
 pub struct ComponentBreaker {
     // State - using atomic for lock-free operation (addresses issue #3)
     state: CachePadded<AtomicU8>,
@@ -426,7 +437,9 @@ impl ComponentBreaker {
 }
 
 /// Global circuit breaker managing all components (addresses issue #1)
-pub struct GlobalCircuitBreaker {
+/// TODO: Add docs
+// ELIMINATED: GlobalCircuitBreaker - Enhanced with Hystrix pattern, trip conditions
+// pub struct GlobalCircuitBreaker {
     breakers: Arc<DashMap<String, Arc<ComponentBreaker>>>,
     config: ArcSwap<CircuitConfig>,  // Hot-reloadable config (addresses issue #6)
     clock: Arc<dyn Clock>,
@@ -441,6 +454,7 @@ pub struct GlobalCircuitBreaker {
 
 /// Events emitted by circuit breaker
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum CircuitEvent {
     StateChange { component: String, from: CircuitState, to: CircuitState },
     ConfigReload { old: CircuitConfig, new: CircuitConfig },
@@ -650,6 +664,7 @@ impl GlobalCircuitBreaker {
 }
 
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct CircuitMetrics {
     pub closed_count: usize,
     pub open_count: usize,

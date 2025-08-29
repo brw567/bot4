@@ -156,6 +156,7 @@ impl Quantity {
 }
 
 /// Timestamp conversions - The ONLY way
+/// TODO: Add docs
 pub struct TimestampConverter;
 
 impl TimestampConverter {
@@ -239,6 +240,7 @@ impl Symbol {
 }
 
 /// Percentage conversions
+/// TODO: Add docs
 pub struct PercentageConverter;
 
 impl PercentageConverter {
@@ -262,6 +264,7 @@ impl PercentageConverter {
 }
 
 /// Array/Vector conversions for ML
+/// TODO: Add docs
 pub struct VectorConverter;
 
 impl VectorConverter {
@@ -294,6 +297,7 @@ impl VectorConverter {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ConversionError {
     NegativePrice(f64),
     NegativeQuantity(f64),

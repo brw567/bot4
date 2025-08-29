@@ -14,6 +14,7 @@ const XAVIER_SCALE: f32 = 1.0;  // Xavier initialization scale
 /// Attention-Enhanced LSTM for Financial Time Series
 /// Morgan: "Combines LSTM's memory with Transformer's attention - best of both worlds!"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AttentionLSTM {
     // Architecture parameters
     input_size: usize,

@@ -13,6 +13,7 @@ use rand::Rng;
 use std::collections::VecDeque;
 
 /// Deep Q-Network Agent
+/// TODO: Add docs
 pub struct DQNAgent {
     /// Q-network (online)
     q_network: QNetwork,
@@ -106,6 +107,7 @@ impl QNetwork {
 }
 
 /// Prioritized Experience Replay Buffer
+/// TODO: Add docs
 pub struct PrioritizedReplayBuffer {
     buffer: VecDeque<Experience>,
     priorities: VecDeque<f64>,

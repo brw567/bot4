@@ -38,6 +38,7 @@ use crate::deployment_config::Environment;
 // ============================================================================
 
 /// Simplified control mode manager for external API
+/// TODO: Add docs
 pub struct ControlModeManager {
     current_mode: Arc<RwLock<ControlMode>>,
     persistence: Arc<ModePersistenceManager>,
@@ -102,6 +103,7 @@ impl ControlModeManager {
 /// JWT Claims for authentication
 /// Sam: "Industry standard JWT with role-based access"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Claims {
     /// Subject (user ID)
     pub sub: String,
@@ -124,6 +126,7 @@ pub struct Claims {
 
 /// User roles with different permission levels
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum UserRole {
     /// Read-only access
     Observer,
@@ -140,6 +143,7 @@ pub enum UserRole {
 
 /// Specific permissions for fine-grained control
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Permission {
     ReadMode,
     ChangeMode,
@@ -190,12 +194,19 @@ impl UserRole {
 
 /// Token bucket rate limiter
 /// Jordan: "Prevents API abuse and DoS attacks"
-pub struct RateLimiter {
-    buckets: Arc<RwLock<HashMap<String, TokenBucket>>>,
-    max_tokens: u32,
-    refill_rate: u32,
-    refill_interval: Duration,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+// pub struct RateLimiter {
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     buckets: Arc<RwLock<HashMap<String, TokenBucket>>>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     max_tokens: u32,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     refill_rate: u32,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     refill_interval: Duration,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+// }
 
 #[derive(Clone)]
 struct TokenBucket {
@@ -250,6 +261,7 @@ impl RateLimiter {
 
 /// Request to change control mode
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ChangeModeRequest {
     pub mode: ControlMode,
     pub reason: String,
@@ -258,6 +270,7 @@ pub struct ChangeModeRequest {
 
 /// Response for mode status
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ModeStatusResponse {
     pub current_mode: ControlMode,
     pub last_changed: String,
@@ -268,16 +281,18 @@ pub struct ModeStatusResponse {
 
 /// Mode capabilities info
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModeCapabilities {
-    pub can_open_positions: bool,
-    pub can_close_positions: bool,
-    pub can_use_ml: bool,
-    pub max_position_size: f64,
-    pub risk_multiplier: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct ModeCapabilities {
+// ELIMINATED:     pub can_open_positions: bool,
+// ELIMINATED:     pub can_close_positions: bool,
+// ELIMINATED:     pub can_use_ml: bool,
+// ELIMINATED:     pub max_position_size: f64,
+// ELIMINATED:     pub risk_multiplier: f64,
+// ELIMINATED: }
 
 /// Health check response
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct HealthResponse {
     pub status: String,
     pub mode: ControlMode,
@@ -287,6 +302,7 @@ pub struct HealthResponse {
 
 /// Error response
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ErrorResponse {
     pub error: String,
     pub code: String,
@@ -299,6 +315,7 @@ pub struct ErrorResponse {
 
 /// External control API server
 /// Alex: "Production-grade API with full security"
+/// TODO: Add docs
 pub struct ExternalControlServer {
     /// Control mode manager
     mode_manager: Arc<ControlModeManager>,
@@ -798,6 +815,7 @@ struct MetricsSummary {
 
 /// Integration with external monitoring systems
 /// Riley: "Pushes mode changes to Prometheus, Grafana, etc."
+/// TODO: Add docs
 pub struct MonitoringIntegration {
     prometheus_gateway: Option<String>,
     grafana_webhook: Option<String>,

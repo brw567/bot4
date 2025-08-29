@@ -5,6 +5,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum ReturnsError {
     #[error("Insufficient data")]
     InsufficientData,
@@ -13,6 +14,7 @@ pub enum ReturnsError {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum ReturnsType {
     Simple,
     Logarithmic,
@@ -21,6 +23,7 @@ pub enum ReturnsType {
 }
 
 /// Calculate simple returns from price series
+/// TODO: Add docs
 pub fn calculate_returns(prices: &[f64], returns_type: ReturnsType) -> Result<Vec<f64>, ReturnsError> {
     if prices.len() < 2 {
         return Err(ReturnsError::InsufficientData);
@@ -43,6 +46,7 @@ fn calculate_simple_returns(prices: &[f64]) -> Vec<f64> {
 }
 
 /// Calculate logarithmic returns
+/// TODO: Add docs
 pub fn calculate_log_returns(prices: &[f64]) -> Vec<f64> {
     prices.windows(2)
         .map(|w| (w[1] / w[0]).ln())

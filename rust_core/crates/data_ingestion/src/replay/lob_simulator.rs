@@ -26,17 +26,19 @@ use types::{Price, Quantity, Symbol, Exchange};
 
 /// Order book level with complete information
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderBookLevel {
-    pub price: Price,
-    pub quantity: Quantity,
-    pub order_count: u32,  // Number of orders at this level
-    pub exchange_timestamp: DateTime<Utc>,
-    pub local_timestamp: DateTime<Utc>,
-    pub implied_quantity: Option<Quantity>,  // For futures with implied orders
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OrderBookLevel {
+// ELIMINATED:     pub price: Price,
+// ELIMINATED:     pub quantity: Quantity,
+// ELIMINATED:     pub order_count: u32,  // Number of orders at this level
+// ELIMINATED:     pub exchange_timestamp: DateTime<Utc>,
+// ELIMINATED:     pub local_timestamp: DateTime<Utc>,
+// ELIMINATED:     pub implied_quantity: Option<Quantity>,  // For futures with implied orders
+// ELIMINATED: }
 
 /// Side of the order book
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Side {
     Bid,
     Ask,
@@ -44,6 +46,7 @@ pub enum Side {
 
 /// Update type for order book changes
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum UpdateType {
     /// New order added
     Add {
@@ -81,6 +84,7 @@ pub enum UpdateType {
 
 /// Individual order information for L3 reconstruction
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderInfo {
     pub order_id: u64,
     pub side: Side,
@@ -94,18 +98,29 @@ pub struct OrderInfo {
 
 /// Order book snapshot for efficient storage
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderBookSnapshot {
-    pub symbol: Symbol,
-    pub exchange: Exchange,
-    pub timestamp: DateTime<Utc>,
-    pub sequence_number: u64,
-    pub bid_levels: Vec<OrderBookLevel>,
-    pub ask_levels: Vec<OrderBookLevel>,
-    pub checksum: u32,  // For integrity validation
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+// pub struct OrderBookSnapshot {
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub symbol: Symbol,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub exchange: Exchange,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub timestamp: DateTime<Utc>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub sequence_number: u64,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub bid_levels: Vec<OrderBookLevel>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub ask_levels: Vec<OrderBookLevel>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub checksum: u32,  // For integrity validation
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+// }
 
 /// Order book update message
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OrderBookUpdate {
     pub symbol: Symbol,
     pub exchange: Exchange,
@@ -117,6 +132,7 @@ pub struct OrderBookUpdate {
 
 /// Configuration for the LOB simulator
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SimulatorConfig {
     /// Maximum number of price levels to maintain
     pub max_depth_levels: usize,
@@ -167,6 +183,7 @@ impl Default for SimulatorConfig {
 }
 
 /// Metrics for monitoring simulation performance
+/// TODO: Add docs
 pub struct SimulatorMetrics {
     pub updates_processed: Arc<dyn MetricsCollector>,
     pub snapshots_generated: Arc<dyn MetricsCollector>,
@@ -177,7 +194,9 @@ pub struct SimulatorMetrics {
 }
 
 /// Main LOB Simulator implementation
-pub struct LOBSimulator {
+/// TODO: Add docs
+// ELIMINATED: LOBSimulator - Enhanced with Agent-based, queue position
+// pub struct LOBSimulator {
     config: Arc<SimulatorConfig>,
     
     // Order books per symbol

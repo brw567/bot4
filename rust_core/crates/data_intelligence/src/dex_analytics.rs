@@ -17,6 +17,7 @@ use tokio::sync::mpsc;
 use reqwest::Client;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum DexAnalyticsError {
     #[error("GraphQL query failed: {0}")]
     GraphQLError(String),
@@ -35,6 +36,7 @@ pub type Result<T> = std::result::Result<T, DexAnalyticsError>;
 
 /// Configuration for DEX analytics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DexAnalyticsConfig {
     pub graph_api_key: Option<String>,  // Optional for free tier
     pub graph_base_url: String,
@@ -61,6 +63,7 @@ impl Default for DexAnalyticsConfig {
 
 /// Supported DEX protocols
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum DexProtocol {
     UniswapV2,
     UniswapV3,
@@ -104,6 +107,7 @@ impl DexProtocol {
 
 /// DEX pool information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DexPool {
     pub id: String,
     pub protocol: DexProtocol,
@@ -122,6 +126,7 @@ pub struct DexPool {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TokenInfo {
     pub address: String,
     pub symbol: String,
@@ -132,6 +137,7 @@ pub struct TokenInfo {
 
 /// DEX swap transaction
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DexSwap {
     pub id: String,
     pub protocol: DexProtocol,
@@ -150,6 +156,7 @@ pub struct DexSwap {
 
 /// Liquidity provision/removal event
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LiquidityEvent {
     pub event_type: LiquidityEventType,
     pub protocol: DexProtocol,
@@ -162,6 +169,7 @@ pub struct LiquidityEvent {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum LiquidityEventType {
     Add,
     Remove,
@@ -169,6 +177,7 @@ pub enum LiquidityEventType {
 
 /// MEV (Maximum Extractable Value) detection
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MevActivity {
     pub mev_type: MevType,
     pub protocol: DexProtocol,
@@ -180,6 +189,7 @@ pub struct MevActivity {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum MevType {
     Sandwich,
     Arbitrage,
@@ -188,6 +198,7 @@ pub enum MevType {
 }
 
 /// Impermanent loss calculator
+/// TODO: Add docs
 pub struct ImpermanentLossCalculator {
     historical_prices: Arc<RwLock<HashMap<String, VecDeque<(DateTime<Utc>, Decimal)>>>>,
 }
@@ -222,6 +233,7 @@ impl ImpermanentLossCalculator {
 }
 
 /// Cross-DEX arbitrage detector
+/// TODO: Add docs
 pub struct ArbitrageDetector {
     price_cache: Arc<RwLock<HashMap<String, HashMap<DexProtocol, Decimal>>>>,
     min_profit_threshold: Decimal,
@@ -295,6 +307,7 @@ impl ArbitrageDetector {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ArbitrageOpportunity {
     pub token_pair: String,
     pub buy_dex: DexProtocol,
@@ -306,6 +319,7 @@ pub struct ArbitrageOpportunity {
 }
 
 /// Main DEX Analytics system
+/// TODO: Add docs
 pub struct DexAnalytics {
     config: DexAnalyticsConfig,
     http_client: Client,
@@ -326,6 +340,7 @@ pub struct DexAnalytics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DexMetrics {
     pub total_pools_tracked: usize,
     pub total_volume_24h_usd: Decimal,
@@ -337,6 +352,7 @@ pub struct DexMetrics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum DexEvent {
     NewSwap(DexSwap),
     LiquidityChange(LiquidityEvent),
@@ -762,6 +778,7 @@ impl DexAnalytics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SwapRoute {
     pub path: Vec<SwapStep>,
     pub total_amount_out: Decimal,
@@ -770,6 +787,7 @@ pub struct SwapRoute {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SwapStep {
     pub protocol: DexProtocol,
     pub pool_id: String,

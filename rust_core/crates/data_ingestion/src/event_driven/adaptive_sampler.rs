@@ -23,6 +23,7 @@ use types::{Price, Quantity, Symbol};
 
 /// Volatility regime classification
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum VolatilityRegime {
     VeryLow,    // < 10% annualized
     Low,        // 10-20% annualized
@@ -34,6 +35,7 @@ pub enum VolatilityRegime {
 
 /// Sampling strategy
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SamplingStrategy {
     /// Fixed rate sampling
     Fixed { interval_ms: u64 },
@@ -59,6 +61,7 @@ pub enum SamplingStrategy {
 
 /// Sampling rate configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SamplingRate {
     pub interval_ms: u64,
     pub events_per_second: f64,
@@ -68,6 +71,7 @@ pub struct SamplingRate {
 
 /// Sampler configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SamplerConfig {
     /// Base sampling interval (milliseconds)
     pub base_interval_ms: u64,
@@ -174,6 +178,7 @@ impl GarchModel {
 }
 
 /// Main adaptive sampler implementation
+/// TODO: Add docs
 pub struct AdaptiveSampler {
     config: Arc<SamplerConfig>,
     

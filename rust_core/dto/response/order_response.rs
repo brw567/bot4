@@ -10,6 +10,7 @@ use crate::domain::entities::{Order, OrderId, OrderStatus, OrderSide, OrderType}
 /// Order response DTO for API output
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct OrderResponse {
     pub order_id: String,
     pub symbol: String,
@@ -59,6 +60,7 @@ impl OrderResponse {
 /// Simplified order summary for lists
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct OrderSummary {
     pub order_id: String,
     pub symbol: String,
@@ -86,23 +88,13 @@ impl OrderSummary {
 /// Order execution report
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ExecutionReport {
-    pub order_id: String,
-    pub execution_id: String,
-    pub symbol: String,
-    pub side: String,
-    pub execution_type: String,
-    pub order_status: String,
-    pub quantity: f64,
-    pub price: f64,
-    pub commission: f64,
-    pub commission_asset: String,
-    pub timestamp: DateTime<Utc>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExecutionReport - use execution::reports::ExecutionReport
 
 /// Order placement response
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct PlaceOrderResponse {
     pub success: bool,
     pub order_id: String,
@@ -136,6 +128,7 @@ impl PlaceOrderResponse {
 /// Cancel order response
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct CancelOrderResponse {
     pub success: bool,
     pub order_id: String,
@@ -146,6 +139,7 @@ pub struct CancelOrderResponse {
 /// Batch order response
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct BatchOrderResponse {
     pub total_orders: usize,
     pub successful_orders: usize,
@@ -157,6 +151,7 @@ pub struct BatchOrderResponse {
 /// Order statistics response
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct OrderStatisticsResponse {
     pub total_orders: usize,
     pub filled_orders: usize,
@@ -173,6 +168,7 @@ pub struct OrderStatisticsResponse {
 /// Error response DTO
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct ErrorResponse {
     pub error_code: String,
     pub message: String,

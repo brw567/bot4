@@ -12,6 +12,7 @@ use serde::{Serialize, Deserialize};
 /// Complete taxonomy of exchange/venue errors
 /// Sophia's requirement: Handle all possible exchange error scenarios
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum VenueError {
     /// Network and connectivity errors
     Network(NetworkError),
@@ -40,6 +41,7 @@ pub enum VenueError {
 
 /// Network-related errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum NetworkError {
     /// Connection timeout
     ConnectionTimeout {
@@ -77,6 +79,7 @@ pub enum NetworkError {
 
 /// Authentication and authorization errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AuthError {
     /// Invalid API key
     InvalidApiKey,
@@ -111,6 +114,7 @@ pub enum AuthError {
 
 /// Order-related errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OrderError {
     /// Order not found
     OrderNotFound {
@@ -200,6 +204,7 @@ pub enum OrderError {
 
 /// Market data errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MarketDataError {
     /// Symbol not found
     SymbolNotFound {
@@ -239,6 +244,7 @@ pub enum MarketDataError {
 
 /// Rate limiting errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum RateLimitError {
     /// Request rate exceeded
     RequestRateExceeded {
@@ -270,6 +276,7 @@ pub enum RateLimitError {
 
 /// Account and balance errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AccountError {
     /// Insufficient balance
     InsufficientBalance {
@@ -316,6 +323,7 @@ pub enum AccountError {
 
 /// System and maintenance errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SystemError {
     /// Exchange under maintenance
     Maintenance {
@@ -354,6 +362,7 @@ pub enum SystemError {
 
 /// Compliance and regulatory errors
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ComplianceError {
     /// KYC required
     KycRequired {
@@ -388,6 +397,7 @@ pub enum ComplianceError {
 
 /// Error recovery strategies
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum RecoveryStrategy {
     /// Retry immediately
     RetryImmediately,
@@ -421,6 +431,7 @@ pub enum RecoveryStrategy {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Severity {
     Low,
     Medium,

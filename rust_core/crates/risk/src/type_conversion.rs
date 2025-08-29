@@ -171,6 +171,7 @@ impl From<Percentage> for f64 {
 // ================== CANDLE TYPE UPGRADE ==================
 // Following "Type-Driven Development" principles from Brady (2017)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TypedCandle {
     pub open: Price,
     pub high: Price,
@@ -244,6 +245,7 @@ impl TypedCandle {
 
 // ================== TICK TYPE UPGRADE ==================
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TypedTick {
     pub timestamp: i64,
     pub price: Price,
@@ -292,7 +294,9 @@ pub trait TradingSignalExt {
 }
 
 #[derive(Debug, Clone)]
-pub struct ExtendedTradingSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExtendedTradingSignal - use canonical_types::TradingSignal
+// pub struct ExtendedTradingSignal {
     pub base: TradingSignal,
     pub entry_price: Price,
     pub stop_loss: Price,
@@ -376,6 +380,7 @@ impl ExtendedTradingSignal {
 
 // ================== FEATURE VECTOR CONVERSIONS ==================
 // For ML pipeline integration
+/// TODO: Add docs
 pub struct FeatureConverter;
 
 impl FeatureConverter {
@@ -472,6 +477,7 @@ impl Price {
 
 // ================== BATCH CONVERSION UTILITIES ==================
 /// Efficient batch conversion for large datasets
+/// TODO: Add docs
 pub struct BatchConverter;
 
 impl BatchConverter {

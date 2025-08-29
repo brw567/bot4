@@ -1,3 +1,4 @@
+use domain_types::PipelineMetrics;
 // Integrated Optimization Module - Day 4 of Optimization Sprint
 // Team Lead: Alex (Coordination) + Jordan (Performance) + Morgan (ML)
 // Contributors: ALL 8 TEAM MEMBERS WORKING TOGETHER
@@ -31,6 +32,7 @@ use infrastructure::zero_copy::{ObjectPool, Arena, MemoryPoolManager};
 // ============================================================================
 
 /// The ultimate ML pipeline combining all optimizations
+/// TODO: Add docs
 pub struct IntegratedMLPipeline {
     // Layer 1: AVX-512 SIMD
     use_simd: bool,
@@ -52,7 +54,8 @@ pub struct IntegratedMLPipeline {
 }
 
 #[derive(Debug, Default)]
-pub struct PipelineMetrics {
+// ELIMINATED: use domain_types::PipelineMetrics
+// pub struct PipelineMetrics {
     simd_operations: u64,
     zero_copy_hits: u64,
     zero_copy_misses: u64,
@@ -514,6 +517,7 @@ impl IntegratedMLPipeline {
 
 /// Trained model representation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TrainedModel {
     pub weights: Vec<f64>,
     pub n_components: usize,
@@ -729,6 +733,7 @@ mod perf_tests {
 // ============================================================================
 
 /// Generate comprehensive validation report
+/// TODO: Add docs
 pub fn generate_validation_report(pipeline: &IntegratedMLPipeline) -> String {
     let metrics = pipeline.get_metrics();
     let speedup = pipeline.estimate_speedup();

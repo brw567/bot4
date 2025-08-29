@@ -54,6 +54,7 @@ pub trait EnhancedOrderBookExt {
 
 /// Calibration metrics for model evaluation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CalibrationMetrics {
     pub brier_score: f64,
     pub log_loss: f64,
@@ -779,19 +780,21 @@ impl MarketAnalytics {
 
 // Storage structures for extending existing types
 #[derive(Debug, Clone)]
-pub struct PredictionRecord {
-    pub timestamp: DateTime<Utc>,
-    pub action: SignalAction,
-    pub confidence: f64,
-    pub actual_outcome: Option<f64>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct PredictionRecord {
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     pub action: SignalAction,
+// ELIMINATED:     pub confidence: f64,
+// ELIMINATED:     pub actual_outcome: Option<f64>,
+// ELIMINATED: }
 
 #[derive(Debug, Clone)]
-pub struct SHAPRecord {
-    pub timestamp: DateTime<Utc>,
-    pub values: Vec<f64>,
-    pub feature_names: Vec<String>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct SHAPRecord {
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     pub values: Vec<f64>,
+// ELIMINATED:     pub feature_names: Vec<String>,
+// ELIMINATED: }
 
 // Extensions to existing structs to add missing fields
 impl MLFeedbackSystem {

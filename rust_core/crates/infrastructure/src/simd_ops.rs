@@ -16,6 +16,7 @@ use crate::cpu_features::{CPU_FEATURES, SimdStrategy};
 
 /// Calculate Exponential Moving Average
 /// Previous implementation was BROKEN - overwrote same memory location
+/// TODO: Add docs
 pub struct EmaCalculator;
 
 impl EmaCalculator {
@@ -194,6 +195,7 @@ impl EmaCalculator {
 // SMA CALCULATION - Simple Moving Average
 // ========================================================================================
 
+/// TODO: Add docs
 pub struct SmaCalculator;
 
 impl SmaCalculator {
@@ -374,233 +376,234 @@ impl SmaCalculator {
 // PORTFOLIO RISK CALCULATION - Fixed to use correlation matrix (Quinn's requirement)
 // ========================================================================================
 
-pub struct PortfolioRiskCalculator;
-
-impl PortfolioRiskCalculator {
-    /// Calculate portfolio risk WITH correlation matrix
-    /// Previous version IGNORED correlations - massive risk underestimation!
-    #[inline(always)]
-    pub fn calculate_risk(
-        positions: &[f64],
-        volatilities: &[f64],
-        correlation_matrix: &[f64],
-    ) -> f64 {
-        match CPU_FEATURES.optimal_strategy {
-            SimdStrategy::Avx512 if CPU_FEATURES.can_use_avx512() => {
-                unsafe { Self::calculate_avx512(positions, volatilities, correlation_matrix) }
-            }
-            SimdStrategy::Avx2 if CPU_FEATURES.can_use_avx2() => {
-                unsafe { Self::calculate_avx2(positions, volatilities, correlation_matrix) }
-            }
-            SimdStrategy::Sse42 if CPU_FEATURES.has_sse42 => {
-                unsafe { Self::calculate_sse42(positions, volatilities, correlation_matrix) }
-            }
-            SimdStrategy::Sse2 if CPU_FEATURES.has_sse2 => {
-                unsafe { Self::calculate_sse2(positions, volatilities, correlation_matrix) }
-            }
-            _ => Self::calculate_scalar(positions, volatilities, correlation_matrix),
-        }
-    }
-    
-    pub(crate) fn calculate_scalar(
-        positions: &[f64],
-        volatilities: &[f64],
-        correlation_matrix: &[f64],
-    ) -> f64 {
-        let n = positions.len();
-        if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
-            return 0.0;
-        }
-        
-        let mut portfolio_variance = 0.0;
-        
-        // Portfolio variance = w' * Σ * w
-        // where Σ[i,j] = σ[i] * σ[j] * ρ[i,j]
-        for i in 0..n {
-            for j in 0..n {
-                let correlation = correlation_matrix[i * n + j];
-                let covariance = volatilities[i] * volatilities[j] * correlation;
-                portfolio_variance += positions[i] * positions[j] * covariance;
-            }
-        }
-        
-        portfolio_variance.sqrt()
-    }
-    
-    #[target_feature(enable = "sse2")]
-    pub(crate) unsafe fn calculate_sse2(
-        positions: &[f64],
-        volatilities: &[f64],
-        correlation_matrix: &[f64],
-    ) -> f64 {
-        let n = positions.len();
-        if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
-            return 0.0;
-        }
-        
-        let mut portfolio_variance = 0.0;
-        
-        // Process 2 doubles at a time with SSE2
-        for i in 0..n {
-            let pos_i = positions[i];
-            let vol_i = volatilities[i];
-            
-            let mut j = 0;
-            while j + 2 <= n {
-                // Load 2 positions and volatilities
-                let pos_vec = _mm_loadu_pd(positions.as_ptr().add(j));
-                let vol_vec = _mm_loadu_pd(volatilities.as_ptr().add(j));
-                let corr_vec = _mm_loadu_pd(correlation_matrix.as_ptr().add(i * n + j));
-                
-                // Calculate covariance
-                let vol_i_vec = _mm_set1_pd(vol_i);
-                let cov_vec = _mm_mul_pd(_mm_mul_pd(vol_i_vec, vol_vec), corr_vec);
-                
-                // Weight by positions
-                let pos_i_vec = _mm_set1_pd(pos_i);
-                let weighted = _mm_mul_pd(_mm_mul_pd(pos_i_vec, pos_vec), cov_vec);
-                
-                // Sum
-                let sum = Self::hsum_sse2_f64(weighted);
-                portfolio_variance += sum;
-                
-                j += 2;
-            }
-            
-            // Handle remainder
-            while j < n {
-                let correlation = correlation_matrix[i * n + j];
-                let covariance = vol_i * volatilities[j] * correlation;
-                portfolio_variance += pos_i * positions[j] * covariance;
-                j += 1;
-            }
-        }
-        
-        portfolio_variance.sqrt()
-    }
-    
-    #[target_feature(enable = "sse2")]
-    unsafe fn hsum_sse2_f64(v: __m128d) -> f64 {
-        let high = _mm_unpackhi_pd(v, v);
-        let sum = _mm_add_pd(v, high);
-        _mm_cvtsd_f64(sum)
-    }
-    
-    #[target_feature(enable = "sse4.2")]
-    pub(crate) unsafe fn calculate_sse42(
-        positions: &[f64],
-        volatilities: &[f64],
-        correlation_matrix: &[f64],
-    ) -> f64 {
-        // SSE4.2 optimizations can be added
-        Self::calculate_sse2(positions, volatilities, correlation_matrix)
-    }
-    
-    #[target_feature(enable = "avx2")]
-    pub(crate) unsafe fn calculate_avx2(
-        positions: &[f64],
-        volatilities: &[f64],
-        correlation_matrix: &[f64],
-    ) -> f64 {
-        let n = positions.len();
-        if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
-            return 0.0;
-        }
-        
-        let mut portfolio_variance = 0.0;
-        
-        // Process 4 doubles at a time with AVX2
-        for i in 0..n {
-            let pos_i = positions[i];
-            let vol_i = volatilities[i];
-            
-            let mut j = 0;
-            while j + 4 <= n {
-                let pos_vec = _mm256_loadu_pd(positions.as_ptr().add(j));
-                let vol_vec = _mm256_loadu_pd(volatilities.as_ptr().add(j));
-                let corr_vec = _mm256_loadu_pd(correlation_matrix.as_ptr().add(i * n + j));
-                
-                let vol_i_vec = _mm256_set1_pd(vol_i);
-                let cov_vec = _mm256_mul_pd(_mm256_mul_pd(vol_i_vec, vol_vec), corr_vec);
-                
-                let pos_i_vec = _mm256_set1_pd(pos_i);
-                let weighted = _mm256_mul_pd(_mm256_mul_pd(pos_i_vec, pos_vec), cov_vec);
-                
-                // Horizontal sum
-                let sum = Self::hsum_avx2_f64(weighted);
-                portfolio_variance += sum;
-                
-                j += 4;
-            }
-            
-            // Handle remainder
-            while j < n {
-                let correlation = correlation_matrix[i * n + j];
-                let covariance = vol_i * volatilities[j] * correlation;
-                portfolio_variance += pos_i * positions[j] * covariance;
-                j += 1;
-            }
-        }
-        
-        portfolio_variance.sqrt()
-    }
-    
-    #[target_feature(enable = "avx2")]
-    unsafe fn hsum_avx2_f64(v: __m256d) -> f64 {
-        let low = _mm256_extractf128_pd(v, 0);
-        let high = _mm256_extractf128_pd(v, 1);
-        let sum128 = _mm_add_pd(low, high);
-        Self::hsum_sse2_f64(sum128)
-    }
-    
-    #[target_feature(enable = "avx512f")]
-    pub(crate) unsafe fn calculate_avx512(
-        positions: &[f64],
-        volatilities: &[f64],
-        correlation_matrix: &[f64],
-    ) -> f64 {
-        let n = positions.len();
-        if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
-            return 0.0;
-        }
-        
-        let mut portfolio_variance = 0.0;
-        
-        // Process 8 doubles at a time with AVX-512
-        for i in 0..n {
-            let pos_i = positions[i];
-            let vol_i = volatilities[i];
-            
-            let mut j = 0;
-            while j + 8 <= n {
-                let pos_vec = _mm512_loadu_pd(positions.as_ptr().add(j));
-                let vol_vec = _mm512_loadu_pd(volatilities.as_ptr().add(j));
-                let corr_vec = _mm512_loadu_pd(correlation_matrix.as_ptr().add(i * n + j));
-                
-                let vol_i_vec = _mm512_set1_pd(vol_i);
-                let cov_vec = _mm512_mul_pd(_mm512_mul_pd(vol_i_vec, vol_vec), corr_vec);
-                
-                let pos_i_vec = _mm512_set1_pd(pos_i);
-                let weighted = _mm512_mul_pd(_mm512_mul_pd(pos_i_vec, pos_vec), cov_vec);
-                
-                // AVX-512 has reduce_add intrinsic
-                portfolio_variance += _mm512_reduce_add_pd(weighted);
-                
-                j += 8;
-            }
-            
-            // Handle remainder
-            while j < n {
-                let correlation = correlation_matrix[i * n + j];
-                let covariance = vol_i * volatilities[j] * correlation;
-                portfolio_variance += pos_i * positions[j] * covariance;
-                j += 1;
-            }
-        }
-        
-        portfolio_variance.sqrt()
-    }
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct PortfolioRiskCalculator;
+// ELIMINATED: 
+// ELIMINATED: impl PortfolioRiskCalculator {
+// ELIMINATED:     /// Calculate portfolio risk WITH correlation matrix
+// ELIMINATED:     /// Previous version IGNORED correlations - massive risk underestimation!
+// ELIMINATED:     #[inline(always)]
+// ELIMINATED:     pub fn calculate_risk(
+// ELIMINATED:         positions: &[f64],
+// ELIMINATED:         volatilities: &[f64],
+// ELIMINATED:         correlation_matrix: &[f64],
+// ELIMINATED:     ) -> f64 {
+// ELIMINATED:         match CPU_FEATURES.optimal_strategy {
+// ELIMINATED:             SimdStrategy::Avx512 if CPU_FEATURES.can_use_avx512() => {
+// ELIMINATED:                 unsafe { Self::calculate_avx512(positions, volatilities, correlation_matrix) }
+// ELIMINATED:             }
+// ELIMINATED:             SimdStrategy::Avx2 if CPU_FEATURES.can_use_avx2() => {
+// ELIMINATED:                 unsafe { Self::calculate_avx2(positions, volatilities, correlation_matrix) }
+// ELIMINATED:             }
+// ELIMINATED:             SimdStrategy::Sse42 if CPU_FEATURES.has_sse42 => {
+// ELIMINATED:                 unsafe { Self::calculate_sse42(positions, volatilities, correlation_matrix) }
+// ELIMINATED:             }
+// ELIMINATED:             SimdStrategy::Sse2 if CPU_FEATURES.has_sse2 => {
+// ELIMINATED:                 unsafe { Self::calculate_sse2(positions, volatilities, correlation_matrix) }
+// ELIMINATED:             }
+// ELIMINATED:             _ => Self::calculate_scalar(positions, volatilities, correlation_matrix),
+// ELIMINATED:         }
+// ELIMINATED:     }
+// ELIMINATED:     
+// ELIMINATED:     pub(crate) fn calculate_scalar(
+// ELIMINATED:         positions: &[f64],
+// ELIMINATED:         volatilities: &[f64],
+// ELIMINATED:         correlation_matrix: &[f64],
+// ELIMINATED:     ) -> f64 {
+// ELIMINATED:         let n = positions.len();
+// ELIMINATED:         if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
+// ELIMINATED:             return 0.0;
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         let mut portfolio_variance = 0.0;
+// ELIMINATED:         
+// ELIMINATED:         // Portfolio variance = w' * Σ * w
+// ELIMINATED:         // where Σ[i,j] = σ[i] * σ[j] * ρ[i,j]
+// ELIMINATED:         for i in 0..n {
+// ELIMINATED:             for j in 0..n {
+// ELIMINATED:                 let correlation = correlation_matrix[i * n + j];
+// ELIMINATED:                 let covariance = volatilities[i] * volatilities[j] * correlation;
+// ELIMINATED:                 portfolio_variance += positions[i] * positions[j] * covariance;
+// ELIMINATED:             }
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         portfolio_variance.sqrt()
+// ELIMINATED:     }
+// ELIMINATED:     
+// ELIMINATED:     #[target_feature(enable = "sse2")]
+// ELIMINATED:     pub(crate) unsafe fn calculate_sse2(
+// ELIMINATED:         positions: &[f64],
+// ELIMINATED:         volatilities: &[f64],
+// ELIMINATED:         correlation_matrix: &[f64],
+// ELIMINATED:     ) -> f64 {
+// ELIMINATED:         let n = positions.len();
+// ELIMINATED:         if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
+// ELIMINATED:             return 0.0;
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         let mut portfolio_variance = 0.0;
+// ELIMINATED:         
+// ELIMINATED:         // Process 2 doubles at a time with SSE2
+// ELIMINATED:         for i in 0..n {
+// ELIMINATED:             let pos_i = positions[i];
+// ELIMINATED:             let vol_i = volatilities[i];
+// ELIMINATED:             
+// ELIMINATED:             let mut j = 0;
+// ELIMINATED:             while j + 2 <= n {
+// ELIMINATED:                 // Load 2 positions and volatilities
+// ELIMINATED:                 let pos_vec = _mm_loadu_pd(positions.as_ptr().add(j));
+// ELIMINATED:                 let vol_vec = _mm_loadu_pd(volatilities.as_ptr().add(j));
+// ELIMINATED:                 let corr_vec = _mm_loadu_pd(correlation_matrix.as_ptr().add(i * n + j));
+// ELIMINATED:                 
+// ELIMINATED:                 // Calculate covariance
+// ELIMINATED:                 let vol_i_vec = _mm_set1_pd(vol_i);
+// ELIMINATED:                 let cov_vec = _mm_mul_pd(_mm_mul_pd(vol_i_vec, vol_vec), corr_vec);
+// ELIMINATED:                 
+// ELIMINATED:                 // Weight by positions
+// ELIMINATED:                 let pos_i_vec = _mm_set1_pd(pos_i);
+// ELIMINATED:                 let weighted = _mm_mul_pd(_mm_mul_pd(pos_i_vec, pos_vec), cov_vec);
+// ELIMINATED:                 
+// ELIMINATED:                 // Sum
+// ELIMINATED:                 let sum = Self::hsum_sse2_f64(weighted);
+// ELIMINATED:                 portfolio_variance += sum;
+// ELIMINATED:                 
+// ELIMINATED:                 j += 2;
+// ELIMINATED:             }
+// ELIMINATED:             
+// ELIMINATED:             // Handle remainder
+// ELIMINATED:             while j < n {
+// ELIMINATED:                 let correlation = correlation_matrix[i * n + j];
+// ELIMINATED:                 let covariance = vol_i * volatilities[j] * correlation;
+// ELIMINATED:                 portfolio_variance += pos_i * positions[j] * covariance;
+// ELIMINATED:                 j += 1;
+// ELIMINATED:             }
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         portfolio_variance.sqrt()
+// ELIMINATED:     }
+// ELIMINATED:     
+// ELIMINATED:     #[target_feature(enable = "sse2")]
+// ELIMINATED:     unsafe fn hsum_sse2_f64(v: __m128d) -> f64 {
+// ELIMINATED:         let high = _mm_unpackhi_pd(v, v);
+// ELIMINATED:         let sum = _mm_add_pd(v, high);
+// ELIMINATED:         _mm_cvtsd_f64(sum)
+// ELIMINATED:     }
+// ELIMINATED:     
+// ELIMINATED:     #[target_feature(enable = "sse4.2")]
+// ELIMINATED:     pub(crate) unsafe fn calculate_sse42(
+// ELIMINATED:         positions: &[f64],
+// ELIMINATED:         volatilities: &[f64],
+// ELIMINATED:         correlation_matrix: &[f64],
+// ELIMINATED:     ) -> f64 {
+// ELIMINATED:         // SSE4.2 optimizations can be added
+// ELIMINATED:         Self::calculate_sse2(positions, volatilities, correlation_matrix)
+// ELIMINATED:     }
+// ELIMINATED:     
+// ELIMINATED:     #[target_feature(enable = "avx2")]
+// ELIMINATED:     pub(crate) unsafe fn calculate_avx2(
+// ELIMINATED:         positions: &[f64],
+// ELIMINATED:         volatilities: &[f64],
+// ELIMINATED:         correlation_matrix: &[f64],
+// ELIMINATED:     ) -> f64 {
+// ELIMINATED:         let n = positions.len();
+// ELIMINATED:         if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
+// ELIMINATED:             return 0.0;
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         let mut portfolio_variance = 0.0;
+// ELIMINATED:         
+// ELIMINATED:         // Process 4 doubles at a time with AVX2
+// ELIMINATED:         for i in 0..n {
+// ELIMINATED:             let pos_i = positions[i];
+// ELIMINATED:             let vol_i = volatilities[i];
+// ELIMINATED:             
+// ELIMINATED:             let mut j = 0;
+// ELIMINATED:             while j + 4 <= n {
+// ELIMINATED:                 let pos_vec = _mm256_loadu_pd(positions.as_ptr().add(j));
+// ELIMINATED:                 let vol_vec = _mm256_loadu_pd(volatilities.as_ptr().add(j));
+// ELIMINATED:                 let corr_vec = _mm256_loadu_pd(correlation_matrix.as_ptr().add(i * n + j));
+// ELIMINATED:                 
+// ELIMINATED:                 let vol_i_vec = _mm256_set1_pd(vol_i);
+// ELIMINATED:                 let cov_vec = _mm256_mul_pd(_mm256_mul_pd(vol_i_vec, vol_vec), corr_vec);
+// ELIMINATED:                 
+// ELIMINATED:                 let pos_i_vec = _mm256_set1_pd(pos_i);
+// ELIMINATED:                 let weighted = _mm256_mul_pd(_mm256_mul_pd(pos_i_vec, pos_vec), cov_vec);
+// ELIMINATED:                 
+// ELIMINATED:                 // Horizontal sum
+// ELIMINATED:                 let sum = Self::hsum_avx2_f64(weighted);
+// ELIMINATED:                 portfolio_variance += sum;
+// ELIMINATED:                 
+// ELIMINATED:                 j += 4;
+// ELIMINATED:             }
+// ELIMINATED:             
+// ELIMINATED:             // Handle remainder
+// ELIMINATED:             while j < n {
+// ELIMINATED:                 let correlation = correlation_matrix[i * n + j];
+// ELIMINATED:                 let covariance = vol_i * volatilities[j] * correlation;
+// ELIMINATED:                 portfolio_variance += pos_i * positions[j] * covariance;
+// ELIMINATED:                 j += 1;
+// ELIMINATED:             }
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         portfolio_variance.sqrt()
+// ELIMINATED:     }
+// ELIMINATED:     
+// ELIMINATED:     #[target_feature(enable = "avx2")]
+// ELIMINATED:     unsafe fn hsum_avx2_f64(v: __m256d) -> f64 {
+// ELIMINATED:         let low = _mm256_extractf128_pd(v, 0);
+// ELIMINATED:         let high = _mm256_extractf128_pd(v, 1);
+// ELIMINATED:         let sum128 = _mm_add_pd(low, high);
+// ELIMINATED:         Self::hsum_sse2_f64(sum128)
+// ELIMINATED:     }
+// ELIMINATED:     
+// ELIMINATED:     #[target_feature(enable = "avx512f")]
+// ELIMINATED:     pub(crate) unsafe fn calculate_avx512(
+// ELIMINATED:         positions: &[f64],
+// ELIMINATED:         volatilities: &[f64],
+// ELIMINATED:         correlation_matrix: &[f64],
+// ELIMINATED:     ) -> f64 {
+// ELIMINATED:         let n = positions.len();
+// ELIMINATED:         if n == 0 || n != volatilities.len() || correlation_matrix.len() != n * n {
+// ELIMINATED:             return 0.0;
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         let mut portfolio_variance = 0.0;
+// ELIMINATED:         
+// ELIMINATED:         // Process 8 doubles at a time with AVX-512
+// ELIMINATED:         for i in 0..n {
+// ELIMINATED:             let pos_i = positions[i];
+// ELIMINATED:             let vol_i = volatilities[i];
+// ELIMINATED:             
+// ELIMINATED:             let mut j = 0;
+// ELIMINATED:             while j + 8 <= n {
+// ELIMINATED:                 let pos_vec = _mm512_loadu_pd(positions.as_ptr().add(j));
+// ELIMINATED:                 let vol_vec = _mm512_loadu_pd(volatilities.as_ptr().add(j));
+// ELIMINATED:                 let corr_vec = _mm512_loadu_pd(correlation_matrix.as_ptr().add(i * n + j));
+// ELIMINATED:                 
+// ELIMINATED:                 let vol_i_vec = _mm512_set1_pd(vol_i);
+// ELIMINATED:                 let cov_vec = _mm512_mul_pd(_mm512_mul_pd(vol_i_vec, vol_vec), corr_vec);
+// ELIMINATED:                 
+// ELIMINATED:                 let pos_i_vec = _mm512_set1_pd(pos_i);
+// ELIMINATED:                 let weighted = _mm512_mul_pd(_mm512_mul_pd(pos_i_vec, pos_vec), cov_vec);
+// ELIMINATED:                 
+// ELIMINATED:                 // AVX-512 has reduce_add intrinsic
+// ELIMINATED:                 portfolio_variance += _mm512_reduce_add_pd(weighted);
+// ELIMINATED:                 
+// ELIMINATED:                 j += 8;
+// ELIMINATED:             }
+// ELIMINATED:             
+// ELIMINATED:             // Handle remainder
+// ELIMINATED:             while j < n {
+// ELIMINATED:                 let correlation = correlation_matrix[i * n + j];
+// ELIMINATED:                 let covariance = vol_i * volatilities[j] * correlation;
+// ELIMINATED:                 portfolio_variance += pos_i * positions[j] * covariance;
+// ELIMINATED:                 j += 1;
+// ELIMINATED:             }
+// ELIMINATED:         }
+// ELIMINATED:         
+// ELIMINATED:         portfolio_variance.sqrt()
+// ELIMINATED:     }
+// ELIMINATED: }
 
 // ========================================================================================
 // TESTS

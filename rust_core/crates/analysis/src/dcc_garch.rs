@@ -7,6 +7,7 @@ use anyhow::Result;
 
 /// DCC-GARCH model for dynamic correlation analysis
 /// Critical for portfolio risk management and position sizing
+/// TODO: Add docs
 pub struct DccGarch {
     /// Number of assets in the portfolio
     n_assets: usize,
@@ -36,7 +37,9 @@ pub struct DccGarch {
 
 /// GARCH(1,1) parameters for individual assets
 #[derive(Debug, Clone)]
-pub struct GarchParams {
+/// TODO: Add docs
+// ELIMINATED: GarchParams - Enhanced with Unified with GARCHModel
+// pub struct GarchParams {
     /// Constant term
     pub omega: f64,
     /// ARCH coefficient (alpha)

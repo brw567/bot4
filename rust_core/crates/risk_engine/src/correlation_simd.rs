@@ -9,6 +9,7 @@ use parking_lot::RwLock;
 use rust_decimal::Decimal;
 
 /// SIMD-optimized correlation analyzer
+/// TODO: Add docs
 pub struct CorrelationAnalyzerSIMD {
     max_correlation: f64,
     price_history: Arc<RwLock<Vec<Vec<f64>>>>,  // [asset_idx][time_idx]

@@ -25,6 +25,7 @@ use crate::replay::lob_simulator::OrderBook;
 
 /// Slippage configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SlippageConfig {
     /// Linear impact coefficient (basis points per unit size)
     pub linear_impact_bps: f64,
@@ -76,6 +77,7 @@ impl Default for SlippageConfig {
 
 /// Execution cost breakdown
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExecutionCost {
     pub symbol: Symbol,
     pub side: TradeSide,
@@ -100,6 +102,7 @@ pub struct ExecutionCost {
 
 /// Trade side
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,
     Sell,
@@ -107,6 +110,7 @@ pub enum TradeSide {
 
 /// Market impact model types
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MarketImpactModel {
     /// Linear impact: I = β * Q
     Linear { beta: f64 },
@@ -130,6 +134,7 @@ pub enum MarketImpactModel {
 
 /// Temporary impact component
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TemporaryImpact {
     pub initial_impact_bps: f64,
     pub decay_rate: f64,
@@ -138,6 +143,7 @@ pub struct TemporaryImpact {
 
 /// Permanent impact component
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PermanentImpact {
     pub impact_bps: f64,
     pub information_ratio: f64,
@@ -171,20 +177,21 @@ impl IntradayPattern {
 }
 
 /// Main slippage model implementation
-pub struct SlippageModel {
-    config: Arc<SlippageConfig>,
-    
-    // Historical volatility tracker
-    volatility_tracker: Arc<RwLock<VolatilityTracker>>,
-    
-    // Intraday patterns
-    intraday_pattern: Arc<IntradayPattern>,
-    
-    // Metrics
-    slippage_histogram: Arc<dyn MetricsCollector>,
-    impact_histogram: Arc<dyn MetricsCollector>,
-    execution_time_histogram: Arc<dyn MetricsCollector>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct SlippageModel {
+// ELIMINATED:     config: Arc<SlippageConfig>,
+// ELIMINATED:     
+// ELIMINATED:     // Historical volatility tracker
+// ELIMINATED:     volatility_tracker: Arc<RwLock<VolatilityTracker>>,
+// ELIMINATED:     
+// ELIMINATED:     // Intraday patterns
+// ELIMINATED:     intraday_pattern: Arc<IntradayPattern>,
+// ELIMINATED:     
+// ELIMINATED:     // Metrics
+// ELIMINATED:     slippage_histogram: Arc<dyn MetricsCollector>,
+// ELIMINATED:     impact_histogram: Arc<dyn MetricsCollector>,
+// ELIMINATED:     execution_time_histogram: Arc<dyn MetricsCollector>,
+// ELIMINATED: }
 
 /// Volatility tracker for dynamic adjustment
 struct VolatilityTracker {
@@ -560,6 +567,7 @@ impl SlippageModel {
 }
 
 /// Advanced slippage models
+/// TODO: Add docs
 pub struct AdvancedSlippageModels;
 
 impl AdvancedSlippageModels {

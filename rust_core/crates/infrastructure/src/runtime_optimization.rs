@@ -12,16 +12,18 @@ use crossbeam::utils::CachePadded;
 
 /// Optimized Tokio runtime configuration
 /// Tuned for 12-core system with main thread on core 0
-pub struct OptimizedRuntime {
-    /// The Tokio runtime instance
-    runtime: Runtime,
-    /// Statistics for monitoring
-    stats: Arc<RuntimeStats>,
-    /// Shutdown flag
-    shutdown: Arc<AtomicBool>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OptimizedRuntime {
+// ELIMINATED:     /// The Tokio runtime instance
+// ELIMINATED:     runtime: Runtime,
+// ELIMINATED:     /// Statistics for monitoring
+// ELIMINATED:     stats: Arc<RuntimeStats>,
+// ELIMINATED:     /// Shutdown flag
+// ELIMINATED:     shutdown: Arc<AtomicBool>,
+// ELIMINATED: }
 
 /// Runtime statistics with cache-padded atomics
+/// TODO: Add docs
 pub struct RuntimeStats {
     /// Total tasks spawned
     pub tasks_spawned: CachePadded<AtomicU64>,
@@ -160,6 +162,7 @@ impl OptimizedRuntime {
 
 /// Zero-allocation task wrapper
 /// Ensures no heap allocations in hot path
+/// TODO: Add docs
 pub struct ZeroAllocTask<T> {
     /// Pre-allocated result storage
     result: Option<T>,
@@ -201,6 +204,7 @@ impl<T> ZeroAllocTask<T> {
 }
 
 /// Hot path verifier - ensures zero allocations
+/// TODO: Add docs
 pub struct HotPathVerifier {
     /// Allocation count at start
     start_allocs: usize,

@@ -17,17 +17,29 @@ use crate::online_store::FeatureVector;
 
 /// TimescaleDB configuration for offline store
 #[derive(Debug, Clone, Deserialize)]
-pub struct TimescaleConfig {
-    pub host: String,
-    pub port: u16,
-    pub database: String,
-    pub username: String,
-    pub password: String,
-    pub pool_size: usize,
-    pub chunk_interval_hours: i64,
-    pub compression_after_hours: i64,
-    pub retention_days: i64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+// pub struct TimescaleConfig {
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub host: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub port: u16,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub database: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub username: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub password: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub pool_size: usize,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub chunk_interval_hours: i64,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub compression_after_hours: i64,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub retention_days: i64,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+// }
 
 impl Default for TimescaleConfig {
     fn default() -> Self {
@@ -46,6 +58,7 @@ impl Default for TimescaleConfig {
 }
 
 /// Offline feature store with TimescaleDB
+/// TODO: Add docs
 pub struct OfflineStore {
     config: TimescaleConfig,
     pool: Arc<Pool>,
@@ -447,6 +460,7 @@ impl OfflineStore {
 
 /// Feature write structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureWrite {
     pub entity_id: String,
     pub feature_name: String,
@@ -458,6 +472,7 @@ pub struct FeatureWrite {
 
 /// Feature statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureStatistics {
     pub feature_name: String,
     pub count: u64,

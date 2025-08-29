@@ -23,6 +23,7 @@ use tracing::{info, warn, error, debug};
 
 /// Backfill system configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct BackfillConfig {
     pub max_concurrent_jobs: usize,
     pub max_retries_per_request: usize,
@@ -58,6 +59,7 @@ impl Default for BackfillConfig {
 
 /// Backfill request priority levels
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum BackfillPriority {
     Critical,  // Real-time trading impacted
     High,      // Recent data for analysis
@@ -78,6 +80,7 @@ impl BackfillPriority {
 
 /// Backfill request
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BackfillRequest {
     pub symbol: String,
     pub start_time: DateTime<Utc>,
@@ -130,6 +133,7 @@ impl Eq for BackfillRequest {}
 
 /// Backfill job status
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum JobStatus {
     Pending,
     Running,
@@ -168,6 +172,7 @@ pub trait BackfillSource: Send + Sync {
 }
 
 /// Mock data source for testing
+/// TODO: Add docs
 pub struct MockDataSource {
     name: String,
     reliability: f64,
@@ -216,6 +221,7 @@ impl BackfillSource for MockDataSource {
 }
 
 /// Backfill system with priority queue and multi-source support
+/// TODO: Add docs
 pub struct BackfillSystem {
     config: BackfillConfig,
     
@@ -603,6 +609,7 @@ impl Clone for BackfillSystem {
 
 /// Data point returned from backfill
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DataPoint {
     pub timestamp: DateTime<Utc>,
     pub symbol: String,
@@ -612,6 +619,7 @@ pub struct DataPoint {
 
 /// Backfill statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BackfillStatistics {
     pub active_jobs: usize,
     pub pending_requests: usize,

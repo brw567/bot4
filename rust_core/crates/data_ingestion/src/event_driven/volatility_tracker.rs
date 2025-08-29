@@ -4,6 +4,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct VolatilityConfig {
     pub window_size: usize,
 }
@@ -14,9 +15,13 @@ impl Default for VolatilityConfig {
     }
 }
 
+/// TODO: Add docs
 pub struct VolatilityTracker;
+/// TODO: Add docs
 pub struct VolatilityMetrics;
+/// TODO: Add docs
 pub struct RegimeChange;
+/// TODO: Add docs
 pub enum VolatilityModel {
     GARCH,
     EWMA,

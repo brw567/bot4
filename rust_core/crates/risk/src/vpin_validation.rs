@@ -17,6 +17,7 @@ use std::collections::VecDeque;
 
 /// VPIN Bucket with enhanced metrics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EnhancedVPINBucket {
     pub volume: f64,
     pub buy_volume: f64,
@@ -31,6 +32,7 @@ pub struct EnhancedVPINBucket {
 }
 
 /// VPIN Calculator with full academic implementation
+/// TODO: Add docs
 pub struct VPINCalculator {
     // Core VPIN parameters
     bucket_size: f64,         // Volume per bucket (τ in paper)
@@ -442,6 +444,7 @@ impl VPINCalculator {
 
 /// VPIN metrics output
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VPINMetrics {
     pub vpin: f64,                   // Core VPIN value
     pub vpin_percentile: f64,        // Historical percentile
@@ -458,6 +461,7 @@ pub struct VPINMetrics {
 
 /// VPIN Strategy recommendations based on toxicity
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum VPINStrategy {
     Normal,                          // VPIN < 0.2
     Cautious,                        // 0.2 <= VPIN < 0.3

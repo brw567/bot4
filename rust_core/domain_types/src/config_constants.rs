@@ -5,6 +5,7 @@ use once_cell::sync::Lazy;
 use std::env;
 
 /// Risk management constants
+/// TODO: Add docs
 pub struct RiskConfig {
     pub max_position_pct: f64,
     pub max_daily_loss_pct: f64,
@@ -43,6 +44,7 @@ impl Default for RiskConfig {
 pub static RISK_CONFIG: Lazy<RiskConfig> = Lazy::new(RiskConfig::default);
 
 /// Time window constants
+/// TODO: Add docs
 pub struct TimeConfig {
     pub default_window_seconds: u64,
     pub day_seconds: u64,

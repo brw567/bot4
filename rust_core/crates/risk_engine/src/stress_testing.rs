@@ -19,6 +19,7 @@ use super::checks::RiskChecker;
 // use crate::kelly_sizing::KellySizer;
 
 /// Comprehensive stress testing framework
+/// TODO: Add docs
 pub struct StressTestFramework {
     /// Risk checker to test
     risk_checker: Arc<RiskChecker>,
@@ -41,6 +42,7 @@ pub struct StressTestFramework {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct HistoricalScenario {
     pub name: String,
     pub date: String,
@@ -52,6 +54,7 @@ pub struct HistoricalScenario {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketMove {
     pub asset: String,
     pub price_change_pct: Decimal,
@@ -60,6 +63,7 @@ pub struct MarketMove {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct HypotheticalScenario {
     pub name: String,
     pub severity: ScenarioSeverity,
@@ -69,6 +73,7 @@ pub struct HypotheticalScenario {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ScenarioSeverity {
     Mild,      // 1-sigma event
     Moderate,  // 3-sigma event
@@ -77,6 +82,7 @@ pub enum ScenarioSeverity {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketShock {
     pub shock_type: ShockType,
     pub magnitude: Decimal,
@@ -84,6 +90,7 @@ pub struct MarketShock {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ShockType {
     PriceShock,
     VolumeShock,
@@ -93,29 +100,32 @@ pub enum ShockType {
     FundingShock,
 }
 
-pub struct MonteCarloEngine {
-    num_simulations: usize,
-    time_horizon: u32,
-    confidence_levels: Vec<Decimal>,
-    random_seed: Option<u64>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct MonteCarloEngine {
+// ELIMINATED:     num_simulations: usize,
+// ELIMINATED:     time_horizon: u32,
+// ELIMINATED:     confidence_levels: Vec<Decimal>,
+// ELIMINATED:     random_seed: Option<u64>,
+// ELIMINATED: }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct StressTestResults {
-    pub scenarios_passed: usize,
-    pub scenarios_failed: usize,
-    pub worst_drawdown: Decimal,
-    pub var_breaches: Vec<VaRBreach>,
-    pub es_breaches: Vec<ESBreach>,
-    pub kelly_violations: Vec<KellyViolation>,
-    pub margin_calls: Vec<MarginCall>,
-    pub liquidations: Vec<Liquidation>,
-    pub survival_probability: Decimal,
-    pub time_to_ruin: Option<u32>,
-    pub recommendations: Vec<String>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct StressTestResults {
+// ELIMINATED:     pub scenarios_passed: usize,
+// ELIMINATED:     pub scenarios_failed: usize,
+// ELIMINATED:     pub worst_drawdown: Decimal,
+// ELIMINATED:     pub var_breaches: Vec<VaRBreach>,
+// ELIMINATED:     pub es_breaches: Vec<ESBreach>,
+// ELIMINATED:     pub kelly_violations: Vec<KellyViolation>,
+// ELIMINATED:     pub margin_calls: Vec<MarginCall>,
+// ELIMINATED:     pub liquidations: Vec<Liquidation>,
+// ELIMINATED:     pub survival_probability: Decimal,
+// ELIMINATED:     pub time_to_ruin: Option<u32>,
+// ELIMINATED:     pub recommendations: Vec<String>,
+// ELIMINATED: }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct VaRBreach {
     pub scenario: String,
     pub expected_var: Decimal,
@@ -124,6 +134,7 @@ pub struct VaRBreach {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ESBreach {
     pub scenario: String,
     pub expected_shortfall: Decimal,
@@ -132,6 +143,7 @@ pub struct ESBreach {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct KellyViolation {
     pub scenario: String,
     pub recommended_size: Decimal,
@@ -140,6 +152,7 @@ pub struct KellyViolation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarginCall {
     pub timestamp: i64,
     pub required_margin: Decimal,
@@ -148,6 +161,7 @@ pub struct MarginCall {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Liquidation {
     pub timestamp: i64,
     pub positions_liquidated: Vec<String>,

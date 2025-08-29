@@ -18,10 +18,11 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::marker::PhantomData;
-use std::ops::{Add, Sub, Mul, Div};
+use std::ops::Add;
 
 /// Type-safe price with currency information
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TypedPrice<C: Currency> {
     price: Price,
     #[serde(skip)]
@@ -114,6 +115,7 @@ impl<C: Currency> fmt::Display for TypedPrice<C> {
 
 /// Type-safe quantity with currency/asset information
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TypedQuantity<C: Currency> {
     quantity: Quantity,
     #[serde(skip)]
@@ -191,6 +193,7 @@ impl<C: Currency> fmt::Display for TypedQuantity<C> {
 
 /// Type-safe money amount (combines quantity and currency)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Money<C: Currency> {
     amount: Decimal,
     #[serde(skip)]
@@ -257,6 +260,7 @@ impl<C: Currency> fmt::Display for Money<C> {
 
 /// Exchange rate between two currencies
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExchangeRate<From: Currency, To: Currency> {
     rate: Decimal,
     #[serde(skip)]

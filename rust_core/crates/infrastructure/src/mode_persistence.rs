@@ -26,6 +26,7 @@ use crate::software_control_modes::ControlMode;
 
 /// Record of mode transitions for history
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ModeTransition {
     pub from: ControlMode,
     pub to: ControlMode,
@@ -41,6 +42,7 @@ pub struct ModeTransition {
 /// Persisted mode state with recovery information
 /// Alex: "Must survive any crash scenario"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PersistedModeState {
     /// Current control mode
     pub mode: ControlMode,
@@ -69,6 +71,7 @@ pub struct PersistedModeState {
 
 /// Recovery information for crash scenarios
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RecoveryInfo {
     /// System version at time of save
     pub system_version: String,
@@ -95,6 +98,7 @@ pub struct RecoveryInfo {
 /// Mode recovery policy
 /// Quinn: "Defines how we recover from different crash scenarios"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RecoveryPolicy {
     /// Maximum crashes before forcing Emergency mode
     pub max_crashes_before_emergency: u32,
@@ -188,6 +192,7 @@ CREATE INDEX IF NOT EXISTS idx_crash_recovery_time ON crash_recovery_log(crash_t
 
 /// Manages mode state persistence and recovery
 /// Sam: "Critical for safe restarts after crashes"
+/// TODO: Add docs
 pub struct ModePersistenceManager {
     /// Database connection pool
     db_pool: PgPool,
@@ -652,6 +657,7 @@ impl ModePersistenceManager {
 
 /// Handles partial state recovery for specific subsystems
 /// Riley: "Granular recovery without full system restart"
+/// TODO: Add docs
 pub struct PartialStateRecovery {
     persistence_manager: Arc<ModePersistenceManager>,
 }

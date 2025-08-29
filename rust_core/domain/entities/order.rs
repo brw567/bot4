@@ -46,6 +46,7 @@ impl fmt::Display for OrderId {
 
 /// Order type enumeration
 
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -58,6 +59,7 @@ pub enum OrderType {
 
 /// Order side (direction)
 
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -65,6 +67,7 @@ pub enum OrderSide {
 
 /// Time in Force for orders
 
+/// TODO: Add docs
 pub enum TimeInForce {
     GTC,  // Good Till Canceled
     IOC,  // Immediate or Cancel
@@ -74,6 +77,7 @@ pub enum TimeInForce {
 
 /// Order status lifecycle
 
+/// TODO: Add docs
 pub enum OrderStatus {
     Draft,           // Not yet submitted
     Pending,         // Submitted, awaiting confirmation

@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum QuantizationError {
     #[error("Invalid quantization level: {0}")]
     InvalidLevel(String),
@@ -19,6 +20,7 @@ pub enum QuantizationError {
 pub type Result<T> = std::result::Result<T, QuantizationError>;
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct QuantizationConfig {
     pub num_bins: usize,
     pub quantization_method: QuantizationMethod,
@@ -26,6 +28,7 @@ pub struct QuantizationConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum QuantizationMethod {
     Uniform,
     Quantile,
@@ -44,6 +47,7 @@ impl Default for QuantizationConfig {
 }
 
 /// Data Quantizer - quantizes continuous data for ML models
+/// TODO: Add docs
 pub struct DataQuantizer {
     config: QuantizationConfig,
     bin_edges: HashMap<String, Vec<f64>>,

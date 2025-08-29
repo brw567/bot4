@@ -284,12 +284,14 @@ impl TradingSignal {
 }
 
 // Storage additions for MLFeedbackSystem
+/// TODO: Add docs
 pub struct MLFeedbackSystemFields {
     pub calibration_params: std::collections::HashMap<String, f64>,
     pub prediction_history: VecDeque<(f64, f64, chrono::DateTime<chrono::Utc>)>,
 }
 
 // Storage additions for SHAPCalculator
+/// TODO: Add docs
 pub struct SHAPCalculatorFields {
     pub baseline_prediction: f64,
     pub feature_means: Vec<f64>,
@@ -298,6 +300,7 @@ pub struct SHAPCalculatorFields {
 }
 
 // Storage additions for MarketAnalytics  
+/// TODO: Add docs
 pub struct MarketAnalyticsFields {
     pub price_history: Vec<f64>,
     pub volume_history: Vec<f64>,

@@ -14,6 +14,7 @@ use rust_decimal::Decimal;
 use crate::{DataError, Result, XAISentiment};
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct XAIConfig {
     pub api_key: String,
     pub api_endpoint: String,
@@ -41,6 +42,7 @@ impl Default for XAIConfig {
 }
 
 /// xAI/Grok integration for advanced sentiment analysis
+/// TODO: Add docs
 pub struct XAIIntegration {
     config: XAIConfig,
     client: Client,
@@ -527,6 +529,7 @@ struct SentimentJson {
 
 // Analysis result structures
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EventImpactAnalysis {
     pub immediate_impact: f64,
     pub short_term_impact: f64,
@@ -536,6 +539,7 @@ pub struct EventImpactAnalysis {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TechnicalIndicators {
     pub rsi: f64,
     pub macd: f64,
@@ -545,6 +549,7 @@ pub struct TechnicalIndicators {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TechnicalAugmentation {
     pub pattern_confirmation: f64,
     pub false_signal_probability: f64,
@@ -555,6 +560,7 @@ pub struct TechnicalAugmentation {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MacroData {
     pub fed_rate: f64,
     pub ten_year: f64,
@@ -565,6 +571,7 @@ pub struct MacroData {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CryptoMetrics {
     pub btc_price: Decimal,
     pub eth_price: Decimal,
@@ -573,6 +580,7 @@ pub struct CryptoMetrics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MacroCorrelationAnalysis {
     pub correlations: HashMap<String, f64>,
     pub leading_indicators: Vec<String>,
@@ -582,6 +590,7 @@ pub struct MacroCorrelationAnalysis {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CacheMetrics {
     pub entries: usize,
     pub hit_rate: f64,

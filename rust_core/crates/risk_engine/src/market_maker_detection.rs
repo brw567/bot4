@@ -19,6 +19,7 @@ use statrs::statistics::Statistics;
 
 /// Market maker behavioral patterns
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MarketMakerProfile {
     pub identifier: String,
     pub confidence_score: f64,           // 0-1 confidence they're a MM
@@ -37,6 +38,7 @@ pub struct MarketMakerProfile {
 
 /// Order book event for analysis
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderBookEvent {
     pub timestamp: DateTime<Utc>,
     pub event_type: OrderEventType,
@@ -48,6 +50,7 @@ pub struct OrderBookEvent {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OrderEventType {
     NewOrder,
     Cancellation,
@@ -56,6 +59,7 @@ pub enum OrderEventType {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -63,6 +67,7 @@ pub enum OrderSide {
 
 /// Market participant classification
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ParticipantType {
     MarketMaker,           // Professional liquidity provider
     InstitutionalTrader,   // Large directional trader
@@ -75,6 +80,7 @@ pub enum ParticipantType {
 
 /// Market Maker Detection Engine
 /// Casey: "We need to know who we're trading against!"
+/// TODO: Add docs
 pub struct MarketMakerDetector {
     /// Participant profiles
     participants: Arc<DashMap<String, MarketMakerProfile>>,
@@ -113,6 +119,7 @@ struct ParticipantActivity {
 
 /// Detection configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DetectionConfig {
     pub min_quote_frequency: f64,      // Min quotes/sec for MM (e.g., 5)
     pub max_avg_spread_bps: f64,       // Max spread for MM (e.g., 10 bps)
@@ -512,6 +519,7 @@ impl MarketMakerDetector {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketMakerMetrics {
     pub total_participants: usize,
     pub market_makers_detected: usize,
@@ -522,12 +530,13 @@ pub struct MarketMakerMetrics {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TradingRecommendation {
-    pub strategy: String,
-    pub reasoning: String,
-    pub suggested_actions: Vec<String>,
-    pub risk_level: String,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct TradingRecommendation {
+// ELIMINATED:     pub strategy: String,
+// ELIMINATED:     pub reasoning: String,
+// ELIMINATED:     pub suggested_actions: Vec<String>,
+// ELIMINATED:     pub risk_level: String,
+// ELIMINATED: }
 
 // ============================================================================
 // TESTS - Casey & Morgan validation

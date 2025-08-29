@@ -1,3 +1,4 @@
+use domain_types::MarketImpact;
 // Value Object: Market Impact Models
 // Implements realistic market impact for large orders
 // Addresses Nexus's critical feedback on linear model limitations
@@ -8,6 +9,7 @@ use std::f64::consts::E;
 
 /// Market impact model types
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MarketImpactModel {
     /// Linear impact: impact = coefficient * volume
     /// Simple but underestimates large orders by 20-30%
@@ -76,7 +78,8 @@ impl MarketImpactModel {
 }
 
 /// Market impact calculator
-pub struct MarketImpact {
+// ELIMINATED: use domain_types::MarketImpact
+// pub struct MarketImpact {
     model: MarketImpactModel,
 }
 
@@ -246,11 +249,8 @@ impl MarketImpact {
 
 /// Market depth snapshot
 #[derive(Debug, Clone)]
-pub struct MarketDepth {
-    pub bids: Vec<(f64, f64)>, // (price, quantity)
-    pub asks: Vec<(f64, f64)>, // (price, quantity)
-    pub timestamp: i64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MarketDepth - use domain_types::market_data::MarketDepth
 
 impl MarketDepth {
     /// Calculate total liquidity up to a price level

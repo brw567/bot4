@@ -12,6 +12,7 @@ use anyhow::Result;
 /// This DTO maps directly to the database schema
 /// Complete separation from domain model per hexagonal architecture
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct OrderDto {
     pub id: String,
     pub symbol: String,
@@ -61,6 +62,7 @@ impl OrderDto {
 
 /// Database representation of Order Fill
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct FillDto {
     pub id: String,
     pub order_id: String,
@@ -75,6 +77,7 @@ pub struct FillDto {
 
 /// Database representation of Position
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct PositionDto {
     pub id: String,
     pub symbol: String,
@@ -91,6 +94,7 @@ pub struct PositionDto {
 
 /// Database representation of Trade
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct TradeDto {
     pub id: String,
     pub order_id: String,
@@ -106,6 +110,7 @@ pub struct TradeDto {
 
 /// Database representation of Balance
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct BalanceDto {
     pub asset: String,
     pub free: f64,
@@ -116,6 +121,7 @@ pub struct BalanceDto {
 
 /// Database representation of Account
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct AccountDto {
     pub id: String,
     pub exchange: String,
@@ -128,6 +134,7 @@ pub struct AccountDto {
 
 /// Database representation of Risk Metrics
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct RiskMetricsDto {
     pub id: String,
     pub timestamp: DateTime<Utc>,
@@ -144,6 +151,7 @@ pub struct RiskMetricsDto {
 
 /// Database representation of ML Model
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct ModelDto {
     pub id: String,
     pub name: String,
@@ -158,6 +166,7 @@ pub struct ModelDto {
 
 /// Database representation of Signal
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct SignalDto {
     pub id: String,
     pub source: String,
@@ -172,6 +181,7 @@ pub struct SignalDto {
 
 /// Database representation of Audit Log
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct AuditLogDto {
     pub id: String,
     pub entity_type: String,

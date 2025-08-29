@@ -1,3 +1,4 @@
+use domain_types::ValidationResult;
 // Exchange Adapter Trait - Open/Closed Principle Implementation
 // Defines the contract that all exchange adapters must follow
 // Owner: Casey | Reviewer: Sam
@@ -43,6 +44,7 @@ pub trait ExchangeAdapter: ExchangePort + Send + Sync {
 
 /// Exchange health status
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeHealth {
     pub is_healthy: bool,
     pub latency_ms: u64,
@@ -54,16 +56,12 @@ pub struct ExchangeHealth {
 
 /// Exchange configuration
 #[derive(Debug, Clone)]
-pub struct ExchangeConfig {
-    pub api_url: String,
-    pub ws_url: String,
-    pub testnet: bool,
-    pub rate_limits: RateLimits,
-    pub features: ExchangeFeatures,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExchangeConfig - use execution::exchange::ExchangeConfig
 
 /// Rate limiting configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RateLimits {
     pub orders_per_second: u32,
     pub orders_per_minute: u32,
@@ -72,6 +70,7 @@ pub struct RateLimits {
 
 /// Exchange feature support
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeFeatures {
     pub supports_oco: bool,
     pub supports_iceberg: bool,
@@ -84,6 +83,7 @@ pub struct ExchangeFeatures {
 
 /// Exchange-specific limits for a symbol
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeLimits {
     pub min_price: Price,
     pub max_price: Price,
@@ -97,7 +97,8 @@ pub struct ExchangeLimits {
 
 /// Order validation result
 #[derive(Debug, Clone)]
-pub struct ValidationResult {
+// ELIMINATED: use domain_types::ValidationResult
+// pub struct ValidationResult {
     pub is_valid: bool,
     pub errors: Vec<ValidationError>,
     pub warnings: Vec<ValidationWarning>,
@@ -105,14 +106,16 @@ pub struct ValidationResult {
 
 /// Validation error
 #[derive(Debug, Clone)]
-pub struct ValidationError {
-    pub code: String,
-    pub message: String,
-    pub field: Option<String>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct ValidationError {
+// ELIMINATED:     pub code: String,
+// ELIMINATED:     pub message: String,
+// ELIMINATED:     pub field: Option<String>,
+// ELIMINATED: }
 
 /// Validation warning
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ValidationWarning {
     pub code: String,
     pub message: String,
@@ -120,6 +123,7 @@ pub struct ValidationWarning {
 }
 
 /// Binance-specific adapter
+/// TODO: Add docs
 pub struct BinanceAdapter {
     config: ExchangeConfig,
     client: reqwest::Client,
@@ -350,6 +354,7 @@ impl ExchangePort for BinanceAdapter {
 }
 
 /// Kraken-specific adapter
+/// TODO: Add docs
 pub struct KrakenAdapter {
     config: ExchangeConfig,
     // Kraken-specific fields
@@ -384,6 +389,7 @@ impl KrakenAdapter {
 // Similar implementation for KrakenAdapter...
 
 /// Factory for creating exchange adapters
+/// TODO: Add docs
 pub struct ExchangeAdapterFactory;
 
 impl ExchangeAdapterFactory {

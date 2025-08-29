@@ -16,7 +16,7 @@
 //! - Smart Order Routing (Virtu Financial)
 //! - Optimal Execution (Almgren-Chriss model)
 
-use crate::{Price, PriceError, Quantity, QuantityError};
+use crate::{Price, Quantity};
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
@@ -27,6 +27,7 @@ use uuid::Uuid;
 
 /// Unique order identifier
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OrderId(pub Uuid);
 
 impl OrderId {
@@ -62,6 +63,7 @@ impl fmt::Display for OrderId {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
 #[serde(rename_all = "UPPERCASE")]
 #[strum(serialize_all = "UPPERCASE")]
+/// TODO: Add docs
 pub enum OrderSide {
     /// Buy order (long)
     Buy,
@@ -92,6 +94,7 @@ impl OrderSide {
 /// Order type - supports all exchange order types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+/// TODO: Add docs
 pub enum OrderType {
     /// Market order - immediate execution at best price
     Market,
@@ -146,6 +149,7 @@ impl OrderType {
 
 /// Time in Force - how long order remains active
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
+/// TODO: Add docs
 pub enum TimeInForce {
     /// Good Till Cancelled - remains until filled or cancelled
     GTC,
@@ -165,6 +169,7 @@ pub enum TimeInForce {
 
 /// Order status - full lifecycle tracking
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
+/// TODO: Add docs
 pub enum OrderStatus {
     /// Created but not submitted
     Draft,
@@ -219,6 +224,7 @@ impl OrderStatus {
 
 /// Execution algorithm for smart order routing
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
+/// TODO: Add docs
 pub enum ExecutionAlgorithm {
     /// Default exchange execution
     Default,
@@ -248,6 +254,7 @@ pub enum ExecutionAlgorithm {
 /// - Filled quantity cannot exceed total quantity
 /// - Risk parameters must be valid for order side
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Order {
     // === Identity ===
     /// Unique order ID (immutable)
@@ -382,6 +389,7 @@ pub struct Order {
 
 /// Individual fill information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Fill {
     /// Fill ID from exchange
     pub fill_id: String,

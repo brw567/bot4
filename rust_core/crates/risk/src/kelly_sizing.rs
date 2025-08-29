@@ -16,6 +16,7 @@ use anyhow::Result;
 /// Kelly Criterion Calculator - Optimal bet sizing based on edge/odds
 /// Sophie: "Without Kelly sizing, you're either leaving money on the table or risking ruin!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct KellySizer {
     /// Configuration
     pub config: KellyConfig,
@@ -31,6 +32,7 @@ pub struct KellySizer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct KellyConfig {
     /// Maximum Kelly fraction to use (safety factor)
     /// Sophie: "NEVER use full Kelly! 25% is the practical maximum"
@@ -70,6 +72,7 @@ impl Default for KellyConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TradeOutcome {
     pub timestamp: i64,
     pub symbol: String,
@@ -81,6 +84,7 @@ pub struct TradeOutcome {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct KellyStatistics {
     pub win_rate: Decimal,
     pub avg_win: Decimal,
@@ -93,6 +97,7 @@ pub struct KellyStatistics {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RiskAdjustments {
     /// Reduce Kelly for high correlation
     pub correlation_factor: Decimal,
@@ -483,6 +488,7 @@ impl KellySizer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct KellyRecommendation {
     pub position_size_pct: Decimal,
     pub confidence: Decimal,

@@ -41,6 +41,7 @@ pub static CPU_FEATURES: Lazy<Arc<CpuFeatures>> = Lazy::new(|| {
 
 /// Comprehensive CPU feature detection with all SIMD levels
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CpuFeatures {
     // Basic features (always available on x86_64)
     pub has_sse: bool,
@@ -83,6 +84,7 @@ pub struct CpuFeatures {
 
 /// SIMD execution strategy based on available features
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum SimdStrategy {
     /// Scalar fallback - works on ALL CPUs
     Scalar,
@@ -303,6 +305,7 @@ macro_rules! simd_dispatch {
 // ========================================================================================
 
 /// Track performance of different SIMD strategies
+/// TODO: Add docs
 pub struct SimdPerformanceMonitor {
     scalar_calls: u64,
     sse2_calls: u64,

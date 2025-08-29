@@ -19,6 +19,7 @@ use crate::feature_registry::FeatureRegistry;
 
 /// A/B testing configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct ABConfig {
     pub min_sample_size: usize,
     pub confidence_level: f64, // e.g., 0.95 for 95%
@@ -44,6 +45,7 @@ impl Default for ABConfig {
 }
 
 /// A/B Test Manager
+/// TODO: Add docs
 pub struct ABTestManager {
     config: ABConfig,
     registry: Arc<FeatureRegistry>,
@@ -393,6 +395,7 @@ impl ABTestManager {
 
 /// Experiment definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Experiment {
     pub experiment_id: String,
     pub name: String,
@@ -456,6 +459,7 @@ impl Experiment {
 
 /// Experiment status
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum ExperimentStatus {
     Draft,
     Running,
@@ -466,6 +470,7 @@ pub enum ExperimentStatus {
 
 /// Stop reason
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum StopReason {
     Manual,
     Expired,
@@ -487,6 +492,7 @@ struct ExperimentAllocation {
 
 /// Experiment results
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExperimentResults {
     pub experiment_id: String,
     pub control_group: GroupStats,
@@ -521,6 +527,7 @@ impl ExperimentResults {
 
 /// Group statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GroupStats {
     pub count: usize,
     pub mean: Option<f64>,

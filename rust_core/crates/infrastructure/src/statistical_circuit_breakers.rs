@@ -31,6 +31,7 @@ use rust_decimal_macros::dec;
 /// Types of statistical anomalies we detect
 /// Morgan: "Each requires different mathematical approach"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum StatisticalAnomaly {
     /// Sharpe ratio degradation below threshold
     SharpeDegradation,
@@ -59,6 +60,7 @@ pub enum StatisticalAnomaly {
 
 /// Statistical circuit breaker state
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum StatisticalState {
     /// Normal market conditions
     Normal,
@@ -76,6 +78,7 @@ pub enum StatisticalState {
 /// Market regime identified by Hidden Markov Model
 /// Based on Hamilton (1989) regime-switching model
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MarketRegime {
     /// Low volatility, trending market
     Trending,
@@ -96,6 +99,7 @@ pub enum MarketRegime {
 
 /// Monitor Sharpe ratio degradation in real-time
 /// Quinn: "Risk-adjusted returns are critical for position sizing"
+/// TODO: Add docs
 pub struct SharpeMonitor {
     /// Rolling window of returns
     returns_window: VecDeque<Decimal>,
@@ -273,6 +277,7 @@ impl SharpeMonitor {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum SharpeTrend {
     Improving,
     Stable,
@@ -286,6 +291,7 @@ pub enum SharpeTrend {
 
 /// Detect market regime changes using Hidden Markov Model
 /// Based on Hamilton (1989) and Bhar & Hamori (2004)
+/// TODO: Add docs
 pub struct RegimeDetector {
     /// Number of hidden states (regimes)
     num_states: usize,
@@ -483,6 +489,7 @@ impl RegimeDetector {
 
 /// Detect abnormal volatility clustering using GARCH(1,1) model
 /// Based on Bollerslev (1986) and Engle (1982)
+/// TODO: Add docs
 pub struct GARCHDetector {
     /// GARCH parameters (omega, alpha, beta)
     omega: f64,  // Constant
@@ -629,6 +636,7 @@ impl GARCHDetector {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum VolatilityRegime {
     VeryLow,
     Low,
@@ -642,6 +650,7 @@ pub enum VolatilityRegime {
 // ============================================================================
 
 /// Coordinates all statistical anomaly detectors
+/// TODO: Add docs
 pub struct StatisticalCircuitBreaker {
     /// Sharpe ratio monitor
     sharpe_monitor: Arc<SyncRwLock<SharpeMonitor>>,
@@ -669,6 +678,7 @@ pub struct StatisticalCircuitBreaker {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct StatisticalConfig {
     /// Window size for calculations
     pub window_size: usize,
@@ -690,6 +700,7 @@ pub struct StatisticalConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TripConditions {
     /// Trip if Sharpe degrades by this percentage
     pub sharpe_trip_threshold: Decimal,
@@ -708,6 +719,7 @@ pub struct TripConditions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AnomalyEvent {
     pub timestamp: SystemTime,
     pub anomaly_type: StatisticalAnomaly,
@@ -936,6 +948,7 @@ impl StatisticalCircuitBreaker {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StatisticalStatus {
     pub state: StatisticalState,
     pub current_sharpe: Decimal,
@@ -953,6 +966,7 @@ pub struct StatisticalStatus {
 // ============================================================================
 
 /// Integration point with main circuit breaker system
+/// TODO: Add docs
 pub struct StatisticalBreakerIntegration {
     statistical_breaker: Arc<StatisticalCircuitBreaker>,
     integration_enabled: Arc<SyncRwLock<bool>>,

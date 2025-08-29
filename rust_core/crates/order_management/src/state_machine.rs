@@ -16,6 +16,7 @@ use crate::order::OrderId;
 /// Order states in the lifecycle
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString, FromRepr)]
 #[repr(u8)]
+/// TODO: Add docs
 pub enum OrderState {
     /// Order created but not yet submitted
     Created = 0,
@@ -103,6 +104,7 @@ impl OrderState {
 
 /// State transition event
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct StateTransition {
     pub order_id: OrderId,
     pub from_state: OrderState,
@@ -113,6 +115,7 @@ pub struct StateTransition {
 }
 
 /// Order state machine with atomic transitions
+/// TODO: Add docs
 pub struct OrderStateMachine {
     order_id: OrderId,
     current_state: Arc<AtomicU8>,
@@ -290,6 +293,7 @@ impl OrderStateMachine {
 
 /// Order lifecycle events
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderEvent {
     Validate,
     Submit,
@@ -303,6 +307,7 @@ pub enum OrderEvent {
 }
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum StateTransitionError {
     #[error("Invalid transition from {from} to {to}")]
     InvalidTransition { from: OrderState, to: OrderState },

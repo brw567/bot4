@@ -35,6 +35,7 @@ pub trait Shutdownable: Send + Sync {
 
 /// Emergency trigger reasons
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EmergencyReason {
     ManualTrigger,           // User initiated
     MaxDrawdownExceeded,     // Portfolio drawdown limit hit
@@ -50,6 +51,7 @@ pub enum EmergencyReason {
 
 /// Emergency coordinator state
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum EmergencyState {
     Normal,           // System operating normally
     Warning,          // Warning conditions detected
@@ -60,6 +62,7 @@ pub enum EmergencyState {
 
 /// CRITICAL: Central Emergency Coordinator
 /// Alex: "This is our nuclear option - one button to stop everything"
+/// TODO: Add docs
 pub struct EmergencyCoordinator {
     /// Current state
     state: Arc<RwLock<EmergencyState>>,
@@ -91,6 +94,7 @@ pub struct EmergencyCoordinator {
 
 /// Emergency event log entry
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EmergencyEvent {
     pub timestamp: DateTime<Utc>,
     pub reason: EmergencyReason,
@@ -381,6 +385,7 @@ impl EmergencyCoordinator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct HealthStatus {
     pub state: EmergencyState,
     pub healthy_components: usize,
@@ -390,6 +395,7 @@ pub struct HealthStatus {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EmergencyStatistics {
     pub currentstate: EmergencyState,
     pub kill_switch_active: bool,

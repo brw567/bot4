@@ -10,6 +10,7 @@ use tracing::{info, warn, debug, instrument};
 
 /// Aggregate timeframe levels
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AggregateLevel {
     OneSecond,
     OneMinute,
@@ -59,6 +60,7 @@ impl AggregateLevel {
 }
 
 /// Manager for continuous aggregate operations
+/// TODO: Add docs
 pub struct AggregateManager {
     pool: Arc<Pool>,
 }
@@ -331,6 +333,7 @@ impl AggregateManager {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AggregateFreshness {
     pub view_name: String,
     pub watermark: Option<DateTime<Utc>>,

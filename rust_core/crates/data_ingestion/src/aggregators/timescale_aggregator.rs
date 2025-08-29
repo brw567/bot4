@@ -18,58 +18,111 @@ use futures::stream::{StreamExt, TryStreamExt};
 
 /// Configuration for TimescaleDB aggregator
 #[derive(Debug, Clone)]
-pub struct TimescaleConfig {
-    /// Database connection URL
-    pub database_url: String,
-    
-    /// Maximum number of connections in the pool
-    pub max_connections: u32,
-    
-    /// Minimum number of connections to maintain
-    pub min_connections: u32,
-    
-    /// Connection timeout in seconds
-    pub connect_timeout: Duration,
-    
-    /// Idle timeout for connections
-    pub idle_timeout: Duration,
-    
-    /// Max lifetime for a connection
-    pub max_lifetime: Duration,
-    
-    /// Enable continuous aggregates
-    pub enable_continuous_aggregates: bool,
-    
-    /// Enable compression policies
-    pub enable_compression: bool,
-    
-    /// Retention policy in days (0 = no retention policy)
-    pub retention_days: u32,
-    
-    /// Compression policy in days (compress data older than this)
-    pub compress_after_days: u32,
-    
-    /// Batch size for bulk inserts
-    pub batch_size: usize,
-    
-    /// Flush interval for batched writes
-    pub flush_interval: Duration,
-    
-    /// Enable real-time aggregation
-    pub enable_realtime_aggregation: bool,
-    
-    /// Candle intervals to generate
-    pub candle_intervals: Vec<CandleInterval>,
-    
-    /// Enable volume profile calculation
-    pub enable_volume_profile: bool,
-    
-    /// Enable order flow imbalance calculation
-    pub enable_order_flow: bool,
-    
-    /// Enable VWAP calculation
-    pub enable_vwap: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+// pub struct TimescaleConfig {
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Database connection URL
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub database_url: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Maximum number of connections in the pool
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub max_connections: u32,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Minimum number of connections to maintain
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub min_connections: u32,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Connection timeout in seconds
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub connect_timeout: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Idle timeout for connections
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub idle_timeout: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Max lifetime for a connection
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub max_lifetime: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Enable continuous aggregates
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_continuous_aggregates: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Enable compression policies
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_compression: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Retention policy in days (0 = no retention policy)
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub retention_days: u32,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Compression policy in days (compress data older than this)
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub compress_after_days: u32,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Batch size for bulk inserts
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub batch_size: usize,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Flush interval for batched writes
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub flush_interval: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Enable real-time aggregation
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_realtime_aggregation: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Candle intervals to generate
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub candle_intervals: Vec<CandleInterval>,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Enable volume profile calculation
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_volume_profile: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Enable order flow imbalance calculation
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_order_flow: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     /// Enable VWAP calculation
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_vwap: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+// }
 
 impl Default for TimescaleConfig {
     fn default() -> Self {
@@ -106,6 +159,7 @@ impl Default for TimescaleConfig {
 
 /// Candle intervals for aggregation
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum CandleInterval {
     OneSecond,
     FiveSeconds,
@@ -182,6 +236,7 @@ impl CandleInterval {
 
 /// Volume profile level
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VolumeLevel {
     pub price: Decimal,
     pub volume: Decimal,
@@ -192,17 +247,18 @@ pub struct VolumeLevel {
 
 /// Order flow imbalance metrics
 #[derive(Debug, Clone)]
-pub struct OrderFlowMetrics {
-    pub timestamp: DateTime<Utc>,
-    pub exchange: String,
-    pub symbol: String,
-    pub interval: CandleInterval,
-    pub delta: Decimal,  // Buy volume - Sell volume
-    pub cumulative_delta: Decimal,
-    pub imbalance_ratio: Decimal,  // Buy / (Buy + Sell)
-    pub aggressor_ratio: Decimal,  // Aggressive orders ratio
-    pub absorption_ratio: Decimal,  // Passive absorption ratio
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OrderFlowMetrics {
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     pub exchange: String,
+// ELIMINATED:     pub symbol: String,
+// ELIMINATED:     pub interval: CandleInterval,
+// ELIMINATED:     pub delta: Decimal,  // Buy volume - Sell volume
+// ELIMINATED:     pub cumulative_delta: Decimal,
+// ELIMINATED:     pub imbalance_ratio: Decimal,  // Buy / (Buy + Sell)
+// ELIMINATED:     pub aggressor_ratio: Decimal,  // Aggressive orders ratio
+// ELIMINATED:     pub absorption_ratio: Decimal,  // Passive absorption ratio
+// ELIMINATED: }
 
 /// Event batch for bulk insertion
 struct EventBatch {
@@ -234,6 +290,7 @@ impl EventBatch {
 }
 
 /// Metrics for monitoring
+/// TODO: Add docs
 pub struct AggregatorMetrics {
     pub events_processed: AtomicU64,
     pub candles_generated: AtomicU64,
@@ -304,6 +361,7 @@ impl CandleCache {
 }
 
 /// Main TimescaleDB aggregator implementation
+/// TODO: Add docs
 pub struct TimescaleAggregator {
     config: Arc<TimescaleConfig>,
     pool: Arc<PgPool>,

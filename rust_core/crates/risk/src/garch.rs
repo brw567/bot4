@@ -20,6 +20,7 @@ use std::arch::x86_64::*;
 /// - β (beta): Persistence coefficient (GARCH term)
 /// - Constraint: α + β < 1 for stationarity
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GARCHModel {
     // Model parameters
     pub omega: f64,     // ω: Long-term variance weight

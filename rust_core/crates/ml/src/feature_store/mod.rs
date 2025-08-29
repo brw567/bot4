@@ -1,3 +1,4 @@
+use domain_types::FeatureMetadata;
 //! # FEATURE STORE - Production-Grade ML Feature Management
 //! Blake (ML Lead) + Full Team Implementation
 //!
@@ -24,6 +25,7 @@ use dashmap::DashMap;
 
 /// Feature Store Configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureStoreConfig {
     /// TimescaleDB connection string
     pub database_url: String,
@@ -67,6 +69,7 @@ impl Default for FeatureStoreConfig {
 }
 
 /// Main Feature Store implementation
+/// TODO: Add docs
 pub struct FeatureStore {
     /// Database connection pool
     pool: Arc<PgPool>,
@@ -89,6 +92,7 @@ pub struct FeatureStore {
 
 /// Unique feature identifier
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureKey {
     pub feature_name: String,
     pub entity_id: String,
@@ -107,6 +111,7 @@ struct CachedFeature {
 
 /// Feature value types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum FeatureValue {
     Float(f64),
     Integer(i64),
@@ -120,7 +125,8 @@ pub enum FeatureValue {
 
 /// Feature metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FeatureMetadata {
+// ELIMINATED: use domain_types::FeatureMetadata
+// pub struct FeatureMetadata {
     pub name: String,
     pub description: String,
     pub value_type: FeatureValueType,
@@ -136,6 +142,7 @@ pub struct FeatureMetadata {
 
 /// Feature value types for schema
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum FeatureValueType {
     Float,
     Integer,
@@ -149,6 +156,7 @@ pub enum FeatureValueType {
 
 /// Feature statistics for monitoring
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureStatistics {
     pub mean: Option<f64>,
     pub std_dev: Option<f64>,
@@ -161,12 +169,14 @@ pub struct FeatureStatistics {
 
 /// Feature computation graph for lineage
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ComputationGraph {
     pub nodes: Vec<ComputationNode>,
     pub edges: Vec<ComputationEdge>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ComputationNode {
     pub id: String,
     pub node_type: ComputationNodeType,
@@ -175,6 +185,7 @@ pub struct ComputationNode {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ComputationNodeType {
     RawData,
     Aggregation,
@@ -184,6 +195,7 @@ pub enum ComputationNodeType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ComputationEdge {
     pub from: String,
     pub to: String,
@@ -191,6 +203,7 @@ pub struct ComputationEdge {
 }
 
 /// Feature registry for metadata management
+/// TODO: Add docs
 pub struct FeatureRegistry {
     features: HashMap<String, FeatureMetadata>,
     entity_types: HashMap<String, EntityType>,
@@ -199,6 +212,7 @@ pub struct FeatureRegistry {
 
 /// Entity type definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EntityType {
     pub name: String,
     pub id_type: String,
@@ -208,6 +222,7 @@ pub struct EntityType {
 
 /// Feature set for grouping related features
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureSet {
     pub name: String,
     pub description: String,
@@ -218,6 +233,7 @@ pub struct FeatureSet {
 
 /// Performance metrics
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct FeatureStoreMetrics {
     pub total_reads: u64,
     pub total_writes: u64,
@@ -394,6 +410,7 @@ impl FeatureStore {
 
 /// Error types
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum FeatureStoreError {
     #[error("Database error: {0}")]
     Database(#[from] sqlx::Error),

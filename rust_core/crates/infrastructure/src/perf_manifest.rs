@@ -10,6 +10,7 @@ use prometheus::{Histogram, HistogramOpts, Registry, register_histogram_vec_with
 
 /// Performance percentiles for each component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct LatencyPercentiles {
     pub p50: u64,   // nanoseconds
     pub p95: u64,   // nanoseconds
@@ -20,6 +21,7 @@ pub struct LatencyPercentiles {
 
 /// Cache information from CPU
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CacheInfo {
     pub l1_data: usize,
     pub l1_instruction: usize,
@@ -29,6 +31,7 @@ pub struct CacheInfo {
 
 /// Performance Manifest - Ground Truth for System Performance
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PerfManifest {
     // Hardware detection
     pub cpu_model: String,

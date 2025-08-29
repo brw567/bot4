@@ -29,6 +29,7 @@ use crate::producers::{MarketEvent, TradeSide};
 
 /// Configuration for Parquet writer
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ParquetConfig {
     /// Base directory for Parquet files
     pub base_path: PathBuf,
@@ -95,6 +96,7 @@ impl Default for ParquetConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum CompressionAlgorithm {
     Snappy,
     Gzip,
@@ -104,6 +106,7 @@ pub enum CompressionAlgorithm {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum PartitionStrategy {
     Daily,
     Hourly,
@@ -165,6 +168,7 @@ struct PartitionWriter {
 }
 
 /// Metrics for monitoring
+/// TODO: Add docs
 pub struct ParquetMetrics {
     pub files_written: AtomicU64,
     pub total_rows: AtomicU64,
@@ -192,6 +196,7 @@ impl ParquetMetrics {
 }
 
 /// Main Parquet writer implementation
+/// TODO: Add docs
 pub struct ParquetWriter {
     config: Arc<ParquetConfig>,
     schema: Arc<Schema>,

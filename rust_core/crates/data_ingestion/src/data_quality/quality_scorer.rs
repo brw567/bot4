@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct ScoringConfig {
     pub weights: QualityWeights,
     pub decay_rate: f64,  // Time-based quality decay
@@ -25,6 +26,7 @@ impl Default for ScoringConfig {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct QualityWeights {
     pub completeness: f64,
     pub accuracy: f64,
@@ -46,6 +48,7 @@ impl Default for QualityWeights {
     }
 }
 
+/// TODO: Add docs
 pub struct QualityScorer {
     config: ScoringConfig,
 }
@@ -114,15 +117,17 @@ impl QualityScorer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct QualityMetrics {
-    pub completeness: f64,  // Percentage of expected data present
-    pub accuracy: f64,       // Correctness of values
-    pub consistency: f64,    // Agreement across sources
-    pub timeliness: f64,     // Freshness of data
-    pub validity: f64,       // Conformance to rules
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct QualityMetrics {
+// ELIMINATED:     pub completeness: f64,  // Percentage of expected data present
+// ELIMINATED:     pub accuracy: f64,       // Correctness of values
+// ELIMINATED:     pub consistency: f64,    // Agreement across sources
+// ELIMINATED:     pub timeliness: f64,     // Freshness of data
+// ELIMINATED:     pub validity: f64,       // Conformance to rules
+// ELIMINATED: }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct QualityScore {
     pub overall_score: f64,
     pub metrics: QualityMetrics,
@@ -132,6 +137,7 @@ pub struct QualityScore {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum QualityLevel {
     Excellent,
     Good,

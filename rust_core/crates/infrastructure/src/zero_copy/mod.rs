@@ -29,7 +29,9 @@ use dashmap::DashMap;
 
 /// Thread-safe object pool with zero allocations after initialization
 #[derive(Debug)]
-pub struct ObjectPool<T: Default + Send> {
+/// TODO: Add docs
+// ELIMINATED: ObjectPool<T> - Lock-free crossbeam
+// pub struct ObjectPool<T: Default + Send> {
     pool: Arc<ArrayQueue<Box<T>>>,
     capacity: usize,
     allocated: AtomicUsize,
@@ -96,6 +98,7 @@ impl<T: Default + Send + 'static> ObjectPool<T> {
 }
 
 /// RAII guard for pooled objects
+/// TODO: Add docs
 pub struct PoolGuard<T: Send> {
     object: Option<Box<T>>,
     pool: Arc<ArrayQueue<Box<T>>>,
@@ -139,6 +142,7 @@ impl<T: Send> std::ops::DerefMut for PoolGuard<T> {
 // ============================================================================
 
 /// Arena allocator for batch operations - zero allocation after init
+/// TODO: Add docs
 pub struct Arena {
     memory: *mut u8,
     size: usize,
@@ -207,6 +211,7 @@ impl Drop for Arena {
 
 /// Lock-free metrics collection
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LockFreeMetrics {
     metrics: Arc<DashMap<String, AtomicU64>>,
     counters: Arc<DashMap<String, AtomicU64>>,
@@ -259,11 +264,17 @@ impl LockFreeMetrics {
 // ============================================================================
 
 /// Zero-copy data pipeline with in-place transformations
-pub struct ZeroCopyPipeline {
-    buffer_pool: ObjectPool<Vec<f64>>,
-    arena: Arc<Arena>,
-    metrics: LockFreeMetrics,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+// pub struct ZeroCopyPipeline {
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     buffer_pool: ObjectPool<Vec<f64>>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     arena: Arc<Arena>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     metrics: LockFreeMetrics,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+// }
 
 impl ZeroCopyPipeline {
     /// Create new pipeline - Morgan
@@ -344,6 +355,7 @@ impl ZeroCopyPipeline {
 // ============================================================================
 
 /// Lock-free ring buffer for streaming data
+/// TODO: Add docs
 pub struct RingBuffer<T: Copy> {
     buffer: *mut T,
     capacity: usize,
@@ -425,6 +437,7 @@ impl<T: Copy> Drop for RingBuffer<T> {
 // ============================================================================
 
 /// Matrix operations with zero allocations
+/// TODO: Add docs
 pub struct ZeroCopyMatrix;
 
 impl ZeroCopyMatrix {
@@ -509,7 +522,9 @@ impl ZeroCopyMatrix {
 
 /// Centralized memory pool manager
 #[derive(Debug)]
-pub struct MemoryPoolManager {
+/// TODO: Add docs
+// ELIMINATED: MemoryPoolManager - Enhanced with MiMalloc, jemalloc integration
+// pub struct MemoryPoolManager {
     matrix_pool: ObjectPool<Vec<f64>>,
     vector_pool: ObjectPool<Vec<f64>>,
     batch_pool: ObjectPool<Vec<Vec<f64>>>,
@@ -593,6 +608,7 @@ impl MemoryPoolManager {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PoolManagerStats {
     pub matrix_stats: PoolStats,
     pub vector_stats: PoolStats,

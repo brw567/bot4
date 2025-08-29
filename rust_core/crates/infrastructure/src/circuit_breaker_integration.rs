@@ -27,6 +27,7 @@ use crate::emergency_coordinator::{EmergencyCoordinator, EmergencyReason};
 /// Toxicity signals that trigger circuit breakers
 /// Morgan: "VPIN alone is insufficient - need multiple signals"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ToxicitySignals {
     /// Order Flow Imbalance (immediate toxicity)
     pub ofi: f64,
@@ -113,6 +114,7 @@ impl ToxicitySignals {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ToxicityBreach {
     OrderFlowImbalance(f64),
     VPINToxicity(f64),
@@ -130,6 +132,7 @@ pub enum ToxicityBreach {
 
 /// Central hub for all circuit breakers
 /// Alex: "Single point of control for all protective mechanisms"
+/// TODO: Add docs
 pub struct CircuitBreakerHub {
     /// Component-specific breakers
     breakers: Arc<DashMap<String, Arc<ComponentBreaker>>>,
@@ -681,6 +684,7 @@ impl CircuitBreakerStats {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CircuitBreakerStatsSnapshot {
     pub toxicity_trips: u64,
     pub spread_halts: u64,
@@ -693,6 +697,7 @@ pub struct CircuitBreakerStatsSnapshot {
 // ============================================================================
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum RiskCalculationType {
     VaR,
     Kelly,
@@ -703,6 +708,7 @@ pub enum RiskCalculationType {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum CircuitBreakerEvent {
     BreakerOpened(String),
     BreakerClosed(String),
@@ -713,6 +719,7 @@ pub enum CircuitBreakerEvent {
 }
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum CircuitBreakerError {
     #[error("Circuit open for {0:?}")]
     CircuitOpen(RiskCalculationType),
@@ -726,13 +733,16 @@ pub enum CircuitBreakerError {
 
 #[derive(Debug, thiserror::Error)]
 #[error("Toxicity gate tripped: {0:?}")]
+/// TODO: Add docs
 pub struct ToxicityGateTripped(pub ToxicityBreach);
 
 #[derive(Debug, thiserror::Error)]
 #[error("Spread explosion detected: {0} bps")]
+/// TODO: Add docs
 pub struct SpreadExplosionDetected(pub f64);
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum APIErrorCascade {
     #[error("Trading halted due to API errors")]
     TradingHalted,

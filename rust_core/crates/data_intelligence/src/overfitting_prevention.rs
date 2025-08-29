@@ -14,6 +14,7 @@ use crate::{DataError, Result};
 
 /// Master overfitting prevention system
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OverfittingPreventionSystem {
     // Validation strategies
     walk_forward_validator: Arc<RwLock<WalkForwardValidator>>,
@@ -37,6 +38,7 @@ pub struct OverfittingPreventionSystem {
 
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OverfittingConfig {
     // Validation parameters
     pub min_train_samples: usize,         // Minimum 1000 samples
@@ -900,6 +902,7 @@ impl OverfittingPreventionSystem {
 
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CorrelationValidation {
     pub stable_correlations: Vec<CorrelationAssessment>,
     pub unstable_correlations: Vec<CorrelationAssessment>,
@@ -910,6 +913,7 @@ pub struct CorrelationValidation {
 
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CorrelationAssessment {
     pub pair: (String, String),
     pub mean_correlation: f64,
@@ -925,6 +929,7 @@ pub struct CorrelationAssessment {
 
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WalkForwardResults {
     pub windows: Vec<WalkForwardWindow>,
     pub average_in_sample_sharpe: f64,
@@ -936,6 +941,7 @@ pub struct WalkForwardResults {
 
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PurgedKFoldResults {
     pub folds: Vec<PurgedFold>,
     pub performances: Vec<Performance>,
@@ -947,6 +953,7 @@ pub struct PurgedKFoldResults {
 
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RobustnessResults {
     pub noise_performances: Vec<(f64, Performance)>,
     pub robustness_score: f64,
@@ -956,6 +963,7 @@ pub struct RobustnessResults {
 
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MonteCarloResults {
     pub confidence_intervals: ConfidenceIntervals,
     pub success_rate: f64,

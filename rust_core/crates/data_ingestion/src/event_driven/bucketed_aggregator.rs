@@ -22,6 +22,7 @@ use crate::monitoring::{MetricsCollector, register_histogram};
 
 /// Window type for aggregation
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum WindowType {
     /// Fixed time windows (tumbling)
     Tumbling,
@@ -41,6 +42,7 @@ pub enum WindowType {
 
 /// Aggregate window
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AggregateWindow {
     pub window_id: u64,
     pub symbol: Symbol,
@@ -75,6 +77,7 @@ pub struct AggregateWindow {
 
 /// Bucket configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BucketConfig {
     /// Window duration in milliseconds
     pub window_duration_ms: u64,
@@ -114,6 +117,7 @@ impl Default for BucketConfig {
 
 /// Bucket statistics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct BucketStats {
     pub total_windows: u64,
     pub active_windows: usize,
@@ -424,6 +428,7 @@ impl WindowBuilder {
 }
 
 /// Main bucketed aggregator implementation
+/// TODO: Add docs
 pub struct BucketedAggregator {
     config: Arc<BucketConfig>,
     
@@ -599,13 +604,21 @@ impl BucketedAggregator {
 
 /// Microstructure features
 #[derive(Debug, Clone, Default)]
-pub struct MicrostructureFeatures {
-    pub flow_toxicity: f64,
-    pub avg_order_imbalance: f64,
-    pub volatility_clustering: f64,
-    pub price_efficiency: f64,
-    pub avg_spread: Decimal,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// pub struct MicrostructureFeatures {
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub flow_toxicity: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub avg_order_imbalance: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub volatility_clustering: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub price_efficiency: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub avg_spread: Decimal,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// }
 
 /// Calculate autocorrelation
 fn calculate_autocorrelation(series: &[f64], lag: usize) -> f64 {

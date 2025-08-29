@@ -25,6 +25,7 @@ use idempotency_manager::{IdempotencyManager, hash_order_request};
 
 /// Latency simulation modes
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum LatencyMode {
     None,
     Fixed(Duration),
@@ -34,6 +35,7 @@ pub enum LatencyMode {
 
 /// Fill simulation modes
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum FillMode {
     Instant,           // Fill immediately at requested price
     Realistic,         // Partial fills, slippage, etc.
@@ -43,6 +45,7 @@ pub enum FillMode {
 
 /// Rate limiting configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RateLimitConfig {
     pub orders_per_second: u32,
     pub weight_per_order: u32,
@@ -63,6 +66,7 @@ impl Default for RateLimitConfig {
 
 /// Network failure modes for chaos testing
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum FailureMode {
     None,
     RandomDrops { probability: f64 },
@@ -132,6 +136,7 @@ struct SimulatedOrderBook {
 /// - Poisson/Beta fill distributions instead of uniform
 /// - Log-normal latency distribution for realistic network delays
 /// - Market impact with square-root scaling
+/// TODO: Add docs
 pub struct ExchangeSimulator {
     state: Arc<RwLock<SimulatorState>>,
     latency_mode: LatencyMode,

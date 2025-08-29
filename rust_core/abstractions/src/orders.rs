@@ -1,3 +1,4 @@
+use domain_types::ValidationResult;
 //! # Order Abstractions (Layer 2)
 //!
 //! Order-related abstractions that lower layers can use without
@@ -13,6 +14,7 @@ use crate::AbstractionResult;
 
 /// Abstract order representation for lower layers
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AbstractOrder {
     /// Order ID
     pub id: String,
@@ -34,6 +36,7 @@ pub struct AbstractOrder {
 
 /// Order side abstraction
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OrderSide {
     /// Buy order
     Buy,
@@ -43,6 +46,7 @@ pub enum OrderSide {
 
 /// Order type abstraction
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OrderType {
     /// Market order
     Market,
@@ -56,6 +60,7 @@ pub enum OrderType {
 
 /// Order status abstraction
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OrderStatus {
     /// New order
     New,
@@ -71,6 +76,7 @@ pub enum OrderStatus {
 
 /// Abstract position representation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AbstractPosition {
     /// Position ID
     pub id: String,
@@ -92,6 +98,7 @@ pub struct AbstractPosition {
 
 /// Abstract fill representation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AbstractFill {
     /// Fill ID
     pub id: String,
@@ -135,7 +142,8 @@ pub trait OrderValidator: Send + Sync {
 
 /// Validation result
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ValidationResult {
+// ELIMINATED: use domain_types::ValidationResult
+// pub struct ValidationResult {
     /// Is valid
     pub is_valid: bool,
     /// Validation errors
@@ -173,6 +181,7 @@ pub trait PositionTracker: Send + Sync {
 
 /// Order events for event-driven architecture
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OrderEvent {
     /// Order placed
     OrderPlaced(AbstractOrder),

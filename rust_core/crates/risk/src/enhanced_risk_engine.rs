@@ -1,3 +1,4 @@
+use domain_types::Portfolio;
 //! # ENHANCED RISK ENGINE - Production-Grade Implementation
 //! Cameron (Risk Lead) + Full Team Collaboration
 //! 
@@ -14,6 +15,7 @@ use rust_decimal::Decimal;
 use statrs::distribution::{Normal, ContinuousCDF};
 
 /// Enhanced Risk Engine with Advanced Metrics
+/// TODO: Add docs
 pub struct EnhancedRiskEngine {
     /// Portfolio state
     portfolio: Arc<RwLock<Portfolio>>,
@@ -35,25 +37,26 @@ pub struct EnhancedRiskEngine {
 }
 
 #[derive(Clone, Debug)]
-pub struct RiskConfig {
-    /// Maximum position size as % of portfolio
-    pub max_position_pct: f64,  // Default: 0.02 (2%)
-    
-    /// Maximum daily loss
-    pub max_daily_loss_pct: f64,  // Default: 0.02 (2%)
-    
-    /// Maximum leverage
-    pub max_leverage: f64,  // Default: 3.0
-    
-    /// VaR confidence level
-    pub var_confidence: f64,  // Default: 0.95
-    
-    /// Kelly fraction safety factor
-    pub kelly_safety_factor: f64,  // Default: 0.25
-    
-    /// Correlation breakdown threshold
-    pub correlation_breakdown_threshold: f64,  // Default: 0.8
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct RiskConfig {
+// ELIMINATED:     /// Maximum position size as % of portfolio
+// ELIMINATED:     pub max_position_pct: f64,  // Default: 0.02 (2%)
+// ELIMINATED:     
+// ELIMINATED:     /// Maximum daily loss
+// ELIMINATED:     pub max_daily_loss_pct: f64,  // Default: 0.02 (2%)
+// ELIMINATED:     
+// ELIMINATED:     /// Maximum leverage
+// ELIMINATED:     pub max_leverage: f64,  // Default: 3.0
+// ELIMINATED:     
+// ELIMINATED:     /// VaR confidence level
+// ELIMINATED:     pub var_confidence: f64,  // Default: 0.95
+// ELIMINATED:     
+// ELIMINATED:     /// Kelly fraction safety factor
+// ELIMINATED:     pub kelly_safety_factor: f64,  // Default: 0.25
+// ELIMINATED:     
+// ELIMINATED:     /// Correlation breakdown threshold
+// ELIMINATED:     pub correlation_breakdown_threshold: f64,  // Default: 0.8
+// ELIMINATED: }
 
 impl Default for RiskConfig {
     fn default() -> Self {
@@ -89,6 +92,7 @@ impl Default for RiskConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Normal { confidence: f64 },
     Trending { direction: f64, strength: f64 },
@@ -295,7 +299,8 @@ impl EnhancedRiskEngine {
 }
 
 // Supporting structures
-pub struct Portfolio {
+// ELIMINATED: use domain_types::Portfolio
+// pub struct Portfolio {
     pub positions: Vec<Position>,
     pub total_value: f64,
     pub cash: f64,
@@ -303,9 +308,11 @@ pub struct Portfolio {
 }
 
 // Using canonical Position from domain_types
-use domain_types::position_canonical::Position;
+use domain_types::canonical_types::Position;
 
-pub struct TradingSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate TradingSignal - use canonical_types::TradingSignal
+// pub struct TradingSignal {
     pub symbol: String,
     pub win_probability: f64,
     pub expected_return: f64,
@@ -313,6 +320,7 @@ pub struct TradingSignal {
     pub confidence: f64,
 }
 
+/// TODO: Add docs
 pub struct TailRisk {
     pub threshold: f64,
     pub shape_parameter: f64,
@@ -322,6 +330,7 @@ pub struct TailRisk {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub enum RiskViolation {
     PositionLimitExceeded,
     LeverageExceeded,

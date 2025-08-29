@@ -18,6 +18,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 /// SAGA execution state
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum SagaState {
     /// Saga not started
     Pending,
@@ -35,6 +36,7 @@ pub enum SagaState {
 
 /// Step execution result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum StepResult {
     /// Step succeeded, continue to next
     Success(serde_json::Value),
@@ -77,6 +79,7 @@ pub trait SagaStep: Send + Sync {
 
 /// SAGA execution context
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SagaContext {
     /// Unique saga ID
     pub saga_id: Uuid,
@@ -91,6 +94,7 @@ pub struct SagaContext {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExecutionRecord {
     pub step_name: String,
     pub started_at: u64,
@@ -146,6 +150,7 @@ impl SagaContext {
 }
 
 /// SAGA definition
+/// TODO: Add docs
 pub struct Saga {
     /// Unique saga ID
     pub id: Uuid,
@@ -323,6 +328,7 @@ impl Saga {
 }
 
 /// SAGA Orchestrator - manages multiple sagas
+/// TODO: Add docs
 pub struct SagaOrchestrator {
     /// Active sagas
     sagas: Arc<RwLock<HashMap<Uuid, Arc<RwLock<Saga>>>>>,
@@ -333,6 +339,7 @@ pub struct SagaOrchestrator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SagaEvent {
     Started(Uuid),
     StepCompleted(Uuid, String),
@@ -461,6 +468,7 @@ impl SagaOrchestrator {
 // Example SAGA steps for trading operations
 
 /// Order placement step
+/// TODO: Add docs
 pub struct PlaceOrderStep {
     symbol: String,
     quantity: rust_decimal::Decimal,
@@ -504,6 +512,7 @@ impl SagaStep for PlaceOrderStep {
 }
 
 /// Risk check step
+/// TODO: Add docs
 pub struct RiskCheckStep {
     max_position_size: f64,
     max_leverage: f64,
@@ -538,6 +547,7 @@ impl SagaStep for RiskCheckStep {
 }
 
 /// Balance update step
+/// TODO: Add docs
 pub struct UpdateBalanceStep {
     account_id: Uuid,
     amount: rust_decimal::Decimal,

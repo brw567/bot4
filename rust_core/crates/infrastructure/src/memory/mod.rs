@@ -29,6 +29,7 @@ pub use safe_pools::{
 
 /// Initialize all memory pools at startup
 /// Must be called before any trading operations
+/// TODO: Add docs
 pub fn initialize_memory_system() {
     // Pre-warm allocator
     warm_allocator();
@@ -90,6 +91,7 @@ fn verify_allocation_latency() {
 
 /// Memory statistics for monitoring
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MemoryStats {
     pub allocated_bytes: usize,
     pub reserved_bytes: usize,

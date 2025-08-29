@@ -1,3 +1,4 @@
+use domain_types::CorrelationMatrix;
 // MONTE CARLO SIMULATIONS - STOCHASTIC MODELING WITH GAME THEORY
 // Team: Morgan (ML Lead) + Quinn (Risk) + Jordan (Performance) + Full Team
 // CRITICAL: Simulate millions of scenarios to validate strategies
@@ -27,6 +28,7 @@ use rayon::prelude::*;
 
 /// Monte Carlo Simulation Engine - Parallel stochastic modeling
 /// Morgan: "If we can't simulate it, we shouldn't trade it!"
+/// TODO: Add docs
 pub struct MonteCarloEngine {
     // Simulation parameters
     num_simulations: usize,
@@ -56,6 +58,7 @@ pub struct MonteCarloEngine {
 
 /// Price dynamics model
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum PriceModel {
     GeometricBrownianMotion {
         drift: f64,
@@ -88,6 +91,7 @@ pub enum PriceModel {
 
 /// Volatility dynamics model
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum VolatilityModel {
     Constant(f64),
     GARCH {
@@ -109,6 +113,7 @@ pub enum VolatilityModel {
 
 /// Jump process model
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct JumpModel {
     pub intensity: f64,  // Poisson intensity
     pub size_distribution: JumpSizeDistribution,
@@ -116,6 +121,7 @@ pub struct JumpModel {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum JumpSizeDistribution {
     Normal { mean: f64, std: f64 },
     DoubleExponential { lambda_up: f64, lambda_down: f64 },
@@ -124,7 +130,8 @@ pub enum JumpSizeDistribution {
 
 /// Correlation structure
 #[derive(Debug, Clone)]
-pub struct CorrelationMatrix {
+// ELIMINATED: use domain_types::CorrelationMatrix
+// pub struct CorrelationMatrix {
     pub assets: Vec<String>,
     pub matrix: Vec<Vec<f64>>,
     pub time_varying: bool,
@@ -133,6 +140,7 @@ pub struct CorrelationMatrix {
 
 /// Single simulation result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SimulationResult {
     pub final_pnl: Decimal,
     pub max_drawdown: f64,
@@ -149,6 +157,7 @@ pub struct SimulationResult {
 
 /// Aggregated path statistics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PathStatistics {
     pub mean_return: f64,
     pub std_return: f64,
@@ -904,6 +913,7 @@ impl MonteCarloEngine {
 
 /// Monte Carlo simulation report
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MonteCarloReport {
     pub strategy_validation: StrategyValidation,
     pub risk_assessment: RiskMetrics,
@@ -916,6 +926,7 @@ pub struct MonteCarloReport {
 
 /// Strategy validation results
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StrategyValidation {
     pub profitable_probability: f64,
     pub expected_sharpe: f64,
@@ -939,6 +950,7 @@ pub struct StrategyValidation {
 
 /// Optimal parameters from optimization
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct OptimalParameters {
     pub kelly_fraction: f64,
     pub stop_loss: f64,
@@ -950,12 +962,14 @@ pub struct OptimalParameters {
 
 /// Stress test results
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct StressTestResults {
     pub scenario_results: Vec<(StressScenario, f64)>,
 }
 
 /// Stress test scenarios
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum StressScenario {
     FlashCrash { magnitude: f64, duration: usize },
     LiquidityCrisis { bid_ask_spread: f64, volume_reduction: f64 },
@@ -966,6 +980,7 @@ pub enum StressScenario {
 
 /// Game theory analysis results
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct GameTheoryAnalysis {
     pub nash_equilibrium: String,
     pub dominant_strategies: Vec<String>,

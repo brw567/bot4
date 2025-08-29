@@ -30,6 +30,7 @@ use crate::message::Message;
 use infrastructure::{Clock, RetryExecutor, RetryPolicy};
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum ReliableWebSocketError {
     #[error("Connection failed after {attempts} attempts: {reason}")]
     ConnectionExhausted { attempts: u32, reason: String },
@@ -57,6 +58,7 @@ pub enum ReliableWebSocketError {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ReliableWebSocketConfig {
     pub url: String,
     pub name: String, // For logging
@@ -147,6 +149,7 @@ impl ReliableWebSocketConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ConnectionState {
     Disconnected,
     Connecting,
@@ -155,6 +158,7 @@ pub enum ConnectionState {
     Failed { reason: String },
 }
 
+/// TODO: Add docs
 pub struct ReliableWebSocketClient {
     config: Arc<ReliableWebSocketConfig>,
     state: Arc<RwLock<ConnectionState>>,
@@ -607,17 +611,18 @@ impl ReliableWebSocketClient {
 }
 
 #[derive(Debug, Clone)]
-pub struct WebSocketStats {
-    pub total_connects: u64,
-    pub total_disconnects: u64,
-    pub messages_sent: u64,
-    pub messages_received: u64,
-    pub reconnect_attempts: u32,
-    pub consecutive_failures: u32,
-    pub pending_messages: usize,
-    pub last_message_time: Instant,
-    pub state: ConnectionState,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct WebSocketStats {
+// ELIMINATED:     pub total_connects: u64,
+// ELIMINATED:     pub total_disconnects: u64,
+// ELIMINATED:     pub messages_sent: u64,
+// ELIMINATED:     pub messages_received: u64,
+// ELIMINATED:     pub reconnect_attempts: u32,
+// ELIMINATED:     pub consecutive_failures: u32,
+// ELIMINATED:     pub pending_messages: usize,
+// ELIMINATED:     pub last_message_time: Instant,
+// ELIMINATED:     pub state: ConnectionState,
+// ELIMINATED: }
 
 // ============================================================================
 // TESTS - Casey & Jordan validation

@@ -20,6 +20,7 @@ pub use crate::trading_types_complete::{
 };
 
 /// Convert from basic TradingSignal to EnhancedTradingSignal
+/// TODO: Add docs
 pub fn enhance_signal(
     basic: crate::unified_types::TradingSignal,
     market_data: &CompleteMarketData,
@@ -226,6 +227,7 @@ fn detect_market_regime(market_data: &CompleteMarketData) -> MarketRegime {
 }
 
 /// Create default sentiment data
+/// TODO: Add docs
 pub fn create_default_sentiment() -> SentimentData {
     SentimentData {
         timestamp: Utc::now(),
@@ -245,6 +247,7 @@ pub fn create_default_sentiment() -> SentimentData {
 }
 
 /// Create enhanced order book from basic data
+/// TODO: Add docs
 pub fn create_enhanced_order_book(
     bids: Vec<(Price, Quantity)>,
     asks: Vec<(Price, Quantity)>,

@@ -1,3 +1,4 @@
+use domain_types::Portfolio;
 use domain_types::market_data::MarketData;
 //! # ENHANCED TRADING LOGIC - 360-DEGREE ANALYSIS
 //! 
@@ -19,6 +20,7 @@ use std::sync::Arc;
 
 /// Enhanced Trading Decision System
 /// Combines ML, TA, Risk, and Market Microstructure
+/// TODO: Add docs
 pub struct EnhancedTradingLogic {
     /// BLAKE: ML prediction engine
     ml_predictor: MLPredictor,
@@ -298,7 +300,9 @@ impl EnhancedTradingLogic {
 
 // Supporting structures
 #[derive(Clone)]
-pub struct MLSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate MLSignal - use canonical_types::TradingSignal
+// pub struct MLSignal {
     pub confidence: f64,
     pub predicted_move: f64,
     pub direction: f64,
@@ -306,6 +310,7 @@ pub struct MLSignal {
 }
 
 #[derive(Clone)]
+/// TODO: Add docs
 pub struct TASignals {
     pub rsi_signal: f64,
     pub macd_signal: f64,
@@ -317,6 +322,7 @@ pub struct TASignals {
 }
 
 #[derive(Clone)]
+/// TODO: Add docs
 pub struct MarketStructure {
     pub imbalance: f64,
     pub spread: f64,
@@ -324,7 +330,9 @@ pub struct MarketStructure {
     pub confidence: f64,
 }
 
-pub struct CombinedSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate CombinedSignal - use canonical_types::TradingSignal
+// pub struct CombinedSignal {
     pub direction: f64,
     pub confidence: f64,
     pub ml_component: f64,
@@ -341,11 +349,13 @@ pub struct CombinedSignal {
     pub volume: Quantity,
 }
 
-pub struct Portfolio {
+// ELIMINATED: use domain_types::Portfolio
+// pub struct Portfolio {
     pub total_equity: Decimal,
     pub heat: f64,  // 0-1 risk utilization
 }
 
+/// TODO: Add docs
 pub struct RiskCheckResult {
     pub approved: bool,
     pub risk_score: f64,
@@ -353,6 +363,7 @@ pub struct RiskCheckResult {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub enum TradingError {
     RiskViolation(String),
     InsufficientData,
@@ -360,9 +371,13 @@ pub enum TradingError {
 }
 
 // Placeholder types
+/// TODO: Add docs
 pub struct MLPredictor;
+/// TODO: Add docs
 pub struct RiskManager;
+/// TODO: Add docs
 pub struct SmartOrderRouter;
+/// TODO: Add docs
 pub struct PerformanceTracker;
 
 impl MLPredictor {

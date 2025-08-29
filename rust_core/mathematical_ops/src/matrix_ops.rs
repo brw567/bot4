@@ -4,6 +4,7 @@ use nalgebra::{DMatrix, DVector};
 use ndarray::{Array2, Array1};
 
 /// Calculate covariance matrix
+/// TODO: Add docs
 pub fn covariance_matrix(returns: &Array2<f64>) -> Array2<f64> {
     let n = returns.nrows();
     let k = returns.ncols();
@@ -32,6 +33,7 @@ pub fn covariance_matrix(returns: &Array2<f64>) -> Array2<f64> {
 }
 
 /// Calculate correlation from covariance
+/// TODO: Add docs
 pub fn correlation_from_covariance(cov_matrix: &Array2<f64>) -> Array2<f64> {
     let n = cov_matrix.nrows();
     let mut corr = Array2::zeros((n, n));

@@ -8,6 +8,7 @@ use rust_decimal::Decimal;
 use crate::unified_types::SignalAction;
 
 /// Extended fields for MLFeedbackSystem
+/// TODO: Add docs
 pub struct MLFeedbackSystemExt {
     pub predictions: VecDeque<PredictionRecord>,
     pub platt_a: Option<f64>,
@@ -17,6 +18,7 @@ pub struct MLFeedbackSystemExt {
 }
 
 /// Extended fields for SHAPCalculator
+/// TODO: Add docs
 pub struct SHAPCalculatorExt {
     pub feature_names: Vec<String>,
     pub feature_means: Vec<f64>,
@@ -26,6 +28,7 @@ pub struct SHAPCalculatorExt {
 }
 
 /// Extended fields for MarketAnalytics
+/// TODO: Add docs
 pub struct MarketAnalyticsExt {
     pub price_history: Vec<f64>,
     pub volume_history: Vec<f64>,
@@ -36,6 +39,7 @@ pub struct MarketAnalyticsExt {
 
 /// Prediction record for ML feedback
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PredictionRecord {
     pub timestamp: DateTime<Utc>,
     pub action: SignalAction,
@@ -45,6 +49,7 @@ pub struct PredictionRecord {
 
 /// SHAP value record
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SHAPRecord {
     pub timestamp: DateTime<Utc>,
     pub values: Vec<f64>,
@@ -53,13 +58,15 @@ pub struct SHAPRecord {
 
 /// Order level for order book
 #[derive(Debug, Clone)]
-pub struct OrderLevel {
-    pub price: Decimal,
-    pub size: Decimal,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OrderLevel {
+// ELIMINATED:     pub price: Decimal,
+// ELIMINATED:     pub size: Decimal,
+// ELIMINATED: }
 
 /// Enhanced order book structure
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct EnhancedOrderBook {
     pub bids: Vec<OrderLevel>,
     pub asks: Vec<OrderLevel>,

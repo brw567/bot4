@@ -11,6 +11,7 @@ use tokio::sync::RwLock;
 
 /// OCO Priority determines which order executes if both trigger simultaneously
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OcoPriority {
     /// Limit order takes precedence
     LimitFirst,
@@ -22,6 +23,7 @@ pub enum OcoPriority {
 
 /// OCO cancellation semantics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OcoSemantics {
     /// Cancel sibling when one leg triggers
     pub trigger_cancels_sibling: bool,
@@ -49,6 +51,7 @@ impl Default for OcoSemantics {
 
 /// OCO Order State
 #[derive(Debug, Clone, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OcoState {
     /// Both legs are pending
     Pending,
@@ -66,12 +69,14 @@ pub enum OcoState {
 
 /// Which leg of the OCO
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OcoLeg {
     Limit,
     Stop,
 }
 
 /// OCO Order - One-Cancels-Other order pair
+/// TODO: Add docs
 pub struct OcoOrder {
     /// Unique OCO ID
     id: String,

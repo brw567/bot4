@@ -1,3 +1,4 @@
+use domain_types::MarketState;
 // DEEP DIVE: Advanced Game Theory for Trading
 // Team: Alex (Lead) + Morgan (ML) + Quinn (Risk) + Full Team
 // NO SIMPLIFICATIONS - FULL IMPLEMENTATION OF TRADING GAME THEORY!
@@ -9,6 +10,7 @@ use crate::parameter_manager::ParameterManager;
 
 /// Advanced Game Theory Engine
 /// Implements multi-player games, information asymmetry, and market microstructure games
+/// TODO: Add docs
 pub struct AdvancedGameTheory {
     params: Arc<ParameterManager>,
     
@@ -23,6 +25,7 @@ pub struct AdvancedGameTheory {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PayoffMatrix {
     timestamp: chrono::DateTime<chrono::Utc>,
     our_strategy: Strategy,
@@ -32,6 +35,7 @@ pub struct PayoffMatrix {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PlayerProfile {
     /// Estimated capital
     capital: f64,
@@ -47,6 +51,7 @@ pub struct PlayerProfile {
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
+/// TODO: Add docs
 pub enum Strategy {
     Aggressive,      // High frequency, large positions
     Conservative,    // Low frequency, small positions
@@ -421,7 +426,8 @@ impl AdvancedGameTheory {
 
 /// Market state for game theory calculations
 #[derive(Debug, Clone, Default)]
-pub struct MarketState {
+// ELIMINATED: use domain_types::MarketState
+// pub struct MarketState {
     pub volatility: f64,
     pub volume: f64,
     pub trend: f64,
@@ -434,6 +440,7 @@ pub struct MarketState {
 /// Prisoner's Dilemma for Market Makers
 /// Theory: Two market makers must decide whether to cooperate (maintain spreads)
 /// or defect (tighten spreads to capture more flow)
+/// TODO: Add docs
 pub struct MarketMakerDilemma {
     params: Arc<ParameterManager>,
 }

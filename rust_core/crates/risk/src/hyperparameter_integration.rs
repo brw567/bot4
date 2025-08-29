@@ -20,6 +20,7 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
 // Temporary stub for OptimalExecutor until full implementation
+/// TODO: Add docs
 pub struct OptimalExecutor {
     algorithm_bias: f64,
     max_participation_rate: f64,
@@ -44,6 +45,7 @@ impl OptimalExecutor {
 
 /// Master integration system that connects hyperparameter optimization
 /// to ALL components for maximum market value extraction
+/// TODO: Add docs
 pub struct HyperparameterIntegrationSystem {
     // Core optimization engine
     auto_tuner: Arc<RwLock<AutoTuner>>,
@@ -560,6 +562,7 @@ impl HyperparameterIntegrationSystem {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OptimizationStats {
     pub total_optimizations: usize,
     pub average_improvement: f64,

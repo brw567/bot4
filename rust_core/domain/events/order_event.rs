@@ -10,6 +10,7 @@ use crate::domain::entities::OrderSide;
 /// Domain events for order lifecycle
 /// These events are emitted when order state changes
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderEvent {
     /// Order has been submitted for execution
     Submitted {

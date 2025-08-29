@@ -28,6 +28,7 @@ use domain::value_objects::{Symbol, Price, Quantity};
 use super::{ExchangeAdapter, ExchangeConfig, ExchangeHealth, OrderStatus};
 
 /// REAL Binance adapter - Production ready
+/// TODO: Add docs
 pub struct BinanceRealAdapter {
     config: ExchangeConfig,
     client: Client,

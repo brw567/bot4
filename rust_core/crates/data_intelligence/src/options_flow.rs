@@ -18,6 +18,7 @@ use reqwest::Client;
 use statrs::distribution::{Normal, ContinuousCDF};
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum OptionsFlowError {
     #[error("API error: {0}")]
     ApiError(String),
@@ -36,6 +37,7 @@ pub type Result<T> = std::result::Result<T, OptionsFlowError>;
 
 /// Configuration for options flow monitoring
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OptionsFlowConfig {
     pub deribit_api_key: Option<String>,  // Optional for public data
     pub deribit_api_secret: Option<String>,
@@ -64,6 +66,7 @@ impl Default for OptionsFlowConfig {
 
 /// Option contract specification
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OptionContract {
     pub symbol: String,
     pub underlying: String,
@@ -89,12 +92,14 @@ pub struct OptionContract {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum OptionType {
     Call,
     Put,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum OptionsExchange {
     Deribit,
     CME,
@@ -105,6 +110,7 @@ pub enum OptionsExchange {
 
 /// Options flow transaction
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OptionsFlow {
     pub timestamp: DateTime<Utc>,
     pub contract: OptionContract,
@@ -117,6 +123,7 @@ pub struct OptionsFlow {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum TradeType {
     Buy,
     Sell,
@@ -125,12 +132,14 @@ pub enum TradeType {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum Side {
     Bid,
     Ask,
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum FlowSentiment {
     Bullish,
     Bearish,
@@ -139,6 +148,7 @@ pub enum FlowSentiment {
 }
 
 /// Greeks calculator using Black-Scholes model
+/// TODO: Add docs
 pub struct GreeksCalculator {
     risk_free_rate: f64,  // Current risk-free rate
 }
@@ -272,6 +282,7 @@ impl GreeksCalculator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Greeks {
     pub delta: f64,
     pub gamma: f64,
@@ -281,6 +292,7 @@ pub struct Greeks {
 }
 
 /// Gamma exposure calculator for market maker positioning
+/// TODO: Add docs
 pub struct GammaExposureCalculator {
     spot_range_percent: f64,  // Calculate GEX for ±X% spot moves
 }
@@ -387,6 +399,7 @@ impl GammaExposureCalculator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct GammaExposureProfile {
     pub total_gex: f64,
     pub gex_by_strike: BTreeMap<Decimal, f64>,
@@ -396,6 +409,7 @@ pub struct GammaExposureProfile {
 }
 
 /// Volatility surface analyzer
+/// TODO: Add docs
 pub struct VolatilitySurfaceAnalyzer {
     min_volume_for_surface: u32,
 }
@@ -457,6 +471,7 @@ impl VolatilitySurfaceAnalyzer {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VolatilitySurface {
     pub surface: HashMap<DateTime<Utc>, HashMap<Decimal, f64>>,
     pub skew: Option<f64>,
@@ -465,6 +480,7 @@ pub struct VolatilitySurface {
 }
 
 /// Main options flow monitoring system
+/// TODO: Add docs
 pub struct OptionsFlowMonitor {
     config: OptionsFlowConfig,
     http_client: Client,
@@ -486,6 +502,7 @@ pub struct OptionsFlowMonitor {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OptionsMetrics {
     pub total_contracts_tracked: usize,
     pub total_volume_24h: u64,
@@ -497,6 +514,7 @@ pub struct OptionsMetrics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OptionsEvent {
     UnusualActivity(UnusualOptionsActivity),
     LargeBlockTrade(OptionsFlow),
@@ -506,6 +524,7 @@ pub enum OptionsEvent {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct UnusualOptionsActivity {
     pub contract: OptionContract,
     pub volume_vs_oi_ratio: f64,

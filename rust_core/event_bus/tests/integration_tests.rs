@@ -1,13 +1,23 @@
 //! # Integration Tests - Event Bus comprehensive test suite
+use domain_types::market_data::MarketTick;
 //!
+use domain_types::market_data::MarketTick;
 //! Tests the entire event bus system including:
+use domain_types::market_data::MarketTick;
 //! - Ultra-low latency publishing (<1μs)
+use domain_types::market_data::MarketTick;
 //! - Event ordering guarantees
+use domain_types::market_data::MarketTick;
 //! - Multiple consumer scenarios
+use domain_types::market_data::MarketTick;
 //! - Replay functionality
+use domain_types::market_data::MarketTick;
 //! - Circuit breaker behavior
+use domain_types::market_data::MarketTick;
 
+use domain_types::market_data::MarketTick;
 use event_bus::{
+use domain_types::market_data::MarketTick;
     RingBuffer, WaitStrategy, Event, EventType, EventHandler,
     BatchEventProcessor, EventJournal, EventReplayer,
     metrics::EventBusMetrics,

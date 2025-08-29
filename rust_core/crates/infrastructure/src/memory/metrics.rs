@@ -10,6 +10,7 @@ use lazy_static::lazy_static;
 use crossbeam_utils::CachePadded;
 
 /// Memory metrics with cache-line padding to prevent false sharing
+/// TODO: Add docs
 pub struct MemoryMetrics {
     // Allocation metrics (cache-padded per Sophia's recommendation)
     allocation_count: CachePadded<AtomicU64>,
@@ -242,6 +243,7 @@ impl MemoryMetrics {
 
 /// Pool type for metrics
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum PoolType {
     Order,
     Signal,
@@ -255,11 +257,13 @@ lazy_static! {
 
 /// Get global metrics instance
 #[inline(always)]  // Zero-cost access
+/// TODO: Add docs
 pub fn metrics() -> &'static MemoryMetrics {
     &METRICS
 }
 
 /// Initialize memory metrics
+/// TODO: Add docs
 pub fn initialize_metrics() {
     lazy_static::initialize(&METRICS);
     

@@ -26,6 +26,7 @@ use crate::message::Message;
 use crate::reconnect::{ReconnectStrategy, ExponentialBackoff};
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum WebSocketError {
     #[error("Connection failed: {0}")]
     ConnectionFailed(String),
@@ -50,16 +51,27 @@ pub enum WebSocketError {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WebSocketConfig {
-    pub url: String,
-    pub reconnect_interval: Duration,
-    pub max_reconnect_attempts: u32,
-    pub ping_interval: Duration,
-    pub pong_timeout: Duration,
-    pub message_buffer_size: usize,
-    pub max_frame_size: usize,
-    pub circuit_breaker_config: CircuitConfig,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+// pub struct WebSocketConfig {
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub url: String,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub reconnect_interval: Duration,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub max_reconnect_attempts: u32,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub ping_interval: Duration,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub pong_timeout: Duration,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub message_buffer_size: usize,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub max_frame_size: usize,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub circuit_breaker_config: CircuitConfig,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+// }
 
 impl Default for WebSocketConfig {
     fn default() -> Self {
@@ -76,6 +88,7 @@ impl Default for WebSocketConfig {
     }
 }
 
+/// TODO: Add docs
 pub struct WebSocketClient {
     config: Arc<WebSocketConfig>,
     circuit_breaker: Arc<CircuitBreaker>,
@@ -250,6 +263,7 @@ impl WebSocketClient {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WebSocketStats {
     pub messages_sent: u64,
     pub messages_received: u64,

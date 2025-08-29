@@ -16,6 +16,7 @@ use statrs::statistics::Statistics;
 /// Historical data point from exchange
 /// Casey: "Standard Binance kline format"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct HistoricalCandle {
     pub open_time: DateTime<Utc>,
     pub open: f64,
@@ -33,6 +34,7 @@ pub struct HistoricalCandle {
 /// Calibration parameters for different models
 /// Morgan: "Each model needs specific calibration"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CalibrationParameters {
     // GARCH parameters - Morgan's expertise
     pub garch_omega: f64,
@@ -55,6 +57,7 @@ pub struct CalibrationParameters {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DistributionType {
     Normal,
     StudentT { df: f64 },
@@ -63,6 +66,7 @@ pub enum DistributionType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DistributionParams {
     pub mean: f64,
     pub std_dev: f64,
@@ -71,6 +75,7 @@ pub struct DistributionParams {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct VolatilityRegime {
     pub id: usize,
     pub name: String,
@@ -79,6 +84,7 @@ pub struct VolatilityRegime {
 }
 
 /// Historical Calibrator - Full team implementation
+/// TODO: Add docs
 pub struct HistoricalCalibrator {
     // Data storage - Avery's design
     data_store: DataStore,
@@ -395,6 +401,7 @@ impl HistoricalCalibrator {
 
 /// GARCH model parameters
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GarchParams {
     pub omega: f64,
     pub alpha: f64,

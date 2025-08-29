@@ -15,6 +15,7 @@ use crate::domain::value_objects::{Symbol, Price, Quantity};
 
 /// Market depth level
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderBookLevel {
     pub price: Price,
     pub quantity: Quantity,
@@ -29,6 +30,7 @@ pub struct OrderBookLevel {
 
 /// Balance information
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Balance {
     pub asset: String,
     pub free: Quantity,
@@ -37,6 +39,7 @@ pub struct Balance {
 
 /// Exchange capabilities
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeCapabilities {
     pub supports_oco: bool,
     pub supports_reduce_only: bool,

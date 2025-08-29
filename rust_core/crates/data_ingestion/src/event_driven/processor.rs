@@ -1,3 +1,4 @@
+use domain_types::Event;
 // Event Processor - Core event-driven processing engine
 // DEEP DIVE: Replaces fixed 10ms cadence with adaptive event processing
 //
@@ -28,6 +29,7 @@ use types::{Price, Quantity, Symbol};
 
 /// Event priority levels
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EventPriority {
     Critical = 0,  // Market halt, circuit breaker
     High = 1,      // Large trades, microbursts
@@ -38,6 +40,7 @@ pub enum EventPriority {
 
 /// Processing result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ProcessingResult {
     pub event_id: u64,
     pub processing_time_ns: u64,
@@ -49,7 +52,8 @@ pub struct ProcessingResult {
 
 /// Event to be processed
 #[derive(Debug, Clone)]
-pub struct Event {
+// ELIMINATED: use domain_types::Event
+// pub struct Event {
     pub id: u64,
     pub timestamp: DateTime<Utc>,
     pub symbol: Symbol,
@@ -60,6 +64,7 @@ pub struct Event {
 
 /// Event payload types
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum EventPayload {
     Trade {
         price: Price,
@@ -87,6 +92,7 @@ pub enum EventPayload {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,
     Sell,
@@ -94,6 +100,7 @@ pub enum TradeSide {
 
 /// Processor configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ProcessorConfig {
     /// Maximum events per second
     pub max_throughput: u64,
@@ -138,6 +145,7 @@ impl Default for ProcessorConfig {
 }
 
 /// Processor metrics
+/// TODO: Add docs
 pub struct ProcessorMetrics {
     pub events_processed: Arc<dyn MetricsCollector>,
     pub events_dropped: Arc<dyn MetricsCollector>,
@@ -174,6 +182,7 @@ struct WorkerStats {
 }
 
 /// Main event processor implementation
+/// TODO: Add docs
 pub struct EventProcessor {
     config: Arc<ProcessorConfig>,
     
@@ -626,6 +635,7 @@ impl EventProcessor {
 
 /// Processing statistics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ProcessingStats {
     pub total_events: u64,
     pub events_processed: u64,

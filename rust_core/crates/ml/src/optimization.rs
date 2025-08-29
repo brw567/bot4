@@ -4,6 +4,7 @@
 use std::sync::Arc;
 use parking_lot::RwLock;
 
+/// TODO: Add docs
 pub struct MemoryPoolManager {
     pools: Vec<Arc<RwLock<Vec<u8>>>>,
 }
@@ -20,6 +21,7 @@ impl MemoryPoolManager {
     }
 }
 
+/// TODO: Add docs
 pub struct AVXOptimizer {
     enabled: bool,
 }

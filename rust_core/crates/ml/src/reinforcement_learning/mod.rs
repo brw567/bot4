@@ -1,3 +1,4 @@
+use domain_types::TrainingResult;
 //! # REINFORCEMENT LEARNING FRAMEWORK - Learn from Market Interaction
 //! Blake (ML Lead) + Full Team Collaboration
 //! 
@@ -23,6 +24,7 @@ use serde::{Serialize, Deserialize};
 /// RL Agent configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RLConfig {
     /// Learning rate
     pub learning_rate: f64,
@@ -83,6 +85,7 @@ impl Default for RLConfig {
 /// Trading environment state
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct State {
     /// Market features
     pub market_features: Array1<f64>,
@@ -106,6 +109,7 @@ pub struct State {
 /// Portfolio state
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PortfolioState {
     /// Current cash balance
     pub cash: f64,
@@ -132,6 +136,7 @@ pub struct PortfolioState {
 /// Trading action
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum Action {
     /// Hold position
     Hold,
@@ -161,6 +166,7 @@ pub enum Action {
 /// Experience tuple for replay buffer
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Experience {
     pub state: State,
     pub action: Action,
@@ -173,6 +179,7 @@ pub struct Experience {
 /// Additional experience information
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExperienceInfo {
     pub timestamp: DateTime<Utc>,
     pub episode: u32,
@@ -210,7 +217,8 @@ pub trait RLAgent: Send + Sync {
 /// Training result
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
-pub struct TrainingResult {
+// ELIMINATED: use domain_types::TrainingResult
+// pub struct TrainingResult {
     pub loss: f64,
     pub value_loss: Option<f64>,
     pub policy_loss: Option<f64>,
@@ -222,6 +230,7 @@ pub struct TrainingResult {
 /// Agent performance metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AgentMetrics {
     pub total_episodes: u32,
     pub total_steps: u64,
@@ -249,6 +258,7 @@ pub trait RewardFunction: Send + Sync {
 /// Transition information for reward calculation
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TransitionInfo {
     pub pnl: f64,
     pub commission: f64,
@@ -259,6 +269,7 @@ pub struct TransitionInfo {
 
 /// Standard reward functions
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SharpeReward {
     window_size: usize,
     returns: Vec<f64>,
@@ -301,6 +312,7 @@ impl RewardFunction for SharpeReward {
 
 /// Risk-adjusted reward
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RiskAdjustedReward {
     risk_aversion: f64,
     max_drawdown_penalty: f64,
@@ -333,6 +345,7 @@ impl RewardFunction for RiskAdjustedReward {
 
 /// Multi-objective reward combining multiple metrics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MultiObjectiveReward {
     weights: HashMap<String, f64>,
 }
@@ -374,6 +387,7 @@ impl RewardFunction for MultiObjectiveReward {
 /// RL Error types
 #[derive(Debug, thiserror::Error)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum RLError {
     #[error("Model error: {0}")]
     ModelError(String),

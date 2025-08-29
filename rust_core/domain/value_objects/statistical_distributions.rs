@@ -10,6 +10,7 @@ use std::time::Duration;
 
 /// Fill distribution parameters for realistic order execution
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FillDistribution {
     /// Average number of fills per order (Poisson λ)
     pub lambda: f64,
@@ -96,6 +97,7 @@ impl FillDistribution {
 
 /// Latency distribution for network delays
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LatencyDistribution {
     /// Log-normal μ parameter (log of median)
     pub mu: f64,
@@ -172,6 +174,7 @@ impl LatencyDistribution {
 
 /// Slippage distribution for market impact
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SlippageDistribution {
     /// Mean slippage in basis points
     pub mean_bps: f64,
@@ -219,6 +222,7 @@ impl SlippageDistribution {
 
 /// Order arrival rate distribution (for market simulation)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ArrivalRateDistribution {
     /// Base arrival rate (orders per second)
     pub base_rate: f64,
@@ -255,6 +259,7 @@ impl ArrivalRateDistribution {
 }
 
 /// Comprehensive market statistics generator
+/// TODO: Add docs
 pub struct MarketStatistics {
     pub fill_dist: FillDistribution,
     pub latency_dist: LatencyDistribution,

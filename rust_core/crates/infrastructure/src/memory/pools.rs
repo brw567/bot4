@@ -26,6 +26,7 @@ use std::cell::RefCell;
 const TLS_CACHE_SIZE: usize = 128;
 
 /// Order object pool - 10,000 capacity
+/// TODO: Add docs
 pub struct OrderPool {
     global: Arc<ArrayQueue<Box<Order>>>,
     local: ThreadLocal<RefCell<Vec<Box<Order>>>>,
@@ -35,6 +36,7 @@ pub struct OrderPool {
 }
 
 /// Signal object pool - 100,000 capacity  
+/// TODO: Add docs
 pub struct SignalPool {
     global: Arc<ArrayQueue<Box<Signal>>>,
     local: ThreadLocal<RefCell<Vec<Box<Signal>>>>,
@@ -44,6 +46,7 @@ pub struct SignalPool {
 }
 
 /// Tick object pool - 1,000,000 capacity
+/// TODO: Add docs
 pub struct TickPool {
     global: Arc<ArrayQueue<Box<Tick>>>,
     local: ThreadLocal<RefCell<Vec<Box<Tick>>>>,
@@ -63,6 +66,7 @@ pub struct TickPool {
 }
 
 
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -80,6 +84,7 @@ pub enum OrderSide {
 }
 
 
+/// TODO: Add docs
 pub enum SignalType {
     Buy,
     Sell,
@@ -395,6 +400,7 @@ lazy_static::lazy_static! {
 }
 
 /// Initialize all pools
+/// TODO: Add docs
 pub fn initialize_all_pools() {
     lazy_static::initialize(&ORDER_POOL);
     lazy_static::initialize(&SIGNAL_POOL);
@@ -418,6 +424,7 @@ pub fn initialize_all_pools() {
     pub tick_pressure: f64,
 }
 
+/// TODO: Add docs
 pub fn get_pool_stats() -> PoolStats {
     let order_alloc = ORDER_POOL.allocated.load(Ordering::Relaxed);
     let order_acquired = ORDER_POOL.acquired.load(Ordering::Relaxed);
@@ -451,36 +458,42 @@ pub fn get_pool_stats() -> PoolStats {
 
 /// Acquire an order from the pool
 #[inline(always)]  // PERFORMANCE: Hot path
+/// TODO: Add docs
 pub fn acquire_order() -> Box<Order> {
     ORDER_POOL.acquire()
 }
 
 /// Release an order back to the pool
 #[inline(always)]  // PERFORMANCE: Hot path
+/// TODO: Add docs
 pub fn release_order(order: Box<Order>) {
     ORDER_POOL.release(order);
 }
 
 /// Acquire a signal from the pool
 #[inline(always)]  // PERFORMANCE: Hot path
+/// TODO: Add docs
 pub fn acquire_signal() -> Box<Signal> {
     SIGNAL_POOL.acquire()
 }
 
 /// Release a signal back to the pool
 #[inline(always)]  // PERFORMANCE: Hot path
+/// TODO: Add docs
 pub fn release_signal(signal: Box<Signal>) {
     SIGNAL_POOL.release(signal);
 }
 
 /// Acquire a tick from the pool
 #[inline(always)]  // PERFORMANCE: Hot path
+/// TODO: Add docs
 pub fn acquire_tick() -> Box<Tick> {
     TICK_POOL.acquire()
 }
 
 /// Release a tick back to the pool
 #[inline(always)]  // PERFORMANCE: Hot path
+/// TODO: Add docs
 pub fn release_tick(tick: Box<Tick>) {
     TICK_POOL.release(tick);
 }

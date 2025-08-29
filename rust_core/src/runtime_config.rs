@@ -8,6 +8,7 @@ use std::thread;
 use std::sync::Arc;
 
 /// CPU pinning configuration for reduced variance
+/// TODO: Add docs
 pub struct CpuAffinity {
     cores: Vec<CoreId>,
     main_thread_core: Option<CoreId>,
@@ -72,6 +73,7 @@ impl CpuAffinity {
 }
 
 /// Optimized Tokio runtime configuration (Nexus recommendations)
+/// TODO: Add docs
 pub struct OptimizedRuntime {
     runtime: Runtime,
     cpu_affinity: Arc<CpuAffinity>,
@@ -151,6 +153,7 @@ impl OptimizedRuntime {
 }
 
 /// System-wide performance optimizations
+/// TODO: Add docs
 pub struct SystemOptimizations;
 
 impl SystemOptimizations {

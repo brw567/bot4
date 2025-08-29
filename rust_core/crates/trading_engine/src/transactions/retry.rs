@@ -1,3 +1,4 @@
+use domain_types::CircuitBreaker;
 // Retry Mechanism with Exponential Backoff and Circuit Breaker
 // Task 2.5: FULL retry implementation with jitter and circuit breaking
 // Team: Jordan (Performance) + Riley (Testing) + Sam (Architecture)
@@ -19,28 +20,29 @@ use std::collections::{HashMap, VecDeque};
 
 /// Retry policy configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RetryPolicy {
-    /// Maximum number of retry attempts
-    pub max_attempts: u32,
-    /// Initial retry delay (milliseconds)
-    pub initial_delay_ms: u64,
-    /// Maximum retry delay (milliseconds)
-    pub max_delay_ms: u64,
-    /// Backoff multiplier (e.g., 2.0 for exponential)
-    pub backoff_multiplier: f64,
-    /// Jitter factor (0.0 to 1.0)
-    pub jitter_factor: f64,
-    /// Retry on these error types
-    pub retryable_errors: Vec<String>,
-    /// Don't retry on these error types (takes precedence)
-    pub non_retryable_errors: Vec<String>,
-    /// Use circuit breaker
-    pub use_circuit_breaker: bool,
-    /// Circuit breaker threshold
-    pub circuit_breaker_threshold: u32,
-    /// Circuit breaker timeout (milliseconds)
-    pub circuit_breaker_timeout_ms: u64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct RetryPolicy {
+// ELIMINATED:     /// Maximum number of retry attempts
+// ELIMINATED:     pub max_attempts: u32,
+// ELIMINATED:     /// Initial retry delay (milliseconds)
+// ELIMINATED:     pub initial_delay_ms: u64,
+// ELIMINATED:     /// Maximum retry delay (milliseconds)
+// ELIMINATED:     pub max_delay_ms: u64,
+// ELIMINATED:     /// Backoff multiplier (e.g., 2.0 for exponential)
+// ELIMINATED:     pub backoff_multiplier: f64,
+// ELIMINATED:     /// Jitter factor (0.0 to 1.0)
+// ELIMINATED:     pub jitter_factor: f64,
+// ELIMINATED:     /// Retry on these error types
+// ELIMINATED:     pub retryable_errors: Vec<String>,
+// ELIMINATED:     /// Don't retry on these error types (takes precedence)
+// ELIMINATED:     pub non_retryable_errors: Vec<String>,
+// ELIMINATED:     /// Use circuit breaker
+// ELIMINATED:     pub use_circuit_breaker: bool,
+// ELIMINATED:     /// Circuit breaker threshold
+// ELIMINATED:     pub circuit_breaker_threshold: u32,
+// ELIMINATED:     /// Circuit breaker timeout (milliseconds)
+// ELIMINATED:     pub circuit_breaker_timeout_ms: u64,
+// ELIMINATED: }
 
 impl Default for RetryPolicy {
     fn default() -> Self {
@@ -106,6 +108,7 @@ impl RetryPolicy {
 
 /// Circuit breaker states
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum CircuitState {
     /// Circuit is closed, requests flow normally
     Closed,
@@ -116,7 +119,8 @@ pub enum CircuitState {
 }
 
 /// Circuit breaker for preventing cascading failures
-pub struct CircuitBreaker {
+// ELIMINATED: use domain_types::CircuitBreaker
+// pub struct CircuitBreaker {
     /// Current state
     state: Arc<RwLock<CircuitState>>,
     /// Failure count
@@ -132,6 +136,7 @@ pub struct CircuitBreaker {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CircuitBreakerConfig {
     /// Failure threshold to open circuit
     pub failure_threshold: u32,
@@ -155,6 +160,7 @@ impl Default for CircuitBreakerConfig {
 }
 
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct CircuitBreakerMetrics {
     total_requests: AtomicU64,
     successful_requests: AtomicU64,
@@ -303,6 +309,7 @@ impl CircuitBreaker {
 }
 
 /// Retry manager with circuit breaker integration
+/// TODO: Add docs
 pub struct RetryManager {
     /// Retry policies by operation type
     policies: Arc<RwLock<HashMap<String, RetryPolicy>>>,

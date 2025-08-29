@@ -31,6 +31,7 @@ use crate::emergency_coordinator::EmergencyCoordinator;
 /// Trading system control modes with graduated capabilities
 /// Alex: "Each mode provides specific guarantees about system behavior"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ControlMode {
     /// Manual mode - Human operator has full control
     /// - No automated trading
@@ -104,6 +105,7 @@ impl ControlMode {
 /// Valid mode transitions with safety constraints
 /// Sam: "Based on IEC 61508 safe state transition patterns"
 #[derive(Clone)]
+/// TODO: Add docs
 pub struct TransitionRules {
     /// Allowed transitions from each mode
     transitions: HashMap<ControlMode, Vec<ControlMode>>,
@@ -229,6 +231,7 @@ impl GuardConditions for DefaultGuardConditions {
 /// Current system context for mode decisions
 /// Avery: "Aggregates health metrics from all components"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SystemContext {
     /// Overall system health (0.0 - 1.0)
     pub health_score: f64,
@@ -285,6 +288,7 @@ impl SystemContext {
 
 /// Manages control mode transitions and enforcement
 /// Alex: "This is the brain of our operational control"
+/// TODO: Add docs
 pub struct ControlModeManager {
     /// Current active mode
     current_mode: Arc<RwLock<ControlMode>>,
@@ -327,6 +331,7 @@ struct ModeTransition {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ControlModeEvent {
     ModeChanged(ControlMode, ControlMode),
     TransitionDenied(ControlMode, ControlMode, String),
@@ -702,6 +707,7 @@ impl ControlModeManager {
 // ============================================================================
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ModeCapabilities {
     pub can_open_positions: bool,
     pub can_close_positions: bool,
@@ -713,6 +719,7 @@ pub struct ModeCapabilities {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum MonitoringLevel {
     Basic,
     Enhanced,
@@ -721,6 +728,7 @@ pub enum MonitoringLevel {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum StrategyComplexity {
     None,
     Simple,
@@ -729,6 +737,7 @@ pub enum StrategyComplexity {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum AnalysisDepth {
     Minimal,
     Basic,
@@ -746,6 +755,7 @@ pub enum AnalysisDepth {
 // }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeOperations {
     pub can_place_orders: bool,
     pub can_cancel_orders: bool,
@@ -755,6 +765,7 @@ pub struct ExchangeOperations {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DataConfig {
     pub collect_trades: bool,
     pub collect_orderbook: bool,
@@ -763,12 +774,14 @@ pub struct DataConfig {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum StoragePriority {
     Normal,
     Critical,
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct InfrastructureConfig {
     pub cpu_governor: &'static str,
     pub memory_limit_mb: usize,

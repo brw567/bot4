@@ -34,6 +34,7 @@ const RESET_COOLDOWN_MS: u64 = 3000;    // 3 second cooldown after emergency sto
 
 /// Emergency Stop Categories per IEC 60204-1
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum StopCategory {
     /// Category 0: Immediate power removal (uncontrolled stop)
     Category0,
@@ -43,6 +44,7 @@ pub enum StopCategory {
 
 /// Hardware Kill Switch State Machine
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum KillSwitchState {
     /// Normal operation - all systems go
     Normal,
@@ -70,6 +72,7 @@ pub trait GPIOInterface: Send + Sync {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum PinMode {
     Input,
     Output,
@@ -78,6 +81,7 @@ pub enum PinMode {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum InterruptEdge {
     Rising,
     Falling,
@@ -86,6 +90,7 @@ pub enum InterruptEdge {
 
 /// Hardware Kill Switch Controller
 /// Quinn: "This is our last line of defense - it MUST work!"
+/// TODO: Add docs
 pub struct HardwareKillSwitch {
     /// Current state of the kill switch
     state: Arc<RwLock<KillSwitchState>>,
@@ -119,6 +124,7 @@ pub struct HardwareKillSwitch {
 
 /// Emergency Event notifications
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum EmergencyEvent {
     /// Emergency stop activated
     Activated {
@@ -142,6 +148,7 @@ pub enum EmergencyEvent {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum ActivationSource {
     PhysicalButton,
     Software,
@@ -150,6 +157,7 @@ pub enum ActivationSource {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum TamperSeverity {
     Low,
     Medium,

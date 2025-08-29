@@ -14,6 +14,7 @@ use statrs::distribution::{StudentsT, ContinuousCDF};
 use crate::{DataError, Result};
 
 /// Enhanced macro-crypto correlation analyzer
+/// TODO: Add docs
 pub struct MacroEconomyCorrelationEngine {
     // Historical data buffers
     macro_data_buffer: Arc<RwLock<MacroDataBuffer>>,
@@ -37,6 +38,7 @@ pub struct MacroEconomyCorrelationEngine {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MacroCorrelationConfig {
     pub correlation_window: usize,  // Days for correlation calculation
     pub min_correlation_threshold: f64,  // Minimum correlation to consider significant
@@ -59,6 +61,7 @@ impl Default for MacroCorrelationConfig {
 
 /// Comprehensive macro data structure
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MacroDataPoint {
     pub timestamp: DateTime<Utc>,
     
@@ -130,6 +133,7 @@ pub struct MacroDataPoint {
 
 /// Crypto market data for correlation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CryptoDataPoint {
     pub timestamp: DateTime<Utc>,
     
@@ -184,6 +188,7 @@ struct MacroRegimeDetector {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum MacroRegime {
     RiskOn,           // Low vol, positive growth, easy money
     RiskOff,          // Flight to safety, high vol
@@ -882,6 +887,7 @@ impl MacroEconomyCorrelationEngine {
 // Output structures
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CorrelationAnalysis {
     pub btc_sp500: f64,
     pub btc_dxy: f64,
@@ -894,6 +900,7 @@ pub struct CorrelationAnalysis {
 }
 
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct MacroRegimeAnalysis {
     pub current_regime: MacroRegime,
     pub regime_confidence: f64,
@@ -913,6 +920,7 @@ impl Default for MacroRegime {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LeadLagAnalysis {
     pub relationships: Vec<LeadLagRelationship>,
     pub optimal_prediction_horizon: usize,
@@ -920,6 +928,7 @@ pub struct LeadLagAnalysis {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LeadLagRelationship {
     pub leader: String,
     pub follower: String,
@@ -929,6 +938,7 @@ pub struct LeadLagRelationship {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CointegrationAnalysis {
     pub cointegrated_pairs: Vec<CointegrationResult>,
     pub trading_signals: Vec<String>,
@@ -936,6 +946,7 @@ pub struct CointegrationAnalysis {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CointegrationResult {
     pub asset1: String,
     pub asset2: String,
@@ -946,6 +957,7 @@ pub struct CointegrationResult {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MeanReversionTrade {
     pub pair: (String, String),
     pub current_zscore: f64,
@@ -956,6 +968,7 @@ pub struct MeanReversionTrade {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MacroTradingSignals {
     pub primary_signal: TradingDirection,
     pub signal_strength: f64,
@@ -967,6 +980,7 @@ pub struct MacroTradingSignals {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TradingDirection {
     Long,
     Short,

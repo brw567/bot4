@@ -5,6 +5,7 @@ use super::*;
 use std::collections::BTreeMap;
 
 /// Feature version manager
+/// TODO: Add docs
 pub struct FeatureVersionManager {
     store: Arc<FeatureStore>,
     versions: Arc<RwLock<BTreeMap<u32, VersionMetadata>>>,
@@ -13,6 +14,7 @@ pub struct FeatureVersionManager {
 
 /// Version metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct VersionMetadata {
     pub version: u32,
     pub created_at: DateTime<Utc>,
@@ -26,6 +28,7 @@ pub struct VersionMetadata {
 
 /// Schema change tracking
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SchemaChange {
     AddFeature { name: String, schema: FeatureSchema },
     RemoveFeature { name: String },
@@ -36,6 +39,7 @@ pub enum SchemaChange {
 
 /// Feature change tracking
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum FeatureChange {
     ComputationUpdated { feature: String, old_formula: String, new_formula: String },
     SourceChanged { feature: String, old_source: String, new_source: String },
@@ -260,6 +264,7 @@ impl FeatureVersionManager {
 
 /// Version comparison result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct VersionComparison {
     pub version1: u32,
     pub version2: u32,

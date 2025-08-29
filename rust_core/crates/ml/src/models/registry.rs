@@ -22,20 +22,35 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 /// Zero-copy model storage using memory-mapped files
 #[derive(Debug)]
-pub struct ModelStorage {
-    // Model file paths
-    model_dir: PathBuf,
-    
-    // Memory-mapped models
-    mmap_cache: Arc<RwLock<HashMap<Uuid, Arc<Mmap>>>>,
-    
-    // Model sizes for monitoring
-    model_sizes: Arc<RwLock<HashMap<Uuid, u64>>>,
-    
-    // Cache statistics
-    cache_hits: AtomicU64,
-    cache_misses: AtomicU64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+// pub struct ModelStorage {
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     // Model file paths
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     model_dir: PathBuf,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     // Memory-mapped models
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     mmap_cache: Arc<RwLock<HashMap<Uuid, Arc<Mmap>>>>,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     // Model sizes for monitoring
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     model_sizes: Arc<RwLock<HashMap<Uuid, u64>>>,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     // Cache statistics
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     cache_hits: AtomicU64,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     cache_misses: AtomicU64,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+// }
 
 impl ModelStorage {
     pub fn new(model_dir: PathBuf) -> std::io::Result<Self> {
@@ -90,22 +105,38 @@ impl ModelStorage {
 
 /// Model metadata for registry
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModelMetadata {
-    pub id: Uuid,
-    pub name: String,
-    pub version: ModelVersion,
-    pub model_type: ModelType,
-    pub created_at: DateTime<Utc>,
-    pub deployed_at: Option<DateTime<Utc>>,
-    pub status: ModelStatus,
-    pub metrics: ModelMetrics,
-    pub config: serde_json::Value,
-    pub tags: Vec<String>,
-    pub shadow_mode: bool,
-    pub traffic_percentage: f32,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+// pub struct ModelMetadata {
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub id: Uuid,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub name: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub version: ModelVersion,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub model_type: ModelType,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub created_at: DateTime<Utc>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub deployed_at: Option<DateTime<Utc>>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub status: ModelStatus,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub metrics: ModelMetrics,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub config: serde_json::Value,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub tags: Vec<String>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub shadow_mode: bool,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub traffic_percentage: f32,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+// }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+/// TODO: Add docs
 pub struct ModelVersion {
     pub major: u32,
     pub minor: u32,
@@ -132,6 +163,7 @@ impl ModelVersion {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ModelType {
     ARIMA,
     LSTM,
@@ -144,6 +176,7 @@ pub enum ModelType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ModelStatus {
     Training,
     Validating,
@@ -155,19 +188,33 @@ pub enum ModelStatus {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModelMetrics {
-    pub accuracy: f64,
-    pub precision: f64,
-    pub recall: f64,
-    pub f1_score: f64,
-    pub mse: f64,
-    pub mae: f64,
-    pub sharpe_ratio: f64,
-    pub max_drawdown: f64,
-    pub win_rate: f64,
-    pub profit_factor: f64,
-    pub custom: HashMap<String, f64>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+// pub struct ModelMetrics {
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub accuracy: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub precision: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub recall: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub f1_score: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub mse: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub mae: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub sharpe_ratio: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub max_drawdown: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub win_rate: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub profit_factor: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub custom: HashMap<String, f64>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+// }
 
 impl Default for ModelMetrics {
     fn default() -> Self {
@@ -192,6 +239,7 @@ impl Default for ModelMetrics {
 // Reviewers: Casey (Integration), Quinn (Risk), Avery (Data)
 // ============================================================================
 
+/// TODO: Add docs
 pub struct ModelRegistry {
     // All registered models
     models: Arc<RwLock<HashMap<Uuid, Arc<ModelMetadata>>>>,
@@ -226,6 +274,7 @@ pub struct ModelRegistry {
 
 /// Automatic rollback configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RollbackConfig {
     pub enabled: bool,
     pub degradation_threshold: f64,  // % performance drop
@@ -253,6 +302,7 @@ impl Default for RollbackConfig {
 /// Performance degradation detector
 /// Riley: "Statistical significance testing prevents false rollbacks!"
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct DegradationDetector {
     baseline_metrics: Arc<RwLock<HashMap<String, HashMap<Uuid, ModelMetrics>>>>,
     current_metrics: Arc<RwLock<HashMap<String, HashMap<Uuid, ModelMetrics>>>>,
@@ -364,6 +414,7 @@ impl DegradationDetector {
 
 /// Model lineage for tracking evolution
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ModelLineage {
     pub parent_id: Option<Uuid>,
     pub children_ids: Vec<Uuid>,
@@ -730,6 +781,7 @@ impl ModelRegistry {
 // ============================================================================
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum DeploymentStrategy {
     Immediate,
     Canary {
@@ -741,6 +793,7 @@ pub enum DeploymentStrategy {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DeploymentResult {
     pub model_id: Uuid,
     pub deployment_type: String,
@@ -749,6 +802,7 @@ pub struct DeploymentResult {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ABTestConfig {
     pub name: String,
     pub start_time: DateTime<Utc>,
@@ -763,6 +817,7 @@ pub struct ABTestConfig {
 
 /// A/B test results with statistical tracking
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ABTestResults {
     pub samples_per_model: HashMap<Uuid, usize>,
     pub conversions_per_model: HashMap<Uuid, usize>,
@@ -837,6 +892,7 @@ impl ABTestConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PerformanceSnapshot {
     pub timestamp: DateTime<Utc>,
     pub accuracy: f64,
@@ -847,6 +903,7 @@ pub struct PerformanceSnapshot {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct ComparisonResult {
     pub model1_id: Uuid,
     pub model2_id: Uuid,
@@ -862,6 +919,7 @@ pub struct ComparisonResult {
 // ============================================================================
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum RegistryError {
     #[error("Model not found: {0}")]
     ModelNotFound(Uuid),

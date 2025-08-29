@@ -16,6 +16,7 @@ use chrono::{DateTime, Utc, Duration};
 
 /// Manipulation types based on regulatory definitions
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum ManipulationType {
     Spoofing,           // Large orders away from mid, quickly cancelled
     Layering,           // Multiple orders to create false depth
@@ -70,6 +71,7 @@ struct TraderProfile {
 }
 
 /// Market Manipulation Detector with full regulatory compliance
+/// TODO: Add docs
 pub struct ManipulationDetector {
     // Order tracking
     order_lifecycles: HashMap<String, OrderLifecycle>,
@@ -109,6 +111,7 @@ pub struct ManipulationDetector {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ManipulationEvent {
     timestamp: DateTime<Utc>,
     manipulation_type: ManipulationType,
@@ -120,6 +123,7 @@ pub struct ManipulationEvent {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum AlertLevel {
     None,
     Low,      // Monitoring
@@ -663,6 +667,7 @@ impl ManipulationDetector {
 
 /// Manipulation detection report
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ManipulationReport {
     pub timestamp: DateTime<Utc>,
     pub manipulation_score: f64,

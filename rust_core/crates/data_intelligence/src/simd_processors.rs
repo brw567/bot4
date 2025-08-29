@@ -14,6 +14,7 @@ use simdeez::sse41::*;
 use crate::{DataError, Result};
 
 /// SIMD processor for ultra-fast data operations
+/// TODO: Add docs
 pub struct SimdProcessor {
     // CPU feature detection
     has_avx512: bool,
@@ -508,6 +509,7 @@ impl SimdProcessor {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SimdMetrics {
     pub operations_performed: u64,
     pub simd_speedup_factor: u64,

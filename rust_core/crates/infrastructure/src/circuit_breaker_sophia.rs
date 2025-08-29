@@ -25,6 +25,7 @@ compile_error!("Bot4 requires native 64-bit atomics. This platform is not suppor
 /// Circuit breaker states encoded as u8 for atomic operations
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+/// TODO: Add docs
 pub enum CircuitState {
     Closed = 0,     // Normal operation
     Open = 1,       // Circuit tripped, rejecting calls
@@ -44,6 +45,7 @@ impl From<u8> for CircuitState {
 
 /// Configuration with hysteresis (Sophia Fix #3)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CircuitConfig {
     // Window configuration
     pub rolling_window: Duration,
@@ -67,6 +69,7 @@ pub struct CircuitConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GlobalTripConditions {
     pub component_open_ratio: f32,      // e.g., 0.5 = trip if 50% components open
     pub component_close_ratio: f32,     // e.g., 0.35 = close if <35% components open (Sophia Fix #3)
@@ -113,6 +116,7 @@ pub trait Clock: Send + Sync {
 }
 
 /// System clock for production
+/// TODO: Add docs
 pub struct SystemClock;
 
 impl Clock for SystemClock {
@@ -123,6 +127,7 @@ impl Clock for SystemClock {
 
 /// Circuit breaker errors
 #[derive(Debug, Clone, Error)]
+/// TODO: Add docs
 pub enum CircuitError {
     #[error("Circuit is open")]
     Open,
@@ -136,6 +141,7 @@ pub enum CircuitError {
 
 /// Event types for monitoring (Sophia Fix #4: bounded channel)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum CircuitEvent {
     StateChanged { component: String, from: CircuitState, to: CircuitState },
     ThresholdExceeded { component: String, error_rate: f32 },
@@ -144,6 +150,7 @@ pub enum CircuitEvent {
 }
 
 /// Component-level circuit breaker with CachePadded atomics
+/// TODO: Add docs
 pub struct ComponentBreaker {
     // Hot path state - each on separate cache line (Sophia Fix #1)
     state: CachePadded<AtomicU8>,
@@ -479,12 +486,14 @@ impl ComponentBreaker {
 
 /// Call outcome for recording results
 #[derive(Debug, Copy, Clone)]
+/// TODO: Add docs
 pub enum Outcome {
     Success,
     Failure,
 }
 
 /// RAII guard for calls with automatic token release
+/// TODO: Add docs
 pub struct CallGuard {
     breaker: *const ComponentBreaker,  // Raw pointer to avoid Arc overhead
     component: String,
@@ -548,6 +557,7 @@ impl Drop for CallGuard {
 }
 
 /// Global circuit breaker with hysteresis (Sophia Fix #3)
+/// TODO: Add docs
 pub struct GlobalCircuitBreaker {
     components: DashMap<String, Arc<ComponentBreaker>>,
     config: Arc<CircuitConfig>,

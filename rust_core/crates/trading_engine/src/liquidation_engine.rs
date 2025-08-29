@@ -44,6 +44,7 @@ use serde::{Serialize, Deserialize};
 }
 
 
+/// TODO: Add docs
 pub enum PositionSide {
     Long,
     Short,
@@ -51,6 +52,7 @@ pub enum PositionSide {
 
 /// Liquidation urgency level
 
+/// TODO: Add docs
 pub enum LiquidationUrgency {
     Normal,      // Orderly unwinding
     Elevated,    // Faster execution needed
@@ -60,6 +62,7 @@ pub enum LiquidationUrgency {
 
 /// Liquidation strategy
 
+/// TODO: Add docs
 pub enum LiquidationStrategy {
     Market,           // Immediate market orders
     TWAP,            // Time-weighted average price
@@ -71,6 +74,7 @@ pub enum LiquidationStrategy {
 
 /// Liquidation order
 
+/// TODO: Add docs
 pub struct LiquidationOrder {
     pub id: String,
     pub position_id: String,
@@ -86,6 +90,7 @@ pub struct LiquidationOrder {
 }
 
 
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -93,6 +98,7 @@ pub enum OrderSide {
 
 /// Order slice for partial execution
 
+/// TODO: Add docs
 pub struct OrderSlice {
     pub slice_id: String,
     pub quantity: Decimal,
@@ -104,6 +110,7 @@ pub struct OrderSlice {
 }
 
 
+/// TODO: Add docs
 pub enum SliceStatus {
     Pending,
     Executing,
@@ -113,6 +120,7 @@ pub enum SliceStatus {
 }
 
 
+/// TODO: Add docs
 pub enum LiquidationStatus {
     Planning,
     Executing,
@@ -123,16 +131,12 @@ pub enum LiquidationStatus {
 
 /// Market conditions for adaptive liquidation
 
-pub struct MarketConditions {
-    pub liquidity_score: f64,      // 0-1, higher is better
-    pub volatility: f64,           // Current volatility
-    pub spread_bps: i32,           // Bid-ask spread
-    pub depth_imbalance: f64,      // Order book imbalance
-    pub recent_slippage_bps: i32,  // Recent execution slippage
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MarketConditions - use domain_types::market_data::MarketConditions
 
 /// Liquidation Engine
 /// Quinn: "When things go wrong, we need to get out cleanly"
+/// TODO: Add docs
 pub struct LiquidationEngine {
     /// Active liquidations
     active_liquidations: Arc<RwLock<HashMap<String, LiquidationOrder>>>,
@@ -163,6 +167,7 @@ pub struct LiquidationEngine {
 
 /// Execution request to exchange
 
+/// TODO: Add docs
 pub struct ExecutionRequest {
     pub order_id: String,
     pub symbol: String,
@@ -175,6 +180,7 @@ pub struct ExecutionRequest {
 }
 
 
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -182,6 +188,7 @@ pub enum OrderType {
 }
 
 
+/// TODO: Add docs
 pub enum TimeInForce {
     IOC,  // Immediate or cancel
     FOK,  // Fill or kill
@@ -190,6 +197,7 @@ pub enum TimeInForce {
 
 /// Liquidation event for monitoring
 
+/// TODO: Add docs
 pub enum LiquidationEvent {
     Started {
         position_id: String,
@@ -212,6 +220,7 @@ pub enum LiquidationEvent {
 
 /// Liquidation configuration
 
+/// TODO: Add docs
 pub struct LiquidationConfig {
     pub max_single_order_pct: f64,        // Max % of daily volume
     pub twap_duration_seconds: i64,       // TWAP execution window
@@ -598,6 +607,7 @@ impl LiquidationEngine {
 }
 
 
+/// TODO: Add docs
 pub struct LiquidationStatistics {
     pub total_liquidations: u64,
     pub active_liquidations: usize,

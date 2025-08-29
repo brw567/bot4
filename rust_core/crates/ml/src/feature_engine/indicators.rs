@@ -1,3 +1,5 @@
+use domain_types::CircuitBreaker;
+use domain_types::FeatureVector;
 pub use domain_types::candle::{Candle, CandleError};
 use crate::ml::unified_indicators::{UnifiedIndicators, MACDValue, BollingerBands};
 
@@ -18,24 +20,28 @@ use thiserror::Error;
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct IndicatorParams {
     pub period: Option<usize>,
     pub smoothing: Option<f64>,
 }
 
 #[derive(Debug, Clone)]
-pub struct FeatureVector {
+// ELIMINATED: use domain_types::FeatureVector
+// pub struct FeatureVector {
     pub values: Vec<f64>,
     pub timestamp: i64,
     pub computation_time: std::time::Duration,
 }
 
 #[derive(Debug, Clone, Default, Hash, Eq, PartialEq)]
+/// TODO: Add docs
 pub struct FeatureKey {
     pub timestamp: i64,
     pub price_hash: u64,
 }
 
+/// TODO: Add docs
 pub struct IndicatorEngine {
     // Indicator implementations
     indicators: HashMap<String, Box<dyn Indicator>>,
@@ -62,6 +68,7 @@ pub trait Indicator: Send + Sync {
 }
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum IndicatorError {
     #[error("Insufficient data")]
     InsufficientData,
@@ -72,6 +79,7 @@ pub enum IndicatorError {
 }
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum FeatureError {
     #[error("Out of bounds: {feature} = {value}, expected [{min}, {max}]")]
     OutOfBounds {
@@ -90,6 +98,7 @@ pub enum FeatureError {
 }
 
 // Aligned buffer for SIMD operations
+/// TODO: Add docs
 pub struct AlignedBuffer<T> {
     data: Vec<T>,
     capacity: usize,
@@ -105,6 +114,7 @@ impl<T: Default + Clone> AlignedBuffer<T> {
 }
 
 /// SIMD accelerator for vectorized operations
+/// TODO: Add docs
 pub struct SimdAccelerator {
     // Pre-allocated aligned buffers for SIMD operations
     workspace: Vec<f32>,  // Will be aligned naturally by Vec
@@ -203,6 +213,7 @@ impl SimdAccelerator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FeatureStats {
     pub mean: f64,
     pub std_dev: f64,
@@ -211,7 +222,8 @@ pub struct FeatureStats {
 }
 
 // Simple circuit breaker
-pub struct CircuitBreaker {
+// ELIMINATED: use domain_types::CircuitBreaker
+// pub struct CircuitBreaker {
     tripped: std::sync::atomic::AtomicBool,
     trip_count: std::sync::atomic::AtomicU32,
 }
@@ -237,6 +249,7 @@ impl CircuitBreaker {
 }
 
 /// Feature bounds for anomaly detection (Quinn's requirement)
+/// TODO: Add docs
 pub struct FeatureBounds {
     // Per-feature historical bounds
     bounds: HashMap<String, (f64, f64)>,
@@ -310,6 +323,7 @@ impl FeatureBounds {
 // ============================================================================
 
 /// Simple Moving Average - SIMD optimized
+/// TODO: Add docs
 pub struct SMA {
     period: usize,
 }
@@ -344,6 +358,7 @@ impl Indicator for SMA {
 }
 
 /// Exponential Moving Average - SIMD optimized
+/// TODO: Add docs
 pub struct EMA {
     period: usize,
     smoothing: f32,
@@ -377,6 +392,7 @@ impl Indicator for EMA {
 }
 
 /// Weighted Moving Average
+/// TODO: Add docs
 pub struct WMA {
     period: usize,
 }
@@ -412,6 +428,7 @@ impl Indicator for WMA {
 }
 
 /// Volume Weighted Moving Average
+/// TODO: Add docs
 pub struct VWMA {
     period: usize,
 }
@@ -455,6 +472,7 @@ impl Indicator for VWMA {
 // ============================================================================
 
 /// Relative Strength Index - SIMD optimized
+/// TODO: Add docs
 pub struct RSI {
     period: usize,
 }
@@ -530,6 +548,7 @@ impl Indicator for RSI {
 }
 
 /// MACD - Moving Average Convergence Divergence
+/// TODO: Add docs
 pub struct MACD {
     fast_period: usize,
     slow_period: usize,
@@ -573,6 +592,7 @@ impl Indicator for MACD {
 // ============================================================================
 
 /// Average True Range
+/// TODO: Add docs
 pub struct ATR {
     period: usize,
 }
@@ -613,10 +633,11 @@ impl Indicator for ATR {
 }
 
 /// Bollinger Bands
-pub struct BollingerBands {
-    period: usize,
-    std_dev: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct BollingerBands {
+// ELIMINATED:     period: usize,
+// ELIMINATED:     std_dev: f64,
+// ELIMINATED: }
 
 impl BollingerBands {
     /// Create new BollingerBands indicator - Alex's constructor
@@ -658,6 +679,7 @@ impl Indicator for BollingerBands {
 // ============================================================================
 
 /// On-Balance Volume
+/// TODO: Add docs
 pub struct OBV;
 
 impl Indicator for OBV {

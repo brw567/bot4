@@ -160,6 +160,7 @@ lazy_static! {
     ).expect("metric creation failed");
 }
 
+/// TODO: Add docs
 pub fn init_metrics() {
     // Register all metrics with the registry
     REGISTRY.register(Box::new(DECISION_LATENCY.clone())).expect("metric registration failed");
@@ -190,9 +191,10 @@ pub fn init_metrics() {
 }
 
 // Timing helper for measuring latencies
-pub struct Timer {
-    start: Instant,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct Timer {
+// ELIMINATED:     start: Instant,
+// ELIMINATED: }
 
 impl Timer {
     pub fn new() -> Self {

@@ -290,4 +290,4 @@ pub use exchange_specific_safety::{
 
 // SIMD validation tests for Task 0.1.1
 #[cfg(test)]
-mod simd_validation_tests;
+mod simd_validation_tests;pub mod hft_optimizations;

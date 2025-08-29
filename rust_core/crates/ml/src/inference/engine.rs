@@ -17,6 +17,7 @@ use std::time::{Duration, Instant};
 
 /// Inference request for the engine
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct InferenceRequest {
     pub model_id: uuid::Uuid,
     pub features: Vec<f32>,
@@ -26,6 +27,7 @@ pub struct InferenceRequest {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+/// TODO: Add docs
 pub enum Priority {
     Critical = 0,  // <10ns target
     High = 1,      // <50ns target  
@@ -35,6 +37,7 @@ pub enum Priority {
 
 /// Inference result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct InferenceResult {
     pub request_id: u64,
     pub prediction: f64,
@@ -48,6 +51,7 @@ pub struct InferenceResult {
 // Reviewers: Jordan (Performance), Quinn (Risk), Casey (Integration)
 // ============================================================================
 
+/// TODO: Add docs
 pub struct InferenceEngine {
     // Model cache for zero-copy access
     model_cache: Arc<DashMap<uuid::Uuid, Arc<CachedModel>>>,
@@ -335,6 +339,7 @@ impl InferenceWorker {
 // ============================================================================
 
 /// Cached model for zero-copy inference
+/// TODO: Add docs
 pub struct CachedModel {
     pub version: String,
     pub model_type: ModelType,
@@ -391,6 +396,7 @@ impl CachedModel {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ModelData {
     pub version: String,
     pub model_type: ModelType,
@@ -400,6 +406,7 @@ pub struct ModelData {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LayerConfig {
     pub input_size: usize,
     pub output_size: usize,
@@ -408,6 +415,7 @@ pub struct LayerConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ModelType {
     Linear,
     Neural,
@@ -415,6 +423,7 @@ pub enum ModelType {
     Custom,
 }
 
+/// TODO: Add docs
 pub struct EngineMetrics {
     pub total_requests: u64,
     pub avg_latency_ns: u64,
@@ -426,6 +435,7 @@ pub struct EngineMetrics {
 }
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum InferenceError {
     #[error("Circuit breaker open")]
     CircuitOpen,

@@ -10,6 +10,7 @@ use chrono::{DateTime, Utc};
 
 /// Replication configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ReplicationConfig {
     pub standby_names: Vec<String>,
     pub synchronous_commit: bool,
@@ -19,6 +20,7 @@ pub struct ReplicationConfig {
 
 /// Backup configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BackupConfig {
     pub backup_interval: chrono::Duration,
     pub retention_days: i32,
@@ -27,6 +29,7 @@ pub struct BackupConfig {
 }
 
 /// Manager for replication and backup operations
+/// TODO: Add docs
 pub struct ReplicationManager {
     pool: Arc<Pool>,
     config: Option<ReplicationConfig>,
@@ -236,6 +239,7 @@ impl ReplicationManager {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct StandbyLag {
     pub standby_name: String,
     pub state: String,
@@ -245,6 +249,7 @@ pub struct StandbyLag {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BackupInfo {
     pub backup_id: String,
     pub timestamp: DateTime<Utc>,

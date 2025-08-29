@@ -23,6 +23,7 @@ use super::DataBatch;
 
 /// Kalman filter configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct KalmanConfig {
     pub process_noise: f64,           // Q: Process noise covariance
     pub measurement_noise: f64,       // R: Measurement noise covariance
@@ -48,6 +49,7 @@ impl Default for KalmanConfig {
 }
 
 /// Multi-dimensional Kalman filter for gap detection
+/// TODO: Add docs
 pub struct KalmanGapDetector {
     config: KalmanConfig,
     
@@ -448,6 +450,7 @@ impl InnovationStats {
 
 /// Gap detection event
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GapEvent {
     pub symbol: String,
     pub gap_start: DateTime<Utc>,
@@ -460,6 +463,7 @@ pub struct GapEvent {
 
 /// Gap severity levels
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum GapSeverity {
     Minor,       // < 10 seconds
     Moderate,    // 10-60 seconds
@@ -470,6 +474,7 @@ pub enum GapSeverity {
 
 /// Interpolated data point
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct InterpolatedPoint {
     pub timestamp: DateTime<Utc>,
     pub value: f64,
@@ -478,6 +483,7 @@ pub struct InterpolatedPoint {
 
 /// Gap statistics for reporting
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GapStatistics {
     pub total_gaps: usize,
     pub total_duration_seconds: i64,

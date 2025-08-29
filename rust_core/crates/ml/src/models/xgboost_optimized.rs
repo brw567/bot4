@@ -28,6 +28,7 @@ use crate::feature_engine::AdvancedFeatureEngine;
 /// Casey: Integration with streaming pipeline
 /// Riley: Comprehensive testing coverage
 /// Alex: Coordinating FULL TEAM effort
+/// TODO: Add docs
 pub struct OptimizedXGBoost {
     // Tree ensemble
     trees: Vec<DecisionTree>,
@@ -61,6 +62,7 @@ pub struct OptimizedXGBoost {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct XGBoostParams {
     // Tree parameters
     pub max_depth: u32,
@@ -86,6 +88,7 @@ pub struct XGBoostParams {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum GrowPolicy {
     DepthWise,
     LossGuide,
@@ -1059,6 +1062,7 @@ struct BestSplit {
 
 /// Training metrics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TrainingMetrics {
     pub train_rmse: f32,
     pub validation_metrics: Option<ValidationMetrics>,
@@ -1069,6 +1073,7 @@ pub struct TrainingMetrics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ValidationMetrics {
     pub rmse: f32,
     pub mae: f32,
@@ -1077,6 +1082,7 @@ pub struct ValidationMetrics {
 
 /// Error types
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum XGBoostError {
     #[error("Model not trained")]
     ModelNotTrained,

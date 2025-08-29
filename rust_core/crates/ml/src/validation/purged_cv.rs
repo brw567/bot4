@@ -17,6 +17,7 @@ use statrs::distribution::{ContinuousCDF, Normal};
 /// 2. **Embargo**: Remove test samples that follow training
 /// 3. **Walk-Forward**: Sequential splits respecting time order
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PurgedWalkForwardCV {
     n_splits: usize,        // Number of CV folds
     purge_gap: usize,       // Bars to purge between train/test
@@ -145,6 +146,7 @@ impl PurgedWalkForwardCV {
 
 /// Leakage Detection Tests
 /// CRITICAL: Ensures no temporal leakage in features or labels
+/// TODO: Add docs
 pub struct LeakageSentinel {
     significance_level: f64,
     min_samples: usize,
@@ -340,6 +342,7 @@ impl LeakageSentinel {
 
 /// Result of leakage test
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LeakageTestResult {
     pub has_leakage: bool,
     pub sharpe_ratio: f64,
@@ -359,6 +362,7 @@ use ndarray::ArrayView1;
 
 /// Sample Weights for Time Decay
 /// More recent samples get higher weight
+/// TODO: Add docs
 pub struct TimeDecayWeights {
     decay_factor: f64,
 }

@@ -10,6 +10,7 @@ use anyhow::Result;
 // ============================================================================
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ScalingMethod {
     /// Standardization: (x - mean) / std
     StandardScaler,
@@ -31,6 +32,7 @@ pub enum ScalingMethod {
 // FEATURE SCALER - Avery's Implementation
 // ============================================================================
 
+/// TODO: Add docs
 pub struct FeatureScaler {
     method: ScalingMethod,
     fitted: bool,

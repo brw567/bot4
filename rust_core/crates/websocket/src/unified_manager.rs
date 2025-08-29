@@ -20,6 +20,7 @@ use serde::{Serialize, Deserialize};
 use crate::message::WebSocketMessage;
 
 /// Unified WebSocket Manager - Single source of truth
+/// TODO: Add docs
 pub struct UnifiedWebSocketManager {
     /// Drew: "One connection per exchange, not 28!"
     connections: Arc<RwLock<HashMap<Exchange, WebSocketConnection>>>,
@@ -328,12 +329,19 @@ impl UnifiedWebSocketManager {
 }
 
 #[derive(Debug, Clone)]
-pub struct WebSocketConfig {
-    pub max_symbols_per_connection: usize,
-    pub ping_interval_secs: u64,
-    pub reconnect_delay_secs: u64,
-    pub max_reconnect_attempts: u32,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+// pub struct WebSocketConfig {
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub max_symbols_per_connection: usize,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub ping_interval_secs: u64,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub reconnect_delay_secs: u64,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub max_reconnect_attempts: u32,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+// }
 
 impl Default for WebSocketConfig {
     fn default() -> Self {
@@ -357,6 +365,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum Exchange {
     Binance,
     Kraken,
@@ -364,6 +373,7 @@ pub enum Exchange {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub enum WebSocketError {
     ConnectionFailed(String),
     NotConnected,

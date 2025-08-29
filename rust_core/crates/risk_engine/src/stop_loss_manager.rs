@@ -18,6 +18,7 @@ use order_management::{Order, OrderSide, Position, PositionId};
 
 /// CRITICAL: Stop loss trigger for position protection
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StopLossTrigger {
     pub position_id: PositionId,
     pub symbol: String,
@@ -33,6 +34,7 @@ pub struct StopLossTrigger {
 }
 
 /// Stop loss manager - Quinn's critical safety system
+/// TODO: Add docs
 pub struct StopLossManager {
     /// Active stop losses by position ID
     stop_losses: Arc<DashMap<PositionId, StopLossTrigger>>,
@@ -342,6 +344,7 @@ impl StopLossManager {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StopLossStatistics {
     pub active_stops: usize,
     pub triggered_stops: u64,

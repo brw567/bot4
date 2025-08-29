@@ -36,6 +36,7 @@ const CRISIS_REDUCTION: f32 = 0.3;  // Reduce to 30% in crisis
 /// 8 sequential layers of risk control to prevent catastrophic losses
 /// Quinn: "Each layer is independent - if ANY triggers, position is reduced!"
 
+/// TODO: Add docs
 pub struct RiskClampSystem {
     // Risk parameters
     config: ClampConfig,
@@ -61,6 +62,7 @@ pub struct RiskClampSystem {
 }
 
 
+/// TODO: Add docs
 pub struct ClampConfig {
     /// Target volatility (e.g., 20% annualized)
     pub vol_target: f32,
@@ -108,6 +110,7 @@ struct CrisisIndicators {
 }
 
 
+/// TODO: Add docs
 pub struct ClampMetrics {
     pub vol_clamps: u64,
     pub var_clamps: u64,

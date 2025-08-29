@@ -17,22 +17,38 @@ use chrono::{DateTime, Utc};
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModelMetadata {
-    pub model_id: String,
-    pub version: String,
-    pub model_type: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-    pub training_config: HashMap<String, serde_json::Value>,
-    pub performance_metrics: HashMap<String, f64>,
-    pub feature_importance: Option<Vec<(String, f64)>>,
-    pub tags: Vec<String>,
-    pub status: ModelStatus,
-    pub file_size_bytes: u64,
-    pub checksum: String,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+// pub struct ModelMetadata {
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub model_id: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub version: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub model_type: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub created_at: DateTime<Utc>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub updated_at: DateTime<Utc>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub training_config: HashMap<String, serde_json::Value>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub performance_metrics: HashMap<String, f64>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub feature_importance: Option<Vec<(String, f64)>>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub tags: Vec<String>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub status: ModelStatus,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub file_size_bytes: u64,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub checksum: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+// }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ModelStatus {
     Training,
     Validating,
@@ -47,12 +63,19 @@ pub enum ModelStatus {
 // ============================================================================
 
 /// Model storage manager for file system and database
-pub struct ModelStorage {
-    base_path: PathBuf,
-    db_url: Option<String>,
-    compression: bool,
-    encryption: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+// pub struct ModelStorage {
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     base_path: PathBuf,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     db_url: Option<String>,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     compression: bool,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     encryption: bool,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+// }
 
 impl ModelStorage {
     pub fn new(base_path: impl AsRef<Path>) -> Self {
@@ -321,6 +344,7 @@ impl ModelStorage {
 // ============================================================================
 
 /// Manages training checkpoints
+/// TODO: Add docs
 pub struct CheckpointManager {
     storage: ModelStorage,
     max_checkpoints: usize,

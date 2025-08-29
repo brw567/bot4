@@ -18,6 +18,7 @@ use crate::offline_store::OfflineStore;
 
 /// Drift detection configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct DriftConfig {
     pub check_interval_seconds: u64,
     pub baseline_window_days: i64,
@@ -49,6 +50,7 @@ impl Default for DriftConfig {
 }
 
 /// Drift detector for monitoring feature distribution changes
+/// TODO: Add docs
 pub struct DriftDetector {
     config: DriftConfig,
     registry: Arc<FeatureRegistry>,
@@ -543,6 +545,7 @@ struct BaselineDistribution {
 
 /// Drift alert
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DriftAlert {
     pub feature_name: String,
     pub drift_type: DriftType,
@@ -555,6 +558,7 @@ pub struct DriftAlert {
 
 /// Types of drift
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DriftType {
     Gradual,        // Slow change over time
     Sudden,         // Abrupt change
@@ -565,6 +569,7 @@ pub enum DriftType {
 
 /// Alert severity
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum Severity {
     Low,
     Medium,
@@ -574,6 +579,7 @@ pub enum Severity {
 
 /// Drift metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DriftMetrics {
     pub psi_score: Option<f64>,
     pub kl_divergence: Option<f64>,

@@ -17,6 +17,7 @@ use crate::dto::database::OrderDto;
 
 /// PostgreSQL implementation of OrderRepository
 /// Follows Hexagonal Architecture - this is an adapter
+/// TODO: Add docs
 pub struct PostgresOrderRepository {
     pool: Arc<PgPool>,
     table_name: String,

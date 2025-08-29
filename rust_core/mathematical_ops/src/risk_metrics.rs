@@ -6,6 +6,7 @@ use crate::variance::calculate_variance;
 use statrs::distribution::{Normal, ContinuousCDF};
 
 /// CANONICAL VaR Calculation - Historical Simulation
+/// TODO: Add docs
 pub fn calculate_var(returns: &[f64], confidence_level: f64) -> f64 {
     if returns.is_empty() {
         return 0.0;
@@ -19,6 +20,7 @@ pub fn calculate_var(returns: &[f64], confidence_level: f64) -> f64 {
 }
 
 /// CANONICAL CVaR (Expected Shortfall)
+/// TODO: Add docs
 pub fn calculate_cvar(returns: &[f64], confidence_level: f64) -> f64 {
     let var = calculate_var(returns, confidence_level);
     
@@ -35,6 +37,7 @@ pub fn calculate_cvar(returns: &[f64], confidence_level: f64) -> f64 {
 }
 
 /// CANONICAL Sharpe Ratio
+/// TODO: Add docs
 pub fn calculate_sharpe(returns: &[f64], risk_free_rate: f64) -> f64 {
     if returns.len() < 2 {
         return 0.0;
@@ -52,6 +55,7 @@ pub fn calculate_sharpe(returns: &[f64], risk_free_rate: f64) -> f64 {
 }
 
 /// CANONICAL Sortino Ratio (downside deviation)
+/// TODO: Add docs
 pub fn calculate_sortino(returns: &[f64], target_return: f64) -> f64 {
     if returns.len() < 2 {
         return 0.0;
@@ -78,6 +82,7 @@ pub fn calculate_sortino(returns: &[f64], target_return: f64) -> f64 {
 }
 
 /// CANONICAL Maximum Drawdown
+/// TODO: Add docs
 pub fn calculate_max_drawdown(equity_curve: &[f64]) -> f64 {
     if equity_curve.is_empty() {
         return 0.0;

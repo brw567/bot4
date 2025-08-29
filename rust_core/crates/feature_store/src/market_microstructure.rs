@@ -29,6 +29,7 @@ use crate::{FeatureUpdate, FeatureValue};
 
 /// Microstructure configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct MicrostructureConfig {
     pub enable_pin: bool,
     pub enable_vpin: bool,
@@ -62,6 +63,7 @@ impl Default for MicrostructureConfig {
 }
 
 /// Market microstructure calculator
+/// TODO: Add docs
 pub struct MicrostructureCalculator {
     config: MicrostructureConfig,
     
@@ -758,23 +760,25 @@ impl MicrostructureCalculator {
 
 /// Quote data
 #[derive(Debug, Clone)]
-pub struct Quote {
-    pub timestamp: DateTime<Utc>,
-    pub bid: f64,
-    pub ask: f64,
-    pub bid_size: f64,
-    pub ask_size: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct Quote {
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     pub bid: f64,
+// ELIMINATED:     pub ask: f64,
+// ELIMINATED:     pub bid_size: f64,
+// ELIMINATED:     pub ask_size: f64,
+// ELIMINATED: }
 
 /// Order flow data
 #[derive(Debug, Clone)]
-pub struct OrderFlow {
-    pub timestamp: DateTime<Utc>,
-    pub buy_volume: f64,
-    pub sell_volume: f64,
-    pub buy_count: u32,
-    pub sell_count: u32,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OrderFlow {
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     pub buy_volume: f64,
+// ELIMINATED:     pub sell_volume: f64,
+// ELIMINATED:     pub buy_count: u32,
+// ELIMINATED:     pub sell_count: u32,
+// ELIMINATED: }
 
 /// Volume bucket for VPIN
 #[derive(Debug, Clone)]

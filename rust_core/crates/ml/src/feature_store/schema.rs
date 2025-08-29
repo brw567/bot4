@@ -6,6 +6,7 @@ use serde_json::Value;
 
 /// Feature schema definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureSchema {
     pub name: String,
     pub description: String,
@@ -19,6 +20,7 @@ pub struct FeatureSchema {
 
 /// Data type definitions
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DataType {
     Float { min: Option<f64>, max: Option<f64>, precision: Option<u8> },
     Integer { min: Option<i64>, max: Option<i64> },
@@ -32,6 +34,7 @@ pub enum DataType {
 
 /// Constraint definitions
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Constraint {
     NotNull,
     Unique,
@@ -42,6 +45,7 @@ pub enum Constraint {
 }
 
 /// Schema registry
+/// TODO: Add docs
 pub struct SchemaRegistry {
     schemas: HashMap<String, FeatureSchema>,
     entity_schemas: HashMap<String, EntitySchema>,
@@ -49,6 +53,7 @@ pub struct SchemaRegistry {
 
 /// Entity schema
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EntitySchema {
     pub entity_type: String,
     pub id_field: String,

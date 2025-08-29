@@ -1,0 +1,43 @@
+[package]
+name = "strategies"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Core dependencies
+rust_decimal = { version = "1.36", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Performance
+mimalloc = "0.1"
+packed_simd_2 = "0.3"
+simba = "0.8"
+
+# Async
+tokio = { version = "1.42", features = ["full"] }
+async-trait = "0.1"
+
+# Random for game theory
+rand = "0.8"
+
+# Domain types
+domain_types = { path = "../../domain_types" }
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Collections
+hashbrown = "0.15"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "simd_bench"
+harness = false
+
+[features]
+default = []
+simd = ["packed_simd_2"]

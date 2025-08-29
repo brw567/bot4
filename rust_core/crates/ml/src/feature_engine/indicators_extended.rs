@@ -10,6 +10,7 @@ use std::collections::HashMap;
 // ============================================================================
 
 /// Stochastic Oscillator
+/// TODO: Add docs
 pub struct Stochastic {
     k_period: usize,
     d_period: usize,
@@ -46,6 +47,7 @@ impl Indicator for Stochastic {
 }
 
 /// Williams %R
+/// TODO: Add docs
 pub struct WilliamsR {
     period: usize,
 }
@@ -80,6 +82,7 @@ impl Indicator for WilliamsR {
 }
 
 /// Commodity Channel Index (CCI)
+/// TODO: Add docs
 pub struct CCI {
     period: usize,
 }
@@ -124,6 +127,7 @@ impl Indicator for CCI {
 }
 
 /// Money Flow Index (MFI)
+/// TODO: Add docs
 pub struct MFI {
     period: usize,
 }
@@ -174,6 +178,7 @@ impl Indicator for MFI {
 // ============================================================================
 
 /// Hull Moving Average (HMA)
+/// TODO: Add docs
 pub struct HMA {
     period: usize,
 }
@@ -225,6 +230,7 @@ impl Indicator for HMA {
 }
 
 /// Kaufman Adaptive Moving Average (KAMA)
+/// TODO: Add docs
 pub struct KAMA {
     period: usize,
     fast_period: usize,
@@ -277,6 +283,7 @@ impl Indicator for KAMA {
 }
 
 /// Parabolic SAR
+/// TODO: Add docs
 pub struct ParabolicSAR {
     acceleration: f64,
     max_acceleration: f64,
@@ -349,6 +356,7 @@ impl Indicator for ParabolicSAR {
 // ============================================================================
 
 /// Keltner Channels
+/// TODO: Add docs
 pub struct KeltnerChannel {
     ema_period: usize,
     atr_period: usize,
@@ -381,6 +389,7 @@ impl Indicator for KeltnerChannel {
 }
 
 /// Donchian Channels
+/// TODO: Add docs
 pub struct DonchianChannel {
     period: usize,
 }
@@ -411,6 +420,7 @@ impl Indicator for DonchianChannel {
 }
 
 /// Standard Deviation
+/// TODO: Add docs
 pub struct StdDev {
     period: usize,
 }
@@ -450,6 +460,7 @@ impl Indicator for StdDev {
 // ============================================================================
 
 /// Chaikin Money Flow (CMF)
+/// TODO: Add docs
 pub struct CMF {
     period: usize,
 }
@@ -495,6 +506,7 @@ impl Indicator for CMF {
 }
 
 /// Volume Weighted Average Price (VWAP)
+/// TODO: Add docs
 pub struct VWAP;
 
 impl Indicator for VWAP {
@@ -527,6 +539,7 @@ impl Indicator for VWAP {
 }
 
 /// Accumulation/Distribution Line
+/// TODO: Add docs
 pub struct ADL;
 
 impl Indicator for ADL {
@@ -561,6 +574,7 @@ impl Indicator for ADL {
 // ============================================================================
 
 /// Support and Resistance Levels
+/// TODO: Add docs
 pub struct SupportResistance {
     lookback: usize,
     threshold: f64,
@@ -611,6 +625,7 @@ impl Indicator for SupportResistance {
 }
 
 /// Pivot Points
+/// TODO: Add docs
 pub struct PivotPoints;
 
 impl Indicator for PivotPoints {
@@ -634,6 +649,7 @@ impl Indicator for PivotPoints {
 // ============================================================================
 
 /// Trend Strength Index (Custom)
+/// TODO: Add docs
 pub struct TrendStrengthIndex {
     period: usize,
 }
@@ -669,6 +685,7 @@ impl Indicator for TrendStrengthIndex {
 }
 
 /// Market Regime Detector (Custom)
+/// TODO: Add docs
 pub struct MarketRegime {
     atr_period: usize,
     trend_period: usize,
@@ -718,6 +735,7 @@ impl Indicator for MarketRegime {
 // REGISTRATION OF ALL 100 INDICATORS
 // ============================================================================
 
+/// TODO: Add docs
 pub fn register_all_indicators() -> HashMap<String, Box<dyn Indicator>> {
     let mut indicators: HashMap<String, Box<dyn Indicator>> = HashMap::new();
     

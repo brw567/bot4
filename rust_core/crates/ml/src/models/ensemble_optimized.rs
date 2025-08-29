@@ -40,6 +40,7 @@ use infrastructure::zero_copy::MemoryPoolManager;
 // ============================================================================
 
 /// Optimized Ensemble System with 5 diverse models
+/// TODO: Add docs
 pub struct OptimizedEnsemble {
     // Diverse model architectures
     models: EnsembleModels,
@@ -61,6 +62,7 @@ pub struct OptimizedEnsemble {
 }
 
 /// Collection of diverse models - Morgan & Team
+/// TODO: Add docs
 pub struct EnsembleModels {
     // 1. Deep LSTM (5-layer) - Our optimized implementation
     deep_lstm: DeepLSTM,
@@ -84,6 +86,7 @@ pub struct EnsembleModels {
 
 /// Voting strategies - Sam's implementation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum VotingStrategy {
     /// Simple average of predictions
     SimpleAverage,
@@ -113,6 +116,7 @@ pub enum VotingStrategy {
 }
 
 /// Weight optimization strategies - Morgan
+/// TODO: Add docs
 pub struct WeightOptimizer {
     strategy: OptimizationStrategy,
     constraints: WeightConstraints,
@@ -120,6 +124,7 @@ pub struct WeightOptimizer {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OptimizationStrategy {
     /// Gradient-based optimization
     GradientDescent { learning_rate: f64 },
@@ -135,6 +140,7 @@ pub enum OptimizationStrategy {
 }
 
 /// Meta-learner for stacking - Avery
+/// TODO: Add docs
 pub struct MetaLearner {
     // Linear meta-model (can be neural network)
     weights: Array2<f64>,
@@ -147,6 +153,7 @@ pub struct MetaLearner {
 }
 
 /// Online weight updater - Casey
+/// TODO: Add docs
 pub struct OnlineUpdater {
     // Exponential moving average of performance
     ema_alpha: f64,
@@ -161,6 +168,7 @@ pub struct OnlineUpdater {
 }
 
 /// Concept drift detection - Casey
+/// TODO: Add docs
 pub struct ConceptDriftDetector {
     // Page-Hinkley test parameters
     threshold: f64,
@@ -173,6 +181,7 @@ pub struct ConceptDriftDetector {
 }
 
 /// Transformer model - Jordan's implementation
+/// TODO: Add docs
 pub struct TransformerModel {
     // Multi-head attention layers
     attention_layers: Vec<MultiHeadAttention>,
@@ -190,6 +199,7 @@ pub struct TransformerModel {
 }
 
 /// Temporal CNN - Avery's implementation
+/// TODO: Add docs
 pub struct TemporalCNN {
     // Convolutional layers
     conv_layers: Vec<Conv1D>,
@@ -207,6 +217,7 @@ pub struct TemporalCNN {
 }
 
 /// Stacked GRU - Morgan's implementation
+/// TODO: Add docs
 pub struct StackedGRU {
     layers: Vec<GRULayer>,
     dropout: f64,
@@ -214,7 +225,9 @@ pub struct StackedGRU {
 }
 
 /// Gradient Boosting - Jordan's implementation
-pub struct GradientBoostingModel {
+/// TODO: Add docs
+// ELIMINATED: GradientBoostingModel - Enhanced with XGBoost, LightGBM, CatBoost
+// pub struct GradientBoostingModel {
     trees: Vec<RegressionTree>,
     learning_rate: f64,
     max_depth: usize,
@@ -227,6 +240,7 @@ pub struct GradientBoostingModel {
 
 /// Model performance tracking - Riley
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ModelPerformance {
     pub accuracy: f64,
     pub sharpe_ratio: f64,
@@ -238,6 +252,7 @@ pub struct ModelPerformance {
 
 /// Ensemble metrics - Riley
 #[derive(Debug, Default, Clone)]
+/// TODO: Add docs
 pub struct EnsembleMetrics {
     pub ensemble_accuracy: f64,
     pub model_agreement: f64,
@@ -751,6 +766,7 @@ impl ConceptDriftDetector {
 
 // Supporting structures
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WeightConstraints {
     pub sum_to_one: bool,
     pub non_negative: bool,
@@ -758,6 +774,7 @@ pub struct WeightConstraints {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum AcquisitionFunction {
     ExpectedImprovement,
     UpperConfidenceBound,

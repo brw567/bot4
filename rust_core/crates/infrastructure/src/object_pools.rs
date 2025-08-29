@@ -42,6 +42,7 @@ use std::collections::HashMap;
 }
 
 
+/// TODO: Add docs
 pub enum OrderSide {
     #[default]
     Buy,
@@ -49,6 +50,7 @@ pub enum OrderSide {
 }
 
 
+/// TODO: Add docs
 pub enum OrderType {
     #[default]
     Market,
@@ -59,6 +61,7 @@ pub enum OrderType {
 }
 
 
+/// TODO: Add docs
 pub enum OrderStatus {
     #[default]
     Pending,
@@ -82,6 +85,7 @@ pub enum OrderStatus {
 }
 
 
+/// TODO: Add docs
 pub enum SignalType {
     #[default]
     Long,
@@ -107,6 +111,7 @@ pub enum SignalType {
 
 
 
+/// TODO: Add docs
 pub struct RiskCheck {
     pub order_id: u64,
     pub passed: bool,
@@ -117,17 +122,11 @@ pub struct RiskCheck {
 }
 
 
-pub struct ExecutionReport {
-    pub order_id: u64,
-    pub exec_id: String,
-    pub filled_quantity: Decimal,
-    pub filled_price: Decimal,
-    pub fees: Decimal,
-    pub timestamp: i64,
-    pub exchange: String,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExecutionReport - use execution::reports::ExecutionReport
 
 
+/// TODO: Add docs
 pub struct Feature {
     pub name: String,
     pub values: Vec<f64>,
@@ -136,6 +135,7 @@ pub struct Feature {
 }
 
 
+/// TODO: Add docs
 pub struct MLInference {
     pub model_id: String,
     pub predictions: Vec<f64>,
@@ -169,6 +169,7 @@ lazy_static! {
     pub static ref POOL_REGISTRY: PoolRegistry = PoolRegistry::new();
 }
 
+/// TODO: Add docs
 pub struct PoolRegistry {
     pub orders: Arc<ObjectPool<Order>>,
     pub signals: Arc<ObjectPool<Signal>>,
@@ -232,6 +233,7 @@ impl PoolRegistry {
 }
 
 
+/// TODO: Add docs
 pub struct GlobalPoolStats {
     pub orders: crate::zero_copy::PoolStats,
     pub signals: crate::zero_copy::PoolStats,
@@ -250,48 +252,56 @@ pub struct GlobalPoolStats {
 
 /// Acquire an Order from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_order() -> PoolGuard<Order> {
     POOL_REGISTRY.orders.acquire()
 }
 
 /// Acquire a Signal from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_signal() -> PoolGuard<Signal> {
     POOL_REGISTRY.signals.acquire()
 }
 
 /// Acquire MarketData from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_market_data() -> PoolGuard<MarketData> {
     POOL_REGISTRY.market_data.acquire()
 }
 
 /// Acquire a Position from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_position() -> PoolGuard<Position> {
     POOL_REGISTRY.positions.acquire()
 }
 
 /// Acquire a RiskCheck from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_risk_check() -> PoolGuard<RiskCheck> {
     POOL_REGISTRY.risk_checks.acquire()
 }
 
 /// Acquire an ExecutionReport from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_execution() -> PoolGuard<ExecutionReport> {
     POOL_REGISTRY.executions.acquire()
 }
 
 /// Acquire a Feature from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_feature() -> PoolGuard<Feature> {
     POOL_REGISTRY.features.acquire()
 }
 
 /// Acquire an MLInference from the pool
 #[inline(always)]
+/// TODO: Add docs
 pub fn acquire_ml_inference() -> PoolGuard<MLInference> {
     POOL_REGISTRY.ml_inferences.acquire()
 }

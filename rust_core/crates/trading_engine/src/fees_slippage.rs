@@ -20,6 +20,7 @@ use std::collections::HashMap;
 
 /// Comprehensive fee structure per exchange
 
+/// TODO: Add docs
 pub struct FeeStructure {
     pub exchange: String,
     pub maker_fee_bps: Decimal,     // Negative = rebate
@@ -28,6 +29,7 @@ pub struct FeeStructure {
 }
 
 
+/// TODO: Add docs
 pub enum TradingTier {
     Tier1 { volume_30d: Decimal },  // >$100M
     Tier2 { volume_30d: Decimal },  // $50-100M
@@ -38,7 +40,9 @@ pub enum TradingTier {
 
 /// Market impact model - Square root law
 
-pub struct MarketImpactModel {
+/// TODO: Add docs
+// ELIMINATED: MarketImpactModel - Enhanced with Almgren-Chriss, Kyle lambda
+// pub struct MarketImpactModel {
     /// γ coefficient (typically 0.1-0.3 for crypto)
     gamma: f64,
     
@@ -89,6 +93,7 @@ impl MarketImpactModel {
 
 /// Queue position model for limit orders
 
+/// TODO: Add docs
 pub struct QueueModel {
     /// Average queue size at best bid/ask
     avg_queue_size: f64,
@@ -135,6 +140,7 @@ impl QueueModel {
 }
 
 /// LOB (Limit Order Book) simulator for backtesting
+/// TODO: Add docs
 pub struct LOBSimulator {
     /// Historical L2 data
     snapshots: Vec<OrderBookSnapshot>,
@@ -393,12 +399,14 @@ impl LOBSimulator {
 }
 
 
+/// TODO: Add docs
 pub enum Side {
     Buy,
     Sell,
 }
 
 
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -406,6 +414,7 @@ pub enum OrderType {
 }
 
 
+/// TODO: Add docs
 pub struct ExecutionResult {
     pub filled_quantity: f64,
     pub average_price: f64,

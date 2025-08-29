@@ -34,6 +34,7 @@ pub trait Optimizer: Send + Sync {
 // ============================================================================
 
 /// Adam optimizer with momentum and adaptive learning
+/// TODO: Add docs
 pub struct AdamOptimizer {
     learning_rate: f64,
     beta1: f64,
@@ -113,6 +114,7 @@ impl Optimizer for AdamOptimizer {
 // SGD WITH MOMENTUM - Jordan's Fast Implementation
 // ============================================================================
 
+/// TODO: Add docs
 pub struct SGDOptimizer {
     learning_rate: f64,
     momentum: f64,
@@ -177,6 +179,7 @@ impl Optimizer for SGDOptimizer {
 // RMSPROP OPTIMIZER - Morgan's Adaptive Learning
 // ============================================================================
 
+/// TODO: Add docs
 pub struct RMSpropOptimizer {
     learning_rate: f64,
     decay_rate: f64,
@@ -254,6 +257,7 @@ impl Optimizer for RMSpropOptimizer {
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum LRScheduler {
     Constant,
     StepDecay { step_size: usize, gamma: f64 },
@@ -300,6 +304,7 @@ impl LRScheduler {
 // OPTIMIZER FACTORY - Sam's Pattern
 // ============================================================================
 
+/// TODO: Add docs
 pub struct OptimizerFactory;
 
 impl OptimizerFactory {

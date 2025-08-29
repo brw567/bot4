@@ -20,6 +20,7 @@ use serde::{Deserialize, Serialize};
 
 /// Position-specific limits
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PositionLimits {
     /// Maximum position size as % of portfolio (Quinn's 2% rule)
     pub max_position_size_pct: Decimal,
@@ -59,6 +60,7 @@ impl Default for PositionLimits {
 
 /// Loss limits
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct LossLimits {
     /// Maximum daily loss
     pub daily_loss_limit: Option<Decimal>,
@@ -94,6 +96,7 @@ impl Default for LossLimits {
 
 /// Exposure limits
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExposureLimits {
     /// Maximum exposure per asset class
     pub max_crypto_exposure: Decimal,
@@ -121,6 +124,7 @@ impl Default for ExposureLimits {
 
 /// Correlation limits
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CorrelationLimits {
     /// Maximum correlation between positions (0.7 per requirements)
     pub max_position_correlation: f64,
@@ -259,6 +263,7 @@ impl RiskLimits {
 
 /// Risk limit adjustments (requires Quinn's approval)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct LimitAdjustment {
     pub limit_name: String,
     pub old_value: Decimal,

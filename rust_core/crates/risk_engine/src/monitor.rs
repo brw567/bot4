@@ -75,6 +75,7 @@ impl Default for RiskMetrics {
 }
 
 /// Drawdown tracker
+/// TODO: Add docs
 pub struct DrawdownTracker {
     peak_value: Arc<RwLock<Decimal>>,
     current_value: Arc<RwLock<Decimal>>,
@@ -85,6 +86,7 @@ pub struct DrawdownTracker {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DrawdownEvent {
     pub start_time: chrono::DateTime<chrono::Utc>,
     pub end_time: Option<chrono::DateTime<chrono::Utc>>,
@@ -181,6 +183,7 @@ impl DrawdownTracker {
 }
 
 /// Main risk monitor
+/// TODO: Add docs
 pub struct RiskMonitor {
     metrics: Arc<RwLock<RiskMetrics>>,
     drawdown_tracker: Arc<DrawdownTracker>,
@@ -191,6 +194,7 @@ pub struct RiskMonitor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RiskAlert {
     pub severity: AlertSeverity,
     pub message: String,
@@ -201,6 +205,7 @@ pub struct RiskAlert {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AlertSeverity {
     Info,
     Warning,
@@ -349,6 +354,7 @@ impl RiskMonitor {
 
 /// Risk report
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RiskReport {
     pub metrics: RiskMetrics,
     pub alerts: Vec<RiskAlert>,

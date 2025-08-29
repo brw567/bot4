@@ -17,6 +17,7 @@ pub trait EventProcessor: Send + Sync {
 }
 
 /// Batch event processor
+/// TODO: Add docs
 pub struct BatchEventProcessor<T> {
     sequence: Arc<Sequence>,
     barrier: SequenceBarrier,
@@ -52,6 +53,7 @@ impl<T: Send + Sync + 'static> EventProcessor for BatchEventProcessor<T> {
 }
 
 /// Work processor for parallel processing
+/// TODO: Add docs
 pub struct WorkProcessor<T> {
     sequence: Arc<Sequence>,
     barrier: SequenceBarrier,

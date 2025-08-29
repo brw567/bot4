@@ -1,3 +1,5 @@
+use domain_types::Event;
+use domain_types::market_data::MarketTick;
 //! # Event Types - Core event definitions
 //! 
 //! Defines all event types that flow through the system.
@@ -12,6 +14,7 @@ use domain_types::{Order, Trade, Price, Quantity, OrderBook, Ticker};
 
 /// Event priority levels
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EventPriority {
     /// Critical events (circuit breakers, kill switch)
     Critical = 0,
@@ -25,6 +28,7 @@ pub enum EventPriority {
 
 /// Core event type enumeration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EventType {
     // === Market Data Events ===
     MarketTick {
@@ -153,15 +157,23 @@ pub enum EventType {
 
 /// Order update fields
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderUpdate {
-    pub price: Option<Price>,
-    pub quantity: Option<Quantity>,
-    pub stop_loss: Option<Price>,
-    pub take_profit: Option<Price>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+// pub struct OrderUpdate {
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub price: Option<Price>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub quantity: Option<Quantity>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub stop_loss: Option<Price>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub take_profit: Option<Price>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+// }
 
 /// Risk limit types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum RiskLimitType {
     MaxPositionSize,
     MaxDrawdown,
@@ -172,6 +184,7 @@ pub enum RiskLimitType {
 
 /// Signal types
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SignalType {
     Buy,
     Sell,
@@ -183,16 +196,25 @@ pub enum SignalType {
 
 /// ML model metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModelMetrics {
-    pub accuracy: f64,
-    pub precision: f64,
-    pub recall: f64,
-    pub sharpe_ratio: f64,
-    pub max_drawdown: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+// pub struct ModelMetrics {
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub accuracy: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub precision: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub recall: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub sharpe_ratio: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub max_drawdown: f64,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+// }
 
 /// Event metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EventMetadata {
     /// Unique event ID
     pub id: Uuid,
@@ -233,7 +255,8 @@ impl EventMetadata {
 
 /// Main event structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Event {
+// ELIMINATED: use domain_types::Event
+// pub struct Event {
     /// Event metadata
     pub metadata: EventMetadata,
     /// Event payload
@@ -302,6 +325,7 @@ impl Event {
 }
 
 /// Event builder for fluent API
+/// TODO: Add docs
 pub struct EventBuilder {
     event_type: Option<EventType>,
     source: Option<String>,

@@ -34,6 +34,7 @@ use anyhow::Result;
 
 /// Optimal Execution Engine - Minimizes market impact using game theory
 /// Casey: "Smart execution can save 50+ bps per trade!"
+/// TODO: Add docs
 pub struct OptimalExecutionEngine {
     // Market microstructure parameters
     kyle_lambda: Arc<RwLock<f64>>,        // Kyle's Lambda - price impact coefficient
@@ -57,6 +58,7 @@ pub struct OptimalExecutionEngine {
 
 /// Execution plan for an order
 
+/// TODO: Add docs
 pub struct ExecutionPlan {
     pub order_id: uuid::Uuid,
     pub symbol: String,
@@ -73,6 +75,7 @@ pub struct ExecutionPlan {
 
 /// Single execution slice (child order)
 
+/// TODO: Add docs
 pub struct ExecutionSlice {
     pub timestamp: u64,
     pub quantity: Quantity,
@@ -85,6 +88,7 @@ pub struct ExecutionSlice {
 
 /// Execution algorithm types
 
+/// TODO: Add docs
 pub enum ExecutionAlgorithm {
     TWAP,      // Time-Weighted Average Price
     VWAP,      // Volume-Weighted Average Price  
@@ -749,13 +753,8 @@ impl OptimalExecutionEngine {
 
 /// Execution performance metrics
 
-pub struct ExecutionMetrics {
-    pub total_slippage: Decimal,
-    pub avg_fill_quality: f64,
-    pub market_impact_saved: Decimal,
-    pub active_executions: usize,
-    pub completed_executions: usize,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExecutionMetrics - use execution::metrics::ExecutionMetrics
 
 /// Order for execution
     pub id: uuid::Uuid,
@@ -769,6 +768,7 @@ pub struct ExecutionMetrics {
 }
 
 
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -778,13 +778,14 @@ pub enum OrderType {
 
 /// Volume profile for VWAP
 
-pub struct VolumeProfile {
-    pub timestamp: u64,
-    pub total_volume: f64,
-    pub buy_volume: f64,
-    pub sell_volume: f64,
-    pub vwap: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct VolumeProfile {
+// ELIMINATED:     pub timestamp: u64,
+// ELIMINATED:     pub total_volume: f64,
+// ELIMINATED:     pub buy_volume: f64,
+// ELIMINATED:     pub sell_volume: f64,
+// ELIMINATED:     pub vwap: f64,
+// ELIMINATED: }
 
 #[cfg(test)]
 mod tests {

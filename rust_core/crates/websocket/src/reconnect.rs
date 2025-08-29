@@ -18,6 +18,7 @@ pub trait ReconnectStrategy: Send + Sync {
 }
 
 /// Exponential backoff with jitter
+/// TODO: Add docs
 pub struct ExponentialBackoff {
     base_delay: Duration,
     max_delay: Duration,
@@ -90,6 +91,7 @@ impl ReconnectStrategy for ExponentialBackoff {
 }
 
 /// Fixed interval reconnection
+/// TODO: Add docs
 pub struct FixedInterval {
     interval: Duration,
     max_attempts: u32,
@@ -119,6 +121,7 @@ impl ReconnectStrategy for FixedInterval {
 }
 
 /// Linear backoff strategy
+/// TODO: Add docs
 pub struct LinearBackoff {
     base_delay: Duration,
     increment: Duration,

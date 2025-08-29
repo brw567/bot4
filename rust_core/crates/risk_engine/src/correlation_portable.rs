@@ -9,6 +9,7 @@ use std::sync::OnceLock;
 
 /// CPU features detected at runtime
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub struct CpuFeatures {
     pub has_avx2: bool,
     pub has_sse2: bool,
@@ -55,11 +56,13 @@ impl CpuFeatures {
 static CPU_FEATURES: OnceLock<CpuFeatures> = OnceLock::new();
 
 /// Get detected CPU features
+/// TODO: Add docs
 pub fn cpu_features() -> CpuFeatures {
     *CPU_FEATURES.get_or_init(CpuFeatures::detect)
 }
 
 /// Portable correlation analyzer with automatic SIMD selection
+/// TODO: Add docs
 pub struct PortableCorrelationAnalyzer {
     max_correlation: f64,
     price_history: Arc<RwLock<Vec<Vec<f64>>>>,

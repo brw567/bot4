@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 /// Calculate mean of a dataset
+/// TODO: Add docs
 pub fn mean(data: &[f64]) -> f64 {
     if data.is_empty() {
         return 0.0;
@@ -11,6 +12,7 @@ pub fn mean(data: &[f64]) -> f64 {
 }
 
 /// Calculate median of a dataset
+/// TODO: Add docs
 pub fn median(data: &[f64]) -> f64 {
     if data.is_empty() {
         return 0.0;
@@ -28,6 +30,7 @@ pub fn median(data: &[f64]) -> f64 {
 }
 
 /// Calculate mode of a dataset
+/// TODO: Add docs
 pub fn mode(data: &[f64]) -> Option<f64> {
     if data.is_empty() {
         return None;
@@ -44,6 +47,7 @@ pub fn mode(data: &[f64]) -> Option<f64> {
 }
 
 /// Calculate standard deviation
+/// TODO: Add docs
 pub fn standard_deviation(data: &[f64]) -> f64 {
     if data.len() < 2 {
         return 0.0;
@@ -58,6 +62,7 @@ pub fn standard_deviation(data: &[f64]) -> f64 {
 }
 
 /// Calculate skewness (third moment)
+/// TODO: Add docs
 pub fn skewness(data: &[f64]) -> f64 {
     if data.len() < 3 {
         return 0.0;
@@ -79,6 +84,7 @@ pub fn skewness(data: &[f64]) -> f64 {
 }
 
 /// Calculate excess kurtosis (fourth moment)
+/// TODO: Add docs
 pub fn kurtosis(data: &[f64]) -> f64 {
     if data.len() < 4 {
         return 0.0;
@@ -103,6 +109,7 @@ pub fn kurtosis(data: &[f64]) -> f64 {
 }
 
 /// Calculate percentile
+/// TODO: Add docs
 pub fn percentile(data: &[f64], p: f64) -> f64 {
     if data.is_empty() || p < 0.0 || p > 100.0 {
         return 0.0;
@@ -116,6 +123,7 @@ pub fn percentile(data: &[f64], p: f64) -> f64 {
 }
 
 /// Calculate quantile (0-1 scale)
+/// TODO: Add docs
 pub fn quantile(data: &[f64], q: f64) -> f64 {
     percentile(data, q * 100.0)
 }

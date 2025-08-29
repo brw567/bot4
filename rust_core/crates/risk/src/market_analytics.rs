@@ -19,6 +19,7 @@ use parking_lot::RwLock;
 
 /// Complete Market Analytics - REAL calculations
 /// Jordan: "Every metric must be calculated from actual data!"
+/// TODO: Add docs
 pub struct MarketAnalytics {
     // Price history for calculations
     pub price_history: Arc<RwLock<PriceHistory>>,
@@ -61,6 +62,7 @@ struct PriceHistory {
 
 /// MACD calculation result
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub struct MACDResult {
     pub macd: f64,
     pub signal: f64,
@@ -69,6 +71,7 @@ pub struct MACDResult {
 
 /// Stochastic Oscillator result
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub struct StochasticResult {
     pub k: f64,  // Fast %K
     pub d: f64,  // Slow %D
@@ -120,6 +123,7 @@ impl PriceHistory {
 
 /// Volatility Engine - Multiple estimators for accuracy
 /// Quinn: "Use multiple volatility measures for robustness!"
+/// TODO: Add docs
 pub struct VolatilityEngine {
     // Different volatility estimators
     close_to_close: f64,     // Simple
@@ -309,6 +313,7 @@ impl VolatilityEngine {
 
 /// Technical Analysis Calculator - REAL indicators
 /// Morgan: "We need ALL the indicators for ML features!"
+/// TODO: Add docs
 pub struct TechnicalAnalysis {
     // Trend indicators
     pub sma_short: f64,
@@ -873,6 +878,7 @@ impl TechnicalAnalysis {
 
 /// Feature Extractor - ML features from market data
 /// Morgan: "Features are EVERYTHING for ML!"
+/// TODO: Add docs
 pub struct FeatureExtractor {
     // Microstructure features
     bid_ask_spread: f64,
@@ -1421,6 +1427,7 @@ impl FeatureExtractor {
 
 /// Performance Calculator - REAL metrics
 /// Alex: "If you can't measure it, you can't improve it!"
+/// TODO: Add docs
 pub struct PerformanceCalculator {
     returns: VecDeque<f64>,
     equity_curve: VecDeque<f64>,
@@ -1570,6 +1577,7 @@ impl PerformanceCalculator {
 }
 
 /// Volume Profile Analysis
+/// TODO: Add docs
 pub struct VolumeProfile {
     price_levels: Vec<(f64, f64)>,  // (price, volume)
     poc: f64,  // Point of Control (highest volume price)
@@ -1941,6 +1949,7 @@ impl MarketAnalytics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MarketMetrics {
     pub volatility: f64,
     pub sharpe_ratio: f64,

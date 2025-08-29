@@ -13,6 +13,7 @@ use anyhow::Result;
 /// Maps predicted probabilities to calibrated probabilities
 /// Ensures monotonic relationship while correcting systematic biases
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct IsotonicCalibrator {
     // Calibration mapping points
     thresholds: Vec<f64>,     // Input probability thresholds
@@ -31,6 +32,7 @@ pub struct IsotonicCalibrator {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Normal,
     Volatile,
@@ -399,6 +401,7 @@ struct ECEBin {
 
 /// Reliability diagram bin
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct ReliabilityBin {
     pub predictions: Vec<f64>,
     pub actuals: Vec<bool>,
@@ -409,6 +412,7 @@ pub struct ReliabilityBin {
 
 /// Calibration metrics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CalibrationMetrics {
     pub samples_used: usize,
     pub brier_improvement: f64,

@@ -1,3 +1,4 @@
+use domain_types::MarketImpact;
 // WHALE ALERT INTEGRATION - DEEP DIVE IMPLEMENTATION
 // Team: FULL TEAM COLLABORATION - NO SIMPLIFICATIONS!
 // Alex: "Track EVERY whale movement for 5-10% alpha extraction!"
@@ -17,6 +18,7 @@ use tokio::sync::mpsc;
 use reqwest::Client;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum WhaleAlertError {
     #[error("API rate limit exceeded: {0}")]
     RateLimitExceeded(String),
@@ -35,6 +37,7 @@ pub type Result<T> = std::result::Result<T, WhaleAlertError>;
 
 /// Configuration for Whale Alert integration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WhaleAlertConfig {
     pub api_key: Option<String>,  // Optional for free tier
     pub websocket_url: String,
@@ -63,21 +66,23 @@ impl Default for WhaleAlertConfig {
 
 /// Whale transaction from Whale Alert API
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WhaleTransaction {
-    pub id: String,
-    pub blockchain: String,
-    pub symbol: String,
-    pub transaction_type: TransactionType,
-    pub hash: String,
-    pub from: WalletInfo,
-    pub to: WalletInfo,
-    pub timestamp: DateTime<Utc>,
-    pub amount: Decimal,
-    pub amount_usd: Decimal,
-    pub transaction_count: Option<u32>,  // For aggregated transactions
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct WhaleTransaction {
+// ELIMINATED:     pub id: String,
+// ELIMINATED:     pub blockchain: String,
+// ELIMINATED:     pub symbol: String,
+// ELIMINATED:     pub transaction_type: TransactionType,
+// ELIMINATED:     pub hash: String,
+// ELIMINATED:     pub from: WalletInfo,
+// ELIMINATED:     pub to: WalletInfo,
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     pub amount: Decimal,
+// ELIMINATED:     pub amount_usd: Decimal,
+// ELIMINATED:     pub transaction_count: Option<u32>,  // For aggregated transactions
+// ELIMINATED: }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct WalletInfo {
     pub address: String,
     pub owner: Option<String>,  // Exchange name if known
@@ -85,6 +90,7 @@ pub struct WalletInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum OwnerType {
     Exchange,
     Unknown,
@@ -96,6 +102,7 @@ pub enum OwnerType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum TransactionType {
     Transfer,
     Mint,
@@ -107,6 +114,7 @@ pub enum TransactionType {
 
 /// Whale behavior patterns detected by ML
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WhaleBehaviorPattern {
     pub pattern_type: WhalePatternType,
     pub confidence: f64,
@@ -116,6 +124,7 @@ pub struct WhaleBehaviorPattern {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum WhalePatternType {
     Accumulation,      // Whale is accumulating
     Distribution,      // Whale is distributing
@@ -127,7 +136,8 @@ pub enum WhalePatternType {
 }
 
 #[derive(Debug, Clone)]
-pub struct MarketImpact {
+// ELIMINATED: use domain_types::MarketImpact
+// pub struct MarketImpact {
     pub price_impact_percent: f64,
     pub volatility_increase: f64,
     pub liquidity_change: f64,
@@ -135,6 +145,7 @@ pub struct MarketImpact {
 }
 
 /// ML-based whale behavior predictor
+/// TODO: Add docs
 pub struct WhaleBehaviorPredictor {
     // Historical patterns for each whale address
     whale_history: Arc<RwLock<HashMap<String, WhaleHistory>>>,
@@ -382,6 +393,7 @@ impl WhaleBehaviorPredictor {
 }
 
 /// Main Whale Alert integration system
+/// TODO: Add docs
 pub struct WhaleAlertIntegration {
     config: WhaleAlertConfig,
     http_client: Client,
@@ -398,6 +410,7 @@ pub struct WhaleAlertIntegration {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WhaleAlertMetrics {
     pub total_transactions_processed: u64,
     pub transactions_per_minute: f64,
@@ -408,6 +421,7 @@ pub struct WhaleAlertMetrics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum WhaleEvent {
     NewTransaction(WhaleTransaction),
     BehaviorDetected(WhaleBehaviorPattern),

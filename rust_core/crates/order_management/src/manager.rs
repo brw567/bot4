@@ -16,6 +16,7 @@ use crate::order::{Order, OrderId, OrderFill, OrderValidationError};
 use crate::state_machine::{OrderStateMachine, OrderState, OrderEvent, StateTransitionError};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OrderManagerConfig {
     pub max_open_orders: usize,
     pub max_orders_per_symbol: usize,
@@ -36,6 +37,7 @@ impl Default for OrderManagerConfig {
     }
 }
 
+/// TODO: Add docs
 pub struct OrderManager {
     config: Arc<OrderManagerConfig>,
     orders: Arc<DashMap<OrderId, Arc<RwLock<Order>>>>,
@@ -431,6 +433,7 @@ impl OrderMetrics {
 }
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum OrderManagerError {
     #[error("Order not found: {0}")]
     OrderNotFound(OrderId),

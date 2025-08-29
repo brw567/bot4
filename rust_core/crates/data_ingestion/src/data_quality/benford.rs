@@ -21,6 +21,7 @@ use super::DataBatch;
 
 /// Benford's Law configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct BenfordConfig {
     pub min_sample_size: usize,      // Minimum data points for validity
     pub chi_squared_threshold: f64,  // Critical value for goodness-of-fit
@@ -42,6 +43,7 @@ impl Default for BenfordConfig {
 }
 
 /// Benford's Law validator
+/// TODO: Add docs
 pub struct BenfordValidator {
     config: BenfordConfig,
     
@@ -350,6 +352,7 @@ struct TestResult {
 
 /// Benford's Law anomaly detection result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BenfordAnomaly {
     pub timestamp: DateTime<Utc>,
     pub symbol: String,
@@ -362,6 +365,7 @@ pub struct BenfordAnomaly {
 
 /// Types of Benford anomalies
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AnomalyType {
     FirstDigit,
     SecondDigit,

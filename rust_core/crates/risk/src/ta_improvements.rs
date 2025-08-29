@@ -7,6 +7,7 @@ use std::collections::VecDeque;
 /// Wilder's Smoothed RSI - The CORRECT implementation
 /// Reference: J. Welles Wilder Jr. (1978) "New Concepts in Technical Trading Systems"
 /// Alex: "RSI MUST use Wilder's smoothing - NO SHORTCUTS!"
+/// TODO: Add docs
 pub struct WildersRSI {
     period: usize,
     avg_gain: f64,
@@ -84,6 +85,7 @@ impl WildersRSI {
 /// Proper MACD with correct EMA calculations
 /// Reference: Gerald Appel (1979)
 /// Quinn: "MACD catches trend changes - must be PRECISE!"
+/// TODO: Add docs
 pub struct ProperMACD {
     ema_12: ExponentialMovingAverage,
     ema_26: ExponentialMovingAverage,
@@ -114,6 +116,7 @@ impl ProperMACD {
 
 /// Exponential Moving Average - The CORRECT way
 /// Jordan: "EMA weighting is CRITICAL for responsiveness!"
+/// TODO: Add docs
 pub struct ExponentialMovingAverage {
     period: usize,
     multiplier: f64,
@@ -147,6 +150,7 @@ impl ExponentialMovingAverage {
 /// Measures trend strength regardless of direction
 /// Reference: Wilder (1978)
 /// Casey: "ADX shows when to trade trends vs ranges!"
+/// TODO: Add docs
 pub struct ADXIndicator {
     period: usize,
     plus_dm_smooth: f64,
@@ -257,6 +261,7 @@ impl ADXIndicator {
 /// Ichimoku Cloud - Complete system
 /// Reference: Goichi Hosoda (1969)
 /// Avery: "Ichimoku shows support, resistance, and trend at a glance!"
+/// TODO: Add docs
 pub struct IchimokuCloud {
     conversion_period: usize,  // Tenkan-sen (9)
     base_period: usize,        // Kijun-sen (26)
@@ -316,6 +321,7 @@ impl IchimokuCloud {
 }
 
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct IchimokuValues {
     pub conversion_line: f64,
     pub base_line: f64,
@@ -424,6 +430,7 @@ mod tests {
 /// Reference: Leonardo Fibonacci (1202) "Liber Abaci"
 /// Used by: Elliott Wave Theory, Technical Analysis
 /// Riley: "Fibonacci levels are psychological support/resistance!"
+/// TODO: Add docs
 pub struct FibonacciLevels {
     // Standard retracement levels
     levels: Vec<f64>,
@@ -535,6 +542,7 @@ impl FibonacciLevels {
 /// Pivot Points Calculator
 /// Reference: Floor Traders' Method
 /// Avery: "Pivots show where institutions are watching!"
+/// TODO: Add docs
 pub struct PivotPoints {
     pub pivot: f64,
     pub r1: f64,  // Resistance 1

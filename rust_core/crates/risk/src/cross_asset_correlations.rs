@@ -26,6 +26,7 @@ use statrs::distribution::{Normal, ContinuousCDF};
 
 /// Asset classes for correlation modeling
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AssetClass {
     // Crypto
     BTC,
@@ -104,6 +105,7 @@ impl AssetClass {
 }
 
 /// DCC-GARCH Model for dynamic correlations
+/// TODO: Add docs
 pub struct DCCGARCHModel {
     // Model parameters
     alpha: f64,  // DCC parameter for correlation dynamics
@@ -368,6 +370,7 @@ impl DCCGARCHModel {
 }
 
 /// Cross-Asset Correlation System
+/// TODO: Add docs
 pub struct CrossAssetCorrelations {
     // Core models
     dcc_garch: Arc<RwLock<DCCGARCHModel>>,
@@ -399,6 +402,7 @@ pub struct CrossAssetCorrelations {
 }
 
 /// Contagion detection system
+/// TODO: Add docs
 pub struct ContagionDetector {
     // Thresholds
     correlation_spike_threshold: f64,
@@ -411,6 +415,7 @@ pub struct ContagionDetector {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ContagionEvent {
     pub timestamp: DateTime<Utc>,
     pub source_asset: AssetClass,
@@ -421,6 +426,7 @@ pub struct ContagionEvent {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum ContagionSeverity {
     Low,      // < 20% correlation increase
     Medium,   // 20-40% increase
@@ -429,6 +435,7 @@ pub enum ContagionSeverity {
 }
 
 /// Correlation breakdown detection
+/// TODO: Add docs
 pub struct CorrelationBreakdown {
     // Historical patterns
     normal_ranges: HashMap<(AssetClass, AssetClass), (f64, f64)>,
@@ -783,6 +790,7 @@ impl CrossAssetCorrelations {
 
 // Supporting structures
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ContagionRisk {
     pub contagion_level: f64,
     pub breakdown_probability: f64,
@@ -792,13 +800,14 @@ pub struct ContagionRisk {
 }
 
 #[derive(Debug, Clone)]
-pub struct PortfolioRisk {
-    pub volatility: f64,
-    pub correlation_risk: f64,
-    pub diversification_ratio: f64,
-    pub concentration_risk: f64,
-    pub contagion_exposure: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct PortfolioRisk {
+// ELIMINATED:     pub volatility: f64,
+// ELIMINATED:     pub correlation_risk: f64,
+// ELIMINATED:     pub diversification_ratio: f64,
+// ELIMINATED:     pub concentration_risk: f64,
+// ELIMINATED:     pub contagion_exposure: f64,
+// ELIMINATED: }
 
 // Jordan: "Eigen decomposition optimized with BLAS!"
 // Morgan: "DCC-GARCH captures regime-dependent correlations!"

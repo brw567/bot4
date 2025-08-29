@@ -47,30 +47,55 @@ pub use monitoring::{PerformanceMonitor, QueryStats};
 
 /// TimescaleDB connection configuration
 #[derive(Debug, Clone, Deserialize)]
-pub struct TimescaleConfig {
-    pub host: String,
-    pub port: u16,
-    pub database: String,
-    pub username: String,
-    pub password: String,
-    
-    // Connection pool settings
-    pub pool_size: usize,
-    pub connection_timeout: Duration,
-    pub idle_timeout: Duration,
-    pub max_lifetime: Duration,
-    
-    // Performance settings
-    pub batch_size: usize,
-    pub batch_timeout: Duration,
-    pub compression_after: Duration,
-    pub retention_days: u32,
-    
-    // Feature flags
-    pub enable_compression: bool,
-    pub enable_continuous_aggregates: bool,
-    pub enable_replication: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+// pub struct TimescaleConfig {
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub host: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub port: u16,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub database: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub username: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub password: String,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     // Connection pool settings
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub pool_size: usize,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub connection_timeout: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub idle_timeout: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub max_lifetime: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     // Performance settings
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub batch_size: usize,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub batch_timeout: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub compression_after: Duration,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub retention_days: u32,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     // Feature flags
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_compression: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_continuous_aggregates: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+//     pub enable_replication: bool,
+// ELIMINATED: Duplicate - use data_ingestion::timescale::TimescaleConfig
+// }
 
 impl Default for TimescaleConfig {
     fn default() -> Self {
@@ -99,6 +124,7 @@ impl Default for TimescaleConfig {
 }
 
 /// Main TimescaleDB client with all capabilities
+/// TODO: Add docs
 pub struct TimescaleClient {
     pool: Arc<Pool>,
     config: TimescaleConfig,
@@ -126,21 +152,11 @@ pub struct TimescaleClient {
 
 /// Market tick data structure matching schema
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MarketTick {
-    pub time: DateTime<Utc>,
-    pub exchange: String,
-    pub symbol: String,
-    pub price: Decimal,
-    pub volume: Decimal,
-    pub side: TradeSide,
-    pub trade_id: i64,
-    pub price_delta: Option<Decimal>,
-    pub volume_bucket: Option<i16>,
-    pub tick_direction: Option<i16>,
-    pub exchange_time: Option<DateTime<Utc>>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MarketTick - use domain_types::market_data::MarketTick
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,
     Sell,
@@ -159,21 +175,36 @@ impl TradeSide {
 
 /// Order book snapshot structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderBookSnapshot {
-    pub time: DateTime<Utc>,
-    pub exchange: String,
-    pub symbol: String,
-    pub snapshot_type: SnapshotType,
-    pub sequence_num: i64,
-    pub bid_prices: Vec<Decimal>,
-    pub bid_volumes: Vec<Decimal>,
-    pub bid_counts: Vec<i32>,
-    pub ask_prices: Vec<Decimal>,
-    pub ask_volumes: Vec<Decimal>,
-    pub ask_counts: Vec<i32>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+// pub struct OrderBookSnapshot {
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub time: DateTime<Utc>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub exchange: String,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub symbol: String,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub snapshot_type: SnapshotType,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub sequence_num: i64,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub bid_prices: Vec<Decimal>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub bid_volumes: Vec<Decimal>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub bid_counts: Vec<i32>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub ask_prices: Vec<Decimal>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub ask_volumes: Vec<Decimal>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub ask_counts: Vec<i32>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+// }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SnapshotType {
     Full,
     Delta,
@@ -181,6 +212,7 @@ pub enum SnapshotType {
 
 /// Execution record for our trades
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExecutionRecord {
     pub time: DateTime<Utc>,
     pub order_id: String,
@@ -756,6 +788,7 @@ impl TimescaleClient {
 
 /// OHLCV data structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OHLCVData {
     pub time: DateTime<Utc>,
     pub open: Decimal,

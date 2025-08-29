@@ -1,3 +1,4 @@
+use domain_types::MarketImpact;
 // STABLECOIN MINT/BURN TRACKER - DEEP DIVE IMPLEMENTATION
 // Team: FULL TEAM COLLABORATION - NO SIMPLIFICATIONS!
 // Alex: "Stablecoin flows are the BLOOD of crypto markets - track EVERY drop!"
@@ -17,6 +18,7 @@ use tokio::sync::mpsc;
 use reqwest::Client;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum StablecoinError {
     #[error("API error: {0}")]
     ApiError(String),
@@ -35,6 +37,7 @@ pub type Result<T> = std::result::Result<T, StablecoinError>;
 
 /// Configuration for stablecoin tracking
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StablecoinConfig {
     pub track_usdt: bool,
     pub track_usdc: bool,
@@ -69,6 +72,7 @@ impl Default for StablecoinConfig {
 
 /// Stablecoin types
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Stablecoin {
     USDT,
     USDC,
@@ -123,6 +127,7 @@ impl Stablecoin {
 
 /// Mint/Burn event
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MintBurnEvent {
     pub event_type: MintBurnType,
     pub stablecoin: Stablecoin,
@@ -136,6 +141,7 @@ pub struct MintBurnEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum MintBurnType {
     Mint,
     Burn,
@@ -143,7 +149,8 @@ pub enum MintBurnType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MarketImpact {
+// ELIMINATED: use domain_types::MarketImpact
+// pub struct MarketImpact {
     pub liquidity_change: f64,  // Percentage
     pub demand_signal: DemandSignal,
     pub price_pressure: PricePressure,
@@ -151,6 +158,7 @@ pub struct MarketImpact {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum DemandSignal {
     StrongBuy,    // Large mints
     Buy,          // Moderate mints
@@ -160,6 +168,7 @@ pub enum DemandSignal {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum PricePressure {
     Bullish,      // Mints exceed burns
     Neutral,      // Balanced
@@ -168,6 +177,7 @@ pub enum PricePressure {
 
 /// Treasury data for a stablecoin
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TreasuryData {
     pub stablecoin: Stablecoin,
     pub total_supply: Decimal,
@@ -177,6 +187,7 @@ pub struct TreasuryData {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ReserveBreakdown {
     pub cash_and_equivalents: Decimal,
     pub commercial_paper: Decimal,
@@ -187,6 +198,7 @@ pub struct ReserveBreakdown {
 }
 
 /// Liquidity analyzer for stablecoin markets
+/// TODO: Add docs
 pub struct LiquidityAnalyzer {
     historical_data: Arc<RwLock<HashMap<Stablecoin, VecDeque<LiquiditySnapshot>>>>,
     crisis_threshold: f64,
@@ -348,6 +360,7 @@ struct LiquiditySnapshot {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LiquidityAnalysis {
     pub current_supply: Decimal,
     pub net_flow_24h: Decimal,
@@ -360,6 +373,7 @@ pub struct LiquidityAnalysis {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum MarketCondition {
     Expansion,    // Growing demand
     Normal,       // Balanced
@@ -368,6 +382,7 @@ pub enum MarketCondition {
 }
 
 /// Demand forecasting using ML
+/// TODO: Add docs
 pub struct DemandForecaster {
     historical_mints: Arc<RwLock<HashMap<Stablecoin, VecDeque<MintBurnEvent>>>>,
     forecast_horizon_days: u32,
@@ -536,6 +551,7 @@ impl DemandForecaster {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DemandForecast {
     pub stablecoin: Stablecoin,
     pub trend: DemandTrend,
@@ -546,6 +562,7 @@ pub struct DemandForecast {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum DemandTrend {
     StronglyIncreasing,
     Increasing,
@@ -556,6 +573,7 @@ pub enum DemandTrend {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum SeasonalityPattern {
     Daily,
     Weekly,
@@ -564,6 +582,7 @@ pub enum SeasonalityPattern {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ForecastPoint {
     pub date: DateTime<Utc>,
     pub expected_net_flow: Decimal,
@@ -572,6 +591,7 @@ pub struct ForecastPoint {
 }
 
 /// Main stablecoin tracking system
+/// TODO: Add docs
 pub struct StablecoinTracker {
     config: StablecoinConfig,
     http_client: Client,
@@ -592,6 +612,7 @@ pub struct StablecoinTracker {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StablecoinMetrics {
     pub total_supply_all: Decimal,
     pub total_mints_24h: Decimal,
@@ -603,6 +624,7 @@ pub struct StablecoinMetrics {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum StablecoinEvent {
     LargeMint(MintBurnEvent),
     LargeBurn(MintBurnEvent),

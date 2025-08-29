@@ -29,6 +29,7 @@ use crate::simd::simd_variance;
 
 /// Variance/VaR calculation errors
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum VarError {
     #[error("Insufficient data: need at least {min} points, got {actual}")]
     InsufficientData { min: usize, actual: usize },
@@ -48,6 +49,7 @@ pub enum VarError {
 
 /// VaR calculation method
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum VarMethod {
     /// Historical simulation
     Historical,
@@ -67,6 +69,7 @@ pub enum VarMethod {
 
 /// Configuration for VaR calculations
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VarConfig {
     /// Confidence level (e.g., 0.95 for 95% VaR)
     pub confidence_level: f64,
@@ -97,6 +100,7 @@ impl Default for VarConfig {
 
 /// VaR calculation result with additional metrics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VarResult {
     /// Value at Risk (as positive number representing potential loss)
     pub var: f64,
@@ -114,6 +118,7 @@ pub struct VarResult {
 
 /// Diagnostic information for VaR calculation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VarDiagnostics {
     /// Sample mean return
     pub mean_return: f64,
@@ -498,6 +503,7 @@ fn calculate_filtered_historical_var(
 }
 
 /// Calculate Conditional VaR (Expected Shortfall)
+/// TODO: Add docs
 pub fn calculate_cvar(
     returns: &[f64],
     confidence_level: f64,
@@ -589,6 +595,7 @@ fn calculate_diagnostics(returns: &[f64]) -> VarDiagnostics {
 }
 
 /// Backtest VaR model
+/// TODO: Add docs
 pub fn backtest_var(
     returns: &[f64],
     var_model: &VarConfig,
@@ -629,6 +636,7 @@ pub fn backtest_var(
 
 /// Backtest result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct BacktestResult {
     /// Actual number of VaR breaches
     pub actual_breaches: usize,

@@ -9,6 +9,7 @@ use serde::{Serialize, Deserialize};
 
 /// Market regimes for regime-specific calibration
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Trending,      // Strong directional movement
     RangeBound,    // Sideways consolidation
@@ -19,7 +20,9 @@ pub enum MarketRegime {
 /// Isotonic Calibration - Monotonic probability mapping
 /// CRITICAL: Prevents overconfident predictions that lead to oversizing!
 #[derive(Debug, Clone)]
-pub struct IsotonicCalibrator {
+/// TODO: Add docs
+// ELIMINATED: IsotonicCalibrator - Enhanced with Platt scaling, beta calibration
+// pub struct IsotonicCalibrator {
     /// Separate calibrators per regime (prevents regime mixing)
     calibrators: HashMap<MarketRegime, IsotonicRegression>,
     
@@ -356,6 +359,7 @@ impl IsotonicRegression {
 
 /// Calibration Reliability Diagram
 /// Visual tool to assess calibration quality
+/// TODO: Add docs
 pub struct ReliabilityDiagram {
     n_bins: usize,
     bins: Vec<CalibrationBin>,
@@ -427,6 +431,7 @@ impl ReliabilityDiagram {
 }
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum CalibrationError {
     #[error("Dimension mismatch between probabilities and outcomes")]
     DimensionMismatch,

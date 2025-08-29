@@ -31,6 +31,7 @@ use parking_lot::RwLock;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum DataError {
     #[error("Data source unavailable: {0}")]
     SourceUnavailable(String),
@@ -54,6 +55,7 @@ pub enum DataError {
 pub type Result<T> = std::result::Result<T, DataError>;
 
 /// Master data intelligence system - coordinates ALL data sources
+/// TODO: Add docs
 pub struct DataIntelligenceSystem {
     // Core components
     pub zero_copy_pipeline: Arc<zero_copy_pipeline::ZeroCopyPipeline>,
@@ -76,6 +78,7 @@ pub struct DataIntelligenceSystem {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DataMetrics {
     pub total_events_processed: u64,
     pub events_per_second: f64,
@@ -249,6 +252,7 @@ impl DataIntelligenceSystem {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DataConfig {
     pub pipeline_config: zero_copy_pipeline::PipelineConfig,
     pub validation_config: historical_validator::ValidationConfig,
@@ -263,6 +267,7 @@ pub struct DataConfig {
 
 /// Unified data stream combining ALL sources
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct UnifiedDataStream {
     pub timestamp: DateTime<Utc>,
     pub market_data: MarketDataEnhanced,
@@ -275,6 +280,7 @@ pub struct UnifiedDataStream {
 
 /// Enhanced market data with full depth
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MarketDataEnhanced {
     pub symbol: String,
     pub exchange: String,
@@ -291,6 +297,7 @@ pub struct MarketDataEnhanced {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderBookDepth {
     pub bids: Vec<(Decimal, Decimal)>,  // (price, size)
     pub asks: Vec<(Decimal, Decimal)>,
@@ -302,6 +309,7 @@ pub struct OrderBookDepth {
 #[derive(Debug, Clone)]
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,
     Sell,
@@ -309,6 +317,7 @@ pub enum TradeSide {
 
 /// Enhanced sentiment with multiple sources
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SentimentDataEnhanced {
     pub xai_sentiment: XAISentiment,
     pub news_sentiment: NewsSentiment,
@@ -318,6 +327,7 @@ pub struct SentimentDataEnhanced {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct XAISentiment {
     pub grok_analysis: String,
     pub bullish_score: f64,
@@ -328,6 +338,7 @@ pub struct XAISentiment {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct NewsSentiment {
     pub overall_score: f64,
     pub article_count: u32,
@@ -338,6 +349,7 @@ pub struct NewsSentiment {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SocialSentiment {
     pub twitter_score: f64,
     pub reddit_score: f64,
@@ -349,6 +361,7 @@ pub struct SocialSentiment {
 
 /// Macro economic indicators
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MacroEconomicData {
     pub fed_funds_rate: f64,
     pub ten_year_yield: f64,
@@ -364,19 +377,21 @@ pub struct MacroEconomicData {
 
 /// On-chain metrics
 #[derive(Debug, Clone)]
-pub struct OnChainMetrics {
-    pub active_addresses: u64,
-    pub transaction_volume: Decimal,
-    pub hash_rate: f64,
-    pub difficulty: f64,
-    pub exchange_inflows: Decimal,
-    pub exchange_outflows: Decimal,
-    pub whale_movements: Vec<WhaleTransaction>,
-    pub defi_tvl: Decimal,
-    pub stablecoin_flows: Decimal,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OnChainMetrics {
+// ELIMINATED:     pub active_addresses: u64,
+// ELIMINATED:     pub transaction_volume: Decimal,
+// ELIMINATED:     pub hash_rate: f64,
+// ELIMINATED:     pub difficulty: f64,
+// ELIMINATED:     pub exchange_inflows: Decimal,
+// ELIMINATED:     pub exchange_outflows: Decimal,
+// ELIMINATED:     pub whale_movements: Vec<WhaleTransaction>,
+// ELIMINATED:     pub defi_tvl: Decimal,
+// ELIMINATED:     pub stablecoin_flows: Decimal,
+// ELIMINATED: }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WhaleTransaction {
     pub timestamp: DateTime<Utc>,
     pub from_address: String,
@@ -386,6 +401,7 @@ pub struct WhaleTransaction {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct NewsAnalysis {
     pub articles: Vec<NewsArticle>,
     pub topic_clusters: Vec<TopicCluster>,
@@ -393,6 +409,7 @@ pub struct NewsAnalysis {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct NewsArticle {
     pub timestamp: DateTime<Utc>,
     pub source: String,
@@ -403,6 +420,7 @@ pub struct NewsArticle {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TopicCluster {
     pub topic: String,
     pub article_count: u32,
@@ -411,7 +429,9 @@ pub struct TopicCluster {
 }
 
 #[derive(Debug, Clone)]
-pub struct MarketEvent {
+/// TODO: Add docs
+// ELIMINATED: MarketEvent - Enhanced with FIX protocol, normalized
+// pub struct MarketEvent {
     pub event_type: EventType,
     pub timestamp: DateTime<Utc>,
     pub impact_score: f64,
@@ -419,6 +439,7 @@ pub struct MarketEvent {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum EventType {
     Regulatory,
     Hack,

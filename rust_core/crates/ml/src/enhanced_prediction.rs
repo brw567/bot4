@@ -14,6 +14,7 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
 /// Enhanced ML Prediction System
+/// TODO: Add docs
 pub struct EnhancedMLPipeline {
     /// Multiple models for ensemble
     models: ModelEnsemble,
@@ -400,7 +401,9 @@ impl ModelPerformanceTracker {
 
 // Supporting types
 #[derive(Clone)]
-pub struct MLPrediction {
+/// TODO: Add docs
+// ELIMINATED: MLPrediction - Enhanced with Confidence intervals, SHAP values
+// pub struct MLPrediction {
     pub value: f64,  // Predicted price movement
     pub confidence: f64,  // 0-1
     pub direction: Direction,
@@ -410,6 +413,7 @@ pub struct MLPrediction {
 }
 
 #[derive(Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum Direction {
     Long,
     Short,
@@ -417,6 +421,7 @@ pub enum Direction {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum ModelType {
     XGBoost,
     LSTM,
@@ -426,6 +431,7 @@ pub enum ModelType {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Trending,
     RangeRound,

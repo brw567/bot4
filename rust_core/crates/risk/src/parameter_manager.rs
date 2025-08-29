@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 /// Global parameter manager - NO HARDCODED VALUES ALLOWED!
 /// ALL parameters MUST come from this system
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ParameterManager {
     /// Current optimized parameters from hyperparameter optimization
     parameters: Arc<RwLock<HashMap<String, f64>>>,
@@ -256,6 +257,7 @@ impl ParameterManager {
 
 /// Game Theory Parameter Calculator
 /// Uses Nash equilibrium and adversarial modeling
+/// TODO: Add docs
 pub struct GameTheoryCalculator {
     manager: Arc<ParameterManager>,
 }

@@ -1,3 +1,4 @@
+use domain_types::TrainingResult;
 // XGBoost-style Gradient Boosting Implementation
 // Team: Morgan (ML Lead) + Jordan (Performance) + Full Team
 // DEEP DIVE: Full gradient boosting with tree ensemble
@@ -18,6 +19,7 @@ use serde::{Serialize, Deserialize};
 /// Gradient Boosting Machine - XGBoost-style implementation
 /// Morgan: "Each tree learns from the mistakes of previous trees"
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct GradientBoostingModel {
     trees: Vec<DecisionTree>,
     learning_rate: f64,
@@ -36,6 +38,7 @@ pub struct GradientBoostingModel {
 
 /// Objective function for gradient boosting
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub enum ObjectiveFunction {
     Regression,     // Squared loss
     Binary,         // Logistic loss
@@ -45,6 +48,7 @@ pub enum ObjectiveFunction {
 
 /// Decision tree for gradient boosting
 #[derive(Clone, Debug, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DecisionTree {
     root: TreeNode,
     max_depth: usize,
@@ -53,6 +57,7 @@ pub struct DecisionTree {
 
 /// Tree node structure
 #[derive(Clone, Debug, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TreeNode {
     Leaf {
         value: f64,
@@ -715,7 +720,8 @@ fn sigmoid(x: f64) -> f64 {
 
 /// Result of training
 #[derive(Debug)]
-pub struct TrainingResult {
+// ELIMINATED: use domain_types::TrainingResult
+// pub struct TrainingResult {
     pub n_trees: usize,
     pub train_losses: Vec<f64>,
     pub validation_losses: Vec<f64>,

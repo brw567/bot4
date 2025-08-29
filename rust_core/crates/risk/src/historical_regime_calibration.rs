@@ -23,6 +23,7 @@ use rand::distributions::Distribution;
 // Quinn: "Each regime needs vol, correlation, tail risk parameters!"
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum HistoricalRegime {
     StrongBull,    // Euphoria phase - be cautious!
     Bull,          // Normal uptrend
@@ -59,6 +60,7 @@ impl HistoricalRegime {
 
 /// Regime characteristics learned from history
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RegimeParameters {
     pub expected_return: f64,      // Daily expected return
     pub volatility: f64,            // Daily volatility
@@ -75,6 +77,7 @@ pub struct RegimeParameters {
 }
 
 /// Hidden Markov Model for regime detection
+/// TODO: Add docs
 pub struct HiddenMarkovModel {
     n_states: usize,
     transition_matrix: Arc<RwLock<DMatrix<f64>>>,  // P(state_t | state_{t-1})
@@ -89,6 +92,7 @@ pub struct HiddenMarkovModel {
 
 /// Parameters for emission distributions (observations given state)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EmissionParameters {
     pub return_mean: f64,
     pub return_std: f64,
@@ -101,6 +105,7 @@ pub struct EmissionParameters {
 }
 
 /// Historical regime calibration system
+/// TODO: Add docs
 pub struct HistoricalRegimeCalibration {
     // Core HMM
     hmm: Arc<HiddenMarkovModel>,
@@ -131,6 +136,7 @@ pub struct HistoricalRegimeCalibration {
 
 /// Crisis indicators from historical analysis
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CrisisIndicators {
     pub vix_spike_threshold: f64,        // VIX > 40 historically
     pub correlation_spike: f64,          // Correlations > 0.8
@@ -144,6 +150,7 @@ pub struct CrisisIndicators {
 
 /// Historical crisis events for calibration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CrisisEvent {
     pub name: String,
     pub start_date: DateTime<Utc>,
@@ -155,6 +162,7 @@ pub struct CrisisEvent {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CrisisCharacteristics {
     pub correlation_peak: f64,
     pub volatility_peak: f64,
@@ -165,6 +173,7 @@ pub struct CrisisCharacteristics {
 }
 
 /// Regime prediction using multiple models
+/// TODO: Add docs
 pub struct RegimePredictor {
     // Ensemble of predictors
     hmm_predictor: HMMPredictor,
@@ -181,6 +190,7 @@ pub struct RegimePredictor {
 
 /// Features for regime detection
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RegimeFeatures {
     pub timestamp: DateTime<Utc>,
     pub returns_1d: f64,
@@ -923,6 +933,7 @@ impl RegimePredictor {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CrisisWarning {
     pub probability: f64,
     pub triggered_indicators: Vec<String>,

@@ -1,3 +1,4 @@
+use domain_types::market_data::PriceLevel;
 use domain_types::market_data::MarketData;
 // Message Types for WebSocket Communication
 // Supports multiple exchange formats with zero-copy deserialization where possible
@@ -9,6 +10,7 @@ use std::hash::Hash;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
+/// TODO: Add docs
 pub enum Message {
     Subscribe(SubscribeMessage),
     Unsubscribe(UnsubscribeMessage),
@@ -21,12 +23,14 @@ pub enum Message {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SubscribeMessage {
     pub channels: Vec<String>,
     pub symbols: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct UnsubscribeMessage {
     pub channels: Vec<String>,
     pub symbols: Vec<String>,
@@ -43,6 +47,7 @@ pub struct UnsubscribeMessage {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "data_type", rename_all = "snake_case")]
+/// TODO: Add docs
 pub enum MarketDataType {
     Trade(TradeData),
     OrderBook(OrderBookData),
@@ -51,6 +56,7 @@ pub enum MarketDataType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TradeData {
     pub price: f64,
     pub quantity: f64,
@@ -61,12 +67,14 @@ pub struct TradeData {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,
     Sell,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OrderBookData {
     pub bids: Vec<PriceLevel>,
     pub asks: Vec<PriceLevel>,
@@ -75,12 +83,10 @@ pub struct OrderBookData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PriceLevel {
-    pub price: f64,
-    pub quantity: f64,
-}
+/// TODO: Add docs
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TickerData {
     pub last_price: f64,
     pub bid_price: f64,
@@ -93,6 +99,7 @@ pub struct TickerData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CandleData {
     pub open: f64,
     pub high: f64,
@@ -105,21 +112,35 @@ pub struct CandleData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderUpdate {
-    pub order_id: String,
-    pub client_order_id: String,
-    pub symbol: String,
-    pub status: OrderStatus,
-    pub side: OrderSide,
-    pub order_type: OrderType,
-    pub price: Option<f64>,
-    pub quantity: f64,
-    pub filled_quantity: f64,
-    pub timestamp: DateTime<Utc>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+// pub struct OrderUpdate {
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub order_id: String,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub client_order_id: String,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub symbol: String,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub status: OrderStatus,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub side: OrderSide,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub order_type: OrderType,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub price: Option<f64>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub quantity: f64,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub filled_quantity: f64,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+//     pub timestamp: DateTime<Utc>,
+// ELIMINATED: Duplicate - use execution::order_updates::OrderUpdate
+// }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
+/// TODO: Add docs
 pub enum OrderStatus {
     New,
     PartiallyFilled,
@@ -131,6 +152,7 @@ pub enum OrderStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -138,6 +160,7 @@ pub enum OrderSide {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -146,6 +169,7 @@ pub enum OrderType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AccountUpdate {
     pub event_type: AccountEventType,
     pub balances: Vec<Balance>,
@@ -154,6 +178,7 @@ pub struct AccountUpdate {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+/// TODO: Add docs
 pub enum AccountEventType {
     BalanceUpdate,
     PositionUpdate,
@@ -161,6 +186,7 @@ pub enum AccountEventType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Balance {
     pub asset: String,
     pub free: f64,
@@ -168,6 +194,7 @@ pub struct Balance {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ErrorMessage {
     pub code: i32,
     pub message: String,
@@ -190,6 +217,7 @@ impl fmt::Display for Message {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum MessageType {
     Subscribe,
     Unsubscribe,

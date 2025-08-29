@@ -20,6 +20,7 @@ use bytes::Bytes;
 use crate::{DataError, Result};
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CacheConfig {
     // Redis configuration
     pub redis_url: String,
@@ -62,6 +63,7 @@ impl Default for CacheConfig {
 }
 
 /// Multi-tier cache with intelligent data placement
+/// TODO: Add docs
 pub struct MultiTierCache {
     // Level 1: Hot cache (in-memory)
     hot_cache: Arc<DashMap<String, CachedItem>>,
@@ -119,6 +121,7 @@ enum DataType {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CacheMetrics {
     // Hit rates
     pub hot_cache_hits: u64,

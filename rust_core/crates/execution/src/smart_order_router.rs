@@ -1,3 +1,5 @@
+use domain_types::market_data::PriceLevel;
+use domain_types::market_data::OrderBook;
 use domain_types::order::Fill;
 use domain_types::order::{Order, OrderId, OrderStatus, OrderType};
 //! # SMART ORDER ROUTER - Optimal Execution Across Venues
@@ -18,6 +20,7 @@ use tokio::sync::mpsc;
 
 /// Smart Order Router configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SORConfig {
     /// Enable smart routing
     pub enabled: bool,
@@ -65,6 +68,7 @@ impl Default for SORConfig {
 
 /// Venue selection strategy
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum VenueStrategy {
     /// Route to best price
     BestPrice,
@@ -86,6 +90,7 @@ pub enum VenueStrategy {
 }
 
 /// Smart Order Router
+/// TODO: Add docs
 pub struct SmartOrderRouter {
     /// Configuration
     config: SORConfig,
@@ -139,23 +144,14 @@ pub trait Venue: Send + Sync {
 
 /// Order book representation
 #[derive(Debug, Clone)]
-pub struct OrderBook {
-    pub symbol: String,
-    pub bids: Vec<PriceLevel>,
-    pub asks: Vec<PriceLevel>,
-    pub timestamp: DateTime<Utc>,
-    pub venue: String,
-}
+/// TODO: Add docs
 
 #[derive(Debug, Clone)]
-pub struct PriceLevel {
-    pub price: Decimal,
-    pub quantity: Decimal,
-    pub order_count: u32,
-}
+/// TODO: Add docs
 
 /// Venue statistics
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct VenueStatistics {
     /// Fill rates by venue
     pub fill_rates: HashMap<String, f64>,
@@ -177,6 +173,7 @@ pub struct VenueStatistics {
 }
 
 /// Order splitter for optimal execution
+/// TODO: Add docs
 pub struct OrderSplitter {
     min_size: Decimal,
     max_splits: usize,
@@ -239,6 +236,7 @@ impl OrderSplitter {
 
 /// Venue quote
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VenueQuote {
     pub venue: String,
     pub price: Decimal,
@@ -250,6 +248,7 @@ pub struct VenueQuote {
 
 /// Split order for execution
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SplitOrder {
     pub venue: String,
     pub quantity: Decimal,
@@ -258,6 +257,7 @@ pub struct SplitOrder {
 }
 
 /// Execution algorithms (TWAP, VWAP, Iceberg, etc.)
+/// TODO: Add docs
 pub struct ExecutionAlgorithms {
     config: SORConfig,
 }
@@ -410,6 +410,7 @@ impl ExecutionAlgorithms {
 }
 
 /// Market impact model
+/// TODO: Add docs
 pub struct MarketImpactModel {
     /// Linear impact coefficient
     linear_impact: f64,
@@ -461,6 +462,7 @@ impl MarketImpactModel {
 
 /// SOR performance metrics
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct SORMetrics {
     pub total_orders_routed: u64,
     pub total_fills: u64,
@@ -718,12 +720,14 @@ enum ExecutionPlan {
 #[derive(Debug, Clone)]
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -736,6 +740,7 @@ pub enum OrderType {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TimeInForce {
     GTC, // Good Till Cancel
     IOC, // Immediate Or Cancel
@@ -745,10 +750,13 @@ pub enum TimeInForce {
 
 /// Order ID
 #[derive(Debug, Clone)]
-pub struct OrderId(pub String);
+/// TODO: Add docs
+// ELIMINATED: OrderId - Enhanced with UUID v7, time-ordered
+// pub struct OrderId(pub String);
 
 /// Order status
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderStatus {
     New,
     PartiallyFilled { filled: Decimal, remaining: Decimal },
@@ -762,6 +770,7 @@ pub enum OrderStatus {
 
 /// Trading fees
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TradingFees {
     pub maker_fee: Decimal,
     pub taker_fee: Decimal,
@@ -777,18 +786,12 @@ struct MarketData {
 }
 
 /// Execution report
-pub struct ExecutionReport {
-    pub order_id: String,
-    pub fills: Vec<Fill>,
-    pub total_quantity: Decimal,
-    pub avg_price: Decimal,
-    pub total_fees: Decimal,
-    pub slippage: Decimal,
-    pub execution_time_ms: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExecutionReport - use execution::reports::ExecutionReport
 
 /// Errors
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum VenueError {
     #[error("Connection error: {0}")]
     ConnectionError(String),
@@ -801,6 +804,7 @@ pub enum VenueError {
 }
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum ExecutionError {
     #[error("No venue available")]
     NoVenueAvailable,

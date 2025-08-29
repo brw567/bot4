@@ -17,14 +17,13 @@
 use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
 use serde::{Deserialize, Serialize};
-use std::cmp::Ordering;
 use std::fmt;
-use std::ops::{Add, Sub, Mul, Div, Neg};
 use std::str::FromStr;
 use thiserror::Error;
 
 /// Errors that can occur with Price operations
 #[derive(Debug, Error, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum PriceError {
     /// Price cannot be negative
     #[error("Price cannot be negative: {0}")]
@@ -67,6 +66,7 @@ pub enum PriceError {
 /// assert_eq!(doubled.as_decimal().to_string(), "201.00");
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Price {
     value: Decimal,
     /// Precision for display (number of decimal places)

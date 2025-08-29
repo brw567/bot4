@@ -1,3 +1,4 @@
+use domain_types::FeatureVector;
 //! # OPTIMIZED ML INFERENCE - Sub-millisecond predictions
 //! Blake: "Every microsecond of inference latency costs money"
 
@@ -6,6 +7,7 @@ use onnxruntime::{GraphOptimizationLevel, session::Session};
 use ndarray::Array2;
 
 /// Optimized inference engine with batching and caching
+/// TODO: Add docs
 pub struct OptimizedInference {
     /// ONNX Runtime session
     session: Arc<Session>,
@@ -21,18 +23,26 @@ pub struct OptimizedInference {
     metrics: InferenceMetrics,
 }
 
-pub struct FeatureVector {
+// ELIMINATED: use domain_types::FeatureVector
+// pub struct FeatureVector {
     pub features: Vec<f32>,
     pub timestamp: u64,
 }
 
-pub struct Prediction {
-    pub signal: f32,
-    pub confidence: f32,
-    pub timestamp: u64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+// pub struct Prediction {
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub signal: f32,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub confidence: f32,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub timestamp: u64,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+// }
 
 #[derive(Default)]
+/// TODO: Add docs
 pub struct InferenceMetrics {
     pub total_inferences: u64,
     pub cache_hits: u64,

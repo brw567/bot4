@@ -10,6 +10,7 @@ use rand_distr::{Normal, Distribution};
 
 // Simulate different network conditions
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct NetworkCondition {
     pub name: String,
     pub base_latency_ms: f64,

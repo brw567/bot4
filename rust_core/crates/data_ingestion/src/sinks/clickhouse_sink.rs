@@ -31,6 +31,7 @@ use crate::monitoring::ClickHouseMetrics;
 
 // ClickHouse schema for market events
 #[derive(Debug, Clone, Row, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketEventRow {
     // Timestamp - ClickHouse will handle as DateTime64
     pub timestamp: DateTime<Utc>,
@@ -67,6 +68,7 @@ pub struct MarketEventRow {
 
 // Configuration for ClickHouse sink
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ClickHouseConfig {
     pub url: String,
     pub database: String,
@@ -82,6 +84,7 @@ pub struct ClickHouseConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum CompressionType {
     None,
     Lz4,
@@ -161,6 +164,7 @@ impl WriteBuffer {
 }
 
 // Main ClickHouse sink implementation
+/// TODO: Add docs
 pub struct ClickHouseSink {
     clients: Vec<Arc<Client>>,
     config: ClickHouseConfig,

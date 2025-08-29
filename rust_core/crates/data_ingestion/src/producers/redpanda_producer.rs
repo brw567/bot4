@@ -32,6 +32,7 @@ use crate::monitoring::ProducerMetrics;
 // Market event types that we'll be producing
 #[derive(Archive, Deserialize, Serialize, Debug, Clone)]
 #[archive(check_bytes)]
+/// TODO: Add docs
 pub enum MarketEvent {
     Trade {
         exchange: String,
@@ -68,6 +69,7 @@ pub enum MarketEvent {
 
 #[derive(Archive, Deserialize, Serialize, Debug, Clone, Copy)]
 #[archive(check_bytes)]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,
     Sell,
@@ -75,6 +77,7 @@ pub enum TradeSide {
 
 // Configuration for the producer
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ProducerConfig {
     pub brokers: String,
     pub batch_size: usize,
@@ -90,6 +93,7 @@ pub struct ProducerConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum CompressionType {
     None,
     Lz4,
@@ -99,6 +103,7 @@ pub enum CompressionType {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum AckLevel {
     None,      // Fire and forget
     Leader,    // Leader acknowledgment only
@@ -124,6 +129,7 @@ impl Default for ProducerConfig {
 }
 
 // Main producer implementation
+/// TODO: Add docs
 pub struct RedpandaProducer {
     producer: Arc<FutureProducer>,
     config: ProducerConfig,

@@ -19,6 +19,7 @@ use rust_decimal::prelude::ToPrimitive;
 // ============================================================================
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FeatureConfig {
     /// Enable price-based features
     pub price_features: bool,
@@ -76,28 +77,8 @@ impl Default for FeatureConfig {
 // MAIN FEATURE PIPELINE - Full Team Implementation
 // ============================================================================
 
-pub struct FeaturePipeline {
-    /// Configuration
-    config: FeatureConfig,
-    
-    /// Technical indicators calculator - Morgan
-    technical: Arc<TechnicalIndicators>,
-    
-    /// Extended indicators - Morgan
-    extended: Arc<ExtendedIndicators>,
-    
-    /// Feature scaler - Avery
-    scaler: Arc<RwLock<FeatureScaler>>,
-    
-    /// Feature selector - Morgan
-    selector: Arc<RwLock<FeatureSelector>>,
-    
-    /// Feature metadata tracking
-    metadata: Arc<RwLock<Vec<FeatureMetadata>>>,
-    
-    /// Pipeline statistics
-    stats: Arc<RwLock<FeatureStats>>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate FeaturePipeline - use ml::features::FeaturePipeline
 
 impl FeaturePipeline {
     /// Create new feature pipeline

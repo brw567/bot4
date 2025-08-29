@@ -25,6 +25,7 @@ use tracing::{debug, trace, warn};
 
 /// Kelly calculation errors
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum KellyError {
     #[error("Invalid win probability: {prob} (must be between 0 and 1)")]
     InvalidProbability { prob: f64 },
@@ -47,7 +48,9 @@ pub enum KellyError {
 
 /// Kelly criterion configuration
 #[derive(Debug, Clone)]
-pub struct KellyConfig {
+/// TODO: Add docs
+// ELIMINATED: KellyConfig - Enhanced with Fractional Kelly, drawdown constraints
+// pub struct KellyConfig {
     /// Kelly fraction (0.25 = quarter Kelly for safety)
     pub fraction: f64,
     /// Maximum allowed position size
@@ -77,6 +80,7 @@ impl Default for KellyConfig {
 
 /// Kelly calculation result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct KellyResult {
     /// Optimal fraction to bet/invest
     pub optimal_fraction: f64,
@@ -107,6 +111,7 @@ pub struct KellyResult {
 /// let kelly = calculate_kelly(0.6, 1.0, 1.0).unwrap();
 /// assert_eq!(kelly.optimal_fraction, 0.2); // Bet 20% of capital
 /// ```
+/// TODO: Add docs
 pub fn calculate_kelly(
     win_prob: f64,
     win_amount: f64,
@@ -116,6 +121,7 @@ pub fn calculate_kelly(
 }
 
 /// Calculate Kelly with custom configuration
+/// TODO: Add docs
 pub fn calculate_kelly_with_config(
     win_prob: f64,
     win_amount: f64,
@@ -203,6 +209,7 @@ pub fn calculate_kelly_with_config(
 }
 
 /// Calculate fractional Kelly for given risk tolerance
+/// TODO: Add docs
 pub fn calculate_fractional_kelly(
     win_prob: f64,
     win_amount: f64,
@@ -221,6 +228,7 @@ pub fn calculate_fractional_kelly(
 }
 
 /// Calculate Kelly for continuous outcomes (e.g., stock returns)
+/// TODO: Add docs
 pub fn calculate_continuous_kelly(
     expected_return: f64,
     variance: f64,
@@ -259,6 +267,7 @@ pub fn calculate_continuous_kelly(
 }
 
 /// Multi-asset Kelly criterion
+/// TODO: Add docs
 pub fn calculate_multi_asset_kelly(
     expected_returns: &Array1<f64>,
     covariance_matrix: &Array2<f64>,
@@ -389,6 +398,7 @@ fn calculate_ruin_probability(win_prob: f64, odds: f64, fraction: f64) -> f64 {
 }
 
 /// Dynamic Kelly adjustment based on market regime
+/// TODO: Add docs
 pub struct DynamicKelly {
     /// Historical performance tracking
     performance_history: Vec<f64>,
@@ -399,6 +409,7 @@ pub struct DynamicKelly {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Trending,
     RangeB bound,

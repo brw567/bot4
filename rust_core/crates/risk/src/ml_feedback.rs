@@ -1,3 +1,4 @@
+use domain_types::MarketState;
 // ML Feedback Loop System - CRITICAL FOR CONTINUOUS IMPROVEMENT
 // Team: Morgan (ML Lead) + Alex (Architecture) + Full Team
 // CRITICAL: System MUST learn from every trade outcome
@@ -17,6 +18,7 @@ use ndarray::{Array1, Array2};
 
 /// ML Feedback System - Learn from EVERY trade
 /// Morgan: "No trade is wasted - each one teaches us something!"
+/// TODO: Add docs
 pub struct MLFeedbackSystem {
     // Experience replay buffer (like DQN)
     experience_buffer: Arc<RwLock<ExperienceBuffer>>,
@@ -72,7 +74,8 @@ struct Experience {
 }
 
 #[derive(Clone, Debug)]
-pub struct MarketState {
+// ELIMINATED: use domain_types::MarketState
+// pub struct MarketState {
     pub price: Price,
     pub volume: Quantity,
     pub volatility: Percentage,
@@ -1099,6 +1102,7 @@ impl MLFeedbackSystem {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MLMetrics {
     pub calibration_score: f64,
     pub brier_score: f64,

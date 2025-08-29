@@ -51,6 +51,7 @@ pub trait MarketDataProvider: Send + Sync {
 
 /// Candle intervals
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum CandleInterval {
     /// 1 minute
     OneMinute,
@@ -68,6 +69,7 @@ pub enum CandleInterval {
 
 /// Market data types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DataType {
     /// Ticker updates
     Ticker,
@@ -80,6 +82,7 @@ pub enum DataType {
 }
 
 /// Data stream for real-time updates
+/// TODO: Add docs
 pub struct DataStream {
     /// Stream ID
     pub id: String,
@@ -93,6 +96,7 @@ pub struct DataStream {
 
 /// Data update event
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DataUpdate {
     /// Ticker update
     Ticker(Ticker),
@@ -139,6 +143,7 @@ pub trait TimeSeriesDB: Send + Sync {
 
 /// Time series query
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TimeSeriesQuery {
     /// Measurement name
     pub measurement: String,
@@ -159,6 +164,7 @@ pub struct TimeSeriesQuery {
 
 /// Time series aggregation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TimeSeriesAggregation {
     /// Function (mean, sum, min, max, etc.)
     pub function: String,
@@ -168,6 +174,7 @@ pub struct TimeSeriesAggregation {
 
 /// Time series result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TimeSeriesResult {
     /// Column names
     pub columns: Vec<String>,
@@ -177,6 +184,7 @@ pub struct TimeSeriesResult {
 
 /// Data point for batch writing
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DataPoint {
     /// Measurement
     pub measurement: String,
@@ -249,6 +257,7 @@ pub trait MessageQueue: Send + Sync {
 }
 
 /// Message stream
+/// TODO: Add docs
 pub struct MessageStream {
     /// Stream ID
     pub id: String,
@@ -260,6 +269,7 @@ pub struct MessageStream {
 
 /// Message from queue
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Message {
     /// Message ID
     pub id: String,

@@ -14,12 +14,8 @@ use tracing::{info, warn, error};
 use super::{ValidationResult, IssueCategory};
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct MonitoringConfig {
-    pub check_interval_ms: u64,
-    pub alert_channels: Vec<AlertChannel>,
-    pub retention_hours: i64,
-    pub alert_rate_limit: usize,  // Max alerts per minute
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MonitoringConfig - use infrastructure::monitoring::MonitoringConfig
 
 impl Default for MonitoringConfig {
     fn default() -> Self {
@@ -33,6 +29,7 @@ impl Default for MonitoringConfig {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub enum AlertChannel {
     Log,
     Webhook(String),
@@ -45,6 +42,7 @@ pub trait AlertSender: Send + Sync {
     async fn send_alert(&self, alert: &QualityAlert) -> Result<()>;
 }
 
+/// TODO: Add docs
 pub struct QualityMonitor {
     config: MonitoringConfig,
     metrics_buffer: Arc<RwLock<VecDeque<MonitoringMetrics>>>,
@@ -260,6 +258,7 @@ impl RateLimiter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MonitoringMetrics {
     pub timestamp: DateTime<Utc>,
     pub symbol: String,
@@ -269,6 +268,7 @@ pub struct MonitoringMetrics {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct QualityAlert {
     pub timestamp: DateTime<Utc>,
     pub symbol: String,
@@ -279,6 +279,7 @@ pub struct QualityAlert {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub enum AlertSeverity {
     Low,
     Medium,

@@ -17,6 +17,7 @@ members = [
     "crates/data_intelligence",
     "crates/data_ingestion",  # Layer 1.1: Redpanda high-performance ingestion
     "crates/feature_store",  # Layer 1.5: Feature Store with <10ms serving
+    "crates/strategies",
 ]
 resolver = "2"
 

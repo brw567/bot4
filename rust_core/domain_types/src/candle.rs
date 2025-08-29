@@ -24,6 +24,7 @@ use strum_macros::{Display, EnumString};
 
 /// Candle time intervals
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString)]
+/// TODO: Add docs
 pub enum CandleInterval {
     /// 1 second
     #[strum(serialize = "1s")]
@@ -134,6 +135,7 @@ impl CandleInterval {
 /// - High >= Low
 /// - Volume >= 0
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Candle {
     // === Core OHLCV ===
     /// Opening price
@@ -389,6 +391,7 @@ impl fmt::Display for Candle {
 
 /// Series of candles for analysis
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CandleSeries {
     /// Symbol for this series
     pub symbol: String,

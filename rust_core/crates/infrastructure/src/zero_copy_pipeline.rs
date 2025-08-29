@@ -1,3 +1,4 @@
+use domain_types::PipelineMetrics;
 //! # ZERO-COPY DATA PIPELINE - Maximum Performance
 //! Ellis (Performance Lead): "Every nanosecond counts"
 
@@ -8,21 +9,36 @@ use mmap_rs::{MmapOptions, Mmap};
 use ringbuf::{HeapRb, Producer, Consumer};
 
 /// Zero-copy market data pipeline
-pub struct ZeroCopyPipeline {
-    /// Ring buffer for real-time data
-    ring_buffer: Arc<HeapRb<MarketDataPacket>>,
-    
-    /// Memory-mapped file for historical data
-    mmap: Option<Mmap>,
-    
-    /// Lock-free queue for orders
-    order_queue: (Sender<OrderPacket>, Receiver<OrderPacket>),
-    
-    /// Metrics
-    metrics: Arc<RwLock<PipelineMetrics>>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+// pub struct ZeroCopyPipeline {
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     /// Ring buffer for real-time data
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     ring_buffer: Arc<HeapRb<MarketDataPacket>>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     /// Memory-mapped file for historical data
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     mmap: Option<Mmap>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     /// Lock-free queue for orders
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     order_queue: (Sender<OrderPacket>, Receiver<OrderPacket>),
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     /// Metrics
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     metrics: Arc<RwLock<PipelineMetrics>>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+// }
 
 #[repr(C, align(64))] // Cache-line aligned
+/// TODO: Add docs
 pub struct MarketDataPacket {
     pub timestamp: u64,
     pub symbol_id: u32,
@@ -36,6 +52,7 @@ pub struct MarketDataPacket {
 }
 
 #[repr(C, align(64))]
+/// TODO: Add docs
 pub struct OrderPacket {
     pub order_id: u64,
     pub symbol_id: u32,
@@ -81,7 +98,8 @@ impl ZeroCopyPipeline {
 }
 
 #[derive(Default)]
-pub struct PipelineMetrics {
+// ELIMINATED: use domain_types::PipelineMetrics
+// pub struct PipelineMetrics {
     pub packets_processed: u64,
     pub bytes_processed: u64,
     pub orders_submitted: u64,

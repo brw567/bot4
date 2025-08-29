@@ -247,6 +247,7 @@ struct MemoryStatsSnapshot {
 
 /// Thread-safe object pool with automatic cleanup
 /// Morgan: "Uses epoch-based reclamation for safe memory management"
+/// TODO: Add docs
 pub struct SafeObjectPool<T: Default + Send + Sync + 'static> {
     // Global pool using lock-free queue
     global: Arc<ArrayQueue<Box<T>>>,
@@ -284,6 +285,7 @@ unsafe impl<T: Send + Sync + 'static> Send for GarbageList<T> {}
 unsafe impl<T: Send + Sync + 'static> Sync for GarbageList<T> {}
 
 
+/// TODO: Add docs
 pub struct PoolConfig {
     name: String,
     capacity: usize,
@@ -597,6 +599,7 @@ impl<T: Default + Send + Sync + 'static> Drop for SafeObjectPool<T> {
 
 /// Order pool with safety features
 /// Casey: "Orders need careful lifecycle management"
+/// TODO: Add docs
 pub fn create_order_pool() -> Arc<SafeObjectPool<Order>> {
     SafeObjectPool::new(PoolConfig {
         name: "OrderPool".to_string(),
@@ -609,6 +612,7 @@ pub fn create_order_pool() -> Arc<SafeObjectPool<Order>> {
 
 /// Signal pool with safety features  
 /// Morgan: "ML signals need fast allocation"
+/// TODO: Add docs
 pub fn create_signal_pool() -> Arc<SafeObjectPool<Signal>> {
     SafeObjectPool::new(PoolConfig {
         name: "SignalPool".to_string(),
@@ -621,6 +625,7 @@ pub fn create_signal_pool() -> Arc<SafeObjectPool<Signal>> {
 
 /// Market tick pool with safety features
 /// Avery: "Highest volume, needs largest capacity"
+/// TODO: Add docs
 pub fn create_tick_pool() -> Arc<SafeObjectPool<Tick>> {
     SafeObjectPool::new(PoolConfig {
         name: "TickPool".to_string(),
@@ -674,6 +679,7 @@ impl Order {
 }
 
 
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -707,6 +713,7 @@ impl Default for Signal {
 }
 
 
+/// TODO: Add docs
 pub enum SignalType {
     Buy,
     Sell,

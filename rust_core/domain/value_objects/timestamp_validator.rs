@@ -10,6 +10,7 @@ use std::sync::Arc;
 
 /// Timestamp validation configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TimestampConfig {
     /// Maximum allowed clock drift between client and server (default 1000ms)
     pub max_clock_drift: Duration,
@@ -55,6 +56,7 @@ impl TimestampConfig {
 }
 
 /// Timestamp validator for preventing replay attacks
+/// TODO: Add docs
 pub struct TimestampValidator {
     /// Current server time (updated periodically)
     server_time: Arc<AtomicI64>,
@@ -225,6 +227,7 @@ impl TimestampValidator {
 
 /// Validation statistics
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct ValidationStats {
     pub valid_timestamps: u64,
     pub expired_timestamps: u64,
@@ -265,6 +268,7 @@ impl ValidationStats {
 }
 
 /// Server time synchronization helper
+/// TODO: Add docs
 pub struct ServerTimeSync {
     validator: Arc<TimestampValidator>,
 }

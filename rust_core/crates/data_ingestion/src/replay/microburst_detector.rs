@@ -1,3 +1,4 @@
+use domain_types::MarketImpact;
 // Microburst Detection and Simulation
 // DEEP DIVE: Detect and simulate rapid market movements
 //
@@ -24,6 +25,7 @@ use types::{Price, Quantity, Symbol};
 
 /// Types of microburst events
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MicroburstType {
     /// Sudden volume spike
     VolumeSpike {
@@ -68,6 +70,7 @@ pub enum MicroburstType {
 
 /// Pattern of quote stuffing
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum StuffingPattern {
     Sawtooth,      // Rapid add/cancel at same price
     Layering,      // Multiple orders away from market
@@ -77,6 +80,7 @@ pub enum StuffingPattern {
 
 /// Volume spike detection
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VolumeSpike {
     pub timestamp: DateTime<Utc>,
     pub symbol: Symbol,
@@ -89,6 +93,7 @@ pub struct VolumeSpike {
 
 /// Price jump event
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PriceJump {
     pub timestamp: DateTime<Utc>,
     pub symbol: Symbol,
@@ -102,6 +107,7 @@ pub struct PriceJump {
 
 /// Latency spike event
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LatencySpike {
     pub timestamp: DateTime<Utc>,
     pub normal_latency_us: u64,
@@ -113,6 +119,7 @@ pub struct LatencySpike {
 
 /// Microburst event container
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MicroburstEvent {
     pub id: u64,
     pub timestamp: DateTime<Utc>,
@@ -125,6 +132,7 @@ pub struct MicroburstEvent {
 
 /// Event severity classification
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EventSeverity {
     Low,      // Normal market noise
     Medium,   // Unusual but not dangerous
@@ -134,7 +142,8 @@ pub enum EventSeverity {
 
 /// Market impact assessment
 #[derive(Debug, Clone)]
-pub struct MarketImpact {
+// ELIMINATED: use domain_types::MarketImpact
+// pub struct MarketImpact {
     pub spread_widening_bps: f64,
     pub depth_reduction_pct: f64,
     pub volatility_increase: f64,
@@ -144,6 +153,7 @@ pub struct MarketImpact {
 
 /// Detection method used
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DetectionMethod {
     ZScore,
     MAD,  // Median Absolute Deviation
@@ -156,6 +166,7 @@ pub enum DetectionMethod {
 
 /// Configuration for microburst detection
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DetectorConfig {
     /// Z-score threshold for volume spikes
     pub volume_z_threshold: f64,
@@ -297,6 +308,7 @@ impl StatisticsTracker {
 }
 
 /// Main microburst detector implementation
+/// TODO: Add docs
 pub struct MicroburstDetector {
     config: Arc<DetectorConfig>,
     

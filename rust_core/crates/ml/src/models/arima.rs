@@ -16,6 +16,7 @@ use log::{debug, info, warn, error};
 
 /// ARIMA model parameters (p, d, q)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ARIMAConfig {
     /// Autoregressive order (p) - number of lag observations
     pub p: usize,
@@ -54,6 +55,7 @@ impl Default for ARIMAConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SeasonalConfig {
     pub period: usize,
     pub p: usize,
@@ -66,6 +68,7 @@ pub struct SeasonalConfig {
 // Reviewers: Sam (Code Quality), Riley (Testing), Avery (Data)
 // ============================================================================
 
+/// TODO: Add docs
 pub struct ARIMAModel {
     config: ARIMAConfig,
     
@@ -362,6 +365,7 @@ impl ARIMAModel {
 // ============================================================================
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum ARIMAError {
     #[error("Invalid ARIMA order: {0}")]
     InvalidOrder(String),
@@ -380,6 +384,7 @@ pub enum ARIMAError {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FitResult {
     pub aic: f64,
     pub bic: f64,
@@ -450,6 +455,7 @@ impl ARIMAModel {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct LjungBoxResult {
     pub q_statistic: f64,
     pub p_value: f64,
@@ -457,6 +463,7 @@ pub struct LjungBoxResult {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct ADFResult {
     pub test_statistic: f64,
     pub critical_values: [f64; 3],

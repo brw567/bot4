@@ -42,6 +42,7 @@ impl fmt::Display for OrderId {
 /// Order side (buy or sell)
 
 #[serde(rename_all = "UPPERCASE")]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -59,6 +60,7 @@ impl OrderSide {
 /// Order type
 
 #[serde(rename_all = "UPPERCASE")]
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -86,6 +88,7 @@ impl OrderType {
 
 /// Time in force for orders
 
+/// TODO: Add docs
 pub enum TimeInForce {
     /// Good Till Cancelled
     GTC,
@@ -284,6 +287,7 @@ impl Order {
 
 
 
+/// TODO: Add docs
 pub enum OrderValidationError {
     #[error("Invalid quantity: {0}")]
     InvalidQuantity(String),

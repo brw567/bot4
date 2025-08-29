@@ -29,6 +29,7 @@ where
 
 /// Handler priority levels
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+/// TODO: Add docs
 pub enum HandlerPriority {
     Critical = 0,
     High = 1,
@@ -37,6 +38,7 @@ pub enum HandlerPriority {
 }
 
 /// Chain of handlers
+/// TODO: Add docs
 pub struct HandlerChain {
     handlers: Vec<(HandlerPriority, Box<dyn EventHandler<Event>>)>,
 }

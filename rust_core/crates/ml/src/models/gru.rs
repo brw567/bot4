@@ -1,3 +1,4 @@
+use domain_types::TrainingResult;
 // GRU (Gated Recurrent Unit) Model Implementation
 // FULL TEAM COLLABORATION - All 8 Members Contributing
 // Owner: Morgan (ML Lead) with full team support
@@ -26,6 +27,7 @@ use serde::{Deserialize, Serialize};
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct GRUConfig {
     /// Input features
     pub input_size: usize,
@@ -274,6 +276,7 @@ impl GRUCell {
 // MAIN GRU MODEL - Full Team Implementation
 // ============================================================================
 
+/// TODO: Add docs
 pub struct GRUModel {
     config: GRUConfig,
     
@@ -570,6 +573,7 @@ fn apply_layer_norm(x: &Array1<f32>, ln: &LayerNorm) -> Array1<f32> {
 // ============================================================================
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum GRUError {
     #[error("Invalid configuration: {0}")]
     InvalidConfig(String),
@@ -588,7 +592,8 @@ pub enum GRUError {
 }
 
 #[derive(Debug, Clone)]
-pub struct TrainingResult {
+// ELIMINATED: use domain_types::TrainingResult
+// pub struct TrainingResult {
     pub final_train_loss: f64,
     pub final_val_loss: f64,
     pub final_val_accuracy: f64,

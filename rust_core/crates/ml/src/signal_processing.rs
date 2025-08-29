@@ -15,6 +15,7 @@ use tracing::info;
 
 /// Signal Orthogonalization Pipeline
 /// Sophie: "Without orthogonalization, correlated signals will destroy model performance"
+/// TODO: Add docs
 pub struct SignalOrthogonalizer {
     /// Method for orthogonalization
     method: OrthogonalizationMethod,
@@ -36,6 +37,7 @@ pub struct SignalOrthogonalizer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OrthogonalizationMethod {
     GramSchmidt,
     PCA,
@@ -465,6 +467,7 @@ impl SignalOrthogonalizer {
 }
 
 /// Variance Inflation Factor (VIF) for multicollinearity detection
+/// TODO: Add docs
 pub struct VIFAnalyzer;
 
 impl VIFAnalyzer {

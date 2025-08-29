@@ -12,6 +12,7 @@ use anyhow::{Result, bail};
 /// - Quantity must be finite
 /// - Zero is a valid quantity (for comparisons)
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+/// TODO: Add docs
 pub struct Quantity(f64);
 
 impl Quantity {

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use rust_decimal::Decimal;
 
 /// Enhanced prompt templates leveraging game theory and advanced trading concepts
+/// TODO: Add docs
 pub struct EnhancedPromptTemplates {
     pub templates: HashMap<String, String>,
 }
@@ -479,6 +480,7 @@ ound => "nash_equilibrium_analysis",
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MarketState {
     HighVolatility,
     LowLiquidity,
@@ -491,6 +493,7 @@ pub enum MarketState {
 
 /// Grok-3 Mini configuration optimized for speed
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Grok3MiniConfig {
     pub model: String,
     pub reasoning_effort: ReasoningEffort,
@@ -520,12 +523,14 @@ impl Default for Grok3MiniConfig {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ReasoningEffort {
     Low,   // Minimal thinking for speed
     High,  // Maximum thinking for complex problems
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ResponseFormat {
     Text,
     Json,
@@ -533,6 +538,7 @@ pub enum ResponseFormat {
 
 /// Prompt optimization strategies
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct PromptOptimizer {
     pub use_few_shot: bool,
     pub use_chain_of_thought: bool,

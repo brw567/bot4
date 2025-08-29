@@ -14,6 +14,7 @@ use crate::order::Order;
 
 /// Exchange route information
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeRoute {
     pub exchange_name: String,
     pub is_active: bool,
@@ -123,6 +124,7 @@ impl ExchangeRoute {
 
 /// Routing strategy
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum RoutingStrategy {
     /// Route to exchange with best price
     BestPrice,
@@ -139,6 +141,7 @@ pub enum RoutingStrategy {
 }
 
 /// Order router for smart order routing
+/// TODO: Add docs
 pub struct OrderRouter {
     routes: Arc<DashMap<String, ExchangeRoute>>,
     strategy: Arc<RwLock<RoutingStrategy>>,
@@ -327,6 +330,7 @@ impl OrderRouter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RoutingStats {
     pub total_routes: usize,
     pub active_routes: usize,
@@ -336,6 +340,7 @@ pub struct RoutingStats {
 }
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum RoutingError {
     #[error("No available route for order")]
     NoAvailableRoute,

@@ -1,3 +1,4 @@
+use domain_types::CorrelationMatrix;
 use mathematical_ops::correlation::calculate_correlation;
 // Correlation Analysis for Risk Management
 // Prevents overexposure to correlated assets (Quinn's 0.7 limit)
@@ -11,7 +12,8 @@ use std::sync::Arc;
 
 /// Correlation matrix for asset pairs
 #[derive(Debug, Clone)]
-pub struct CorrelationMatrix {
+// ELIMINATED: use domain_types::CorrelationMatrix
+// pub struct CorrelationMatrix {
     symbols: Vec<String>,
     matrix: Arc<RwLock<Array2<f64>>>,
     last_update: Arc<RwLock<chrono::DateTime<chrono::Utc>>>,
@@ -89,6 +91,7 @@ impl CorrelationMatrix {
 }
 
 /// Correlation analyzer for position risk
+/// TODO: Add docs
 pub struct CorrelationAnalyzer {
     price_history: Arc<RwLock<HashMap<String, Vec<f64>>>>,
     correlation_matrix: Arc<CorrelationMatrix>,
@@ -236,6 +239,7 @@ impl CorrelationAnalyzer {
 
 /// Portfolio correlation metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CorrelationMetrics {
     pub average_correlation: f64,
     pub max_correlation: f64,

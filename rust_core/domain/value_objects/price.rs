@@ -12,6 +12,7 @@ use anyhow::{Result, bail};
 /// - Price must be finite
 /// - Price has 8 decimal places precision (satoshi level)
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+/// TODO: Add docs
 pub struct Price(f64);
 
 impl Price {

@@ -12,6 +12,7 @@ use anyhow::{Result, bail};
 /// - Both base and quote must be valid asset codes
 /// - Symbol is case-insensitive but stored in uppercase
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct Symbol {
     base: String,
     quote: String,

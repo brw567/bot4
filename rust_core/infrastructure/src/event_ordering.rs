@@ -11,6 +11,7 @@ use std::time::{Duration, Instant};
 
 /// Monotonic sequence generator for event ordering
 /// Sophia's requirement: Prevent event reordering in distributed systems
+/// TODO: Add docs
 pub struct MonotonicSequencer {
     // Global sequence counter (never decreases)
     sequence: Arc<AtomicU64>,
@@ -101,6 +102,7 @@ impl MonotonicSequencer {
 
 /// Event sequence with total ordering guarantees
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+/// TODO: Add docs
 pub struct EventSequence {
     /// Primary ordering field - always increasing
     pub sequence: u64,
@@ -121,6 +123,7 @@ impl EventSequence {
 }
 
 /// Event ordering buffer for handling out-of-order events
+/// TODO: Add docs
 pub struct EventOrderingBuffer<T> {
     // Buffer for reordering
     buffer: Arc<RwLock<BTreeMap<EventSequence, T>>>,
@@ -255,6 +258,7 @@ impl<T: Clone + Send + Sync> EventOrderingBuffer<T> {
 }
 
 /// Vector clock for distributed event ordering
+/// TODO: Add docs
 pub struct VectorClock {
     // Node ID -> logical timestamp
     clocks: Arc<RwLock<BTreeMap<u16, u64>>>,
@@ -308,6 +312,7 @@ impl VectorClock {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VectorTimestamp {
     clocks: BTreeMap<u16, u64>,
 }
@@ -341,6 +346,7 @@ impl VectorTimestamp {
 }
 
 /// Lamport timestamp for total ordering
+/// TODO: Add docs
 pub struct LamportClock {
     counter: Arc<AtomicU64>,
 }
@@ -376,6 +382,7 @@ impl LamportClock {
     }
 }
 
+/// TODO: Add docs
 pub struct OrderingMetrics {
     pub buffer_size: usize,
     pub last_delivered: u64,

@@ -9,6 +9,7 @@ use std::collections::VecDeque;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum ValidationError {
     #[error("Data anomaly detected: {0}")]
     AnomalyDetected(String),
@@ -20,6 +21,7 @@ pub enum ValidationError {
 pub type Result<T> = std::result::Result<T, ValidationError>;
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ValidationConfig {
     pub z_score_threshold: f64,
     pub min_historical_points: usize,
@@ -37,6 +39,7 @@ impl Default for ValidationConfig {
 }
 
 /// Historical Validator - validates incoming data against historical patterns
+/// TODO: Add docs
 pub struct HistoricalValidator {
     config: ValidationConfig,
     historical_data: VecDeque<DataPoint>,

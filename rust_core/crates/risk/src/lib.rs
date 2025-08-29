@@ -99,6 +99,7 @@ pub use cross_asset_correlations::{
 };
 
 // Re-export for convenience
+/// TODO: Add docs
 pub fn create_risk_system() -> (RiskClampSystem, KellySizer) {
     let clamp_config = ClampConfig::default();
     let kelly_config = KellyConfig::default();
@@ -107,4 +108,4 @@ pub fn create_risk_system() -> (RiskClampSystem, KellySizer) {
         RiskClampSystem::new(clamp_config),
         KellySizer::new(kelly_config),
     )
-}
+}pub mod quantitative_finance;

@@ -8,6 +8,7 @@ use statrs::distribution::{ChiSquared, ContinuousCDF, Normal};
 
 /// Augmented Dickey-Fuller test for stationarity
 /// Required by Nexus for price series validation
+/// TODO: Add docs
 pub struct ADFTest {
     pub statistic: f64,
     pub p_value: f64,
@@ -16,6 +17,7 @@ pub struct ADFTest {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CriticalValues {
     pub one_pct: f64,
     pub five_pct: f64,
@@ -74,6 +76,7 @@ impl ADFTest {
 
 /// Jarque-Bera test for normality
 /// Required by Nexus for return distribution validation
+/// TODO: Add docs
 pub struct JarqueBeraTest {
     pub statistic: f64,
     pub p_value: f64,
@@ -132,6 +135,7 @@ impl JarqueBeraTest {
 
 /// Ljung-Box test for autocorrelation
 /// Required for validating independence assumptions
+/// TODO: Add docs
 pub struct LjungBoxTest {
     pub statistic: f64,
     pub p_value: f64,
@@ -179,6 +183,7 @@ impl LjungBoxTest {
 
 /// DCC-GARCH for dynamic correlations
 /// Required by Nexus for time-varying risk assessment
+/// TODO: Add docs
 pub struct DCCGarch {
     pub conditional_correlations: Array2<f64>,
     pub volatilities: Array1<f64>,
@@ -241,6 +246,7 @@ impl DCCGarch {
 
 /// Copula for tail dependencies
 /// Required for extreme event modeling
+/// TODO: Add docs
 pub struct GaussianCopula {
     correlation: f64,
 }

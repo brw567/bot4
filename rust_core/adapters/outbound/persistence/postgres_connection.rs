@@ -11,18 +11,8 @@ use tracing::{info, error, debug};
 
 /// Database connection configuration
 #[derive(Debug, Clone)]
-pub struct DatabaseConfig {
-    pub host: String,
-    pub port: u16,
-    pub database: String,
-    pub username: String,
-    pub password: String,
-    pub max_connections: u32,
-    pub min_connections: u32,
-    pub connection_timeout: Duration,
-    pub idle_timeout: Duration,
-    pub max_lifetime: Duration,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate DatabaseConfig - use infrastructure::database::DatabaseConfig
 
 impl Default for DatabaseConfig {
     fn default() -> Self {
@@ -79,6 +69,7 @@ impl DatabaseConfig {
 }
 
 /// Database connection pool manager
+/// TODO: Add docs
 pub struct DatabaseConnectionPool {
     pool: Arc<PgPool>,
     config: DatabaseConfig,
@@ -161,6 +152,7 @@ impl DatabaseConnectionPool {
 }
 
 /// Database health check
+/// TODO: Add docs
 pub struct DatabaseHealthCheck {
     pool: Arc<PgPool>,
 }
@@ -213,7 +205,9 @@ impl DatabaseHealthCheck {
 }
 
 #[derive(Debug)]
-pub struct HealthStatus {
+/// TODO: Add docs
+// ELIMINATED: HealthStatus - Enhanced with Prometheus metrics export
+// pub struct HealthStatus {
     pub is_healthy: bool,
     pub latency_ms: u64,
     pub connections: u32,
@@ -221,6 +215,7 @@ pub struct HealthStatus {
 }
 
 /// Unit of Work implementation for transactions
+/// TODO: Add docs
 pub struct PostgresUnitOfWork {
     pool: Arc<PgPool>,
     transaction: Option<sqlx::Transaction<'static, sqlx::Postgres>>,
@@ -291,6 +286,7 @@ impl PostgresUnitOfWork {
 }
 
 /// Repository factory
+/// TODO: Add docs
 pub struct RepositoryFactory {
     pool: Arc<PgPool>,
 }

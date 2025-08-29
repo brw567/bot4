@@ -13,6 +13,7 @@ use arrayvec::ArrayVec;
 
 /// Object pool for zero-allocation operations
 /// Jordan: "Pre-allocate EVERYTHING - allocations kill latency!"
+/// TODO: Add docs
 pub struct ObjectPool<T: Default + Send> {
     pool: Arc<Mutex<Vec<T>>>,
     capacity: usize,
@@ -76,6 +77,7 @@ impl<T: Default + Send> ObjectPool<T> {
     }
 }
 
+/// TODO: Add docs
 pub struct PooledObject<T: Send> {
     object: Option<T>,
     pool: Arc<Mutex<Vec<T>>>,
@@ -118,6 +120,7 @@ impl<T: Send> std::ops::DerefMut for PooledObject<T> {
 
 /// Lock-free ring buffer for market data
 /// Jordan: "Lock-free is the only way to hit <1μs!"
+/// TODO: Add docs
 pub struct LockFreeRingBuffer<T: Copy> {
     buffer: Box<[UnsafeCell<T>]>,
     capacity: usize,
@@ -190,6 +193,7 @@ pub type SmallFeatureVec = SmallVec<[f64; 64]>;
 pub type SmallSignalVec = ArrayVec<SignalData, 8>;
 
 #[derive(Copy, Clone, Debug)]
+/// TODO: Add docs
 pub struct SignalData {
     pub action: i8,  // -1=sell, 0=hold, 1=buy
     pub confidence: f32,
@@ -199,6 +203,7 @@ pub struct SignalData {
 /// Cache-aligned data structures for hot paths
 /// Jordan: "False sharing kills performance - align to cache lines!"
 #[repr(align(64))]
+/// TODO: Add docs
 pub struct CacheAligned<T> {
     pub value: T,
 }
@@ -213,6 +218,7 @@ impl<T> CacheAligned<T> {
 /// SIMD-friendly data layout for batch operations
 /// Morgan: "Vectorize everything possible!"
 #[repr(C, align(32))]
+/// TODO: Add docs
 pub struct SimdFeatures {
     pub prices: [f32; 8],
     pub volumes: [f32; 8],
@@ -231,6 +237,7 @@ impl Default for SimdFeatures {
 
 /// Pre-computed lookup tables for common calculations
 /// Alex: "Why calculate when you can lookup?"
+/// TODO: Add docs
 pub struct LookupTables {
     // Exponential decay factors for EMA
     pub ema_factors: Vec<f64>,
@@ -329,6 +336,7 @@ pub mod branchless {
 
 /// Memory-mapped circular buffer for zero-copy operations
 /// Avery: "mmap for the win - zero copies!"
+/// TODO: Add docs
 pub struct MmapCircularBuffer {
     // Implementation would use memmap2 crate
     // Placeholder for now
@@ -336,12 +344,13 @@ pub struct MmapCircularBuffer {
 }
 
 /// Global performance metrics
-pub struct PerformanceMetrics {
-    pub decision_latency_ns: AtomicU64,
-    pub throughput_ops_sec: AtomicU64,
-    pub allocation_count: AtomicU64,
-    pub cache_misses: AtomicU64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct PerformanceMetrics {
+// ELIMINATED:     pub decision_latency_ns: AtomicU64,
+// ELIMINATED:     pub throughput_ops_sec: AtomicU64,
+// ELIMINATED:     pub allocation_count: AtomicU64,
+// ELIMINATED:     pub cache_misses: AtomicU64,
+// ELIMINATED: }
 
 impl PerformanceMetrics {
     pub fn new() -> Self {

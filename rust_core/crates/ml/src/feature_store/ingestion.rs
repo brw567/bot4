@@ -6,6 +6,7 @@ use tokio::sync::mpsc;
 use std::collections::VecDeque;
 
 /// Feature ingestion pipeline with batching and optimization
+/// TODO: Add docs
 pub struct FeatureIngestionPipeline {
     store: Arc<FeatureStore>,
     
@@ -24,6 +25,7 @@ pub struct FeatureIngestionPipeline {
 
 /// Ingestion request
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct IngestionRequest {
     pub entity_id: String,
     pub entity_type: String,
@@ -34,6 +36,7 @@ pub struct IngestionRequest {
 
 /// Raw feature value before transformation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum RawFeatureValue {
     Float(f64),
     Integer(i64),
@@ -56,6 +59,7 @@ pub trait FeatureTransformer: Send + Sync {
 }
 
 /// Batch processor for efficient database writes
+/// TODO: Add docs
 pub struct BatchProcessor {
     batch_size: usize,
     flush_interval: Duration,
@@ -64,6 +68,7 @@ pub struct BatchProcessor {
 
 /// Validation error
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum ValidationError {
     #[error("Invalid value type for {0}")]
     InvalidType(String),
@@ -80,6 +85,7 @@ pub enum ValidationError {
 
 /// Transform error
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum TransformError {
     #[error("Transform failed: {0}")]
     Failed(String),

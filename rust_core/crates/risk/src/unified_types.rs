@@ -32,6 +32,7 @@ use std::fmt;
 /// Sam: "No more f32 vs Decimal confusion!"
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Price(Decimal);
 
 impl Price {
@@ -72,6 +73,7 @@ impl Price {
 /// Unified Quantity type - for position sizes, volumes
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Quantity(Decimal);
 
 impl Quantity {
@@ -102,6 +104,7 @@ impl Quantity {
 /// Jordan: "Percentages should be 0.01 for 1%, not 1.0!"
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Percentage(f64);
 
 impl Percentage {
@@ -243,6 +246,7 @@ impl Position {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum Side {
     Long,
     Short,
@@ -252,7 +256,9 @@ pub enum Side {
 /// Alex: "All strategies output this format!"
 
 #[derive(Debug, Clone)]
-pub struct TradingSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate TradingSignal - use canonical_types::TradingSignal
+// pub struct TradingSignal {
     pub timestamp: u64,
     pub symbol: String,
     pub action: SignalAction,
@@ -270,6 +276,7 @@ pub struct TradingSignal {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SignalAction {
     Buy,
     Sell,
@@ -282,6 +289,7 @@ pub enum SignalAction {
 /// Order - unified order representation
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct UnifiedOrder {
     pub id: uuid::Uuid,
     pub symbol: String,
@@ -298,6 +306,7 @@ pub struct UnifiedOrder {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -309,6 +318,7 @@ pub enum OrderType {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TimeInForce {
     GTC,  // Good Till Cancel
     IOC,  // Immediate or Cancel

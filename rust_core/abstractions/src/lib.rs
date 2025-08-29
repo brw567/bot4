@@ -33,6 +33,7 @@ pub type AbstractionResult<T> = Result<T, AbstractionError>;
 
 /// Errors that can occur in abstraction layer
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum AbstractionError {
     /// Layer violation detected
     #[error("Layer violation: {0}")]
@@ -137,6 +138,7 @@ pub trait CircuitBreaker: Send + Sync {
 
 /// Circuit breaker states
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum CircuitState {
     /// Circuit is closed (normal operation)
     Closed,

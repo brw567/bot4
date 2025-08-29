@@ -15,6 +15,7 @@ use std::sync::{Arc, RwLock};
 use uuid::Uuid;
 
 /// Event journal for persistence
+/// TODO: Add docs
 pub struct EventJournal {
     /// Path to journal file
     path: PathBuf,
@@ -88,6 +89,7 @@ impl EventJournal {
 
 /// Checkpoint for fast recovery
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Checkpoint {
     /// Checkpoint ID
     pub id: Uuid,
@@ -102,6 +104,7 @@ pub struct Checkpoint {
 }
 
 /// Event replayer for recovery
+/// TODO: Add docs
 pub struct EventReplayer {
     /// Journal to read from
     journal_path: PathBuf,
@@ -247,6 +250,7 @@ impl EventReplayer {
 }
 
 /// Event store for querying historical events
+/// TODO: Add docs
 pub struct EventStore {
     /// Replayer for loading events
     replayer: EventReplayer,
@@ -326,6 +330,7 @@ impl EventStore {
 }
 
 /// Replay coordinator for system recovery
+/// TODO: Add docs
 pub struct ReplayCoordinator {
     /// Event store
     store: EventStore,

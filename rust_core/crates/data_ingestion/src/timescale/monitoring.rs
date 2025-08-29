@@ -12,6 +12,7 @@ use std::collections::VecDeque;
 
 /// Query statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct QueryStats {
     pub query_name: String,
     pub execution_time_ms: f64,
@@ -21,6 +22,7 @@ pub struct QueryStats {
 
 /// Ingestion statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct IngestionStats {
     pub events_per_second: f64,
     pub avg_latency_ms: f64,
@@ -31,6 +33,7 @@ pub struct IngestionStats {
 }
 
 /// Performance monitor for tracking metrics
+/// TODO: Add docs
 pub struct PerformanceMonitor {
     pool: Arc<Pool>,
     query_history: Arc<RwLock<VecDeque<QueryStats>>>,
@@ -255,6 +258,7 @@ impl PerformanceMonitor {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BenchmarkResults {
     pub recent_ticks_ms: f64,
     pub recent_ticks_rows: usize,
@@ -266,6 +270,7 @@ pub struct BenchmarkResults {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct QuerySummary {
     pub total_queries: usize,
     pub avg_time_ms: f64,

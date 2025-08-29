@@ -32,6 +32,7 @@ use ndarray::Array2;
 
 /// The BRAIN of the trading system - orchestrates ALL components
 /// Alex: "This is where EVERYTHING comes together!"
+/// TODO: Add docs
 pub struct DecisionOrchestrator {
     // Core Components
     ml_system: Arc<RwLock<MLFeedbackSystem>>,
@@ -68,6 +69,7 @@ pub struct DecisionOrchestrator {
 
 /// Complete decision record for learning
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DecisionRecord {
     pub timestamp: u64,
     pub ml_signal: Signal,
@@ -94,6 +96,7 @@ pub struct DecisionRecord {
 
 /// Execution result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExecutionResult {
     pub success: bool,
     pub actual_size: Decimal,
@@ -792,6 +795,7 @@ impl DecisionOrchestrator {
 
 /// TA Indicators structure
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TAIndicators {
     pub rsi: f64,
     pub macd: f64,
@@ -812,6 +816,7 @@ pub struct TAIndicators {
 
 /// Sentiment data
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SentimentData {
     pub source: String,
     pub score: f64,       // -1 to 1

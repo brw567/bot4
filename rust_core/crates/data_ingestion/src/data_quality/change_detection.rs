@@ -10,6 +10,7 @@ use chrono::{DateTime, Utc};
 use super::DataBatch;
 
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct ChangeDetectionConfig {
     pub algorithm: DetectionAlgorithm,
     pub window_size: usize,
@@ -29,12 +30,14 @@ impl Default for ChangeDetectionConfig {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+/// TODO: Add docs
 pub enum DetectionAlgorithm {
     CUSUM,  // Cumulative sum
     PELT,   // Pruned Exact Linear Time
     BayesianOnline,
 }
 
+/// TODO: Add docs
 pub struct ChangeDetector {
     config: ChangeDetectionConfig,
     buffer: VecDeque<f64>,
@@ -177,6 +180,7 @@ impl ChangeDetector {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ChangePoint {
     pub timestamp: DateTime<Utc>,
     pub index: usize,
@@ -186,6 +190,7 @@ pub struct ChangePoint {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ChangeType {
     LevelShift,
     VarianceChange,

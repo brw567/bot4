@@ -12,6 +12,7 @@ use tracing::{error, warn, info};
 /// Trip conditions that trigger emergency stop
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TripCondition {
     /// Daily loss exceeded
     DailyLossExceeded { loss: Decimal, limit: Decimal },
@@ -40,6 +41,7 @@ pub enum TripCondition {
 
 /// Kill switch - the big red button
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct KillSwitch {
     is_active: Arc<AtomicBool>,
     // Using AtomicU64 for lock-free operation (Sophia Issue #1 fix)
@@ -140,6 +142,7 @@ impl KillSwitch {
 
 /// Emergency stop system
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EmergencyStop {
     kill_switch: Arc<KillSwitch>,
     conditions: Arc<RwLock<Vec<EmergencyCondition>>>,
@@ -287,6 +290,7 @@ impl EmergencyStop {
 /// Emergency system status
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EmergencyStatus {
     pub kill_switch_active: bool,
     pub trigger_reason: Option<TripCondition>,
@@ -298,6 +302,7 @@ pub struct EmergencyStatus {
 /// Emergency recovery plan
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RecoveryPlan {
     pub steps: Vec<RecoveryStep>,
     pub estimated_time: Duration,
@@ -306,6 +311,7 @@ pub struct RecoveryPlan {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RecoveryStep {
     pub order: usize,
     pub description: String,
@@ -315,6 +321,7 @@ pub struct RecoveryStep {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum RecoveryAction {
     CloseAllPositions,
     CancelAllOrders,

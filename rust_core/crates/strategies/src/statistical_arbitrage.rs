@@ -5,6 +5,7 @@ use nalgebra::{DMatrix, DVector};
 use statrs::statistics::Statistics;
 
 /// Statistical Arbitrage Engine
+/// TODO: Add docs
 pub struct StatArbEngine {
     /// Cointegration analyzer
     cointegration: CointegrationAnalyzer,
@@ -22,6 +23,7 @@ pub struct StatArbEngine {
 }
 
 /// Cointegration Analysis using Johansen Test
+/// TODO: Add docs
 pub struct CointegrationAnalyzer {
     confidence_level: f64,
     max_lag: usize,
@@ -104,6 +106,7 @@ impl CointegrationAnalyzer {
 }
 
 /// Kalman Filter for Dynamic Hedge Ratio
+/// TODO: Add docs
 pub struct KalmanFilter {
     /// State estimate
     state: DVector<f64>,
@@ -136,6 +139,7 @@ impl KalmanFilter {
     }
 }
 
+/// TODO: Add docs
 pub struct CointegrationResult {
     pub cointegrated: bool,
     pub hedge_ratio: f64,
@@ -179,6 +183,7 @@ impl StatArbEngine {
     }
 }
 
+/// TODO: Add docs
 pub enum TradingSignal {
     Long { size: f64, hedge_ratio: f64 },
     Short { size: f64, hedge_ratio: f64 },

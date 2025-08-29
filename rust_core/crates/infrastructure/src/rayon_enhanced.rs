@@ -24,6 +24,7 @@ use crate::object_pools::{
 // ============================================================================
 
 /// Main parallel trading engine with work-stealing
+/// TODO: Add docs
 pub struct ParallelTradingEngine {
     /// Dedicated thread pool for trading operations
     trading_pool: Arc<ThreadPool>,
@@ -270,6 +271,7 @@ impl ParallelTradingEngine {
 
 /// Performance metrics for the parallel engine
 #[derive(Clone)]
+/// TODO: Add docs
 pub struct EngineMetrics {
     /// Total operations processed
     pub total_ops: Arc<CachePadded<AtomicU64>>,
@@ -352,6 +354,7 @@ impl EngineMetrics {
 }
 
 /// Instrument sharding for cache-efficient parallel processing
+/// TODO: Add docs
 pub struct InstrumentSharding {
     num_shards: usize,
     instrument_map: DashMap<String, usize>,
@@ -404,6 +407,7 @@ fn pin_to_core(_core_id: usize) {
 // ============================================================================
 
 /// Parallel pipeline for stream processing
+/// TODO: Add docs
 pub struct ParallelPipeline<T: Send + Sync> {
     stages: Vec<Box<dyn PipelineStage<T>>>,
 }

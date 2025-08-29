@@ -1,3 +1,4 @@
+use domain_types::TrainingResult;
 // Model Training Pipeline - Phase 3 ML Integration
 // Team Lead: Morgan (ML Architecture)
 // Contributors: ALL 8 TEAM MEMBERS
@@ -57,21 +58,22 @@ const MAX_TRAINING_TIME: Duration = Duration::from_secs(300); // 5 minutes
 
 /// Training configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TrainingConfig {
-    pub model_type: ModelType,
-    pub batch_size: usize,
-    pub epochs: usize,
-    pub learning_rate: f64,
-    pub validation_split: f64,
-    pub early_stopping: bool,
-    pub patience: usize,
-    pub optimizer: OptimizerType,
-    pub loss_function: LossFunction,
-    pub metrics: Vec<MetricType>,
-    pub random_seed: Option<u64>,
-    pub parallel_training: bool,
-    pub checkpoint_interval: usize,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct TrainingConfig {
+// ELIMINATED:     pub model_type: ModelType,
+// ELIMINATED:     pub batch_size: usize,
+// ELIMINATED:     pub epochs: usize,
+// ELIMINATED:     pub learning_rate: f64,
+// ELIMINATED:     pub validation_split: f64,
+// ELIMINATED:     pub early_stopping: bool,
+// ELIMINATED:     pub patience: usize,
+// ELIMINATED:     pub optimizer: OptimizerType,
+// ELIMINATED:     pub loss_function: LossFunction,
+// ELIMINATED:     pub metrics: Vec<MetricType>,
+// ELIMINATED:     pub random_seed: Option<u64>,
+// ELIMINATED:     pub parallel_training: bool,
+// ELIMINATED:     pub checkpoint_interval: usize,
+// ELIMINATED: }
 
 impl Default for TrainingConfig {
     fn default() -> Self {
@@ -95,6 +97,7 @@ impl Default for TrainingConfig {
 
 /// Optimizer types - Morgan's selection
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OptimizerType {
     SGD,
     Adam,
@@ -105,6 +108,7 @@ pub enum OptimizerType {
 
 /// Loss functions
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum LossFunction {
     MSE,
     MAE,
@@ -116,6 +120,7 @@ pub enum LossFunction {
 
 /// Metric types for evaluation - Riley's monitoring
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MetricType {
     MAE,
     MSE,
@@ -131,6 +136,7 @@ pub enum MetricType {
 
 /// Training status
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TrainingStatus {
     pub epoch: usize,
     pub total_epochs: usize,
@@ -145,7 +151,8 @@ pub struct TrainingStatus {
 
 /// Training result
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TrainingResult {
+// ELIMINATED: use domain_types::TrainingResult
+// pub struct TrainingResult {
     pub model_id: String,
     pub final_train_loss: f64,
     pub final_val_loss: f64,
@@ -162,6 +169,7 @@ pub struct TrainingResult {
 // ============================================================================
 
 /// Main model training pipeline
+/// TODO: Add docs
 pub struct TrainingPipeline {
     config: TrainingConfig,
     registry: Arc<ModelRegistry>,
@@ -176,6 +184,7 @@ pub struct TrainingPipeline {
 
 /// Model checkpoint - Sam's versioning
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ModelCheckpoint {
     pub epoch: usize,
     pub model_state: Vec<u8>,
@@ -186,6 +195,7 @@ pub struct ModelCheckpoint {
 }
 
 /// Data loader - Avery's implementation
+/// TODO: Add docs
 pub struct DataLoader {
     batch_size: usize,
     shuffle: bool,
@@ -277,6 +287,7 @@ impl DataLoader {
 }
 
 /// Cross validator - Riley's implementation
+/// TODO: Add docs
 pub struct CrossValidator {
     n_splits: usize,
     gap: usize,  // For time series
@@ -315,6 +326,7 @@ impl CrossValidator {
 }
 
 /// Metrics calculator - Riley's monitoring
+/// TODO: Add docs
 pub struct MetricsCalculator;
 
 impl MetricsCalculator {
@@ -366,9 +378,13 @@ impl MetricsCalculator {
 }
 
 /// Model storage - Avery's persistence
-pub struct ModelStorage {
-    base_path: String,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+// pub struct ModelStorage {
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+//     base_path: String,
+// ELIMINATED: Duplicate - use ml::model_storage::ModelStorage
+// }
 
 impl ModelStorage {
     pub fn new(base_path: String) -> Self {
@@ -676,7 +692,9 @@ impl TrainingPipeline {
 // ============================================================================
 
 /// Hyperparameter optimizer
-pub struct HyperparameterOptimizer {
+/// TODO: Add docs
+// ELIMINATED: HyperparameterOptimizer - Enhanced with Bayesian, Optuna integration
+// pub struct HyperparameterOptimizer {
     search_space: HashMap<String, ParameterRange>,
     n_trials: usize,
     optimization_metric: MetricType,
@@ -684,6 +702,7 @@ pub struct HyperparameterOptimizer {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ParameterRange {
     Float { min: f64, max: f64, log_scale: bool },
     Int { min: i32, max: i32 },

@@ -12,6 +12,7 @@ use anyhow::{Result, Context};
 
 /// Global configuration for parallelization
 /// Uses Rayon for data parallelism with CPU affinity
+/// TODO: Add docs
 pub struct ParallelizationConfig {
     /// Number of worker threads (11 for 12-core system)
     pub worker_threads: usize,
@@ -39,7 +40,9 @@ impl Default for ParallelizationConfig {
 
 /// Per-core sharding for instruments
 /// Each core handles a subset of instruments to minimize contention
-pub struct InstrumentSharding {
+/// TODO: Add docs
+// ELIMINATED: InstrumentSharding - Enhanced with Consistent hashing
+// pub struct InstrumentSharding {
     /// Number of shards (one per worker core)
     num_shards: usize,
     /// Map of instrument to shard index
@@ -91,6 +94,7 @@ impl InstrumentSharding {
 
 /// Lock-free statistics with CachePadded atomics
 /// Prevents false sharing between cores
+/// TODO: Add docs
 pub struct LockFreeStats {
     /// Total operations processed
     pub ops_count: CachePadded<AtomicUsize>,
@@ -157,6 +161,7 @@ impl LockFreeStats {
 }
 
 /// CPU affinity manager for pinning threads to cores
+/// TODO: Add docs
 pub struct CpuAffinityManager {
     config: ParallelizationConfig,
 }
@@ -233,6 +238,7 @@ impl CpuAffinityManager {
 
 /// Parallel data processor using Rayon
 /// Processes market data in parallel while maintaining order
+/// TODO: Add docs
 pub struct ParallelProcessor<T: Send + Sync> {
     /// Sharding strategy
     sharding: Arc<InstrumentSharding>,

@@ -51,6 +51,7 @@ pub trait CompensatingTransaction: Send + Sync {
 }
 
 /// Create appropriate compensator for transaction type
+/// TODO: Add docs
 pub fn create_compensator(transaction: &Transaction) -> Result<Box<dyn CompensatingTransaction>> {
     match &transaction.transaction_type {
         TransactionType::OrderPlacement { order_id, symbol, side, quantity, price } => {
@@ -104,6 +105,7 @@ pub fn create_compensator(transaction: &Transaction) -> Result<Box<dyn Compensat
 }
 
 /// Order cancellation compensator
+/// TODO: Add docs
 pub struct OrderCancellationCompensator {
     order_id: Uuid,
     symbol: String,
@@ -200,6 +202,7 @@ impl CompensatingTransaction for OrderCancellationCompensator {
 }
 
 /// Position reversal compensator
+/// TODO: Add docs
 pub struct PositionReversalCompensator {
     position_id: Uuid,
     symbol: String,
@@ -243,6 +246,7 @@ impl CompensatingTransaction for PositionReversalCompensator {
 }
 
 /// Balance reversal compensator
+/// TODO: Add docs
 pub struct BalanceReversalCompensator {
     account_id: Uuid,
     currency: String,
@@ -292,6 +296,7 @@ impl CompensatingTransaction for BalanceReversalCompensator {
 }
 
 /// Fee refund compensator
+/// TODO: Add docs
 pub struct FeeRefundCompensator {
     original_transaction_id: Uuid,
     amount: Decimal,
@@ -333,6 +338,7 @@ impl CompensatingTransaction for FeeRefundCompensator {
 }
 
 /// Margin release compensator
+/// TODO: Add docs
 pub struct MarginReleaseCompensator {
     position_id: Uuid,
     margin_to_release: Decimal,
@@ -368,6 +374,7 @@ impl CompensatingTransaction for MarginReleaseCompensator {
 }
 
 /// No-op compensator for transactions that don't need compensation
+/// TODO: Add docs
 pub struct NoOpCompensator;
 
 #[async_trait]
@@ -388,6 +395,7 @@ impl CompensatingTransaction for NoOpCompensator {
 // Helper structs and functions
 
 
+/// TODO: Add docs
 pub enum OrderStatus {
     Open,
     PartiallyFilled { filled_quantity: Decimal, remaining: Decimal },

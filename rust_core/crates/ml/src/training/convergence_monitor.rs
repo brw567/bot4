@@ -12,6 +12,7 @@ use serde::{Serialize, Deserialize};
 
 /// Comprehensive training convergence monitor
 /// Morgan: "Without proper monitoring, models WILL overfit!"
+/// TODO: Add docs
 pub struct ConvergenceMonitor {
     /// Configuration
     config: ConvergenceConfig,
@@ -43,6 +44,7 @@ pub struct ConvergenceMonitor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ConvergenceConfig {
     /// Early stopping patience
     pub patience: usize,
@@ -85,6 +87,7 @@ impl Default for ConvergenceConfig {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ConvergenceMetrics {
     pub current_epoch: usize,
     pub train_loss: f64,
@@ -447,6 +450,7 @@ impl ConvergenceMonitor {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TrainingHistory {
     pub train_losses: Vec<f64>,
     pub val_losses: Vec<f64>,

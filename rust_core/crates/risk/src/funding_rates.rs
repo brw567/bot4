@@ -20,6 +20,7 @@ use chrono::{DateTime, Utc, Duration};
 
 /// Funding Rate Analyzer - Extracts profit from perpetual futures funding
 /// Casey: "This is FREE MONEY if done right - 15-30% APY guaranteed!"
+/// TODO: Add docs
 pub struct FundingRateAnalyzer {
     // Historical funding rates by exchange and symbol
     funding_history: Arc<RwLock<HashMap<String, FundingHistory>>>,
@@ -50,6 +51,7 @@ pub struct FundingRateAnalyzer {
 
 /// Funding rate history for analysis
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FundingHistory {
     pub symbol: String,
     pub exchange: String,
@@ -62,6 +64,7 @@ pub struct FundingHistory {
 
 /// Single funding rate data point
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FundingRatePoint {
     pub timestamp: DateTime<Utc>,
     pub rate: f64,           // Funding rate (e.g., 0.01% = 0.0001)
@@ -73,6 +76,7 @@ pub struct FundingRatePoint {
 
 /// Current funding rate on an exchange
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeFundingRate {
     pub exchange: String,
     pub symbol: String,
@@ -86,6 +90,7 @@ pub struct ExchangeFundingRate {
 
 /// Funding arbitrage opportunity
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FundingArbitrage {
     pub id: uuid::Uuid,
     pub timestamp: DateTime<Utc>,
@@ -102,6 +107,7 @@ pub struct FundingArbitrage {
 
 /// Execution strategy for funding arbitrage
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ExecutionStrategy {
     Immediate,                    // Execute immediately
     WaitForBetterRate(f64),      // Wait for target rate
@@ -582,6 +588,7 @@ impl FundingRateAnalyzer {
 
 /// Funding configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FundingConfig {
     pub min_arbitrage_spread: f64,
     pub max_position_size: Decimal,

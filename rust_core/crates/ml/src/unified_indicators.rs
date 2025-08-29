@@ -13,6 +13,7 @@ use std::collections::VecDeque;
 use statrs::statistics::Statistics;
 
 /// Unified Indicator Calculator - ALL indicators in one place
+/// TODO: Add docs
 pub struct UnifiedIndicators {
     /// Price history buffer
     price_buffer: VecDeque<f64>,
@@ -309,6 +310,7 @@ impl UnifiedIndicators {
 
 // Supporting structures
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct MACDValue {
     pub macd: f64,
     pub signal: f64,
@@ -316,6 +318,7 @@ pub struct MACDValue {
 }
 
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct BollingerBands {
     pub upper: f64,
     pub middle: f64,
@@ -324,12 +327,14 @@ pub struct BollingerBands {
 }
 
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct StochasticValue {
     pub k: f64,
     pub d: f64,
 }
 
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct IndicatorSnapshot {
     pub rsi: Option<f64>,
     pub macd: Option<MACDValue>,

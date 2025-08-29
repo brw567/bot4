@@ -14,14 +14,8 @@ use crate::{OnlineStore, OfflineStore};
 
 /// Monitoring configuration
 #[derive(Debug, Clone, Deserialize)]
-pub struct MonitoringConfig {
-    pub metrics_port: u16,
-    pub collection_interval_seconds: u64,
-    pub latency_buckets: Vec<f64>, // milliseconds
-    pub enable_prometheus: bool,
-    pub enable_logging: bool,
-    pub alert_thresholds: AlertThresholds,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MonitoringConfig - use infrastructure::monitoring::MonitoringConfig
 
 impl Default for MonitoringConfig {
     fn default() -> Self {
@@ -38,6 +32,7 @@ impl Default for MonitoringConfig {
 
 /// Alert thresholds
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct AlertThresholds {
     pub online_latency_p99_ms: f64,
     pub offline_latency_p99_ms: f64,
@@ -57,6 +52,7 @@ impl Default for AlertThresholds {
 }
 
 /// Feature monitoring system
+/// TODO: Add docs
 pub struct FeatureMonitor {
     config: MonitoringConfig,
     online_store: Arc<OnlineStore>,

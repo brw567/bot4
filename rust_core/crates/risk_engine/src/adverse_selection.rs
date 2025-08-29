@@ -25,6 +25,7 @@ const LONG_WINDOW_MS: i64 = 10000;  // 10 seconds for drift
 
 /// Adverse selection event
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AdverseSelectionEvent {
     pub timestamp: DateTime<Utc>,
     pub order_id: OrderId,
@@ -41,6 +42,7 @@ pub struct AdverseSelectionEvent {
 
 /// Counterparty toxicity profile
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct CounterpartyProfile {
     pub identifier: String,
     pub total_trades: u64,
@@ -52,6 +54,7 @@ pub struct CounterpartyProfile {
 }
 
 /// Adverse selection detector
+/// TODO: Add docs
 pub struct AdverseSelectionDetector {
     /// Recent fills for analysis
     recent_fills: Arc<RwLock<VecDeque<AdverseSelectionEvent>>>,
@@ -400,6 +403,7 @@ impl Clone for AdverseSelectionDetector {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AdverseSelectionStats {
     pub total_fills_analyzed: u64,
     pub toxic_fills_detected: u64,

@@ -24,6 +24,7 @@ use chrono::{DateTime, Utc};
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,   // Buyer aggressor (at ask)
     Sell,  // Seller aggressor (at bid)
@@ -33,29 +34,53 @@ pub enum TradeSide {
 /// Advanced Microstructure Feature Calculator
 /// Avery: "These features capture market dynamics invisible to simple TA!"
 #[derive(Debug)]
-pub struct MicrostructureFeatures {
-    // Configuration
-    lookback_window: usize,
-    tick_buffer: VecDeque<Tick>,
-    use_avx512: bool,
-    
-    // Kyle Lambda parameters
-    kyle_window: usize,
-    kyle_alpha: f64,  // Regularization for stability
-    
-    // Spread decomposition parameters
-    spread_components: SpreadComponents,
-    
-    // Order flow parameters
-    flow_buckets: usize,  // Time buckets for VPIN
-    flow_threshold: f64,  // Imbalance threshold
-    
-    // Liquidity measures
-    liquidity_depth_levels: usize,
-    
-    // Performance tracking
-    calculation_times: Vec<u64>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// pub struct MicrostructureFeatures {
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Configuration
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     lookback_window: usize,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     tick_buffer: VecDeque<Tick>,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     use_avx512: bool,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Kyle Lambda parameters
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     kyle_window: usize,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     kyle_alpha: f64,  // Regularization for stability
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Spread decomposition parameters
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     spread_components: SpreadComponents,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Order flow parameters
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     flow_buckets: usize,  // Time buckets for VPIN
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     flow_threshold: f64,  // Imbalance threshold
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Liquidity measures
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     liquidity_depth_levels: usize,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Performance tracking
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     calculation_times: Vec<u64>,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// }
 
 /// Spread decomposition components (Huang & Stoll 1997)
 #[derive(Debug, Clone)]
@@ -666,6 +691,7 @@ impl MicrostructureFeatures {
 
 /// Complete microstructure feature set
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MicrostructureFeatureSet {
     // Liquidity measures
     pub kyle_lambda: f64,

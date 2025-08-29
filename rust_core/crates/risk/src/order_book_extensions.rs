@@ -164,6 +164,7 @@ impl OrderBookExtensions for OrderBook {
 
 /// Complete ML prediction structure
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MLPrediction {
     pub signal: f64,  // -1 to 1 (sell to buy)
     pub confidence: f64,  // 0 to 1

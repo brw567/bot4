@@ -34,6 +34,7 @@ use crate::circuit_breaker::{ComponentBreaker as CircuitBreaker, CircuitConfig, 
 /// Network health state for single-node deployment
 /// Alex: "Focus on ACTUAL external dependencies, not imaginary nodes"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum NetworkHealth {
     /// All external services reachable
     Healthy,
@@ -54,6 +55,7 @@ pub enum NetworkHealth {
 /// Service criticality levels
 /// Quinn: "Risk-based classification of dependencies"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ServiceCriticality {
     /// Cannot operate without this (PostgreSQL)
     Critical,
@@ -70,6 +72,7 @@ pub enum ServiceCriticality {
 
 /// External service health status
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ServiceHealth {
     /// Service name
     pub name: String,
@@ -106,6 +109,7 @@ pub struct ServiceHealth {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ServiceType {
     Database,
     Cache,
@@ -118,6 +122,7 @@ pub enum ServiceType {
 /// Failover strategy using game theory
 /// Morgan: "Nash equilibrium for optimal service selection"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FailoverStrategy {
     /// Primary service
     pub primary: String,
@@ -137,6 +142,7 @@ pub struct FailoverStrategy {
 
 /// Network partition detection for single-node
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PartitionStatus {
     /// Overall network health
     pub health: NetworkHealth,
@@ -170,6 +176,7 @@ pub struct PartitionStatus {
 // NETWORK HEALTH MONITOR - SINGLE NODE IMPLEMENTATION
 // ============================================================================
 
+/// TODO: Add docs
 pub struct NetworkHealthMonitor {
     /// Service health tracking
     services: Arc<RwLock<HashMap<String, ServiceHealth>>>,
@@ -800,6 +807,7 @@ impl LatencyTracker {
 
 /// Network health events
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum NetworkEvent {
     /// Health state changed
     HealthChanged {

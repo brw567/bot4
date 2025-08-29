@@ -1,22 +1,41 @@
 // Stream Processing Module - Phase 3 ML Integration
+use domain_types::market_data::MarketTick;
 // Team Lead: Casey (Streaming Architecture)
+use domain_types::market_data::MarketTick;
 // Contributors: ALL 8 TEAM MEMBERS
+use domain_types::market_data::MarketTick;
 // Date: January 18, 2025
+use domain_types::market_data::MarketTick;
 // Performance Target: <100μs processing latency per message
+use domain_types::market_data::MarketTick;
 
+use domain_types::market_data::MarketTick;
 // ============================================================================
+use domain_types::market_data::MarketTick;
 // TEAM CONTRIBUTIONS
+use domain_types::market_data::MarketTick;
 // ============================================================================
+use domain_types::market_data::MarketTick;
 // Casey: Redis Streams integration, message routing
+use domain_types::market_data::MarketTick;
 // Morgan: ML feature streaming, batch processing
+use domain_types::market_data::MarketTick;
 // Avery: TimescaleDB integration, data persistence
+use domain_types::market_data::MarketTick;
 // Jordan: Performance optimization, zero-copy
+use domain_types::market_data::MarketTick;
 // Quinn: Risk event streaming, circuit breakers
+use domain_types::market_data::MarketTick;
 // Riley: Test harness, monitoring
+use domain_types::market_data::MarketTick;
 // Sam: Clean architecture, trait design
+use domain_types::market_data::MarketTick;
 // Alex: Coordination, integration requirements
+use domain_types::market_data::MarketTick;
 
+use domain_types::market_data::MarketTick;
 use anyhow::Result;
+use domain_types::market_data::MarketTick;
 use redis::aio::ConnectionManager;
 use redis::streams::{StreamId, StreamKey, StreamReadOptions, StreamReadReply};
 use redis::{AsyncCommands, RedisResult};
@@ -61,6 +80,7 @@ const MODEL_PREDICTIONS_STREAM: &str = "stream:model:predictions";
 /// Stream message types
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum StreamMessage {
     // Market data - Casey
     MarketTick {
@@ -109,6 +129,7 @@ pub enum StreamMessage {
 /// Signal actions
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SignalAction {
     Buy,
     Sell,
@@ -119,6 +140,7 @@ pub enum SignalAction {
 /// Risk event types - Quinn's specification
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum RiskEventType {
     PositionLimitExceeded,
     DrawdownThreshold,
@@ -130,6 +152,7 @@ pub enum RiskEventType {
 /// Risk severity levels
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum RiskSeverity {
     Low,
     Medium,
@@ -140,6 +163,7 @@ pub enum RiskSeverity {
 /// Stream processor configuration
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StreamConfig {
     pub redis_url: String,
     pub batch_size: usize,
@@ -170,6 +194,7 @@ impl Default for StreamConfig {
 
 /// Main stream processing engine
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StreamProcessor {
     // Redis connections
     redis_conn: Arc<RwLock<ConnectionManager>>,
@@ -202,6 +227,7 @@ pub struct StreamProcessor {
 /// Stream processing metrics - Riley's design
 #[derive(Debug, Default)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StreamMetrics {
     pub messages_processed: std::sync::atomic::AtomicU64,
     pub messages_failed: std::sync::atomic::AtomicU64,

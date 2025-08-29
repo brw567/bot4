@@ -16,49 +16,50 @@ use sqlx::FromRow;
 /// CANONICAL Order DTO - Database representation
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 #[sqlx(rename_all = "snake_case")]
-pub struct OrderDto {
-    pub id: Uuid,
-    pub client_order_id: String,
-    pub exchange_order_id: Option<String>,
-    
-    // Core fields
-    pub symbol: String,
-    pub exchange: String,
-    pub side: String,
-    pub order_type: String,
-    pub quantity: Decimal,
-    pub price: Option<Decimal>,
-    pub stop_price: Option<Decimal>,
-    pub time_in_force: String,
-    
-    // Status
-    pub status: String,
-    pub filled_quantity: Decimal,
-    pub average_fill_price: Option<Decimal>,
-    pub commission: Decimal,
-    pub commission_asset: String,
-    
-    // Risk fields (Cameron)
-    pub risk_score: f64,
-    pub kelly_fraction: Decimal,
-    pub max_slippage_bps: i32,
-    pub value_at_risk: Decimal,
-    
-    // ML fields (Blake)
-    pub ml_confidence: Option<f64>,
-    pub ml_prediction: Option<f64>,
-    pub strategy_id: Option<String>,
-    
-    // Timestamps
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-    pub submitted_at: Option<DateTime<Utc>>,
-    pub filled_at: Option<DateTime<Utc>>,
-    
-    // Performance (Ellis)
-    pub decision_latency_ns: i64,
-    pub network_latency_ns: Option<i64>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OrderDto {
+// ELIMINATED:     pub id: Uuid,
+// ELIMINATED:     pub client_order_id: String,
+// ELIMINATED:     pub exchange_order_id: Option<String>,
+// ELIMINATED:     
+// ELIMINATED:     // Core fields
+// ELIMINATED:     pub symbol: String,
+// ELIMINATED:     pub exchange: String,
+// ELIMINATED:     pub side: String,
+// ELIMINATED:     pub order_type: String,
+// ELIMINATED:     pub quantity: Decimal,
+// ELIMINATED:     pub price: Option<Decimal>,
+// ELIMINATED:     pub stop_price: Option<Decimal>,
+// ELIMINATED:     pub time_in_force: String,
+// ELIMINATED:     
+// ELIMINATED:     // Status
+// ELIMINATED:     pub status: String,
+// ELIMINATED:     pub filled_quantity: Decimal,
+// ELIMINATED:     pub average_fill_price: Option<Decimal>,
+// ELIMINATED:     pub commission: Decimal,
+// ELIMINATED:     pub commission_asset: String,
+// ELIMINATED:     
+// ELIMINATED:     // Risk fields (Cameron)
+// ELIMINATED:     pub risk_score: f64,
+// ELIMINATED:     pub kelly_fraction: Decimal,
+// ELIMINATED:     pub max_slippage_bps: i32,
+// ELIMINATED:     pub value_at_risk: Decimal,
+// ELIMINATED:     
+// ELIMINATED:     // ML fields (Blake)
+// ELIMINATED:     pub ml_confidence: Option<f64>,
+// ELIMINATED:     pub ml_prediction: Option<f64>,
+// ELIMINATED:     pub strategy_id: Option<String>,
+// ELIMINATED:     
+// ELIMINATED:     // Timestamps
+// ELIMINATED:     pub created_at: DateTime<Utc>,
+// ELIMINATED:     pub updated_at: DateTime<Utc>,
+// ELIMINATED:     pub submitted_at: Option<DateTime<Utc>>,
+// ELIMINATED:     pub filled_at: Option<DateTime<Utc>>,
+// ELIMINATED:     
+// ELIMINATED:     // Performance (Ellis)
+// ELIMINATED:     pub decision_latency_ns: i64,
+// ELIMINATED:     pub network_latency_ns: Option<i64>,
+// ELIMINATED: }
 
 impl OrderDto {
     /// Convert from domain Order to DTO
@@ -107,65 +108,68 @@ impl OrderDto {
 
 /// CANONICAL Position DTO
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-pub struct PositionDto {
-    pub id: Uuid,
-    pub symbol: String,
-    pub exchange: String,
-    pub side: String,
-    
-    // Quantities and prices
-    pub quantity: Decimal,
-    pub entry_price: Decimal,
-    pub current_price: Decimal,
-    pub average_entry: Decimal,
-    
-    // P&L
-    pub unrealized_pnl: Decimal,
-    pub unrealized_pnl_pct: Decimal,
-    pub realized_pnl: Decimal,
-    pub total_pnl: Decimal,
-    pub commission_paid: Decimal,
-    pub funding_paid: Decimal,
-    
-    // Risk (Cameron)
-    pub stop_loss: Option<Decimal>,
-    pub take_profit: Option<Decimal>,
-    pub max_drawdown: Decimal,
-    pub liquidation_price: Option<Decimal>,
-    pub kelly_fraction: Decimal,
-    pub risk_score: f64,
-    
-    // ML (Blake)
-    pub strategy_id: Option<String>,
-    pub ml_confidence: Option<f64>,
-    
-    // Timestamps
-    pub opened_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-    pub closed_at: Option<DateTime<Utc>>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct PositionDto {
+// ELIMINATED:     pub id: Uuid,
+// ELIMINATED:     pub symbol: String,
+// ELIMINATED:     pub exchange: String,
+// ELIMINATED:     pub side: String,
+// ELIMINATED:     
+// ELIMINATED:     // Quantities and prices
+// ELIMINATED:     pub quantity: Decimal,
+// ELIMINATED:     pub entry_price: Decimal,
+// ELIMINATED:     pub current_price: Decimal,
+// ELIMINATED:     pub average_entry: Decimal,
+// ELIMINATED:     
+// ELIMINATED:     // P&L
+// ELIMINATED:     pub unrealized_pnl: Decimal,
+// ELIMINATED:     pub unrealized_pnl_pct: Decimal,
+// ELIMINATED:     pub realized_pnl: Decimal,
+// ELIMINATED:     pub total_pnl: Decimal,
+// ELIMINATED:     pub commission_paid: Decimal,
+// ELIMINATED:     pub funding_paid: Decimal,
+// ELIMINATED:     
+// ELIMINATED:     // Risk (Cameron)
+// ELIMINATED:     pub stop_loss: Option<Decimal>,
+// ELIMINATED:     pub take_profit: Option<Decimal>,
+// ELIMINATED:     pub max_drawdown: Decimal,
+// ELIMINATED:     pub liquidation_price: Option<Decimal>,
+// ELIMINATED:     pub kelly_fraction: Decimal,
+// ELIMINATED:     pub risk_score: f64,
+// ELIMINATED:     
+// ELIMINATED:     // ML (Blake)
+// ELIMINATED:     pub strategy_id: Option<String>,
+// ELIMINATED:     pub ml_confidence: Option<f64>,
+// ELIMINATED:     
+// ELIMINATED:     // Timestamps
+// ELIMINATED:     pub opened_at: DateTime<Utc>,
+// ELIMINATED:     pub updated_at: DateTime<Utc>,
+// ELIMINATED:     pub closed_at: Option<DateTime<Utc>>,
+// ELIMINATED: }
 
 /// CANONICAL Trade DTO
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-pub struct TradeDto {
-    pub id: Uuid,
-    pub order_id: Uuid,
-    pub position_id: Option<Uuid>,
-    
-    pub symbol: String,
-    pub exchange: String,
-    pub side: String,
-    pub quantity: Decimal,
-    pub price: Decimal,
-    pub commission: Decimal,
-    pub commission_asset: String,
-    
-    pub executed_at: DateTime<Utc>,
-    pub settlement_at: Option<DateTime<Utc>>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct TradeDto {
+// ELIMINATED:     pub id: Uuid,
+// ELIMINATED:     pub order_id: Uuid,
+// ELIMINATED:     pub position_id: Option<Uuid>,
+// ELIMINATED:     
+// ELIMINATED:     pub symbol: String,
+// ELIMINATED:     pub exchange: String,
+// ELIMINATED:     pub side: String,
+// ELIMINATED:     pub quantity: Decimal,
+// ELIMINATED:     pub price: Decimal,
+// ELIMINATED:     pub commission: Decimal,
+// ELIMINATED:     pub commission_asset: String,
+// ELIMINATED:     
+// ELIMINATED:     pub executed_at: DateTime<Utc>,
+// ELIMINATED:     pub settlement_at: Option<DateTime<Utc>>,
+// ELIMINATED: }
 
 /// CANONICAL Market Data DTO
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct MarketDataDto {
     pub id: Uuid,
     pub symbol: String,
@@ -202,30 +206,32 @@ pub struct MarketDataDto {
 
 /// CANONICAL Risk Metrics DTO (Cameron)
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-pub struct RiskMetricsDto {
-    pub id: Uuid,
-    pub timestamp: DateTime<Utc>,
-    
-    // Portfolio level
-    pub total_value: Decimal,
-    pub total_positions: i32,
-    pub portfolio_heat: f64,
-    
-    // Risk metrics
-    pub portfolio_var: Decimal,
-    pub portfolio_cvar: Decimal,
-    pub max_drawdown: Decimal,
-    pub sharpe_ratio: f64,
-    pub sortino_ratio: f64,
-    
-    // Limits
-    pub position_limit_used: f64,
-    pub leverage_used: f64,
-    pub daily_loss: Decimal,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct RiskMetricsDto {
+// ELIMINATED:     pub id: Uuid,
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     
+// ELIMINATED:     // Portfolio level
+// ELIMINATED:     pub total_value: Decimal,
+// ELIMINATED:     pub total_positions: i32,
+// ELIMINATED:     pub portfolio_heat: f64,
+// ELIMINATED:     
+// ELIMINATED:     // Risk metrics
+// ELIMINATED:     pub portfolio_var: Decimal,
+// ELIMINATED:     pub portfolio_cvar: Decimal,
+// ELIMINATED:     pub max_drawdown: Decimal,
+// ELIMINATED:     pub sharpe_ratio: f64,
+// ELIMINATED:     pub sortino_ratio: f64,
+// ELIMINATED:     
+// ELIMINATED:     // Limits
+// ELIMINATED:     pub position_limit_used: f64,
+// ELIMINATED:     pub leverage_used: f64,
+// ELIMINATED:     pub daily_loss: Decimal,
+// ELIMINATED: }
 
 /// CANONICAL ML Model Metrics DTO (Blake)
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct MLMetricsDto {
     pub id: Uuid,
     pub model_id: String,
@@ -252,6 +258,7 @@ pub struct MLMetricsDto {
 
 /// CANONICAL Performance DTO (Ellis)
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+/// TODO: Add docs
 pub struct PerformanceDto {
     pub id: Uuid,
     pub component: String,
@@ -277,6 +284,7 @@ pub struct PerformanceDto {
 }
 
 // Database queries using canonical DTOs
+/// TODO: Add docs
 pub struct UnifiedQueries;
 
 impl UnifiedQueries {
@@ -315,9 +323,10 @@ impl UnifiedQueries {
 }
 
 use crate::order_enhanced::Order;
-use crate::position_canonical::Position;
+use crate::canonical_types::Position;
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub enum DtoError {
     ConversionError(String),
     ValidationError(String),

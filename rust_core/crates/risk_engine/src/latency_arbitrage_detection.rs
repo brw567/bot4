@@ -21,6 +21,7 @@ use statrs::statistics::Statistics;
 
 /// Latency arbitrage event
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LatencyArbitrageEvent {
     pub timestamp: DateTime<Utc>,
     pub event_type: ArbitrageType,
@@ -39,6 +40,7 @@ pub struct LatencyArbitrageEvent {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum ArbitrageType {
     FrontRunning,       // Someone trades ahead of us
     BackRunning,        // Someone trades immediately after us
@@ -49,6 +51,7 @@ pub enum ArbitrageType {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -56,6 +59,7 @@ pub enum OrderSide {
 
 /// Latency measurement for different operations
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct LatencyMetrics {
     pub data_feed_latency_ms: f64,      // Time from exchange to us
     pub decision_latency_ms: f64,       // Our processing time
@@ -69,6 +73,7 @@ pub struct LatencyMetrics {
 
 /// Arbitrageur profile
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ArbitrageurProfile {
     pub identifier: String,
     pub detectioncount: u64,
@@ -84,6 +89,7 @@ pub struct ArbitrageurProfile {
 
 /// Latency Arbitrage Detector
 /// Jordan: "Every microsecond counts - we need to know when we're being beaten"
+/// TODO: Add docs
 pub struct LatencyArbitrageDetector {
     /// Recent order executions for analysis
     recent_executions: Arc<RwLock<VecDeque<ExecutionRecord>>>,
@@ -149,6 +155,7 @@ struct TradeEvent {
 
 /// Detection configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DetectionConfig {
     pub min_adverse_move_bps: i32,         // Min move to consider arbitrage (e.g., 2)
     pub max_execution_time_ms: i64,        // Max time for normal execution (e.g., 100)
@@ -591,6 +598,7 @@ impl LatencyArbitrageDetector {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ArbitrageProtection {
     pub strategy: String,
     pub recommendations: Vec<String>,
@@ -599,6 +607,7 @@ pub struct ArbitrageProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct LatencyArbitrageStats {
     pub total_orders_analyzed: u64,
     pub arbitrage_events_detected: u64,

@@ -14,7 +14,9 @@ use std::cmp::Ordering;
 /// 3. Senkou Span A (Leading Span A) - average of Tenkan and Kijun, plotted 26 periods ahead
 /// 4. Senkou Span B (Leading Span B) - 52 period average, plotted 26 periods ahead
 /// 5. Chikou Span (Lagging Span) - close plotted 26 periods behind
-pub struct IchimokuCloud {
+/// TODO: Add docs
+// ELIMINATED: IchimokuCloud - Enhanced with Multiple timeframes, Kumo twist
+// pub struct IchimokuCloud {
     tenkan_period: usize,   // Default: 9
     kijun_period: usize,    // Default: 26
     senkou_b_period: usize, // Default: 52
@@ -23,6 +25,7 @@ pub struct IchimokuCloud {
 
 /// Complete Ichimoku result with all components
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct IchimokuResult {
     pub tenkan_sen: f64,
     pub kijun_sen: f64,
@@ -37,6 +40,7 @@ pub struct IchimokuResult {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub enum IchimokuSignal {
     StrongBullish,  // Price above cloud, Tenkan > Kijun, cloud green
     Bullish,        // Price above cloud

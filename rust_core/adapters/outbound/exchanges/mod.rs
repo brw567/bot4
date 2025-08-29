@@ -18,6 +18,7 @@ use std::sync::Arc;
 
 /// Factory for creating exchange adapters
 /// Casey: "Always use REAL adapters in production!"
+/// TODO: Add docs
 pub struct ExchangeFactory;
 
 impl ExchangeFactory {

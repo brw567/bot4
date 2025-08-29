@@ -1,3 +1,4 @@
+use domain_types::Portfolio;
 pub use domain_types::quantity::Quantity;
 pub use domain_types::price::Price;
 // Decimal Arithmetic for Money Operations
@@ -15,12 +16,14 @@ use serde::{Serialize, Deserialize};
 /// Money type using decimal arithmetic for perfect precision
 /// Sophia's requirement: No floating point errors in money calculations
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Money {
     amount: Decimal,
     currency: Currency,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Currency {
     USD,
     BTC,
@@ -265,7 +268,8 @@ impl fmt::Display for Money {
 
 /// Portfolio value with multi-currency support
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Portfolio {
+// ELIMINATED: use domain_types::Portfolio
+// pub struct Portfolio {
     balances: HashMap<Currency, Money>,
     base_currency: Currency,
 }
@@ -320,6 +324,7 @@ impl Portfolio {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MoneyError {
     CurrencyMismatch,
     InsufficientBalance,
@@ -332,6 +337,7 @@ pub enum MoneyError {
 // ============================================================================
 
 /// Convert legacy f64 prices to decimal
+/// TODO: Add docs
 pub fn migrate_price_f64_to_decimal(price: f64, pair: TradingPair) -> Price {
     // Use string conversion to avoid float precision issues
     let value = Decimal::from_str(&format!("{:.8}", price))
@@ -340,6 +346,7 @@ pub fn migrate_price_f64_to_decimal(price: f64, pair: TradingPair) -> Price {
 }
 
 /// Convert legacy f64 amounts to Money
+/// TODO: Add docs
 pub fn migrate_amount_f64_to_money(amount: f64, currency: Currency) -> Money {
     let decimal = Decimal::from_str(&format!("{:.8}", amount))
         .unwrap_or_else(|_| Decimal::from_f64(amount).expect("SAFETY: Add proper error handling"));

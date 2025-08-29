@@ -1,3 +1,5 @@
+use domain_types::PipelineMetrics;
+use domain_types::market_data::MarketTick;
 // Stream Processor Module - Message Processing Pipeline
 // Team Lead: Morgan (ML Processing)
 // Contributors: ALL 8 TEAM MEMBERS
@@ -16,6 +18,7 @@ use tokio::sync::RwLock;
 // ============================================================================
 
 /// Message processing pipeline
+/// TODO: Add docs
 pub struct ProcessingPipeline {
     stages: Arc<RwLock<Vec<Arc<dyn ProcessorStage>>>>,
     metrics: Arc<PipelineMetrics>,
@@ -24,7 +27,8 @@ pub struct ProcessingPipeline {
 
 /// Pipeline metrics - Riley's monitoring
 #[derive(Debug, Default)]
-pub struct PipelineMetrics {
+// ELIMINATED: use domain_types::PipelineMetrics
+// pub struct PipelineMetrics {
     pub messages_processed: std::sync::atomic::AtomicU64,
     pub stage_latencies: Arc<RwLock<HashMap<String, u64>>>,
     pub pipeline_latency_us: std::sync::atomic::AtomicU64,
@@ -129,6 +133,7 @@ impl ProcessingPipeline {
 // FEATURE EXTRACTION STAGE - Morgan's Implementation
 // ============================================================================
 
+/// TODO: Add docs
 pub struct FeatureExtractionStage {
     // Feature extraction logic
 }
@@ -192,6 +197,7 @@ impl ProcessorStage for FeatureExtractionStage {
 // ML INFERENCE STAGE - Morgan's ML Integration
 // ============================================================================
 
+/// TODO: Add docs
 pub struct MLInferenceStage {
     model_id: String,
 }
@@ -236,6 +242,7 @@ impl ProcessorStage for MLInferenceStage {
 // SIGNAL GENERATION STAGE - Casey's Trading Logic
 // ============================================================================
 
+/// TODO: Add docs
 pub struct SignalGenerationStage {
     threshold: f64,
 }
@@ -285,6 +292,7 @@ impl ProcessorStage for SignalGenerationStage {
 // RISK VALIDATION STAGE - Quinn's Safety Checks
 // ============================================================================
 
+/// TODO: Add docs
 pub struct RiskValidationStage {
     max_position_size: f64,
     max_daily_trades: u64,
@@ -339,6 +347,7 @@ impl ProcessorStage for RiskValidationStage {
 // PERSISTENCE STAGE - Avery's Data Storage
 // ============================================================================
 
+/// TODO: Add docs
 pub struct PersistenceStage {
     // Database connection would go here
 }
@@ -384,6 +393,7 @@ impl ProcessorStage for PersistenceStage {
 // PIPELINE BUILDER - Sam's Fluent API
 // ============================================================================
 
+/// TODO: Add docs
 pub struct PipelineBuilder {
     pipeline: ProcessingPipeline,
 }

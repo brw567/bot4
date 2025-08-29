@@ -175,6 +175,7 @@ impl OrderBookAnalytics for OrderBook {
 }
 
 // Advanced market microstructure calculations
+/// TODO: Add docs
 pub struct MicrostructureMetrics;
 
 impl MicrostructureMetrics {

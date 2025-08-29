@@ -9,50 +9,51 @@ use std::str::FromStr;
 /// Unified RiskLimits supporting all use cases
 /// Consolidates 7 duplicate definitions into one
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct RiskLimits {
-    // Position limits
-    pub max_position_pct: Decimal,        // % of portfolio
-    pub max_position_value: Decimal,      // Absolute value
-    pub max_positions_per_symbol: u32,    // Concentration limit
-    pub max_total_positions: u32,         // Portfolio limit
-    
-    // Loss limits
-    pub max_loss_per_trade: Decimal,      // Single trade
-    pub max_daily_loss: Decimal,          // Daily limit
-    pub max_weekly_loss: Decimal,         // Weekly limit
-    pub max_drawdown: Decimal,            // Maximum drawdown
-    
-    // Exposure limits
-    pub max_leverage: Decimal,            // Leverage limit
-    pub max_gross_exposure: Decimal,      // Gross exposure
-    pub max_net_exposure: Decimal,        // Net exposure
-    pub max_sector_exposure: Decimal,     // Per sector
-    
-    // Correlation & diversification
-    pub max_correlation: Decimal,         // Between positions
-    pub min_diversification: Decimal,     // Minimum required
-    pub max_concentration: Decimal,       // Single asset concentration
-    
-    // Risk metrics thresholds
-    pub max_var_95: Decimal,              // 95% VaR limit
-    pub max_var_99: Decimal,              // 99% VaR limit
-    pub max_expected_shortfall: Decimal,  // CVaR limit
-    pub min_sharpe_ratio: Decimal,        // Performance threshold
-    
-    // Kelly criterion limits
-    pub max_kelly_fraction: Decimal,      // Maximum Kelly %
-    pub kelly_safety_factor: Decimal,     // Safety multiplier
-    
-    // Circuit breaker thresholds
-    pub circuit_breaker_threshold: Decimal,
-    pub emergency_stop_loss: Decimal,
-    
-    // Operational limits
-    pub require_stop_loss: bool,
-    pub require_take_profit: bool,
-    pub allow_overnight: bool,
-    pub allow_weekend: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct RiskLimits {
+// ELIMINATED:     // Position limits
+// ELIMINATED:     pub max_position_pct: Decimal,        // % of portfolio
+// ELIMINATED:     pub max_position_value: Decimal,      // Absolute value
+// ELIMINATED:     pub max_positions_per_symbol: u32,    // Concentration limit
+// ELIMINATED:     pub max_total_positions: u32,         // Portfolio limit
+// ELIMINATED:     
+// ELIMINATED:     // Loss limits
+// ELIMINATED:     pub max_loss_per_trade: Decimal,      // Single trade
+// ELIMINATED:     pub max_daily_loss: Decimal,          // Daily limit
+// ELIMINATED:     pub max_weekly_loss: Decimal,         // Weekly limit
+// ELIMINATED:     pub max_drawdown: Decimal,            // Maximum drawdown
+// ELIMINATED:     
+// ELIMINATED:     // Exposure limits
+// ELIMINATED:     pub max_leverage: Decimal,            // Leverage limit
+// ELIMINATED:     pub max_gross_exposure: Decimal,      // Gross exposure
+// ELIMINATED:     pub max_net_exposure: Decimal,        // Net exposure
+// ELIMINATED:     pub max_sector_exposure: Decimal,     // Per sector
+// ELIMINATED:     
+// ELIMINATED:     // Correlation & diversification
+// ELIMINATED:     pub max_correlation: Decimal,         // Between positions
+// ELIMINATED:     pub min_diversification: Decimal,     // Minimum required
+// ELIMINATED:     pub max_concentration: Decimal,       // Single asset concentration
+// ELIMINATED:     
+// ELIMINATED:     // Risk metrics thresholds
+// ELIMINATED:     pub max_var_95: Decimal,              // 95% VaR limit
+// ELIMINATED:     pub max_var_99: Decimal,              // 99% VaR limit
+// ELIMINATED:     pub max_expected_shortfall: Decimal,  // CVaR limit
+// ELIMINATED:     pub min_sharpe_ratio: Decimal,        // Performance threshold
+// ELIMINATED:     
+// ELIMINATED:     // Kelly criterion limits
+// ELIMINATED:     pub max_kelly_fraction: Decimal,      // Maximum Kelly %
+// ELIMINATED:     pub kelly_safety_factor: Decimal,     // Safety multiplier
+// ELIMINATED:     
+// ELIMINATED:     // Circuit breaker thresholds
+// ELIMINATED:     pub circuit_breaker_threshold: Decimal,
+// ELIMINATED:     pub emergency_stop_loss: Decimal,
+// ELIMINATED:     
+// ELIMINATED:     // Operational limits
+// ELIMINATED:     pub require_stop_loss: bool,
+// ELIMINATED:     pub require_take_profit: bool,
+// ELIMINATED:     pub allow_overnight: bool,
+// ELIMINATED:     pub allow_weekend: bool,
+// ELIMINATED: }
 
 impl Default for RiskLimits {
     fn default() -> Self {

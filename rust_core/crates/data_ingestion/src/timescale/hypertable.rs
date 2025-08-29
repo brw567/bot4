@@ -10,6 +10,7 @@ use tracing::{info, warn, debug};
 
 /// Hypertable configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ChunkConfig {
     pub table_name: String,
     pub time_column: String,
@@ -21,6 +22,7 @@ pub struct ChunkConfig {
 }
 
 /// Hypertable manager for schema operations
+/// TODO: Add docs
 pub struct HypertableManager {
     pool: Arc<Pool>,
 }
@@ -171,6 +173,7 @@ impl HypertableManager {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ChunkStats {
     pub total_chunks: i64,
     pub compressed_chunks: i64,

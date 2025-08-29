@@ -1,3 +1,4 @@
+use domain_types::CircuitBreaker;
 use domain_types::order::OrderError;
 //! Position Reconciliation Module - Layer 0.8.1
 //! Module uses canonical Position type from domain_types
@@ -53,7 +54,8 @@ use crate::mode_persistence::ModePersistenceManager;
 /// Simple circuit breaker for reconciliation
 
 #[derive(Debug, Clone)]
-pub struct CircuitBreaker {
+// ELIMINATED: use domain_types::CircuitBreaker
+// pub struct CircuitBreaker {
     name: String,
     failure_count: Arc<Mutex<u32>>,
     max_failures: u32,
@@ -100,6 +102,7 @@ impl CircuitBreaker {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum PositionSide {
     Long,
     Short,
@@ -107,6 +110,7 @@ pub enum PositionSide {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum PositionStatus {
     Open,
     Closing,
@@ -144,6 +148,7 @@ pub enum PositionStatus {
 /// Alex: "Complete visibility into discrepancies"
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ReconciliationReport {
     /// Timestamp of reconciliation
     pub timestamp: DateTime<Utc>,
@@ -179,6 +184,7 @@ pub struct ReconciliationReport {
 /// Types of discrepancies
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum Discrepancy {
     /// Position exists on exchange but not internally
     MissingInternal {
@@ -234,6 +240,7 @@ pub enum Discrepancy {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum Severity {
     Critical,  // Requires immediate action
     High,      // Significant risk
@@ -243,6 +250,7 @@ pub enum Severity {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ReconciliationStatus {
     /// All positions match perfectly
     FullyReconciled,
@@ -260,6 +268,7 @@ pub enum ReconciliationStatus {
 /// Risk assessment from reconciliation
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RiskAssessment {
     /// Overall risk level
     pub risk_level: RiskLevel,
@@ -282,6 +291,7 @@ pub struct RiskAssessment {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum RiskLevel {
     Extreme,   // Force Emergency mode
     High,      // Downgrade to Manual
@@ -292,6 +302,7 @@ pub enum RiskLevel {
 /// Recommended actions based on reconciliation
 #[derive(Debug, Clone)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum RecommendedAction {
     /// Force emergency mode
     ForceEmergency(String),
@@ -353,6 +364,7 @@ pub trait ExchangeConnector: Send + Sync {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
@@ -360,6 +372,7 @@ pub enum OrderSide {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -369,6 +382,7 @@ pub enum OrderType {
 
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderStatus {
     Pending,
     Open,
@@ -384,6 +398,7 @@ pub enum OrderStatus {
 /// Main reconciliation engine
 /// Morgan: "Mathematical precision in state verification"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PositionReconciliationEngine {
     /// Exchange connectors
     exchanges: HashMap<String, Arc<dyn ExchangeConnector>>,
@@ -413,6 +428,7 @@ pub struct PositionReconciliationEngine {
 /// Reconciliation configuration
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ReconciliationConfig {
     /// Maximum acceptable size discrepancy (percentage)
     pub size_tolerance_pct: Decimal,
@@ -457,6 +473,7 @@ impl Default for ReconciliationConfig {
 /// Reconciliation events
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ReconciliationEvent {
     Started(DateTime<Utc>),
     Completed(ReconciliationReport),
@@ -999,6 +1016,7 @@ impl PositionReconciliationEngine {
 /// Automated reconciliation scheduler
 /// Riley: "Continuous verification at configurable intervals"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ReconciliationScheduler {
     engine: Arc<PositionReconciliationEngine>,
     interval: Duration,

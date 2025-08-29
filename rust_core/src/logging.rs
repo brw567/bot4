@@ -15,6 +15,7 @@ use serde_json::json;
 use std::io;
 
 /// Initialize comprehensive logging system
+/// TODO: Add docs
 pub fn init_logging() -> anyhow::Result<()> {
     // Environment-based log level
     let env_filter = EnvFilter::try_from_default_env()
@@ -90,6 +91,7 @@ pub fn init_logging() -> anyhow::Result<()> {
 
 /// Log performance metrics
 #[inline]
+/// TODO: Add docs
 pub fn log_performance(
     component: &str,
     operation: &str,
@@ -107,6 +109,7 @@ pub fn log_performance(
 }
 
 /// Log trade execution
+/// TODO: Add docs
 pub fn log_trade(
     symbol: &str,
     side: &str,
@@ -127,6 +130,7 @@ pub fn log_trade(
 }
 
 /// Log risk events
+/// TODO: Add docs
 pub fn log_risk_event(
     event_type: &str,
     severity: &str,
@@ -150,6 +154,7 @@ pub fn log_risk_event(
 }
 
 /// Log ML model predictions
+/// TODO: Add docs
 pub fn log_ml_prediction(
     model: &str,
     symbol: &str,
@@ -169,6 +174,7 @@ pub fn log_ml_prediction(
 }
 
 /// Structured error logging with context
+/// TODO: Add docs
 pub fn log_error<E: std::fmt::Display>(
     component: &str,
     operation: &str,

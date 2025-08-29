@@ -36,6 +36,7 @@ use crate::circuit_breaker_integration::CircuitBreakerHub;
 /// Real-time P&L data structure
 /// Morgan: "P&L must include unrealized, fees, and slippage"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PnLSnapshot {
     pub timestamp: u64,
     pub realized_pnl: f64,
@@ -55,6 +56,7 @@ pub struct PnLSnapshot {
 /// Position status information
 /// Casey: "Must show all exchange positions consolidated"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PositionSnapshot {
     pub symbol: String,
     pub exchange: String,
@@ -73,6 +75,7 @@ pub struct PositionSnapshot {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum PositionSide {
     Long,
     Short,
@@ -81,6 +84,7 @@ pub enum PositionSide {
 /// Risk metrics display
 /// Quinn: "Real-time risk metrics are critical for monitoring"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RiskMetricsSnapshot {
     pub timestamp: u64,
     pub total_exposure: f64,
@@ -100,6 +104,7 @@ pub struct RiskMetricsSnapshot {
 /// System health metrics
 /// Sam: "Health monitoring prevents silent failures"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SystemHealthSnapshot {
     pub timestamp: u64,
     pub uptime_seconds: u64,
@@ -117,6 +122,7 @@ pub struct SystemHealthSnapshot {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ConnectionStatus {
     Connected,
     Disconnected,
@@ -125,6 +131,7 @@ pub enum ConnectionStatus {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum BreakerStatus {
     Closed,
     Open,
@@ -134,6 +141,7 @@ pub enum BreakerStatus {
 /// Historical performance data point
 /// Riley: "Historical data essential for trend analysis"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PerformancePoint {
     pub timestamp: u64,
     pub total_pnl: f64,
@@ -148,6 +156,7 @@ pub struct PerformancePoint {
 /// Alert information
 /// Alex: "Alerts must be prioritized and actionable"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AlertSnapshot {
     pub id: String,
     pub timestamp: u64,
@@ -161,6 +170,7 @@ pub struct AlertSnapshot {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+/// TODO: Add docs
 pub enum AlertLevel {
     Info,
     Warning,
@@ -169,6 +179,7 @@ pub enum AlertLevel {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AlertCategory {
     Risk,
     System,
@@ -185,6 +196,7 @@ pub enum AlertCategory {
 /// Avery: "Efficient serialization crucial for real-time performance"
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "data")]
+/// TODO: Add docs
 pub enum DashboardMessage {
     /// P&L update
     PnLUpdate(PnLSnapshot),
@@ -227,6 +239,7 @@ pub enum DashboardMessage {
 
 /// Aggregates data from all trading systems for dashboard display
 /// Jordan: "Zero-copy aggregation for performance"
+/// TODO: Add docs
 pub struct DashboardAggregator {
     /// Current P&L data
     pnl_data: Arc<RwLock<PnLSnapshot>>,
@@ -415,6 +428,7 @@ impl DashboardAggregator {
 
 /// WebSocket server for dashboard connections
 /// Alex: "Must support multiple concurrent dashboard clients"
+/// TODO: Add docs
 pub struct DashboardWebSocketServer {
     /// Data aggregator
     aggregator: Arc<DashboardAggregator>,
@@ -597,6 +611,7 @@ impl DashboardWebSocketServer {
 
 /// Main dashboard manager coordinating all monitoring
 /// Sam: "Single entry point for all dashboard operations"
+/// TODO: Add docs
 pub struct DashboardManager {
     /// Data aggregator
     aggregator: Arc<DashboardAggregator>,
@@ -913,6 +928,7 @@ use crate::historical_charts::{ChartDataAggregator, ChartRenderer, Timeframe};
 use crate::alert_management::{AlertManager, Alert as SystemAlert, AlertSeverity as SystemAlertSeverity};
 
 /// Extended dashboard manager with charts and alerts
+/// TODO: Add docs
 pub struct ExtendedDashboardManager {
     base_manager: Arc<DashboardManager>,
     chart_aggregator: Arc<ChartDataAggregator>,

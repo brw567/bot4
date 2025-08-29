@@ -17,6 +17,7 @@ use tokio::sync::RwLock;
 // ============================================================================
 
 /// High-performance batch message producer
+/// TODO: Add docs
 pub struct BatchProducer {
     redis_conn: Arc<RwLock<ConnectionManager>>,
     buffer: Arc<RwLock<Vec<(String, StreamMessage)>>>,
@@ -27,6 +28,7 @@ pub struct BatchProducer {
 
 /// Producer metrics - Riley's monitoring
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct ProducerMetrics {
     pub messages_sent: std::sync::atomic::AtomicU64,
     pub batches_sent: std::sync::atomic::AtomicU64,
@@ -142,6 +144,7 @@ impl BatchProducer {
 // ============================================================================
 
 /// Priority producer for critical messages
+/// TODO: Add docs
 pub struct PriorityProducer {
     redis_conn: Arc<RwLock<ConnectionManager>>,
     circuit_breaker: Arc<StreamCircuitBreaker>,

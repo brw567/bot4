@@ -24,17 +24,18 @@ use super::DataBatch;
 
 /// Reconciliation configuration
 #[derive(Debug, Clone, Deserialize)]
-pub struct ReconciliationConfig {
-    pub min_sources_for_consensus: usize,
-    pub price_tolerance_percent: f64,
-    pub volume_tolerance_percent: f64,
-    pub timestamp_tolerance_ms: i64,
-    pub consensus_threshold: f64,  // Percentage of sources that must agree
-    pub enable_outlier_detection: bool,
-    pub outlier_std_multiplier: f64,
-    pub enable_fuzzy_matching: bool,
-    pub fuzzy_threshold: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct ReconciliationConfig {
+// ELIMINATED:     pub min_sources_for_consensus: usize,
+// ELIMINATED:     pub price_tolerance_percent: f64,
+// ELIMINATED:     pub volume_tolerance_percent: f64,
+// ELIMINATED:     pub timestamp_tolerance_ms: i64,
+// ELIMINATED:     pub consensus_threshold: f64,  // Percentage of sources that must agree
+// ELIMINATED:     pub enable_outlier_detection: bool,
+// ELIMINATED:     pub outlier_std_multiplier: f64,
+// ELIMINATED:     pub enable_fuzzy_matching: bool,
+// ELIMINATED:     pub fuzzy_threshold: f64,
+// ELIMINATED: }
 
 impl Default for ReconciliationConfig {
     fn default() -> Self {
@@ -62,6 +63,7 @@ pub trait DataSource: Send + Sync {
 }
 
 /// Mock data source for testing
+/// TODO: Add docs
 pub struct MockSource {
     name: String,
     reliability: f64,
@@ -97,6 +99,7 @@ impl DataSource for MockSource {
 }
 
 /// Cross-source reconciliation engine
+/// TODO: Add docs
 pub struct CrossSourceReconciler {
     config: ReconciliationConfig,
     
@@ -454,6 +457,7 @@ impl CrossSourceReconciler {
 
 /// Source data structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SourceData {
     pub source: String,
     pub symbol: String,
@@ -486,6 +490,7 @@ struct SourceMetrics {
 
 /// Reconciliation result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ReconciliationResult {
     pub symbol: String,
     pub timestamp: DateTime<Utc>,
@@ -501,6 +506,7 @@ pub struct ReconciliationResult {
 
 /// Reconciliation statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ReconciliationStatistics {
     pub total_reconciliations: usize,
     pub consistent_count: usize,
@@ -511,6 +517,7 @@ pub struct ReconciliationStatistics {
 
 /// Source statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SourceStatistics {
     pub total_reports: usize,
     pub outlier_count: usize,

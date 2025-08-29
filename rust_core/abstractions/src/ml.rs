@@ -1,3 +1,4 @@
+use domain_types::FeatureVector;
 //! # ML Layer Abstractions (Layer 3)
 //!
 //! ML abstractions that feature_store can use without depending on ML crate.
@@ -46,7 +47,8 @@ pub trait FeatureProvider: Send + Sync {
 
 /// Feature vector
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FeatureVector {
+// ELIMINATED: use domain_types::FeatureVector
+// pub struct FeatureVector {
     /// Entity ID
     pub entity_id: String,
     /// Features as key-value pairs
@@ -60,6 +62,7 @@ pub struct FeatureVector {
 /// Feature value types
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
+/// TODO: Add docs
 pub enum FeatureValue {
     /// Numeric feature
     Numeric(f64),
@@ -75,6 +78,7 @@ pub enum FeatureValue {
 
 /// Time series features
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TimeSeriesFeatures {
     /// Entity ID
     pub entity_id: String,
@@ -86,6 +90,7 @@ pub struct TimeSeriesFeatures {
 
 /// Time point in series
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TimePoint {
     /// Timestamp
     pub timestamp: DateTime<Utc>,
@@ -95,6 +100,7 @@ pub struct TimePoint {
 
 /// Feature computation definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureComputation {
     /// Feature name
     pub name: String,
@@ -110,6 +116,7 @@ pub struct FeatureComputation {
 
 /// Computation types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ComputationType {
     /// Direct computation
     Direct,
@@ -125,6 +132,7 @@ pub enum ComputationType {
 
 /// Aggregation types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AggregationType {
     /// Sum
     Sum,
@@ -165,22 +173,36 @@ pub trait ModelPredictor: Send + Sync {
 
 /// Prediction result
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Prediction {
-    /// Model ID
-    pub model_id: String,
-    /// Predicted value
-    pub value: PredictionValue,
-    /// Confidence/probability
-    pub confidence: f64,
-    /// Prediction timestamp
-    pub timestamp: DateTime<Utc>,
-    /// Feature importance
-    pub feature_importance: Option<HashMap<String, f64>>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+// pub struct Prediction {
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     /// Model ID
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub model_id: String,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     /// Predicted value
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub value: PredictionValue,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     /// Confidence/probability
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub confidence: f64,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     /// Prediction timestamp
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub timestamp: DateTime<Utc>,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     /// Feature importance
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+//     pub feature_importance: Option<HashMap<String, f64>>,
+// ELIMINATED: Duplicate - use ml::predictions::Prediction
+// }
 
 /// Prediction value types
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
+/// TODO: Add docs
 pub enum PredictionValue {
     /// Regression output
     Regression(f64),
@@ -194,20 +216,35 @@ pub enum PredictionValue {
 
 /// Model metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModelMetadata {
-    /// Model ID
-    pub model_id: String,
-    /// Model type
-    pub model_type: String,
-    /// Version
-    pub version: String,
-    /// Training date
-    pub trained_at: DateTime<Utc>,
-    /// Performance metrics
-    pub metrics: HashMap<String, f64>,
-    /// Feature names
-    pub feature_names: Vec<String>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+// pub struct ModelMetadata {
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     /// Model ID
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub model_id: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     /// Model type
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub model_type: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     /// Version
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub version: String,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     /// Training date
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub trained_at: DateTime<Utc>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     /// Performance metrics
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub metrics: HashMap<String, f64>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     /// Feature names
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+//     pub feature_names: Vec<String>,
+// ELIMINATED: Duplicate - use ml::model_metadata::ModelMetadata
+// }
 
 /// Model training abstraction
 #[async_trait]
@@ -239,6 +276,7 @@ pub trait ModelTrainer: Send + Sync {
 
 /// Training configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TrainingConfig {
     /// Model type
     pub model_type: String,
@@ -256,6 +294,7 @@ pub struct TrainingConfig {
 
 /// Evaluation metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EvaluationMetrics {
     /// Mean squared error
     pub mse: Option<f64>,

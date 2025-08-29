@@ -9,6 +9,7 @@ use std::collections::VecDeque;
 
 /// Complete Elliott Wave pattern detection system
 /// Implements ALL rules and guidelines from Elliott Wave Theory
+/// TODO: Add docs
 pub struct ElliottWaveDetector {
     lookback_period: usize,
     min_wave_size: f64,  // Minimum price movement to qualify as a wave
@@ -19,6 +20,7 @@ pub struct ElliottWaveDetector {
 
 /// Individual wave structure
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct Wave {
     pub wave_type: WaveType,
     pub start_price: f64,
@@ -32,6 +34,7 @@ pub struct Wave {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub enum WaveType {
     // Impulsive waves (motive)
     Wave1,
@@ -55,6 +58,7 @@ pub enum WaveType {
 
 /// Complete Elliott Wave pattern
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct ElliottPattern {
     pub pattern_type: PatternType,
     pub waves: Vec<Wave>,
@@ -67,6 +71,7 @@ pub struct ElliottPattern {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub enum PatternType {
     ImpulsiveFive,      // 1-2-3-4-5
     DiagonalLeading,    // Leading diagonal in wave 1/A
@@ -81,6 +86,7 @@ pub enum PatternType {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub enum WaveDegree {
     GrandSupercycle,  // Multi-century
     Supercycle,       // Multi-decade (40-70 years)
@@ -595,6 +601,7 @@ enum PivotType {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub enum MarketPosition {
     EarlyTrend,    // Wave 1 or 2
     StrongTrend,   // Wave 3

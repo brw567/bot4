@@ -18,6 +18,7 @@ struct LatencyBucket {
 }
 
 /// Performance metrics collector
+/// TODO: Add docs
 pub struct EventBusMetrics {
     /// Total events published
     pub events_published: CachePadded<AtomicU64>,
@@ -218,6 +219,7 @@ impl Default for EventBusMetrics {
 
 /// Snapshot of metrics at a point in time
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MetricsSnapshot {
     pub events_published: u64,
     pub events_consumed: u64,
@@ -253,6 +255,7 @@ impl MetricsSnapshot {
 }
 
 /// Latency timer for measuring operation duration
+/// TODO: Add docs
 pub struct LatencyTimer {
     start: Instant,
     metrics: Arc<EventBusMetrics>,
@@ -275,6 +278,7 @@ impl LatencyTimer {
 }
 
 /// Metrics reporter for periodic reporting
+/// TODO: Add docs
 pub struct MetricsReporter {
     metrics: Arc<EventBusMetrics>,
     interval: Duration,

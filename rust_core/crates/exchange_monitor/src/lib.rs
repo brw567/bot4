@@ -20,6 +20,7 @@ static GLOBAL: MiMalloc = MiMalloc;
 
 /// Exchange identifiers for 5 major exchanges
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum Exchange {
     Binance,
     Coinbase,
@@ -31,17 +32,11 @@ pub enum Exchange {
 /// Zero-copy market tick using rkyv
 #[derive(Archive, Deserialize, Serialize, Debug, Clone)]
 #[archive(check_bytes)]
-pub struct MarketTick {
-    pub exchange: Exchange,
-    pub symbol: [u8; 16],  // Fixed-size for zero-copy
-    pub bid: f64,
-    pub ask: f64,
-    pub bid_size: f64,
-    pub ask_size: f64,
-    pub timestamp_ns: u64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MarketTick - use domain_types::market_data::MarketTick
 
 /// SIMD-optimized order book with AVX-512
+/// TODO: Add docs
 pub struct SimdOrderBook {
     // Use f64x8 for AVX-512 processing of 8 prices at once
     bids: Vec<f64x8>,
@@ -142,15 +137,24 @@ impl SimdOrderBook {
 }
 
 #[derive(Debug, Clone)]
-pub struct MicrostructureFeatures {
-    pub kyle_lambda: f64,
-    pub ofi: f64,
-    pub effective_spread: f64,
-    pub microprice: f64,
-    pub book_pressure: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// pub struct MicrostructureFeatures {
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub kyle_lambda: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub ofi: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub effective_spread: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub microprice: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     pub book_pressure: f64,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// }
 
 /// Zero-copy multi-exchange aggregator
+/// TODO: Add docs
 pub struct ExchangeAggregator {
     // Use DashMap for lock-free concurrent access
     order_books: Arc<DashMap<(Exchange, String), Arc<RwLock<SimdOrderBook>>>>,
@@ -163,6 +167,7 @@ pub struct ExchangeAggregator {
 }
 
 /// Game theory optimal execution
+/// TODO: Add docs
 pub struct GameTheoryRouter {
     // Nash equilibrium strategies
     nash_strategies: DashMap<Exchange, NashStrategy>,
@@ -172,6 +177,7 @@ pub struct GameTheoryRouter {
 }
 
 #[derive(Clone)]
+/// TODO: Add docs
 pub struct NashStrategy {
     // Mixed strategy probabilities
     pub aggression: f64,  // Probability of aggressive orders
@@ -179,6 +185,7 @@ pub struct NashStrategy {
     pub hidden: f64,      // Probability of hidden orders
 }
 
+/// TODO: Add docs
 pub struct StackelbergParams {
     // Leader-follower game parameters
     pub leader_advantage: f64,
@@ -247,12 +254,14 @@ impl GameTheoryRouter {
     }
 }
 
+/// TODO: Add docs
 pub struct ExecutionPlan {
     pub trajectories: Vec<f64>,
     pub exchange_allocation: Vec<(Exchange, f64)>,
     pub nash_strategy: NashStrategy,
 }
 
+/// TODO: Add docs
 pub struct MarketImpactParams {
     pub permanent_impact: f64,
     pub temporary_impact: f64,

@@ -8,6 +8,7 @@ use thiserror::Error;
 use std::str;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum ParseError {
     #[error("Invalid UTF-8 in message")]
     InvalidUtf8,
@@ -23,6 +24,7 @@ pub enum ParseError {
 }
 
 /// Zero-copy WebSocket frame
+/// TODO: Add docs
 pub struct Frame<'a> {
     pub opcode: OpCode,
     pub payload: &'a [u8],  // Borrowed, not owned
@@ -30,6 +32,7 @@ pub struct Frame<'a> {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum OpCode {
     Continuation = 0x0,
     Text = 0x1,
@@ -40,6 +43,7 @@ pub enum OpCode {
 }
 
 /// Zero-copy WebSocket parser
+/// TODO: Add docs
 pub struct ZeroCopyParser {
     buffer: BytesMut,
     max_frame_size: usize,
@@ -158,6 +162,7 @@ impl OpCode {
 }
 
 /// Zero-copy JSON message parser
+/// TODO: Add docs
 pub struct JsonMessageParser {
     parser: ZeroCopyParser,
 }
@@ -192,6 +197,7 @@ impl JsonMessageParser {
 }
 
 /// Optimized order book update parser (zero-copy)
+/// TODO: Add docs
 pub struct OrderBookParser {
     parser: ZeroCopyParser,
 }
@@ -225,6 +231,7 @@ impl OrderBookParser {
 
 /// Order book update with borrowed data
 #[derive(Debug, serde::Deserialize)]
+/// TODO: Add docs
 pub struct OrderBookUpdate<'a> {
     #[serde(borrow)]
     pub symbol: &'a str,  // Borrowed string

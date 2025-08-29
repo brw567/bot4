@@ -8,6 +8,7 @@ use std::fmt;
 
 /// Fee amount with currency
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub struct Fee {
     /// Fee amount (can be negative for rebates)
     amount: f64,
@@ -88,6 +89,7 @@ impl fmt::Display for Fee {
 
 /// Fee tier for volume-based fee schedules
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FeeTier {
     /// Minimum volume for this tier (in quote currency)
     pub min_volume: f64,
@@ -99,6 +101,7 @@ pub struct FeeTier {
 
 /// Fee model for calculating trading fees
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FeeModel {
     /// Base maker fee in basis points (can be negative for rebates)
     maker_fee_bps: i32,
@@ -257,6 +260,7 @@ impl FeeModel {
 
 /// Fill with fee information
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FillWithFee {
     /// Fill quantity
     pub quantity: f64,

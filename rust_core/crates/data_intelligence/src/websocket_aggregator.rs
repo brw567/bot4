@@ -16,6 +16,7 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 use futures_util::{SinkExt, StreamExt};
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum WebSocketError {
     #[error("Connection failed: {0}")]
     ConnectionFailed(String),
@@ -30,13 +31,21 @@ pub enum WebSocketError {
 pub type Result<T> = std::result::Result<T, WebSocketError>;
 
 #[derive(Debug, Clone)]
-pub struct WebSocketConfig {
-    pub max_reconnect_attempts: u32,
-    pub reconnect_delay_ms: u64,
-    pub ping_interval_seconds: u64,
-    pub message_buffer_size: usize,
-    pub enable_compression: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+// pub struct WebSocketConfig {
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub max_reconnect_attempts: u32,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub reconnect_delay_ms: u64,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub ping_interval_seconds: u64,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub message_buffer_size: usize,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+//     pub enable_compression: bool,
+// ELIMINATED: Duplicate - use execution::websocket::WebSocketConfig
+// }
 
 impl Default for WebSocketConfig {
     fn default() -> Self {
@@ -51,6 +60,7 @@ impl Default for WebSocketConfig {
 }
 
 /// WebSocket Aggregator - manages multiple concurrent WebSocket connections
+/// TODO: Add docs
 pub struct WebSocketAggregator {
     config: WebSocketConfig,
     connections: Arc<RwLock<HashMap<String, ConnectionState>>>,
@@ -67,6 +77,7 @@ struct ConnectionState {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketEvent {
     pub exchange: String,
     pub event_type: EventType,
@@ -75,6 +86,7 @@ pub struct MarketEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EventType {
     Trade,
     OrderBook,

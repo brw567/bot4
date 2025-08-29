@@ -17,6 +17,7 @@ use serde::{Serialize, Deserialize};
 
 /// Fee structure for an exchange
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeFeeStructure {
     pub exchange_name: String,
     pub base_maker_fee_bps: i32,        // Base maker fee in basis points
@@ -33,6 +34,7 @@ pub struct ExchangeFeeStructure {
 
 /// Volume-based fee tier
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VolumeTier {
     pub min_volume_usd: Decimal,
     pub maker_fee_bps: i32,
@@ -41,6 +43,7 @@ pub struct VolumeTier {
 
 /// VIP tier with special benefits
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VipTier {
     pub level: u8,
     pub min_volume_30d: Decimal,
@@ -52,6 +55,7 @@ pub struct VipTier {
 
 /// Special fee programs
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SpecialProgram {
     MarketMakerProgram {
         requirements: MarketMakerRequirements,
@@ -70,6 +74,7 @@ pub enum SpecialProgram {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MarketMakerRequirements {
     pub min_volume_30d: Decimal,
     pub min_orders_per_day: u64,
@@ -79,6 +84,7 @@ pub struct MarketMakerRequirements {
 
 /// Native token discount program
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TokenDiscount {
     pub token_symbol: String,
     pub discount_pct: f64,
@@ -88,6 +94,7 @@ pub struct TokenDiscount {
 
 /// Trading statistics for fee calculation
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct TradingStatistics {
     pub volume_30d: Decimal,
     pub volume_mtd: Decimal,           // Month to date
@@ -101,6 +108,7 @@ pub struct TradingStatistics {
 
 /// Fee calculation result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FeeCalculation {
     pub exchange: String,
     pub order_type: OrderType,
@@ -114,6 +122,7 @@ pub struct FeeCalculation {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OrderType {
     Maker,
     Taker,
@@ -121,6 +130,7 @@ pub enum OrderType {
 
 /// Fee optimization strategy
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum OptimizationStrategy {
     MinimizeFees,           // Absolute lowest fees
     MaximizeRebates,        // Focus on rebates
@@ -131,6 +141,7 @@ pub enum OptimizationStrategy {
 
 /// Fee Optimization Engine
 /// Avery: "Every basis point counts when you're trading millions"
+/// TODO: Add docs
 pub struct FeeOptimizationEngine {
     /// Exchange fee structures
     exchange_fees: Arc<RwLock<HashMap<String, ExchangeFeeStructure>>>,
@@ -172,6 +183,7 @@ struct ExchangeRanking {
 
 /// Configuration for fee optimizer
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FeeOptimizerConfig {
     pub max_acceptable_fee_bps: i32,          // Maximum fee we'll pay
     pub min_rebate_to_provide_liquidity: i32, // Min rebate to act as maker
@@ -703,6 +715,7 @@ impl FeeOptimizationEngine {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum OrderUrgency {
     Immediate,  // Must execute now
     Normal,     // Standard execution
@@ -710,6 +723,7 @@ pub enum OrderUrgency {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TierRecommendation {
     pub exchange: String,
     pub current_volume: Decimal,
@@ -722,6 +736,7 @@ pub struct TierRecommendation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeeStatistics {
     pub total_fees_paid: Decimal,
     pub total_rebates_earned: Decimal,

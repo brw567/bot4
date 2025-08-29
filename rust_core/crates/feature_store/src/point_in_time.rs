@@ -1,3 +1,5 @@
+use domain_types::Event;
+use domain_types::ValidationResult;
 // Point-in-Time Correctness for Backtesting
 // DEEP DIVE: Prevent data leakage and ensure temporal consistency
 
@@ -13,6 +15,7 @@ use crate::online_store::FeatureVector;
 
 /// Point-in-time correctness configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct PointInTimeConfig {
     pub feature_lag_ms: i64, // Minimum lag between event and feature availability
     pub max_lookback_days: i64,
@@ -32,6 +35,7 @@ impl Default for PointInTimeConfig {
 }
 
 /// Point-in-time correctness engine
+/// TODO: Add docs
 pub struct PointInTimeCorrectness {
     offline_store: Arc<OfflineStore>,
     config: PointInTimeConfig,
@@ -355,6 +359,7 @@ impl PointInTimeCorrectness {
 }
 
 /// Temporal join helper
+/// TODO: Add docs
 pub struct TemporalJoin {
     pit: PointInTimeCorrectness,
 }
@@ -378,7 +383,8 @@ impl TemporalJoin {
 
 /// Event structure for temporal join
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Event {
+// ELIMINATED: use domain_types::Event
+// pub struct Event {
     pub entity_id: String,
     pub timestamp: DateTime<Utc>,
     pub data: serde_json::Value,
@@ -386,6 +392,7 @@ pub struct Event {
 
 /// Enriched event with features
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EnrichedEvent {
     pub event: Event,
     pub features: Option<FeatureVector>,
@@ -393,6 +400,7 @@ pub struct EnrichedEvent {
 
 /// Label for training
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Label {
     pub entity_id: String,
     pub timestamp: DateTime<Utc>,
@@ -401,6 +409,7 @@ pub struct Label {
 
 /// Training sample with PIT-correct features
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TrainingSample {
     pub features: FeatureVector,
     pub label: f64,
@@ -410,6 +419,7 @@ pub struct TrainingSample {
 
 /// Training dataset
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TrainingDataset {
     pub samples: Vec<TrainingSample>,
     pub feature_names: Vec<String>,
@@ -419,6 +429,7 @@ pub struct TrainingDataset {
 
 /// Leakage violation types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ViolationType {
     FutureLeak,       // Feature from future
     InsufficientLag,  // Feature too recent
@@ -426,6 +437,7 @@ pub enum ViolationType {
 
 /// Leakage violation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct LeakageViolation {
     pub feature_name: String,
     pub feature_time: DateTime<Utc>,
@@ -435,7 +447,8 @@ pub struct LeakageViolation {
 
 /// Validation result
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ValidationResult {
+// ELIMINATED: use domain_types::ValidationResult
+// pub struct ValidationResult {
     pub is_valid: bool,
     pub violations: Vec<LeakageViolation>,
     pub checked_at: DateTime<Utc>,

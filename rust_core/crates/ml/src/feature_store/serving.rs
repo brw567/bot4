@@ -9,6 +9,7 @@ use lru::LruCache;
 use std::num::NonZeroUsize;
 
 /// Feature serving layer with caching and optimization
+/// TODO: Add docs
 pub struct FeatureServingLayer {
     store: Arc<FeatureStore>,
     
@@ -25,6 +26,7 @@ pub struct FeatureServingLayer {
 
 /// Aggregated features for common queries
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AggregatedFeatures {
     pub entity_id: String,
     pub features: HashMap<String, FeatureValue>,
@@ -32,6 +34,7 @@ pub struct AggregatedFeatures {
 }
 
 /// Batch optimizer for efficient retrieval
+/// TODO: Add docs
 pub struct BatchOptimizer {
     pending_requests: Arc<RwLock<Vec<PendingRequest>>>,
     batch_size: usize,

@@ -12,6 +12,7 @@ use std::sync::Arc;
 
 /// Canonical Tick - Used by ALL components
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+/// TODO: Add docs
 pub struct Tick {
     pub symbol: String,
     pub exchange: String,
@@ -25,6 +26,7 @@ pub struct Tick {
 
 /// Canonical Signal - ML & Strategy unified
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Signal {
     pub id: uuid::Uuid,
     pub source: String,
@@ -38,6 +40,7 @@ pub struct Signal {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SignalAction {
     Buy,
     Sell,
@@ -47,14 +50,12 @@ pub enum SignalAction {
 
 /// Canonical FeatureVector - ML unified
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FeatureVector {
-    pub values: Vec<f64>,
-    pub names: Arc<Vec<String>>,  // Shared names
-    pub timestamp: u64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate FeatureVector - use ml::features::FeatureVector
 
 /// Canonical Portfolio - Risk & Execution unified
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Portfolio {
     pub positions: Vec<Position>,
     pub cash_balance: Decimal,
@@ -68,6 +69,7 @@ pub struct Portfolio {
 
 /// Canonical Position
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Position {
     pub id: uuid::Uuid,
     pub symbol: String,
@@ -83,21 +85,12 @@ pub struct Position {
 
 /// Canonical RiskMetrics - Unified risk calculations
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RiskMetrics {
-    pub var_95: Decimal,
-    pub var_99: Decimal,
-    pub cvar_95: Decimal,
-    pub cvar_99: Decimal,
-    pub sharpe_ratio: f64,
-    pub sortino_ratio: f64,
-    pub calmar_ratio: f64,
-    pub max_drawdown: f64,
-    pub kelly_fraction: f64,
-    pub correlation_matrix: CorrelationMatrix,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate RiskMetrics - use risk::metrics::RiskMetrics
 
 /// Canonical CorrelationMatrix
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CorrelationMatrix {
     pub symbols: Vec<String>,
     pub matrix: Vec<Vec<f64>>,
@@ -107,6 +100,7 @@ pub struct CorrelationMatrix {
 
 /// Canonical MarketState - Exchange & Strategy unified
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketState {
     pub regime: MarketRegime,
     pub volatility: f64,
@@ -116,6 +110,7 @@ pub struct MarketState {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Trending,
     Ranging,
@@ -124,6 +119,7 @@ pub enum MarketRegime {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MicrostructureState {
     pub spread: Decimal,
     pub depth: Decimal,
@@ -133,6 +129,7 @@ pub struct MicrostructureState {
 
 /// Canonical Event - Event bus unified
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Event {
     pub id: uuid::Uuid,
     pub event_type: EventType,
@@ -143,6 +140,7 @@ pub struct Event {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EventType {
     OrderPlaced,
     OrderFilled,
@@ -156,6 +154,7 @@ pub enum EventType {
 
 /// Canonical ValidationResult
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ValidationResult {
     pub is_valid: bool,
     pub errors: Vec<ValidationError>,
@@ -164,6 +163,7 @@ pub struct ValidationResult {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ValidationError {
     pub field: String,
     pub message: String,
@@ -172,6 +172,7 @@ pub struct ValidationError {
 
 /// Canonical PipelineMetrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PipelineMetrics {
     pub throughput: f64,
     pub latency_p50: u64,
@@ -183,6 +184,7 @@ pub struct PipelineMetrics {
 
 /// Canonical CircuitBreaker
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CircuitBreaker {
     pub state: CircuitBreakerState,
     pub failure_count: u32,
@@ -193,6 +195,7 @@ pub struct CircuitBreaker {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum CircuitBreakerState {
     Closed,
     Open,
@@ -204,8 +207,8 @@ pub enum CircuitBreakerState {
 // ═══════════════════════════════════════════════════════════════════════════
 
 pub mod calculations {
-    use super::*;
-    use ndarray::{Array1, Array2};
+    
+    
     
     /// Single correlation calculation for entire system
     pub fn calculate_correlation(x: &[f64], y: &[f64]) -> f64 {
@@ -348,4 +351,24 @@ mod uniqueness_tests {
         std::mem::size_of::<Portfolio>();
         // Compilation succeeds only if types are unique
     }
+}
+
+/// Canonical FeatureVector
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FeatureVector {
+    pub values: Vec<f64>,
+    pub feature_names: Vec<String>,
+    pub timestamp: u64,
+}
+
+/// Canonical RiskMetrics
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RiskMetrics {
+    pub var_95: Decimal,
+    pub cvar_95: Decimal,
+    pub sharpe_ratio: f64,
+    pub max_drawdown: f64,
+    pub kelly_fraction: f64,
+    pub portfolio_beta: f64,
+    pub tracking_error: f64,
 }

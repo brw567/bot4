@@ -10,6 +10,7 @@ use serde::{Serialize, Deserialize};
 /// Market Regime Detection using Hidden Markov Models
 /// Morgan: "We need to detect Bull, Bear, and Sideways markets"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Bull,       // Trending up, low volatility
     Bear,       // Trending down, high volatility  
@@ -19,6 +20,7 @@ pub enum MarketRegime {
 
 /// Auto-Tuning System with Reinforcement Learning
 /// Quinn: "Parameters MUST adapt to market conditions!"
+/// TODO: Add docs
 pub struct AutoTuningSystem {
     // Historical performance tracking
     performance_history: VecDeque<PerformanceRecord>,
@@ -47,6 +49,7 @@ pub struct AutoTuningSystem {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PerformanceRecord {
     pub timestamp: u64,
     pub regime: MarketRegime,
@@ -575,6 +578,7 @@ impl QTable {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AdaptiveParameters {
     pub var_limit: f64,
     pub vol_target: f64,

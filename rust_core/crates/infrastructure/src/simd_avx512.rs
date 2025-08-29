@@ -296,11 +296,13 @@ pub unsafe fn dot_product_avx512(a: &[f32], b: &[f32]) -> f32 {
 
 /// Check if AVX-512 is available at runtime
 #[inline(always)]
+/// TODO: Add docs
 pub fn is_avx512_available() -> bool {
     is_x86_feature_detected!("avx512f")
 }
 
 /// Benchmark structure for SIMD operations
+/// TODO: Add docs
 pub struct SimdBenchmark {
     pub name: &'static str,
     pub scalar_ns: u64,

@@ -33,6 +33,7 @@ use crate::statistical_circuit_breakers::{StatisticalBreakerIntegration, Statist
 
 /// Supported exchanges with specific safety profiles
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Exchange {
     Binance,
     BinanceUS,
@@ -98,6 +99,7 @@ impl Exchange {
 
 /// Exchange-specific failure modes we monitor
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ExchangeFailureMode {
     /// API rate limit exceeded
     RateLimitExceeded,
@@ -138,6 +140,7 @@ pub enum ExchangeFailureMode {
 
 /// Exchange health status
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ExchangeHealthStatus {
     /// Fully operational
     Healthy,
@@ -159,6 +162,7 @@ pub enum ExchangeHealthStatus {
 /// Risk limits per exchange
 /// Casey: "Each exchange has different risk characteristics"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExchangeRiskLimits {
     /// Maximum position size in base currency
     pub max_position_size: Decimal,
@@ -264,6 +268,7 @@ impl ExchangeRiskLimits {
 // ============================================================================
 
 /// Monitor exchange-specific metrics
+/// TODO: Add docs
 pub struct ExchangeMonitor {
     /// Exchange being monitored
     exchange: Exchange,
@@ -297,6 +302,7 @@ pub struct ExchangeMonitor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FailureEvent {
     pub timestamp: SystemTime,
     pub failure_mode: ExchangeFailureMode,
@@ -328,6 +334,7 @@ pub struct FailureEvent {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderTracker {
     /// Open orders count
     pub open_orders: usize,
@@ -657,22 +664,39 @@ impl ExchangeMonitor {
 // ============================================================================
 
 /// Rate limiter for exchange APIs
-pub struct RateLimiter {
-    /// Requests per second limit
-    requests_per_second: u32,
-    
-    /// Weight limit per minute (Binance specific)
-    weight_per_minute: u32,
-    
-    /// Request timestamps
-    request_times: Arc<Mutex<VecDeque<Instant>>>,
-    
-    /// Weight tracking
-    weight_tracker: Arc<Mutex<WeightTracker>>,
-    
-    /// Semaphore for concurrent request limiting
-    semaphore: Arc<Semaphore>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+// pub struct RateLimiter {
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     /// Requests per second limit
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     requests_per_second: u32,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     /// Weight limit per minute (Binance specific)
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     weight_per_minute: u32,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     /// Request timestamps
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     request_times: Arc<Mutex<VecDeque<Instant>>>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     /// Weight tracking
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     weight_tracker: Arc<Mutex<WeightTracker>>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     /// Semaphore for concurrent request limiting
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     semaphore: Arc<Semaphore>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+// }
 
 #[derive(Debug, Clone)]
 struct WeightTracker {
@@ -712,6 +736,7 @@ impl RateLimiter {
 // ============================================================================
 
 /// Coordinates safety across all exchanges
+/// TODO: Add docs
 pub struct ExchangeSafetyCoordinator {
     /// Monitors for each exchange
     monitors: HashMap<Exchange, Arc<ExchangeMonitor>>,
@@ -727,6 +752,7 @@ pub struct ExchangeSafetyCoordinator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct GlobalExposure {
     /// Total exposure across all exchanges
     pub total_exposure: Decimal,
@@ -742,6 +768,7 @@ pub struct GlobalExposure {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FailoverStrategy {
     /// Primary exchange
     pub primary: Exchange,
@@ -757,6 +784,7 @@ pub struct FailoverStrategy {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FailoverEvent {
     pub timestamp: SystemTime,
     pub from_exchange: Exchange,
@@ -765,6 +793,7 @@ pub struct FailoverEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExchangeSafetyConfig {
     /// Maximum total exposure across all exchanges
     pub max_total_exposure: Decimal,
@@ -958,6 +987,7 @@ impl ExchangeSafetyCoordinator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeSafetyStatus {
     pub total_exposure: Decimal,
     pub risk_budget: Decimal,

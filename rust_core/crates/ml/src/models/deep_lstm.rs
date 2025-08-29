@@ -42,6 +42,7 @@ use infrastructure::zero_copy::MemoryPoolManager;
 
 /// 5-Layer LSTM with all optimizations applied
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DeepLSTM {
     // Architecture
     layers: Vec<LSTMLayer>,
@@ -66,6 +67,7 @@ pub struct DeepLSTM {
 
 /// Individual LSTM Layer - Jordan's AVX-512 Optimized
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LSTMLayer {
     // Weight matrices (Xavier initialized)
     w_ii: Array2<f64>, w_if: Array2<f64>, w_ig: Array2<f64>, w_io: Array2<f64>,
@@ -87,6 +89,7 @@ pub struct LSTMLayer {
 
 /// Residual Connection - Quinn's Numerical Stability
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ResidualConnection {
     from_layer: usize,
     to_layer: usize,
@@ -96,6 +99,7 @@ pub struct ResidualConnection {
 
 /// Layer Normalization - Quinn's Implementation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct LayerNorm {
     gamma: Array1<f64>,
     beta: Array1<f64>,
@@ -107,6 +111,7 @@ pub struct LayerNorm {
 
 /// Gradient Clipper - Quinn's Stability Mechanism
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct GradientClipper {
     max_norm: f64,
     clip_value: f64,
@@ -116,6 +121,7 @@ pub struct GradientClipper {
 
 /// AdamW Optimizer - Morgan's Implementation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AdamW {
     learning_rate: f64,
     beta1: f64,
@@ -133,15 +139,25 @@ pub struct AdamW {
 
 /// Model Metrics - Riley's Comprehensive Tracking
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct ModelMetrics {
-    pub training_loss: Vec<f64>,
-    pub validation_loss: Vec<f64>,
-    pub gradient_norms: Vec<f64>,
-    pub learning_rates: Vec<f64>,
-    pub layer_activations: Vec<Vec<f64>>,
-    pub memory_usage: Vec<usize>,
-    pub inference_time_us: Vec<u64>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+// pub struct ModelMetrics {
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub training_loss: Vec<f64>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub validation_loss: Vec<f64>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub gradient_norms: Vec<f64>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub learning_rates: Vec<f64>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub layer_activations: Vec<Vec<f64>>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub memory_usage: Vec<usize>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+//     pub inference_time_us: Vec<u64>,
+// ELIMINATED: Duplicate - use ml::model_metrics::ModelMetrics
+// }
 
 impl DeepLSTM {
     /// Create new 5-layer LSTM - FULL TEAM collaboration

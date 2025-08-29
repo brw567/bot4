@@ -33,6 +33,7 @@ use chrono::Utc;
 /// Categories of auditable events
 /// Alex: "Every action that affects money or risk must be audited"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AuditEventType {
     // Trading Events
     OrderPlaced,
@@ -118,6 +119,7 @@ impl AuditEventType {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AuditSeverity {
     Info = 0,
     Low = 1,
@@ -133,6 +135,7 @@ pub enum AuditSeverity {
 /// Immutable audit event with cryptographic proof
 /// Sam: "Each event must be independently verifiable"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AuditEvent {
     /// Unique event ID (UUID v4)
     pub id: String,
@@ -254,6 +257,7 @@ struct MerkleNode {
 }
 
 /// Merkle tree for batch verification
+/// TODO: Add docs
 pub struct MerkleTree {
     root: Option<MerkleNode>,
     leaves: Vec<String>,
@@ -351,6 +355,7 @@ impl MerkleTree {
 
 /// Append-only audit log with hash chain
 /// Quinn: "Log must be tamper-evident and crash-resistant"
+/// TODO: Add docs
 pub struct AuditLog {
     /// Log file path
     log_path: PathBuf,
@@ -546,6 +551,7 @@ impl AuditLog {
 /// Compliance report types
 /// Morgan: "Reports must meet MiFID II and SEC requirements"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ReportType {
     DailyTrading,
     RiskExposure,
@@ -558,6 +564,7 @@ pub enum ReportType {
 }
 
 /// Compliance report generator
+/// TODO: Add docs
 pub struct ComplianceReporter {
     audit_log: Arc<AuditLog>,
     report_dir: PathBuf,
@@ -766,6 +773,7 @@ impl ComplianceReporter {
 
 /// Manual intervention detector
 /// Casey: "Must detect any human override of automated systems"
+/// TODO: Add docs
 pub struct InterventionDetector {
     audit_log: Arc<AuditLog>,
     detection_window: Duration,
@@ -822,6 +830,7 @@ impl InterventionDetector {
 
 /// Intervention alert
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct InterventionAlert {
     pub timestamp: u64,
     pub actor: String,
@@ -831,6 +840,7 @@ pub struct InterventionAlert {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum InterventionSeverity {
     Low,      // Single intervention
     Medium,   // 2-3 interventions
@@ -855,6 +865,7 @@ impl InterventionSeverity {
 
 /// Forensic analysis tools
 /// Riley: "Must reconstruct exact sequence of events for any incident"
+/// TODO: Add docs
 pub struct ForensicAnalyzer {
     audit_log: Arc<AuditLog>,
 }
@@ -994,6 +1005,7 @@ impl ForensicAnalyzer {
 
 /// Incident analysis result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct IncidentAnalysis {
     pub incident_id: String,
     pub incident_type: AuditEventType,
@@ -1008,6 +1020,7 @@ pub struct IncidentAnalysis {
 
 /// Timeline entry
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TimelineEntry {
     pub timestamp: u64,
     pub event_type: AuditEventType,
@@ -1017,6 +1030,7 @@ pub struct TimelineEntry {
 
 /// System state at point in time
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SystemState {
     pub timestamp: u64,
     pub open_positions: u32,
@@ -1032,6 +1046,7 @@ pub struct SystemState {
 
 /// Central audit system manager
 /// Avery: "Single point of coordination for all audit functions"
+/// TODO: Add docs
 pub struct AuditManager {
     audit_log: Arc<AuditLog>,
     compliance_reporter: Arc<ComplianceReporter>,
@@ -1144,6 +1159,7 @@ impl AuditManager {
 
 /// Audit system configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AuditConfig {
     pub log_dir: PathBuf,
     pub report_dir: PathBuf,
@@ -1166,6 +1182,7 @@ impl Default for AuditConfig {
 
 /// Audit statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AuditStatistics {
     pub total_events: u64,
     pub events_by_type: HashMap<AuditEventType, u64>,

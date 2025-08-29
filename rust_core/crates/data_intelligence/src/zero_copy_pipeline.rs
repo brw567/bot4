@@ -1,3 +1,4 @@
+use domain_types::PipelineMetrics;
 // ZERO-COPY DATA PIPELINE - DEEP DIVE IMPLEMENTATION
 // Team: Jordan (Lead) - NO ALLOCATIONS, MAXIMUM PERFORMANCE!
 // Target: <100ns per event processing
@@ -20,6 +21,7 @@ use crate::{DataError, Result};
 
 /// Zero-copy pipeline configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PipelineConfig {
     pub ring_buffer_size: usize,      // Power of 2
     pub batch_size: usize,             // Events per batch
@@ -41,28 +43,51 @@ impl Default for PipelineConfig {
 }
 
 /// Lock-free ring buffer for zero-copy data transfer
-pub struct ZeroCopyPipeline {
-    // Ring buffer storage
-    buffer: Pin<Box<[MaybeUninit<CacheLineAligned<RawEvent>>]>>,
-    mask: usize,
-    
-    // Lock-free indices
-    write_index: Arc<AtomicUsize>,
-    read_index: Arc<AtomicUsize>,
-    cached_write: AtomicUsize,
-    cached_read: AtomicUsize,
-    
-    // Memory mapped regions for large data
-    mmap_regions: Arc<RwLock<Vec<MmapRegion>>>,
-    
-    // Metrics
-    events_processed: AtomicU64,
-    bytes_processed: AtomicU64,
-    zero_copy_hits: AtomicU64,
-    
-    // Configuration
-    config: PipelineConfig,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+// pub struct ZeroCopyPipeline {
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     // Ring buffer storage
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     buffer: Pin<Box<[MaybeUninit<CacheLineAligned<RawEvent>>]>>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     mask: usize,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     // Lock-free indices
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     write_index: Arc<AtomicUsize>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     read_index: Arc<AtomicUsize>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     cached_write: AtomicUsize,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     cached_read: AtomicUsize,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     // Memory mapped regions for large data
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     mmap_regions: Arc<RwLock<Vec<MmapRegion>>>,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     // Metrics
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     events_processed: AtomicU64,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     bytes_processed: AtomicU64,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     zero_copy_hits: AtomicU64,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     // Configuration
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+//     config: PipelineConfig,
+// ELIMINATED: Duplicate - use infrastructure::zero_copy::ZeroCopyPipeline
+// }
 
 /// Cache-line aligned event to prevent false sharing
 #[repr(C, align(64))]
@@ -74,6 +99,7 @@ struct CacheLineAligned<T> {
 /// Raw event in the pipeline
 #[derive(Debug, Clone, Copy, AsBytes, FromBytes, FromZeroes)]
 #[repr(C)]
+/// TODO: Add docs
 pub struct RawEvent {
     pub timestamp_ns: u64,
     pub event_type: u32,
@@ -311,7 +337,8 @@ impl ZeroCopyPipeline {
 }
 
 #[derive(Debug, Clone)]
-pub struct PipelineMetrics {
+// ELIMINATED: use domain_types::PipelineMetrics
+// pub struct PipelineMetrics {
     pub events_processed: u64,
     pub bytes_processed: u64,
     pub zero_copy_hits: u64,

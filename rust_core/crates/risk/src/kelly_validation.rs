@@ -11,6 +11,7 @@ use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 /// Validate Kelly calculations against theoretical values
+/// TODO: Add docs
 pub struct KellyValidator;
 
 impl KellyValidator {
@@ -205,13 +206,21 @@ impl KellyValidator {
 }
 
 #[derive(Debug)]
-pub struct ValidationReport {
-    pub coin_flip: bool,
-    pub blackjack: bool,
-    pub stock_market: bool,
-    pub options: bool,
-    pub cost_impact: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+// pub struct ValidationReport {
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub coin_flip: bool,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub blackjack: bool,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub stock_market: bool,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub options: bool,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+//     pub cost_impact: bool,
+// ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
+// }
 
 impl ValidationReport {
     pub fn all_passed(&self) -> bool {

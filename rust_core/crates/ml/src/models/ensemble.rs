@@ -32,6 +32,7 @@ use super::{
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EnsembleConfig {
     /// Ensemble strategy
     pub strategy: EnsembleStrategy,
@@ -56,6 +57,7 @@ pub struct EnsembleConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum EnsembleStrategy {
     /// Simple average of predictions
     Average,
@@ -80,6 +82,7 @@ pub enum EnsembleStrategy {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EnsembleModelConfig {
     pub id: ModelId,
     pub model_type: String,
@@ -107,6 +110,7 @@ impl Default for EnsembleConfig {
 // ENSEMBLE MODEL - Core Implementation
 // ============================================================================
 
+/// TODO: Add docs
 pub struct EnsembleModel {
     config: Arc<RwLock<EnsembleConfig>>,
     
@@ -475,6 +479,7 @@ impl EnsembleModel {
 // INPUT/OUTPUT TYPES - Team Defined
 // ============================================================================
 
+/// TODO: Add docs
 pub struct EnsembleInput {
     /// For ARIMA models
     pub steps: usize,
@@ -490,6 +495,7 @@ pub struct EnsembleInput {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Trending,
     Ranging,
@@ -498,6 +504,7 @@ pub enum MarketRegime {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EnsemblePrediction {
     pub value: f64,
     pub confidence: f64,
@@ -511,6 +518,7 @@ pub struct EnsemblePrediction {
 // ============================================================================
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum EnsembleError {
     #[error("No models in ensemble")]
     NoModels,

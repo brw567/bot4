@@ -184,6 +184,7 @@ impl Position {
 }
 
 /// Position manager for tracking all positions
+/// TODO: Add docs
 pub struct PositionManager {
     positions: Arc<DashMap<PositionId, Arc<RwLock<Position>>>>,
     symbol_positions: Arc<DashMap<String, Vec<PositionId>>>,
@@ -380,6 +381,7 @@ impl PositionManager {
 }
 
 /// P&L Calculator for various scenarios
+/// TODO: Add docs
 pub struct PnLCalculator {
     commission_rate: Decimal,
 }

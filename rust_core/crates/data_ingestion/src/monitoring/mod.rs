@@ -11,6 +11,7 @@ pub trait MetricsCollector: Send + Sync {
 }
 
 /// Simple counter implementation
+/// TODO: Add docs
 pub struct Counter {
     value: AtomicU64,
 }
@@ -38,6 +39,7 @@ impl MetricsCollector for Counter {
 }
 
 /// Histogram implementation for distribution tracking
+/// TODO: Add docs
 pub struct Histogram {
     values: Arc<RwLock<Vec<f64>>>,
 }
@@ -85,20 +87,23 @@ impl MetricsCollector for Histogram {
 }
 
 /// Register a histogram metric
+/// TODO: Add docs
 pub fn register_histogram(_name: &str) -> Arc<dyn MetricsCollector> {
     Arc::new(Histogram::new())
 }
 
 /// Register a counter metric
+/// TODO: Add docs
 pub fn register_counter(_name: &str) -> Arc<dyn MetricsCollector> {
     Arc::new(Counter::new())
 }
 
-pub struct ProducerMetrics {
-    queuing_latency_us: Arc<AtomicU64>,
-    throughput_events: Arc<AtomicU64>,
-    throughput_bytes: Arc<AtomicU64>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct ProducerMetrics {
+// ELIMINATED:     queuing_latency_us: Arc<AtomicU64>,
+// ELIMINATED:     throughput_events: Arc<AtomicU64>,
+// ELIMINATED:     throughput_bytes: Arc<AtomicU64>,
+// ELIMINATED: }
 
 impl ProducerMetrics {
     pub fn new() -> Self {
@@ -119,6 +124,7 @@ impl ProducerMetrics {
     }
 }
 
+/// TODO: Add docs
 pub struct ConsumerMetrics {
     events_processed: Arc<AtomicU64>,
     processing_latency_us: Arc<AtomicU64>,
@@ -134,6 +140,7 @@ impl ConsumerMetrics {
 }
 
 // ClickHouse metrics moved here to avoid circular dependency
+/// TODO: Add docs
 pub struct ClickHouseMetrics {
     pub writes_total: Arc<dyn MetricsCollector>,
     pub write_latency_ms: Arc<dyn MetricsCollector>,

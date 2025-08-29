@@ -21,7 +21,9 @@ use chrono::{DateTime, Utc};
 /// Morgan: "Every signal must have risk parameters defined!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
-pub struct EnhancedTradingSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate EnhancedTradingSignal - use canonical_types::TradingSignal
+// pub struct EnhancedTradingSignal {
     // Core signal data
     pub timestamp: u64,
     pub symbol: String,
@@ -60,6 +62,7 @@ pub struct EnhancedTradingSignal {
 /// Casey: "Every market condition needs its optimal execution!"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum ExecutionAlgorithm {
     // Time-based algorithms
     TWAP,           // Time-Weighted Average Price
@@ -159,29 +162,30 @@ impl ExecutionAlgorithm {
 /// Avery: "Aggregate sentiment from all available sources!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
-pub struct SentimentData {
-    pub timestamp: DateTime<Utc>,
-    
-    // Social sentiment
-    pub twitter_sentiment: f64,      // -1 to 1
-    pub reddit_sentiment: f64,       // -1 to 1
-    pub news_sentiment: f64,         // -1 to 1
-    
-    // Market sentiment indicators
-    pub fear_greed_index: f64,       // 0 to 100
-    pub put_call_ratio: f64,         // Typically 0.5 to 2.0
-    pub vix: f64,                    // Volatility index
-    
-    // On-chain sentiment (crypto specific)
-    pub long_short_ratio: f64,       // Futures positioning
-    pub funding_rate: f64,           // Perpetual funding
-    pub open_interest: f64,          // Total OI in USD
-    
-    // Aggregated scores
-    pub overall_sentiment: f64,      // -1 to 1 weighted average
-    pub sentiment_momentum: f64,     // Rate of change
-    pub sentiment_divergence: f64,   // Price vs sentiment divergence
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct SentimentData {
+// ELIMINATED:     pub timestamp: DateTime<Utc>,
+// ELIMINATED:     
+// ELIMINATED:     // Social sentiment
+// ELIMINATED:     pub twitter_sentiment: f64,      // -1 to 1
+// ELIMINATED:     pub reddit_sentiment: f64,       // -1 to 1
+// ELIMINATED:     pub news_sentiment: f64,         // -1 to 1
+// ELIMINATED:     
+// ELIMINATED:     // Market sentiment indicators
+// ELIMINATED:     pub fear_greed_index: f64,       // 0 to 100
+// ELIMINATED:     pub put_call_ratio: f64,         // Typically 0.5 to 2.0
+// ELIMINATED:     pub vix: f64,                    // Volatility index
+// ELIMINATED:     
+// ELIMINATED:     // On-chain sentiment (crypto specific)
+// ELIMINATED:     pub long_short_ratio: f64,       // Futures positioning
+// ELIMINATED:     pub funding_rate: f64,           // Perpetual funding
+// ELIMINATED:     pub open_interest: f64,          // Total OI in USD
+// ELIMINATED:     
+// ELIMINATED:     // Aggregated scores
+// ELIMINATED:     pub overall_sentiment: f64,      // -1 to 1 weighted average
+// ELIMINATED:     pub sentiment_momentum: f64,     // Rate of change
+// ELIMINATED:     pub sentiment_divergence: f64,   // Price vs sentiment divergence
+// ELIMINATED: }
 
 impl SentimentData {
     /// Calculate actionable sentiment score using game theory
@@ -204,6 +208,7 @@ impl SentimentData {
 /// Casey: "Order book tells you everything about short-term direction!"
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EnhancedOrderBook {
     pub bids: Vec<OrderLevel>,
     pub asks: Vec<OrderLevel>,
@@ -219,6 +224,7 @@ pub struct EnhancedOrderBook {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderLevel {
     pub price: Price,
     pub quantity: Quantity,
@@ -229,6 +235,7 @@ pub struct OrderLevel {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TradeSide {
     Buy,
     Sell,
@@ -236,6 +243,7 @@ pub enum TradeSide {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderFlow {
     pub buy_volume: f64,
     pub sell_volume: f64,
@@ -249,6 +257,7 @@ pub struct OrderFlow {
 /// Complete Market Data with all required fields
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CompleteMarketData {
     pub symbol: String,
     pub timestamp: u64,
@@ -281,6 +290,7 @@ pub struct CompleteMarketData {
 /// Time in Force for orders
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum TimeInForce {
     GTC,    // Good Till Cancelled
     IOC,    // Immediate or Cancel
@@ -293,6 +303,7 @@ pub enum TimeInForce {
 /// Market Regime detection
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum MarketRegime {
     Trending,
     RangeB
@@ -308,6 +319,7 @@ pub enum MarketRegime {
 /// Signal Action types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SignalAction {
     Buy,
     Sell,
@@ -327,20 +339,13 @@ pub enum SignalAction {
 /// Market Conditions for execution cost calculation
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
-pub struct MarketConditions {
-    pub spread_bps: f64,
-    pub taker_fee_bps: f64,
-    pub maker_rebate_bps: f64,
-    pub temporary_impact_bps: f64,
-    pub permanent_impact_bps: f64,
-    pub adverse_selection_bps: f64,
-    pub volatility: f64,
-    pub adv: f64,  // Average daily volume
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MarketConditions - use domain_types::market_data::MarketConditions
 
 /// Backtest metrics for signal validation
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct BacktestMetrics {
     pub total_trades: u32,
     pub win_rate: f64,
@@ -355,6 +360,7 @@ pub struct BacktestMetrics {
 /// Asset classification for risk management
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum AssetClass {
     Crypto,
     CryptoAlt,      // Altcoins
@@ -397,6 +403,7 @@ impl AssetClass {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RiskParameters {
     pub max_position: Percentage,
     pub max_leverage: f64,
@@ -418,6 +425,7 @@ impl Default for RiskParameters {
 /// Optimization strategy for hyperparameter tuning
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OptimizationStrategy {
     GridSearch,
     RandomSearch,
@@ -431,6 +439,7 @@ pub enum OptimizationStrategy {
 /// Optimization direction
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OptimizationDirection {
     Maximize,
     Minimize,

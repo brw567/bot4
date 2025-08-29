@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum OnChainError {
     #[error("Node connection error: {0}")]
     NodeError(String),
@@ -23,6 +24,7 @@ pub enum OnChainError {
 pub type Result<T> = std::result::Result<T, OnChainError>;
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OnChainConfig {
     pub node_urls: Vec<String>,
     pub track_whale_wallets: bool,
@@ -40,12 +42,14 @@ impl Default for OnChainConfig {
 }
 
 /// On-Chain Analytics - analyzes blockchain data
+/// TODO: Add docs
 pub struct OnChainAnalytics {
     config: OnChainConfig,
     metrics_cache: Arc<RwLock<OnChainMetrics>>,
 }
 
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct OnChainMetrics {
     pub active_addresses_24h: u64,
     pub transaction_count_24h: u64,

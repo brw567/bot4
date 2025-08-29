@@ -13,12 +13,14 @@ use chrono::{DateTime, Utc};
 
 /// Database persistence for auto-tuning parameters
 /// Sam: "This is CRITICAL - we need ACID compliance!"
+/// TODO: Add docs
 pub struct AutoTuningPersistence {
     pool: PgPool,
 }
 
 /// Adaptive parameter stored in database
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+/// TODO: Add docs
 pub struct AdaptiveParameter {
     pub id: uuid::Uuid,
     pub parameter_name: String,
@@ -41,6 +43,7 @@ pub struct AdaptiveParameter {
 
 /// Q-Learning state-action-value entry
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+/// TODO: Add docs
 pub struct QLearningEntry {
     pub id: uuid::Uuid,
     pub state_hash: String,
@@ -63,6 +66,7 @@ pub struct QLearningEntry {
 
 /// Market regime history entry
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+/// TODO: Add docs
 pub struct MarketRegimeEntry {
     pub id: uuid::Uuid,
     pub timestamp: DateTime<Utc>,
@@ -83,6 +87,7 @@ pub struct MarketRegimeEntry {
 
 /// Performance feedback for reinforcement learning
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+/// TODO: Add docs
 pub struct PerformanceFeedback {
     pub id: uuid::Uuid,
     pub timestamp: DateTime<Utc>,
@@ -390,6 +395,7 @@ impl AutoTuningPersistence {
 
 /// Market regime detection metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketRegimeMetrics {
     pub trend_slope: Decimal,
     pub average_return: Decimal,

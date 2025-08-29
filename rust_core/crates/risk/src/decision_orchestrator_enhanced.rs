@@ -89,6 +89,7 @@ use ndarray::{Array1, Array2};
 use chrono::Utc;
 
 /// ENHANCED Decision Orchestrator - Uses ALL systems at FULL capacity
+/// TODO: Add docs
 pub struct EnhancedDecisionOrchestrator {
     // Core AI/ML Components
     pub(crate) ml_system: Arc<RwLock<MLFeedbackSystem>>,
@@ -138,6 +139,7 @@ pub struct EnhancedDecisionOrchestrator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct EnhancedDecisionRecord {
     pub timestamp: i64,
     pub ml_confidence: f64,
@@ -153,15 +155,8 @@ pub struct EnhancedDecisionRecord {
 }
 
 #[derive(Debug, Clone)]
-pub struct FeaturePipeline {
-    pub price_features: Vec<f64>,
-    pub volume_features: Vec<f64>,
-    pub microstructure_features: Vec<f64>,
-    pub technical_features: Vec<f64>,
-    pub sentiment_features: Vec<f64>,
-    pub regime_features: Vec<f64>,
-    pub correlation_features: Vec<f64>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate FeaturePipeline - use ml::features::FeaturePipeline
 
 impl EnhancedDecisionOrchestrator {
     /// Create FULLY integrated orchestrator

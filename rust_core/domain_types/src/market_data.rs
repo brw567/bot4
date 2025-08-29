@@ -24,6 +24,7 @@ use std::fmt;
 
 /// Order book level (price point with aggregated quantity)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BookLevel {
     /// Price at this level
     pub price: Price,
@@ -56,6 +57,7 @@ impl BookLevel {
 
 /// Order book side (bid or ask)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BookSide {
     /// Levels sorted by price (descending for bids, ascending for asks)
     levels: BTreeMap<Price, BookLevel>,
@@ -212,6 +214,7 @@ impl Default for BookSide {
 
 /// Full order book with bid and ask sides
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OrderBook {
     /// Symbol
     pub symbol: String,
@@ -356,6 +359,7 @@ impl OrderBook {
 
 /// Depth profile summary
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DepthProfile {
     /// Number of levels included
     pub levels: usize,
@@ -375,6 +379,7 @@ pub struct DepthProfile {
 
 /// Ticker data (24hr rolling stats)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Ticker {
     /// Symbol
     pub symbol: String,
@@ -507,6 +512,7 @@ impl Ticker {
 
 /// Aggregated market data combining order book and ticker
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketData {
     /// Symbol
     pub symbol: String,
@@ -526,6 +532,7 @@ pub struct MarketData {
 
 /// Market state classification
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum MarketState {
     /// Normal trading
     Normal,
@@ -541,6 +548,7 @@ pub enum MarketState {
 
 /// Liquidity metrics for market quality
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct LiquidityMetrics {
     /// Spread in basis points
     pub spread_bps: Decimal,

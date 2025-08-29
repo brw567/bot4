@@ -23,7 +23,9 @@ use std::collections::HashMap;
 
 /// Enhanced ML Signal with calibration
 #[derive(Debug, Clone)]
-pub struct EnhancedMLSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate EnhancedMLSignal - use canonical_types::TradingSignal
+// pub struct EnhancedMLSignal {
     pub action: SignalAction,
     pub raw_confidence: f64,
     pub calibrated_confidence: f64,
@@ -33,6 +35,7 @@ pub struct EnhancedMLSignal {
 
 /// Monte Carlo validation results
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MonteCarloValidation {
     pub win_rate: f64,
     pub expected_return: f64,

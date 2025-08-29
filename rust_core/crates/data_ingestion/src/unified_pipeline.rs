@@ -13,6 +13,7 @@ use tokio::sync::RwLock;
 use chrono::{DateTime, Utc};
 
 /// Unified Data Pipeline - Single flow from source to analytics
+/// TODO: Add docs
 pub struct UnifiedDataPipeline {
     /// Ingestion layer (Drew's WebSocket manager)
     ingestion: Arc<DataIngestion>,

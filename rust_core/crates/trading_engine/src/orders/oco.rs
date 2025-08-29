@@ -27,6 +27,7 @@ use async_trait::async_trait;
 /// OCO Order Group - Two orders linked where one cancels the other
 /// Casey: "Essential for bracket orders and stop-loss with profit targets!"
 
+/// TODO: Add docs
 pub struct OCOGroup {
     pub group_id: Uuid,
     pub primary_order: Order,
@@ -38,6 +39,7 @@ pub struct OCOGroup {
 }
 
 
+/// TODO: Add docs
 pub enum OCOLinkType {
     /// Standard OCO - either order fills, other cancels
     Standard,
@@ -59,6 +61,7 @@ pub enum OCOLinkType {
 }
 
 
+/// TODO: Add docs
 pub enum OCOStatus {
     Active,
     PartiallyFilled,
@@ -69,6 +72,7 @@ pub enum OCOStatus {
 }
 
 
+/// TODO: Add docs
 pub struct OCOMetadata {
     pub strategy: String,
     pub risk_limit: f64,
@@ -80,6 +84,7 @@ pub struct OCOMetadata {
 }
 
 
+/// TODO: Add docs
 pub enum TimeInForce {
     GTC,  // Good Till Cancelled
     IOC,  // Immediate or Cancel
@@ -104,12 +109,14 @@ pub enum TimeInForce {
 }
 
 
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,
@@ -120,6 +127,7 @@ pub enum OrderType {
 }
 
 
+/// TODO: Add docs
 pub enum OrderStatus {
     Pending,
     New,
@@ -131,6 +139,7 @@ pub enum OrderStatus {
 }
 
 /// OCO Order Manager - Handles complex order relationships
+/// TODO: Add docs
 pub struct OCOManager {
     // Active OCO groups
     active_groups: Arc<RwLock<HashMap<Uuid, OCOGroup>>>,
@@ -534,6 +543,7 @@ impl OCOManager {
 
 /// OCO Error types
 
+/// TODO: Add docs
 pub enum OCOError {
     #[error("Risk validation failed: {0}")]
     RiskValidation(RiskError),
@@ -552,6 +562,7 @@ pub enum OCOError {
 }
 
 
+/// TODO: Add docs
 pub enum RiskError {
     #[error("Position limit exceeded")]
     PositionLimitExceeded,
@@ -564,6 +575,7 @@ pub enum RiskError {
 }
 
 
+/// TODO: Add docs
 pub enum ExchangeError {
     #[error("Connection error")]
     ConnectionError,

@@ -5,6 +5,7 @@ use std::sync::Arc;
 use cache_padded::CachePadded;
 
 /// Sequence counter with cache padding
+/// TODO: Add docs
 pub struct Sequence {
     /// Current sequence value
     value: CachePadded<AtomicUsize>,
@@ -35,6 +36,7 @@ impl Sequence {
 }
 
 /// Sequence barrier for coordination
+/// TODO: Add docs
 pub struct SequenceBarrier {
     /// Cursor sequence to track
     pub cursor: Arc<Sequence>,

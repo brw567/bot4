@@ -9,6 +9,7 @@ use std::collections::HashMap;
 
 /// Complete Harmonic Pattern recognition system
 /// Implements ALL major harmonic patterns with exact Fibonacci ratios
+/// TODO: Add docs
 pub struct HarmonicPatternDetector {
     lookback_period: usize,
     fib_tolerance: f64,  // Tolerance for Fibonacci ratio matching
@@ -19,6 +20,7 @@ pub struct HarmonicPatternDetector {
 
 /// Complete harmonic pattern structure
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct HarmonicPattern {
     pub pattern_type: HarmonicType,
     pub points: PatternPoints,
@@ -33,6 +35,7 @@ pub struct HarmonicPattern {
 
 /// Pattern point structure (XABCD)
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct PatternPoints {
     pub x: PricePoint,
     pub a: PricePoint,
@@ -42,6 +45,7 @@ pub struct PatternPoints {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct PricePoint {
     pub price: f64,
     pub timestamp: i64,
@@ -50,6 +54,7 @@ pub struct PricePoint {
 
 /// All Fibonacci ratios for pattern validation
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct FibonacciRatios {
     pub xab: f64,  // B retracement of XA
     pub abc: f64,  // C retracement of AB
@@ -60,6 +65,7 @@ pub struct FibonacciRatios {
 
 /// Potential Reversal Zone (PRZ)
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct PotentialReversalZone {
     pub upper_bound: f64,
     pub lower_bound: f64,
@@ -70,6 +76,7 @@ pub struct PotentialReversalZone {
 
 /// Trade setup based on harmonic pattern
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub struct TradeSetup {
     pub entry_price: f64,
     pub stop_loss: f64,
@@ -82,6 +89,7 @@ pub struct TradeSetup {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
+/// TODO: Add docs
 pub enum HarmonicType {
     // Classic Patterns
     Gartley,      // Original pattern from 1935

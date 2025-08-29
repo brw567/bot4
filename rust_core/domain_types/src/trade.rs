@@ -24,6 +24,7 @@ use strum_macros::{Display, EnumString};
 
 /// Unique trade identifier
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TradeId(pub Uuid);
 
 impl TradeId {
@@ -57,6 +58,7 @@ impl fmt::Display for TradeId {
 
 /// Trade side from perspective of the order
 #[derive(Debug, Display, EnumString, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TradeSide {
     /// Buy trade
     Buy,
@@ -75,6 +77,7 @@ impl From<OrderSide> for TradeSide {
 
 /// Trade role (maker vs taker)
 #[derive(Debug, Display, EnumString, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TradeRole {
     /// Maker - provided liquidity
     Maker,
@@ -84,6 +87,7 @@ pub enum TradeRole {
 
 /// Trade type classification
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TradeType {
     /// Regular trade
     Regular,
@@ -106,6 +110,7 @@ pub enum TradeType {
 /// - Must have valid price and quantity
 /// - Commission cannot be negative
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Trade {
     // === Identity ===
     /// Unique trade ID
@@ -304,6 +309,7 @@ impl fmt::Display for Trade {
 
 /// Aggregated trade statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TradeStats {
     /// Total number of trades
     pub count: u64,

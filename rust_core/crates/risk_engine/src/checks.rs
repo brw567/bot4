@@ -17,6 +17,7 @@ use crate::limits::RiskLimits;
 
 /// Result of risk check
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum RiskCheckResult {
     /// Order approved
     Approved {
@@ -36,6 +37,7 @@ pub enum RiskCheckResult {
 
 /// Risk modification suggestions
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RiskSuggestion {
     pub field: String,
     pub current_value: String,
@@ -45,6 +47,7 @@ pub struct RiskSuggestion {
 
 /// Pre-trade check types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum PreTradeCheck {
     PositionSize,
     StopLoss,
@@ -57,6 +60,7 @@ pub enum PreTradeCheck {
 }
 
 /// Risk checker - Quinn's enforcement engine
+/// TODO: Add docs
 pub struct RiskChecker {
     limits: Arc<RiskLimits>,
     current_positions: Arc<DashMap<String, Position>>,
@@ -278,6 +282,7 @@ impl RiskChecker {
 }
 
 /// Batch risk checker for multiple orders
+/// TODO: Add docs
 pub struct BatchRiskChecker {
     checker: Arc<RiskChecker>,
 }
@@ -303,6 +308,7 @@ impl BatchRiskChecker {
 }
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum RiskCheckError {
     #[error("Position size exceeds limit: {0}")]
     PositionSizeTooLarge(String),

@@ -18,6 +18,7 @@ use anyhow::{Result, Context};
 /// Complete trading cost model accounting for ALL costs
 /// Sophia identified we were missing $1,800/month in costs!
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ComprehensiveCostModel {
     /// Exchange-specific fee structures
     pub exchange_fees: HashMap<String, ExchangeFeeStructure>,
@@ -37,6 +38,7 @@ pub struct ComprehensiveCostModel {
 
 /// Exchange fee structure with volume-based tiers
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ExchangeFeeStructure {
     pub exchange: String,
     pub spot_fees: TieredFeeSchedule,
@@ -47,11 +49,13 @@ pub struct ExchangeFeeStructure {
 
 /// Tiered fee schedule based on 30-day volume
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TieredFeeSchedule {
     pub tiers: Vec<FeeTier>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeeTier {
     pub min_volume: Decimal,
     pub max_volume: Option<Decimal>,
@@ -78,6 +82,7 @@ impl TieredFeeSchedule {
 
 /// Funding rate calculator for perpetual futures
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FundingRateCalculator {
     /// Current funding rates by symbol
     pub current_rates: HashMap<String, FundingRate>,
@@ -87,6 +92,7 @@ pub struct FundingRateCalculator {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FundingRate {
     pub symbol: String,
     pub rate: Decimal,  // Per 8 hours typically
@@ -95,6 +101,7 @@ pub struct FundingRate {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct HistoricalFunding {
     pub symbol: String,
     pub timestamp: i64,
@@ -144,6 +151,7 @@ impl FundingRateCalculator {
 
 /// Slippage and market impact model
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SlippageModel {
     /// Linear impact coefficient (temporary impact)
     pub linear_impact: Decimal,
@@ -223,6 +231,7 @@ impl SlippageModel {
 
 /// Spread cost estimator
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SpreadCostEstimator {
     /// Current spreads by symbol
     pub current_spreads: HashMap<String, SpreadMetrics>,
@@ -232,6 +241,7 @@ pub struct SpreadCostEstimator {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SpreadMetrics {
     pub bid: Decimal,
     pub ask: Decimal,
@@ -241,6 +251,7 @@ pub struct SpreadMetrics {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SpreadStatistics {
     pub symbol: String,
     pub avg_spread_bps: Decimal,
@@ -286,12 +297,14 @@ impl SpreadCostEstimator {
 
 /// Historical cost tracking for analysis
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CostHistory {
     pub trades: Vec<TradeCost>,
     pub daily_summaries: Vec<DailyCostSummary>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TradeCost {
     pub trade_id: String,
     pub timestamp: i64,
@@ -308,6 +321,7 @@ pub struct TradeCost {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DailyCostSummary {
     pub date: String,
     pub total_volume: Decimal,
@@ -566,6 +580,7 @@ impl ComprehensiveCostModel {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MonthlyCostReport {
     pub month: String,
     pub tradecount: u32,
@@ -580,6 +595,7 @@ pub struct MonthlyCostReport {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CostBreakdown {
     pub fees_pct: Decimal,
     pub slippage_pct: Decimal,

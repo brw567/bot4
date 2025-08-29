@@ -24,6 +24,7 @@ pub trait BaseModel: Send + Sync {
 /// Stacking Ensemble Coordinator
 /// Morgan: "Combines strengths of multiple models while mitigating individual weaknesses!"
 #[derive(Clone)]
+/// TODO: Add docs
 pub struct StackingEnsemble {
     // Base models (Level 0)
     base_models: Vec<Arc<RwLock<dyn BaseModel>>>,
@@ -51,6 +52,7 @@ pub struct StackingEnsemble {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct EnsembleConfig {
     pub use_proba: bool,  // Use probabilities instead of predictions
     pub blend_mode: BlendMode,
@@ -62,6 +64,7 @@ pub struct EnsembleConfig {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum BlendMode {
     Stacking,       // Train meta-learner on OOF predictions
     Blending,       // Simple weighted average
@@ -71,6 +74,7 @@ pub enum BlendMode {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum CrossValidationStrategy {
     KFold { n_splits: usize, shuffle: bool },
     StratifiedKFold { n_splits: usize },
@@ -677,6 +681,7 @@ impl StackingEnsemble {
 
 /// Model errors
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum ModelError {
     #[error("Model not fitted")]
     NotFitted,

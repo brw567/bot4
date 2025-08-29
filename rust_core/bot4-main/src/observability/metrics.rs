@@ -163,6 +163,7 @@ lazy_static! {
 
 static INIT: Once = Once::new();
 
+/// TODO: Add docs
 pub fn init_metrics() {
     INIT.call_once(|| {
         // Register all metrics with the registry
@@ -195,6 +196,7 @@ pub fn init_metrics() {
 }
 
 // Timing helper for measuring latencies
+/// TODO: Add docs
 pub struct Timer {
     start: Instant,
 }

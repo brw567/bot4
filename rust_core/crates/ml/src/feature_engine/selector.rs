@@ -11,6 +11,7 @@ use anyhow::Result;
 // ============================================================================
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SelectionMethod {
     /// Variance threshold - remove low variance features
     VarianceThreshold(f64),
@@ -35,6 +36,7 @@ pub enum SelectionMethod {
 // FEATURE SELECTOR - Morgan's Implementation
 // ============================================================================
 
+/// TODO: Add docs
 pub struct FeatureSelector {
     method: SelectionMethod,
     target_features: usize,

@@ -76,6 +76,7 @@ pub trait OrderRepository: Repository<Order, OrderId> {
 
 /// Order statistics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderStatistics {
     pub total_orders: usize,
     pub filled_orders: usize,

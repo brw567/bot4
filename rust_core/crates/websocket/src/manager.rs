@@ -15,6 +15,7 @@ use crate::client::{WebSocketClient, WebSocketConfig, WebSocketStats};
 use crate::message::{Message, MessageType};
 
 /// Manages multiple WebSocket connections with load balancing
+/// TODO: Add docs
 pub struct WebSocketManager {
     connections: Arc<DashMap<String, Arc<WebSocketClient>>>,
     message_router: Arc<MessageRouter>,
@@ -257,6 +258,7 @@ struct StatsSummary {
 }
 
 /// Connection pool for load balancing
+/// TODO: Add docs
 pub struct ConnectionPool {
     connections: Vec<Arc<WebSocketClient>>,
     current_index: Arc<AtomicUsize>,
@@ -264,6 +266,7 @@ pub struct ConnectionPool {
 }
 
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum LoadBalancingStrategy {
     RoundRobin,
     LeastConnections,

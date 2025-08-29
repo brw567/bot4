@@ -21,6 +21,7 @@ use crate::replay::lob_simulator::OrderBook;
 
 /// Kyle's lambda - permanent price impact coefficient
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct KyleLambda {
     /// Lambda coefficient (price impact per unit volume)
     pub lambda: f64,
@@ -37,6 +38,7 @@ pub struct KyleLambda {
 
 /// Almgren-Chriss model parameters
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AlmgrenChriss {
     /// Permanent impact coefficient
     pub gamma: f64,
@@ -56,6 +58,7 @@ pub struct AlmgrenChriss {
 
 /// Obizhaev-Wang model parameters
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ObizhaevWang {
     /// Market depth parameter
     pub kappa: f64,
@@ -69,6 +72,7 @@ pub struct ObizhaevWang {
 
 /// Impact calculation parameters
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ImpactParameters {
     /// Order size
     pub order_size: Quantity,
@@ -90,6 +94,7 @@ pub struct ImpactParameters {
 }
 
 /// Market impact calculator
+/// TODO: Add docs
 pub struct MarketImpactCalculator {
     /// Historical order flow data for calibration
     order_flow_history: Arc<RwLock<Vec<OrderFlowSample>>>,
@@ -495,6 +500,7 @@ impl MarketImpactCalculator {
 }
 
 /// Impact surface for visualization
+/// TODO: Add docs
 pub struct ImpactSurface {
     /// Participation rate grid
     pub participation_rates: Vec<f64>,

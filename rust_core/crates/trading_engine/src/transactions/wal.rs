@@ -256,6 +256,7 @@ impl Segment {
 }
 
 /// Write-Ahead Log with multiple segments
+/// TODO: Add docs
 pub struct WriteAheadLog {
     /// Base directory for WAL files
     base_dir: PathBuf,
@@ -274,6 +275,7 @@ pub struct WriteAheadLog {
 }
 
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct WalMetrics {
     pub total_writes: AtomicU64,
     pub total_bytes: AtomicU64,

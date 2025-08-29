@@ -10,6 +10,7 @@ use thiserror::Error;
 use crossbeam_utils::CachePadded;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum RateLimitError {
     #[error("Rate limit exceeded: {current}/{limit} per {window:?}")]
     Exceeded {
@@ -32,6 +33,7 @@ pub enum RateLimitError {
 
 /// Exchange-specific rate limits (per Nexus reality check)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeLimits {
     pub spot_orders_per_sec: u32,
     pub futures_orders_per_sec: u32,
@@ -77,28 +79,51 @@ impl ExchangeLimits {
 }
 
 /// Token bucket rate limiter with burst support
-pub struct RateLimiter {
-    // Token bucket state - CachePadded for high contention
-    tokens: CachePadded<AtomicU32>,
-    last_refill: CachePadded<AtomicU64>,  // nanos since epoch
-    
-    // Configuration
-    max_tokens: u32,
-    refill_rate: u32,  // tokens per second
-    refill_interval: Duration,
-    
-    // Burst handling
-    burst_tokens: CachePadded<AtomicU32>,
-    burst_window_start: CachePadded<AtomicU64>,
-    burst_limit: u32,
-    
-    // Statistics
-    total_requests: CachePadded<AtomicU64>,
-    rejected_requests: CachePadded<AtomicU64>,
-    
-    // Semaphore for async coordination
-    semaphore: Arc<Semaphore>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+// pub struct RateLimiter {
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     // Token bucket state - CachePadded for high contention
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     tokens: CachePadded<AtomicU32>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     last_refill: CachePadded<AtomicU64>,  // nanos since epoch
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     // Configuration
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     max_tokens: u32,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     refill_rate: u32,  // tokens per second
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     refill_interval: Duration,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     // Burst handling
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     burst_tokens: CachePadded<AtomicU32>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     burst_window_start: CachePadded<AtomicU64>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     burst_limit: u32,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     // Statistics
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     total_requests: CachePadded<AtomicU64>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     rejected_requests: CachePadded<AtomicU64>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     // Semaphore for async coordination
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+//     semaphore: Arc<Semaphore>,
+// ELIMINATED: Duplicate - use execution::rate_limiter::RateLimiter
+// }
 
 impl RateLimiter {
     pub fn new(requests_per_sec: u32, burst_multiplier: f32) -> Self {
@@ -254,6 +279,7 @@ impl RateLimiter {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RateLimiterStats {
     pub total_requests: u64,
     pub rejected_requests: u64,
@@ -262,6 +288,7 @@ pub struct RateLimiterStats {
 }
 
 /// Multi-exchange rate limiter manager
+/// TODO: Add docs
 pub struct ExchangeRateLimitManager {
     binance_spot: Arc<RateLimiter>,
     binance_futures: Arc<RateLimiter>,

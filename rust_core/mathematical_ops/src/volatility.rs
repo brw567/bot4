@@ -29,6 +29,7 @@ use crate::simd::simd_volatility;
 
 /// Volatility calculation errors
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum VolatilityError {
     #[error("Insufficient data: need at least {min} points, got {actual}")]
     InsufficientData { min: usize, actual: usize },
@@ -45,6 +46,7 @@ pub enum VolatilityError {
 
 /// Volatility model types
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum VolatilityModel {
     /// Simple historical volatility
     Historical,
@@ -64,6 +66,7 @@ pub enum VolatilityModel {
 
 /// OHLC price data for advanced volatility estimators
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OhlcData {
     pub open: f64,
     pub high: f64,
@@ -75,6 +78,7 @@ pub struct OhlcData {
 
 /// Volatility calculation result
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VolatilityResult {
     /// Current volatility estimate (annualized)
     pub volatility: f64,
@@ -92,6 +96,7 @@ pub struct VolatilityResult {
 
 /// Volatility regime classification
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// TODO: Add docs
 pub enum VolatilityRegime {
     Low,      // < 10% annualized
     Normal,   // 10-25% annualized
@@ -112,6 +117,7 @@ pub enum VolatilityRegime {
 /// let vol = calculate_volatility(&returns, VolatilityModel::Historical).unwrap();
 /// println!("Annualized volatility: {:.2}%", vol.volatility * 100.0);
 /// ```
+/// TODO: Add docs
 pub fn calculate_volatility(
     returns: &[f64],
     model: VolatilityModel,
@@ -129,6 +135,7 @@ pub fn calculate_volatility(
 }
 
 /// Calculate volatility from OHLC data
+/// TODO: Add docs
 pub fn calculate_volatility_ohlc(
     data: &[OhlcData],
     model: VolatilityModel,
@@ -401,6 +408,7 @@ fn calculate_yang_zhang_volatility(data: &[OhlcData]) -> Result<VolatilityResult
 }
 
 /// Dynamic volatility tracker with regime detection
+/// TODO: Add docs
 pub struct VolatilityTracker {
     /// Rolling window of returns
     returns_window: VecDeque<f64>,
@@ -522,6 +530,7 @@ fn calculate_confidence_intervals(volatility: f64, n: usize) -> Option<(f64, f64
 }
 
 /// Volatility cone for term structure
+/// TODO: Add docs
 pub fn calculate_volatility_cone(
     returns: &[f64],
     windows: &[usize],

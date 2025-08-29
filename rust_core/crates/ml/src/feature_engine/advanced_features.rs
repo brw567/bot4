@@ -42,6 +42,7 @@ use infrastructure::zero_copy::{ObjectPool, MemoryPoolManager};
 // ============================================================================
 
 /// Advanced feature engineering with 100+ features
+/// TODO: Add docs
 pub struct AdvancedFeatureEngine {
     // Feature categories
     statistical_features: StatisticalFeatures,
@@ -67,6 +68,7 @@ pub struct AdvancedFeatureEngine {
 }
 
 /// Statistical features from tsfresh - Avery
+/// TODO: Add docs
 pub struct StatisticalFeatures {
     // Basic statistics (already optimized with SIMD)
     compute_moments: bool,
@@ -84,6 +86,7 @@ pub struct StatisticalFeatures {
 }
 
 /// Frequency domain features - Morgan & Jordan
+/// TODO: Add docs
 pub struct FrequencyDomainFeatures {
     // FFT-based features
     fft_aggregated: Vec<FFTAggregation>,
@@ -98,6 +101,7 @@ pub struct FrequencyDomainFeatures {
 }
 
 /// Wavelet decomposition - Morgan
+/// TODO: Add docs
 pub struct WaveletFeatures {
     // Discrete Wavelet Transform
     wavelet_type: WaveletType,
@@ -110,23 +114,40 @@ pub struct WaveletFeatures {
 }
 
 /// Market microstructure features - Jordan
-pub struct MicrostructureFeatures {
-    // Order book features
-    compute_book_imbalance: bool,
-    compute_spread_features: bool,
-    compute_depth_features: bool,
-    
-    // Trade flow features
-    compute_kyle_lambda: bool,  // Price impact
-    compute_roll_spread: bool,  // Effective spread
-    compute_amihud_illiquidity: bool,
-    
-    // High-frequency features
-    compute_tick_features: bool,
-    compute_quote_features: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// pub struct MicrostructureFeatures {
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Order book features
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_book_imbalance: bool,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_spread_features: bool,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_depth_features: bool,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // Trade flow features
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_kyle_lambda: bool,  // Price impact
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_roll_spread: bool,  // Effective spread
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_amihud_illiquidity: bool,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     // High-frequency features
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_tick_features: bool,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+//     compute_quote_features: bool,
+// ELIMINATED: Duplicate - use ml::features::MicrostructureFeatures
+// }
 
 /// Fractal and chaos features - Quinn
+/// TODO: Add docs
 pub struct FractalFeatures {
     // Hurst exponent (R/S analysis)
     compute_hurst: bool,
@@ -142,6 +163,7 @@ pub struct FractalFeatures {
 }
 
 /// Information theory features - Sam
+/// TODO: Add docs
 pub struct InformationTheoryFeatures {
     // Entropy measures
     compute_shannon_entropy: bool,
@@ -157,6 +179,7 @@ pub struct InformationTheoryFeatures {
 }
 
 /// Feature selector with importance - Riley
+/// TODO: Add docs
 pub struct FeatureSelector {
     // Selection methods
     method: SelectionMethod,
@@ -172,6 +195,7 @@ pub struct FeatureSelector {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SelectionMethod {
     VarianceThreshold(f64),
     MutualInformation { k: usize },
@@ -181,6 +205,7 @@ pub enum SelectionMethod {
 }
 
 /// Online feature adapter - Casey
+/// TODO: Add docs
 pub struct OnlineFeatureAdapter {
     // Adaptive normalization
     running_mean: Array1<f64>,
@@ -195,6 +220,7 @@ pub struct OnlineFeatureAdapter {
 }
 
 /// Feature drift detection - Casey
+/// TODO: Add docs
 pub struct FeatureDriftDetector {
     // Kolmogorov-Smirnov test
     ks_threshold: f64,
@@ -208,6 +234,7 @@ pub struct FeatureDriftDetector {
 
 /// Feature engineering metrics - Riley
 #[derive(Debug, Default, Clone)]
+/// TODO: Add docs
 pub struct FeatureMetrics {
     pub total_features: usize,
     pub selected_features: usize,
@@ -1214,6 +1241,7 @@ impl FFTConvolution {
 
 // Supporting structures
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TimeSeriesData {
     pub prices: Vec<f64>,
     pub volumes: Vec<f64>,

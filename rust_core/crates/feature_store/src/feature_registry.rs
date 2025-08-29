@@ -1,3 +1,4 @@
+use domain_types::FeatureMetadata;
 // Feature Registry - Metadata and Lineage Tracking
 // DEEP DIVE: Complete feature lifecycle management with versioning
 
@@ -14,6 +15,7 @@ use uuid::Uuid;
 
 /// Registry configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct RegistryConfig {
     pub postgres_url: String,
     pub pool_size: usize,
@@ -35,6 +37,7 @@ impl Default for RegistryConfig {
 }
 
 /// Feature registry for metadata and lineage
+/// TODO: Add docs
 pub struct FeatureRegistry {
     config: RegistryConfig,
     pool: Arc<Pool>,
@@ -603,6 +606,7 @@ impl FeatureRegistry {
 
 /// Feature definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureDefinition {
     pub feature_id: Uuid,
     pub feature_name: String,
@@ -656,7 +660,8 @@ impl FeatureDefinition {
 
 /// Feature metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FeatureMetadata {
+// ELIMINATED: use domain_types::FeatureMetadata
+// pub struct FeatureMetadata {
     pub feature_id: String,
     pub feature_name: String,
     pub description: Option<String>,
@@ -669,6 +674,7 @@ pub struct FeatureMetadata {
 
 /// Feature update
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureUpdate {
     pub change_type: String, // major, minor, patch
     pub schema: Option<serde_json::Value>,
@@ -679,6 +685,7 @@ pub struct FeatureUpdate {
 
 /// Feature usage statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureUsage {
     pub feature_name: String,
     pub request_count: u64,

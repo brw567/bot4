@@ -15,15 +15,16 @@ use crate::{OnlineStore, OfflineStore, FeatureRegistry, FeatureUpdate, FeatureVa
 
 /// Pipeline configuration
 #[derive(Debug, Clone, Deserialize)]
-pub struct PipelineConfig {
-    pub batch_size: usize,
-    pub batch_timeout_ms: u64,
-    pub parallelism: usize,
-    pub buffer_size: usize,
-    pub checkpoint_interval_seconds: u64,
-    pub enable_streaming: bool,
-    pub enable_batch: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct PipelineConfig {
+// ELIMINATED:     pub batch_size: usize,
+// ELIMINATED:     pub batch_timeout_ms: u64,
+// ELIMINATED:     pub parallelism: usize,
+// ELIMINATED:     pub buffer_size: usize,
+// ELIMINATED:     pub checkpoint_interval_seconds: u64,
+// ELIMINATED:     pub enable_streaming: bool,
+// ELIMINATED:     pub enable_batch: bool,
+// ELIMINATED: }
 
 impl Default for PipelineConfig {
     fn default() -> Self {
@@ -40,24 +41,8 @@ impl Default for PipelineConfig {
 }
 
 /// Feature pipeline for processing updates
-pub struct FeaturePipeline {
-    config: PipelineConfig,
-    online_store: Arc<OnlineStore>,
-    offline_store: Arc<OfflineStore>,
-    registry: Arc<FeatureRegistry>,
-    
-    // Streaming engine
-    streaming_engine: Arc<StreamingEngine>,
-    
-    // Batch processor
-    batch_processor: Arc<BatchProcessor>,
-    
-    // Transform registry
-    transformers: Arc<RwLock<HashMap<String, Box<dyn FeatureTransformer + Send + Sync>>>>,
-    
-    // Pipeline state
-    is_running: Arc<RwLock<bool>>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate FeaturePipeline - use ml::features::FeaturePipeline
 
 impl FeaturePipeline {
     /// Create new feature pipeline
@@ -239,6 +224,7 @@ impl FeaturePipeline {
 }
 
 /// Streaming engine for real-time processing
+/// TODO: Add docs
 pub struct StreamingEngine {
     config: PipelineConfig,
     online_store: Arc<OnlineStore>,

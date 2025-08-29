@@ -23,6 +23,7 @@ use crate::isotonic::MarketRegime;
 
 /// Configuration for automatic hyperparameter tuning
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct AutoTunerConfig {
     pub n_trials: usize,
     pub n_startup_trials: usize,
@@ -45,6 +46,7 @@ impl Default for AutoTunerConfig {
 
 // Simplified Trial for AutoTuner
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SimpleTrial {
     pub id: usize,
     pub params: HashMap<String, f64>,
@@ -54,6 +56,7 @@ pub struct SimpleTrial {
 }
 
 // Simplified TradingParameterSpace for AutoTuner
+/// TODO: Add docs
 pub struct TradingParameterSpace {
     parameters: Vec<(String, f64, f64)>, // name, min, max
 }
@@ -102,6 +105,7 @@ impl TradingParameterSpace {
 }
 
 /// Main auto-tuner that orchestrates optimization
+/// TODO: Add docs
 pub struct AutoTuner {
     pub sampler: TPESampler,
     pub pruner: MedianPruner,
@@ -252,6 +256,7 @@ impl AutoTuner {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct HyperOptStats {
     pub total_trials: usize,
     pub best_trial_id: usize,
@@ -261,6 +266,7 @@ pub struct HyperOptStats {
 
 /// Parameter types for optimization
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ParameterType {
     Float { min: f64, max: f64, log_scale: bool },
     Integer { min: i64, max: i64, log_scale: bool },
@@ -270,6 +276,7 @@ pub enum ParameterType {
 
 /// Single parameter definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ParameterDef {
     pub name: String,
     pub param_type: ParameterType,
@@ -280,6 +287,7 @@ pub struct ParameterDef {
 
 /// Study for optimization (like Optuna Study)
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct OptimizationStudy {
     pub study_name: String,
     pub direction: OptimizationDirection,
@@ -293,6 +301,7 @@ pub struct OptimizationStudy {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum OptimizationDirection {
     Maximize,  // For profit, Sharpe ratio
     Minimize,  // For risk, drawdown
@@ -300,6 +309,7 @@ pub enum OptimizationDirection {
 
 /// Trial represents a single optimization attempt
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Trial {
     pub trial_id: usize,
     pub params: HashMap<String, ParameterValue>,
@@ -314,6 +324,7 @@ pub struct Trial {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TrialState {
     Running,
     Complete,
@@ -322,6 +333,7 @@ pub enum TrialState {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ParameterValue {
     Float(f64),
     Integer(i64),
@@ -409,6 +421,7 @@ impl OptimizationStudy {
 
 // Random sampler for baseline
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RandomSampler;
 
 impl RandomSampler {
@@ -471,6 +484,7 @@ impl Sampler for RandomSampler {
 
 // No pruning pruner
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct NoPruner;
 
 impl Pruner for NoPruner {
@@ -504,6 +518,7 @@ pub trait Sampler: Send + Sync + Debug {
 
 /// TPE (Tree-structured Parzen Estimator) Sampler - Optuna's default
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct TPESampler {
     n_startup_trials: usize,
     n_ei_candidates: usize,
@@ -1038,6 +1053,7 @@ pub trait Pruner: Send + Sync + Debug {
 
 /// Median Pruner - prunes if trial is worse than median of previous trials
 #[derive(Clone, Debug)]
+/// TODO: Add docs
 pub struct MedianPruner {
     n_startup_trials: usize,
     n_warmup_steps: usize,
@@ -1105,6 +1121,7 @@ impl Pruner for MedianPruner {
 }
 
 /// Hyperparameter optimizer with auto-tuning capabilities
+/// TODO: Add docs
 pub struct HyperparameterOptimizer {
     studies: HashMap<String, OptimizationStudy>,
     default_sampler: Arc<RwLock<Box<dyn Sampler>>>,
@@ -1129,6 +1146,7 @@ pub struct HyperparameterOptimizer {
 
 /// Trading-specific parameters for optimization
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TradingParameters {
     // Risk parameters
     pub max_position_size: ParameterDef,
@@ -1337,6 +1355,7 @@ impl TradingParameters {
 // Use crate::isotonic::MarketRegime
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OptimizationResult {
     pub timestamp: DateTime<Utc>,
     pub study_name: String,
@@ -1780,6 +1799,7 @@ impl HyperparameterOptimizer {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OptimizationReport {
     pub timestamp: DateTime<Utc>,
     pub total_studies: usize,
@@ -1792,6 +1812,7 @@ pub struct OptimizationReport {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ConvergenceAnalysis {
     pub convergence_rates: Vec<(String, f64)>,
     pub avg_trials_to_convergence: f64,

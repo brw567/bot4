@@ -12,14 +12,13 @@
 use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
 use serde::{Deserialize, Serialize};
-use std::cmp::Ordering;
 use std::fmt;
-use std::ops::{Add, Sub, Mul, Div};
 use std::str::FromStr;
 use thiserror::Error;
 
 /// Errors that can occur with Quantity operations
 #[derive(Debug, Error, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum QuantityError {
     /// Quantity cannot be negative
     #[error("Quantity cannot be negative: {0}")]
@@ -70,6 +69,7 @@ pub enum QuantityError {
 /// assert_eq!(doubled.as_decimal().to_string(), "0.002");
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Quantity {
     value: Decimal,
     precision: u32,

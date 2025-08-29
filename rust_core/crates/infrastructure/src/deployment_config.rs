@@ -28,6 +28,7 @@ use tokio::sync::broadcast;
 /// Deployment environment types
 /// Alex: "Each environment has specific security and performance profiles"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Environment {
     /// Local development environment
     Development,
@@ -129,6 +130,7 @@ pub trait SecretProvider: Send + Sync {
 }
 
 /// Environment variable secret provider
+/// TODO: Add docs
 pub struct EnvSecretProvider {
     prefix: String,
 }
@@ -174,6 +176,7 @@ impl SecretProvider for EnvSecretProvider {
 
 /// Kubernetes secret provider
 /// Uses mounted secret volumes
+/// TODO: Add docs
 pub struct K8sSecretProvider {
     secret_path: PathBuf,
 }
@@ -220,6 +223,7 @@ impl SecretProvider for K8sSecretProvider {
 
 /// HashiCorp Vault secret provider
 /// Morgan: "Industry standard for secret management"
+/// TODO: Add docs
 pub struct VaultSecretProvider {
     client: reqwest::Client,
     vault_addr: String,
@@ -275,6 +279,7 @@ impl VaultSecretProvider {
 /// Complete deployment configuration
 /// Alex: "Single source of truth for all deployment settings"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DeploymentConfig {
     /// Current environment
     pub environment: Environment,
@@ -303,6 +308,7 @@ pub struct DeploymentConfig {
 
 /// Application configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AppConfig {
     pub name: String,
     pub version: String,
@@ -316,17 +322,8 @@ pub struct AppConfig {
 /// Database configuration
 /// Avery: "TimescaleDB with connection pooling"
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DatabaseConfig {
-    pub host: String,
-    pub port: u16,
-    pub database: String,
-    pub username: String,
-    #[serde(skip_serializing)]
-    pub password: String,
-    pub pool_size: u32,
-    pub connection_timeout: u64,
-    pub ssl_mode: String,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate DatabaseConfig - use infrastructure::database::DatabaseConfig
 
 impl DatabaseConfig {
     pub fn connection_string(&self) -> String {
@@ -344,6 +341,7 @@ impl DatabaseConfig {
 
 /// Redis configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct RedisConfig {
     pub host: String,
     pub port: u16,
@@ -367,30 +365,18 @@ impl RedisConfig {
 /// Exchange configuration
 /// Casey: "Per-exchange API configuration"
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ExchangeConfig {
-    pub name: String,
-    pub api_key: String,
-    #[serde(skip_serializing)]
-    pub api_secret: String,
-    pub testnet: bool,
-    pub ws_endpoint: String,
-    pub rest_endpoint: String,
-    pub rate_limit: u32,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExchangeConfig - use execution::exchange::ExchangeConfig
 
 /// Monitoring configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MonitoringConfig {
-    pub prometheus_enabled: bool,
-    pub jaeger_enabled: bool,
-    pub jaeger_endpoint: String,
-    pub log_format: String,
-    pub metrics_prefix: String,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MonitoringConfig - use infrastructure::monitoring::MonitoringConfig
 
 /// Feature flags for gradual rollout
 /// Jordan: "Control feature activation per environment"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureFlags {
     pub ml_models_enabled: bool,
     pub auto_trading_enabled: bool,
@@ -401,6 +387,7 @@ pub struct FeatureFlags {
 
 /// Resource limits per environment
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ResourceLimits {
     pub max_memory_mb: u64,
     pub max_cpu_cores: f32,
@@ -414,6 +401,7 @@ pub struct ResourceLimits {
 // ============================================================================
 
 /// Configuration manager with hot reload support
+/// TODO: Add docs
 pub struct ConfigManager {
     /// Current configuration
     config: Arc<RwLock<DeploymentConfig>>,
@@ -579,6 +567,7 @@ impl ConfigManager {
 
 /// Generate Kubernetes manifests
 /// Riley: "Automated K8s manifest generation for consistency"
+/// TODO: Add docs
 pub struct K8sManifestGenerator {
     config: DeploymentConfig,
     namespace: String,
@@ -762,6 +751,7 @@ spec:
 // ============================================================================
 
 /// Generate Docker Compose configuration
+/// TODO: Add docs
 pub struct DockerComposeGenerator {
     config: DeploymentConfig,
 }

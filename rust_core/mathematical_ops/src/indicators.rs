@@ -13,6 +13,7 @@ use std::collections::VecDeque;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum IndicatorError {
     #[error("Insufficient data: need {min}, got {actual}")]
     InsufficientData { min: usize, actual: usize },
@@ -21,12 +22,14 @@ pub enum IndicatorError {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct IndicatorConfig {
     pub period: usize,
     pub smoothing: f64,
 }
 
 /// Calculate Simple Moving Average (consolidates 3 implementations)
+/// TODO: Add docs
 pub fn calculate_sma(data: &[f64], period: usize) -> Result<Vec<f64>, IndicatorError> {
     if data.len() < period {
         return Err(IndicatorError::InsufficientData {
@@ -46,6 +49,7 @@ pub fn calculate_sma(data: &[f64], period: usize) -> Result<Vec<f64>, IndicatorE
 }
 
 /// Calculate Exponential Moving Average (consolidates 4 implementations)
+/// TODO: Add docs
 pub fn calculate_ema(data: &[f64], period: usize) -> Result<Vec<f64>, IndicatorError> {
     if data.is_empty() {
         return Err(IndicatorError::InsufficientData {
@@ -82,6 +86,7 @@ pub fn calculate_ema(data: &[f64], period: usize) -> Result<Vec<f64>, IndicatorE
 }
 
 /// Calculate Relative Strength Index (consolidates 4 implementations)
+/// TODO: Add docs
 pub fn calculate_rsi(data: &[f64], period: usize) -> Result<Vec<f64>, IndicatorError> {
     if data.len() < period + 1 {
         return Err(IndicatorError::InsufficientData {
@@ -132,6 +137,7 @@ pub fn calculate_rsi(data: &[f64], period: usize) -> Result<Vec<f64>, IndicatorE
 }
 
 /// Calculate MACD (Moving Average Convergence Divergence)
+/// TODO: Add docs
 pub fn calculate_macd(
     data: &[f64],
     fast_period: usize,
@@ -169,6 +175,7 @@ pub fn calculate_macd(
 }
 
 /// Calculate Bollinger Bands
+/// TODO: Add docs
 pub fn calculate_bollinger_bands(
     data: &[f64],
     period: usize,
@@ -193,6 +200,7 @@ pub fn calculate_bollinger_bands(
 }
 
 /// Calculate Average True Range (ATR)
+/// TODO: Add docs
 pub fn calculate_atr(
     high: &[f64],
     low: &[f64],
@@ -223,6 +231,7 @@ pub fn calculate_atr(
 }
 
 /// Calculate Stochastic Oscillator
+/// TODO: Add docs
 pub fn calculate_stochastic(
     high: &[f64],
     low: &[f64],

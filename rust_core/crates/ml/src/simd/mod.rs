@@ -28,6 +28,7 @@ use std::alloc::{alloc, dealloc, Layout};
 
 /// 64-byte aligned vector for optimal SIMD performance
 #[repr(align(64))]
+/// TODO: Add docs
 pub struct AlignedVec<T> {
     ptr: *mut T,
     len: usize,
@@ -169,6 +170,7 @@ impl<T> std::ops::IndexMut<usize> for AlignedVec<T> {
 
 /// Check if AVX-512 is available - Jordan
 #[inline]
+/// TODO: Add docs
 pub fn has_avx512() -> bool {
     is_x86_feature_detected!("avx512f") &&
     is_x86_feature_detected!("avx512dq") &&
@@ -178,6 +180,7 @@ pub fn has_avx512() -> bool {
 
 /// Check if AVX-512 VNNI is available for neural networks
 #[inline]
+/// TODO: Add docs
 pub fn has_avx512_vnni() -> bool {
     is_x86_feature_detected!("avx512vnni")
 }
@@ -561,6 +564,7 @@ pub unsafe fn max_avx512(x: &[f64]) -> f64 {
 // ============================================================================
 
 /// Safe dot product with runtime SIMD detection
+/// TODO: Add docs
 pub fn dot_product(a: &[f64], b: &[f64]) -> f64 {
     if has_avx512() {
         unsafe { dot_product_avx512(a, b) }
@@ -571,6 +575,7 @@ pub fn dot_product(a: &[f64], b: &[f64]) -> f64 {
 }
 
 /// Safe matrix multiply with runtime SIMD detection
+/// TODO: Add docs
 pub fn matrix_multiply(
     a: &[f64],
     b: &[f64],

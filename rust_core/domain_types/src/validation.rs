@@ -1,7 +1,3 @@
-//! # Validation System for Canonical Types
-//! 
-//! Ensures all canonical types meet business rules and invariants.
-//! Provides both synchronous and async validation with detailed error reporting.
 //!
 //! ## Design Principles
 //! - Fail fast with clear error messages
@@ -9,13 +5,14 @@
 //! - Performance-aware (caching, lazy evaluation)
 //! - Extensible for exchange-specific rules
 
-use crate::{Order, OrderType, OrderSide, Price, Quantity, Trade, Candle, OrderBook, Ticker};
+use crate::{Order, OrderType, OrderSide, Price, Quantity, Trade, Candle, OrderBook};
 use rust_decimal::Decimal;
 use thiserror::Error;
 use std::collections::HashMap;
 
 /// Validation errors with detailed context
 #[derive(Debug, Error, Clone)]
+/// TODO: Add docs
 pub enum ValidationError {
     #[error("Price validation failed: {0}")]
     InvalidPrice(String),
@@ -62,6 +59,7 @@ pub trait Validatable {
 
 /// Validation context with exchange rules and limits
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ValidationContext {
     /// Exchange-specific rules
     pub exchange_rules: HashMap<String, ExchangeRules>,
@@ -73,6 +71,7 @@ pub struct ValidationContext {
 
 /// Exchange-specific trading rules
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeRules {
     /// Exchange name
     pub exchange: String,
@@ -96,6 +95,7 @@ pub struct ExchangeRules {
 
 /// Risk management limits
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct RiskLimits {
     /// Maximum position size as % of portfolio
     pub max_position_pct: Decimal,
@@ -126,18 +126,11 @@ impl Default for RiskLimits {
 
 /// Current market conditions for validation
 #[derive(Debug, Clone)]
-pub struct MarketConditions {
-    /// Is market volatile?
-    pub high_volatility: bool,
-    /// Is liquidity low?
-    pub low_liquidity: bool,
-    /// Are we near market close?
-    pub near_close: bool,
-    /// Current drawdown
-    pub current_drawdown: Decimal,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate MarketConditions - use domain_types::market_data::MarketConditions
 
 /// Main validator struct
+/// TODO: Add docs
 pub struct Validator {
     context: ValidationContext,
     cache: HashMap<String, ValidationResult<()>>,

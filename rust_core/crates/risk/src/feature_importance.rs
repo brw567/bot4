@@ -1,3 +1,4 @@
+use domain_types::FeatureMetadata;
 // OPTIMIZE: Feature Importance with SHAP Values - FULL Implementation
 // Team: Alex (Lead) + Morgan + Quinn + Jordan + Avery + Full Team
 // NO SIMPLIFICATIONS - COMPLETE SHAP IMPLEMENTATION
@@ -16,6 +17,7 @@ use ndarray::{Array1, Array2, ArrayView1, Axis};
 
 /// Feature categories for organized analysis
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub enum FeatureCategory {
     Price,          // Price-based features
     Volume,         // Volume-based features
@@ -29,7 +31,8 @@ pub enum FeatureCategory {
 
 /// Feature metadata for tracking
 #[derive(Debug, Clone)]
-pub struct FeatureMetadata {
+// ELIMINATED: use domain_types::FeatureMetadata
+// pub struct FeatureMetadata {
     pub name: String,
     pub category: FeatureCategory,
     pub description: String,
@@ -40,6 +43,7 @@ pub struct FeatureMetadata {
 }
 
 /// SHAP calculator using various methods
+/// TODO: Add docs
 pub struct SHAPCalculator {
     // Model interface
     model_predict: Arc<dyn Fn(&Array2<f64>) -> Array1<f64> + Send + Sync>,
@@ -704,6 +708,7 @@ impl SHAPCalculator {
 
 // Helper structs for reporting
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FeatureImportanceReport {
     pub timestamp: chrono::DateTime<chrono::Utc>,
     pub total_features: usize,
@@ -716,6 +721,7 @@ pub struct FeatureImportanceReport {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CategoryStats {
     pub count: usize,
     pub total_importance: f64,
@@ -724,6 +730,7 @@ pub struct CategoryStats {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct StabilityAnalysis {
     pub avg_stability: f64,
     pub stable_features: Vec<String>,
@@ -731,6 +738,7 @@ pub struct StabilityAnalysis {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct InteractionAnalysis {
     pub strongest_pairs: Vec<(String, String, f64)>,
 }

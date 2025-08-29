@@ -20,6 +20,7 @@ use crate::parameter_manager::{PARAMETERS, ParameterManager};
 
 /// Configuration for t-Copula
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TCopulaConfig {
     pub initial_df: f64,        // Initial degrees of freedom
     pub min_df: f64,            // Minimum df (heavier tails)
@@ -46,6 +47,7 @@ impl Default for TCopulaConfig {
 /// Quinn: "When markets crash, EVERYTHING becomes correlated!"
 /// Morgan: "Normal copulas FAIL in crises - we need Student's t!"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TCopula {
     /// Correlation matrix (time-varying!)
     correlation_matrix: Arc<RwLock<DMatrix<f64>>>,
@@ -74,6 +76,7 @@ pub struct TCopula {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CopulaParameters {
     pub degrees_of_freedom: f64,
     pub correlation_scale: f64,  // Scale correlations in crisis
@@ -670,6 +673,7 @@ impl TCopula {
 
 /// Crisis scenario analysis results
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CrisisScenario {
     pub stressed_correlation: DMatrix<f64>,
     pub stressed_df: f64,
@@ -907,6 +911,7 @@ impl TCopula {
 
 /// Tail risk metrics for portfolio
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TailRiskMetrics {
     pub tail_var: f64,
     pub expected_shortfall: f64,
@@ -917,6 +922,7 @@ pub struct TailRiskMetrics {
 
 /// Tail dependence metrics (for test compatibility)
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TailDependenceMetrics {
     pub average_tail_dependence: f64,
     pub max_tail_dependence: f64,

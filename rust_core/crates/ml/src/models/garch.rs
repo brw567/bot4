@@ -18,7 +18,9 @@ const MAX_ITERATIONS: usize = 500;
 /// 
 /// CRITICAL: Handles fat tails in crypto returns
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GARCHModel {
+/// TODO: Add docs
+// ELIMINATED: GARCHModel - Enhanced with EGARCH, GJR-GARCH extensions
+// pub struct GARCHModel {
     // Model parameters
     omega: f32,   // Constant term (long-run variance * (1 - α - β))
     alpha: f32,   // ARCH coefficient (reaction to shocks)
@@ -477,6 +479,7 @@ impl GARCHModel {
 
 /// GARCH Error types
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum GARCHError {
     #[error("Insufficient data for GARCH estimation (need >= 100 points)")]
     InsufficientData,

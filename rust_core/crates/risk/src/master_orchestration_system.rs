@@ -44,6 +44,7 @@ use tokio::time::{interval, Duration as TokioDuration};
 
 /// The ULTIMATE orchestration system that integrates EVERYTHING
 /// No component operates in isolation - full bidirectional communication
+/// TODO: Add docs
 pub struct MasterOrchestrationSystem {
     // Core decision making
     decision_orchestrator: Arc<DecisionOrchestrator>,
@@ -81,6 +82,7 @@ pub struct MasterOrchestrationSystem {
 
 /// Master configuration for the entire system
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MasterConfig {
     pub optimization_interval: Duration,        // How often to re-optimize
     pub min_trades_for_optimization: usize,     // Min trades before optimization
@@ -823,7 +825,9 @@ impl Clone for MasterOrchestrationSystem {
 
 /// Integrated signal with full context
 #[derive(Debug, Clone)]
-pub struct IntegratedSignal {
+/// TODO: Add docs
+// ELIMINATED: Duplicate IntegratedSignal - use canonical_types::TradingSignal
+// pub struct IntegratedSignal {
     pub action: SignalAction,
     pub size: Quantity,
     pub confidence: Percentage,
@@ -837,6 +841,7 @@ pub struct IntegratedSignal {
 
 /// Execution costs breakdown
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExecutionCosts {
     pub expected_slippage: f64,
     pub spread_cost: f64,

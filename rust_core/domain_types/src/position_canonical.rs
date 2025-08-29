@@ -14,6 +14,7 @@ use uuid::Uuid;
 
 /// Unique position identifier
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PositionId(pub Uuid);
 
 impl PositionId {
@@ -24,7 +25,9 @@ impl PositionId {
 
 /// CANONICAL POSITION - All Requirements Unified
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Position {
+/// TODO: Add docs
+// ELIMINATED: Duplicate Position - use canonical_types::Position
+// pub struct Position {
     // ======= IDENTITY =======
     pub id: PositionId,
     pub symbol: Symbol,
@@ -85,6 +88,7 @@ pub struct Position {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AuditEntry {
     pub timestamp: DateTime<Utc>,
     pub action: String,
@@ -154,6 +158,7 @@ impl Position {
 }
 
 // MORGAN: "Builder for testing"
+/// TODO: Add docs
 pub struct PositionBuilder {
     position: Position,
 }

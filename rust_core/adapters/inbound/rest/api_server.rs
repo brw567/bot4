@@ -31,6 +31,7 @@ use crate::ports::inbound::TradingService;
 /// API Server State - Shared across all handlers
 /// Alex: "This holds all our service dependencies"
 #[derive(Clone)]
+/// TODO: Add docs
 pub struct ApiState {
     /// Trading service port
     /// Casey: "Main trading operations"
@@ -52,6 +53,7 @@ pub struct ApiState {
 /// API Configuration
 /// Sam: "Configurable for different environments"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ApiConfig {
     pub host: String,
     pub port: u16,
@@ -74,6 +76,7 @@ impl Default for ApiConfig {
 
 /// Create the main router with all endpoints
 /// Full team collaborated on endpoint design
+/// TODO: Add docs
 pub fn create_router(state: ApiState) -> Router {
     // Alex: "Organize routes by domain"
     

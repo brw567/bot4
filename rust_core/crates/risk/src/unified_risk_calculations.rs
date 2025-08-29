@@ -1,3 +1,4 @@
+use domain_types::CorrelationMatrix;
 use domain_types::risk_limits::RiskLimits;
 //! # UNIFIED RISK CALCULATIONS - Single Source of Truth
 //! Cameron: "No more inconsistent risk metrics!"
@@ -15,6 +16,7 @@ use std::collections::HashMap;
 use statrs::distribution::{Normal, ContinuousCDF};
 
 /// Unified Risk Calculator - All risk metrics in one place
+/// TODO: Add docs
 pub struct UnifiedRiskCalculator {
     /// Historical data for calculations
     historical_returns: Vec<f64>,
@@ -33,6 +35,7 @@ pub struct UnifiedRiskCalculator {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum VolatilityRegime {
     Low,
     Normal,
@@ -267,13 +270,15 @@ impl UnifiedRiskCalculator {
 
 // Supporting structures
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PortfolioPosition {
     pub symbol: String,
     pub value: Decimal,
     pub volatility: f64,
 }
 
-pub struct CorrelationMatrix {
+// ELIMINATED: use domain_types::CorrelationMatrix
+// pub struct CorrelationMatrix {
     data: Vec<Vec<f64>>,
 }
 
@@ -284,6 +289,7 @@ impl CorrelationMatrix {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct PortfolioRisk {
     pub total_value: Decimal,
     pub portfolio_volatility: f64,
@@ -295,6 +301,7 @@ pub struct PortfolioRisk {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct PerformanceMetrics {
     pub sharpe_ratio: f64,
     pub max_drawdown: f64,

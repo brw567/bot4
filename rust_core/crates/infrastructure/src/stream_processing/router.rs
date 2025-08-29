@@ -1,10 +1,17 @@
 // Stream Router Module - Intelligent Message Routing
+use domain_types::market_data::MarketTick;
 // Team Lead: Casey (Routing Architecture)
+use domain_types::market_data::MarketTick;
 // Contributors: ALL 8 TEAM MEMBERS  
+use domain_types::market_data::MarketTick;
 // Date: January 18, 2025
+use domain_types::market_data::MarketTick;
 // Performance Target: <5μs routing decision
+use domain_types::market_data::MarketTick;
 
+use domain_types::market_data::MarketTick;
 use super::*;
+use domain_types::market_data::MarketTick;
 use anyhow::Result;
 use async_trait::async_trait;
 use std::collections::HashMap;
@@ -31,6 +38,7 @@ pub trait RoutingRule: Send + Sync {
 }
 
 /// Symbol-based routing rule
+/// TODO: Add docs
 pub struct SymbolRoute {
     symbols: Vec<String>,
     destination: String,
@@ -62,6 +70,7 @@ impl RoutingRule for SymbolRoute {
 }
 
 /// Risk-based routing rule - Quinn's design
+/// TODO: Add docs
 pub struct RiskRoute {
     severity_threshold: RiskSeverity,
     destination: String,
@@ -105,6 +114,7 @@ impl RoutingRule for RiskRoute {
 }
 
 /// Confidence-based routing - Morgan's ML routing
+/// TODO: Add docs
 pub struct ConfidenceRoute {
     min_confidence: f64,
     destination: String,
@@ -138,6 +148,7 @@ impl RoutingRule for ConfidenceRoute {
 // ============================================================================
 
 /// High-performance message router
+/// TODO: Add docs
 pub struct MessageRouter {
     rules: Arc<RwLock<Vec<Arc<dyn RoutingRule>>>>,
     default_destination: String,
@@ -147,6 +158,7 @@ pub struct MessageRouter {
 
 /// Router metrics - Riley's monitoring
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct RouterMetrics {
     pub messages_routed: std::sync::atomic::AtomicU64,
     pub routing_decisions_us: std::sync::atomic::AtomicU64,
@@ -262,6 +274,7 @@ impl MessageRouter {
 // ============================================================================
 
 /// Load-balanced router for multiple destinations
+/// TODO: Add docs
 pub struct LoadBalancedRouter {
     routers: Vec<Arc<MessageRouter>>,
     current_index: Arc<std::sync::atomic::AtomicUsize>,
@@ -290,6 +303,7 @@ impl LoadBalancedRouter {
 // ============================================================================
 
 /// Fanout router for broadcasting to multiple destinations
+/// TODO: Add docs
 pub struct FanoutRouter {
     destinations: Vec<String>,
     producers: Arc<RwLock<HashMap<String, Arc<producer::BatchProducer>>>>,

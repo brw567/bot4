@@ -12,6 +12,7 @@ use crate::domain::value_objects::{Symbol, Price, Quantity};
 /// Place order request DTO
 #[derive(Debug, Clone, Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct PlaceOrderRequest {
     #[validate(length(min = 1, max = 20))]
     pub symbol: String,
@@ -115,6 +116,7 @@ impl PlaceOrderRequest {
 /// Cancel order request DTO
 #[derive(Debug, Clone, Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct CancelOrderRequest {
     #[validate(length(min = 1, max = 100))]
     pub order_id: String,
@@ -126,6 +128,7 @@ pub struct CancelOrderRequest {
 /// Modify order request DTO
 #[derive(Debug, Clone, Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct ModifyOrderRequest {
     #[validate(length(min = 1, max = 100))]
     pub order_id: String,
@@ -140,6 +143,7 @@ pub struct ModifyOrderRequest {
 /// Batch order request for multiple orders
 #[derive(Debug, Clone, Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct BatchOrderRequest {
     #[validate(length(min = 1, max = 100))]
     pub orders: Vec<PlaceOrderRequest>,
@@ -150,6 +154,7 @@ pub struct BatchOrderRequest {
 /// OCO (One-Cancels-Other) order request
 #[derive(Debug, Clone, Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]
+/// TODO: Add docs
 pub struct OcoOrderRequest {
     #[validate(length(min = 1, max = 20))]
     pub symbol: String,

@@ -17,6 +17,7 @@ use crate::domain::value_objects::{Symbol, Price, Quantity};
 
 /// Message types for symbol actors
 #[derive(Debug)]
+/// TODO: Add docs
 pub enum SymbolMessage {
     PlaceOrder {
         order: Order,
@@ -42,6 +43,7 @@ pub enum SymbolMessage {
 
 /// Statistics for a symbol actor
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct ActorStats {
     pub messages_processed: u64,
     pub orders_placed: u64,
@@ -55,6 +57,7 @@ pub struct ActorStats {
 /// Individual symbol actor
 /// Processes all orders for a single symbol sequentially
 /// Ensures deterministic order processing and prevents race conditions
+/// TODO: Add docs
 pub struct SymbolActor {
     symbol: Symbol,
     receiver: mpsc::Receiver<SymbolMessage>,
@@ -228,6 +231,7 @@ impl SymbolActor {
 
 /// Symbol Actor Manager
 /// Manages per-symbol actors and routes messages
+/// TODO: Add docs
 pub struct SymbolActorManager {
     actors: Arc<RwLock<HashMap<Symbol, mpsc::Sender<SymbolMessage>>>>,
     handles: Arc<RwLock<HashMap<Symbol, JoinHandle<()>>>>,

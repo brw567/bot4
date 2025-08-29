@@ -1,12 +1,21 @@
 // Fast Order Processor - Zero-Allocation Hot Path
+use execution::reports::ExecutionReport;
 // Team: Jordan (Performance) & Sam (Architecture) & Casey (Exchange)
+use execution::reports::ExecutionReport;
 // CRITICAL: Demonstrates proper object pool usage for <100μs latency
+use execution::reports::ExecutionReport;
 // References:
+use execution::reports::ExecutionReport;
 // - "Ultra-Low Latency Trading Systems" - Narang
+use execution::reports::ExecutionReport;
 // - "High-Performance Trading" - Aldridge
+use execution::reports::ExecutionReport;
 // - "Zero-Copy Architecture" - Linux Journal
+use execution::reports::ExecutionReport;
 
+use execution::reports::ExecutionReport;
 use std::sync::Arc;
+use execution::reports::ExecutionReport;
 use std::sync::atomic::{AtomicU64, AtomicBool, Ordering};
 use std::time::Instant;
 use rust_decimal::Decimal;
@@ -21,6 +30,7 @@ use infrastructure::{
 
 /// Fast order processor using pre-allocated object pools
 /// ZERO allocations in the hot path
+/// TODO: Add docs
 pub struct FastOrderProcessor {
     // Performance metrics
     orders_processed: Arc<AtomicU64>,
@@ -287,6 +297,7 @@ impl FastOrderProcessor {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct ProcessorStats {
     pub orders_processed: u64,
     pub signals_processed: u64,

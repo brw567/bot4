@@ -28,6 +28,7 @@ use crate::replay::lob_simulator::{OrderBookUpdate, UpdateType, Side};
 
 /// Supported data sources
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DataSource {
     /// LOBSTER format (academic standard)
     LOBSTER {
@@ -78,6 +79,7 @@ pub enum DataSource {
 
 /// Tardis data types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TardisDataType {
     BookSnapshot,
     BookUpdate,
@@ -88,6 +90,7 @@ pub enum TardisDataType {
 
 /// Databento schemas
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DatabentSchema {
     MBO,  // Market by Order
     MBP1, // Market by Price (top of book)
@@ -98,6 +101,7 @@ pub enum DatabentSchema {
 
 /// Binary formats
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum BinaryFormat {
     FIX,
     FAST,
@@ -108,6 +112,7 @@ pub enum BinaryFormat {
 
 /// Data format for normalized output
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DataFormat {
     OrderBookUpdate,
     Trade,
@@ -117,6 +122,7 @@ pub enum DataFormat {
 
 /// Tick data structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TickData {
     pub timestamp: DateTime<Utc>,
     pub symbol: Symbol,
@@ -127,6 +133,7 @@ pub struct TickData {
 
 /// Tick types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum TickType {
     Trade(TradeData),
     Quote(QuoteData),
@@ -135,24 +142,26 @@ pub enum TickType {
 
 /// Trade data
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TradeData {
-    pub price: Price,
-    pub quantity: Quantity,
-    pub side: Side,
-    pub trade_id: u64,
-    pub is_implied: bool,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct TradeData {
+// ELIMINATED:     pub price: Price,
+// ELIMINATED:     pub quantity: Quantity,
+// ELIMINATED:     pub side: Side,
+// ELIMINATED:     pub trade_id: u64,
+// ELIMINATED:     pub is_implied: bool,
+// ELIMINATED: }
 
 /// Quote data
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct QuoteData {
-    pub bid_price: Price,
-    pub bid_quantity: Quantity,
-    pub ask_price: Price,
-    pub ask_quantity: Quantity,
-    pub bid_count: u32,
-    pub ask_count: u32,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct QuoteData {
+// ELIMINATED:     pub bid_price: Price,
+// ELIMINATED:     pub bid_quantity: Quantity,
+// ELIMINATED:     pub ask_price: Price,
+// ELIMINATED:     pub ask_quantity: Quantity,
+// ELIMINATED:     pub bid_count: u32,
+// ELIMINATED:     pub ask_count: u32,
+// ELIMINATED: }
 
 /// LOBSTER message types
 #[derive(Debug)]
@@ -209,6 +218,7 @@ pub trait DataLoader: Send + Sync {
 
 /// Data metadata
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DataMetadata {
     pub symbol: Symbol,
     pub exchange: Exchange,
@@ -220,6 +230,7 @@ pub struct DataMetadata {
 }
 
 /// Main historical data loader
+/// TODO: Add docs
 pub struct HistoricalDataLoader {
     source: DataSource,
     buffer_size: usize,

@@ -1,3 +1,4 @@
+use domain_types::TrainingResult;
 // LSTM (Long Short-Term Memory) Model Implementation
 // FULL TEAM COLLABORATION - All 8 Members Contributing
 // Owner: Morgan (ML Lead) with full team support
@@ -26,6 +27,7 @@ use serde::{Deserialize, Serialize};
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct LSTMConfig {
     /// Input dimension (number of features)
     pub input_size: usize,
@@ -234,6 +236,7 @@ impl LSTMCell {
 // MAIN LSTM MODEL - Full Team Design
 // ============================================================================
 
+/// TODO: Add docs
 pub struct LSTMModel {
     config: LSTMConfig,
     
@@ -478,6 +481,7 @@ fn tanh(x: &Array1<f32>) -> Array1<f32> {
 // ============================================================================
 
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum LSTMError {
     #[error("Invalid configuration: {0}")]
     InvalidConfig(String),
@@ -499,7 +503,8 @@ pub enum LSTMError {
 }
 
 #[derive(Debug, Clone)]
-pub struct TrainingResult {
+// ELIMINATED: use domain_types::TrainingResult
+// pub struct TrainingResult {
     pub final_loss: f64,
     pub validation_accuracy: f64,
     pub epochs_trained: usize,

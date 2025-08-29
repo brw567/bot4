@@ -24,6 +24,7 @@ pub use dcc_garch::{DccGarch, GarchParams};
 
 /// Comprehensive mathematical validation suite
 /// Returns true if all tests pass required thresholds
+/// TODO: Add docs
 pub fn validate_trading_data(returns: &[f64], _max_correlation: f64) -> Result<bool, anyhow::Error> {
     
     use ndarray::Array1;
@@ -58,6 +59,7 @@ pub fn validate_trading_data(returns: &[f64], _max_correlation: f64) -> Result<b
 
 /// Mathematical validation for portfolio returns
 /// Used by Quinn for risk validation
+/// TODO: Add docs
 pub fn validate_portfolio_returns(
     asset_returns: &[Vec<f64>], 
     max_correlation: f64

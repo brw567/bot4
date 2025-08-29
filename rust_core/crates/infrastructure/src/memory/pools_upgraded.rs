@@ -1,3 +1,4 @@
+use domain_types::Event;
 use domain_types::order::OrderError;
 //! Module uses canonical Order type from domain_types
 //! Avery: "Single source of truth for Order struct"
@@ -65,6 +66,7 @@ pub trait ObjectPool<T>: Send + Sync {
 // GENERIC POOL IMPLEMENTATION - Team Collaboration
 // ============================================================================
 
+/// TODO: Add docs
 pub struct GenericPool<T: Send> {
     // Global queue - Jordan's lock-free design
     global: Arc<ArrayQueue<T>>,
@@ -243,6 +245,7 @@ impl<T: Send> GenericPool<T> {
 // ============================================================================
 
 
+/// TODO: Add docs
 pub struct PoolStats {
     pub name: String,
     pub capacity: usize,
@@ -303,7 +306,8 @@ pub struct PoolStats {
 use domain_types::order::Fill;
 
 
-pub struct Event {
+// ELIMINATED: use domain_types::Event
+// pub struct Event {
     pub id: u64,
     pub event_type: EventType,
     pub payload: Vec<u8>,
@@ -314,6 +318,7 @@ pub struct Event {
 }
 
 
+/// TODO: Add docs
 pub enum OrderSide {
     #[default]
     Buy,
@@ -321,6 +326,7 @@ pub enum OrderSide {
 }
 
 
+/// TODO: Add docs
 pub enum EventType {
     #[default]
     OrderPlaced,
@@ -334,6 +340,7 @@ pub enum EventType {
 // POOL MANAGER - Alex's Centralized Management
 // ============================================================================
 
+/// TODO: Add docs
 pub struct PoolManager {
     order_pool: Arc<GenericPool<Order>>,
     signal_pool: Arc<GenericPool<Signal>>,

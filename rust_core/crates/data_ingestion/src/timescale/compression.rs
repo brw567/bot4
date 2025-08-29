@@ -10,6 +10,7 @@ use tracing::{info, debug, warn};
 
 /// Compression policy configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CompressionPolicy {
     pub table_name: String,
     pub compress_after: Duration,
@@ -18,6 +19,7 @@ pub struct CompressionPolicy {
 }
 
 /// Manager for compression operations
+/// TODO: Add docs
 pub struct CompressionManager {
     pool: Arc<Pool>,
     default_compress_after: Duration,
@@ -184,6 +186,7 @@ impl CompressionManager {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct CompressionStats {
     pub table_name: String,
     pub total_chunks: i64,

@@ -47,6 +47,7 @@ pub use ab_testing::{ABTestManager, Experiment, ExperimentResults};
 
 /// Main Feature Store configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureStoreConfig {
     pub online_store: online_store::RedisConfig,
     pub offline_store: offline_store::TimescaleConfig,
@@ -72,20 +73,8 @@ impl Default for FeatureStoreConfig {
 }
 
 /// Main Feature Store interface - Enhanced with Game Theory & Microstructure
-pub struct FeatureStore {
-    config: FeatureStoreConfig,
-    online_store: Arc<OnlineStore>,
-    offline_store: Arc<OfflineStore>,
-    registry: Arc<FeatureRegistry>,
-    pipeline: Arc<FeaturePipeline>,
-    drift_detector: Arc<DriftDetector>,
-    ab_manager: Arc<ABTestManager>,
-    monitor: Arc<monitoring::FeatureMonitor>,
-    
-    // Advanced feature calculators
-    game_theory: Arc<game_theory::GameTheoryCalculator>,
-    microstructure: Arc<market_microstructure::MicrostructureCalculator>,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate FeatureStore - use ml::feature_store::FeatureStore
 
 impl FeatureStore {
     /// Create new Feature Store instance
@@ -348,6 +337,7 @@ impl FeatureStore {
 
 /// Feature update structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureUpdate {
     pub entity_id: String,
     pub feature_id: String,
@@ -358,6 +348,7 @@ pub struct FeatureUpdate {
 
 /// Feature value types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum FeatureValue {
     Float(f64),
     Integer(i64),
@@ -368,6 +359,7 @@ pub enum FeatureValue {
 
 /// Feature lineage information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeatureLineage {
     pub feature_id: String,
     pub version: String,
@@ -380,6 +372,7 @@ pub struct FeatureLineage {
 
 /// Health metrics for monitoring
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct HealthMetrics {
     pub online_store_latency_ms: f64,
     pub offline_store_latency_ms: f64,

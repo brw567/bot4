@@ -20,6 +20,7 @@ use std::sync::Arc;
 /// Extended market data for profit extraction
 /// Alex: "We need MORE data than basic MarketData for proper analysis!"
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExtendedMarketData {
     // Core market data
     pub symbol: String,
@@ -85,6 +86,7 @@ impl ExtendedMarketData {
 
 /// Profit Extraction Engine - The Money Maker
 /// Quinn: "This is where we turn signals into PROFIT!"
+/// TODO: Add docs
 pub struct ProfitExtractor {
     // Market microstructure analysis
     order_book_analyzer: OrderBookAnalyzer,
@@ -574,12 +576,8 @@ impl ExecutionOptimizer {
 /// Exchange Configuration - Minimum order requirements
 /// Alex: "MUST respect exchange minimums for REAL trading!"
 #[derive(Debug, Clone)]
-pub struct ExchangeConfig {
-    pub name: String,
-    pub min_order_usd: Price,  // Minimum order size in USD
-    pub maker_fee: Percentage,
-    pub taker_fee: Percentage,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate ExchangeConfig - use execution::exchange::ExchangeConfig
 
 impl ExchangeConfig {
     pub fn binance() -> Self {
@@ -1536,13 +1534,14 @@ impl ProfitExtractor {
 }
 
 #[derive(Debug, Clone)]
-pub struct PerformanceStats {
-    pub total_trades: u64,
-    pub win_rate: f64,
-    pub total_pnl: Price,
-    pub sharpe_ratio: f64,
-    pub max_drawdown: Percentage,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct PerformanceStats {
+// ELIMINATED:     pub total_trades: u64,
+// ELIMINATED:     pub win_rate: f64,
+// ELIMINATED:     pub total_pnl: Price,
+// ELIMINATED:     pub sharpe_ratio: f64,
+// ELIMINATED:     pub max_drawdown: Percentage,
+// ELIMINATED: }
 
 impl Default for PerformanceStats {
     fn default() -> Self {

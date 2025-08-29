@@ -34,6 +34,7 @@ pub trait Currency: Send + Sync + 'static {
 
 /// US Dollar
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct USD;
 
 impl Currency for USD {
@@ -46,6 +47,7 @@ impl Currency for USD {
 
 /// Bitcoin
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct BTC;
 
 impl Currency for BTC {
@@ -58,6 +60,7 @@ impl Currency for BTC {
 
 /// Ethereum
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct ETH;
 
 impl Currency for ETH {
@@ -70,6 +73,7 @@ impl Currency for ETH {
 
 /// Tether (USDT)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct USDT;
 
 impl Currency for USDT {
@@ -82,6 +86,7 @@ impl Currency for USDT {
 
 /// USDC
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct USDC;
 
 impl Currency for USDC {
@@ -94,6 +99,7 @@ impl Currency for USDC {
 
 /// Euro
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct EUR;
 
 impl Currency for EUR {
@@ -106,6 +112,7 @@ impl Currency for EUR {
 
 /// Japanese Yen
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct JPY;
 
 impl Currency for JPY {
@@ -118,6 +125,7 @@ impl Currency for JPY {
 
 /// Binance Coin
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct BNB;
 
 impl Currency for BNB {
@@ -130,6 +138,7 @@ impl Currency for BNB {
 
 /// Solana
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct SOL;
 
 impl Currency for SOL {
@@ -142,6 +151,7 @@ impl Currency for SOL {
 
 /// XRP (Ripple)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct XRP;
 
 impl Currency for XRP {
@@ -154,6 +164,7 @@ impl Currency for XRP {
 
 /// Trading pair representation with compile-time safety
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// TODO: Add docs
 pub struct TradingPair<Base: Currency, Quote: Currency> {
     _base: PhantomData<Base>,
     _quote: PhantomData<Quote>,

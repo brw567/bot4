@@ -23,6 +23,7 @@ use crate::{FeatureUpdate, FeatureValue};
 
 /// Game theory feature configuration
 #[derive(Debug, Clone, Deserialize)]
+/// TODO: Add docs
 pub struct GameTheoryConfig {
     pub enable_nash_equilibrium: bool,
     pub enable_kyle_lambda: bool,
@@ -50,7 +51,9 @@ impl Default for GameTheoryConfig {
 }
 
 /// Game theory feature calculator
-pub struct GameTheoryCalculator {
+/// TODO: Add docs
+// ELIMINATED: GameTheoryCalculator - Enhanced with Unified with Router
+// pub struct GameTheoryCalculator {
     config: GameTheoryConfig,
     
     // Market state tracking
@@ -566,6 +569,7 @@ impl GameTheoryCalculator {
 
 /// Order book state snapshot
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct OrderBookState {
     pub timestamp: DateTime<Utc>,
     pub bid_price: f64,
@@ -577,6 +581,7 @@ pub struct OrderBookState {
 
 /// Trade event
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TradeEvent {
     pub timestamp: DateTime<Utc>,
     pub player_id: String,

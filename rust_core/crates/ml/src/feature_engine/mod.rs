@@ -1,3 +1,5 @@
+use domain_types::FeatureMetadata;
+use domain_types::FeatureVector;
 // Feature Engineering Pipeline - Critical ML Component
 // Team Lead: Morgan | Full Team Collaboration Required
 // Phase 3 - Machine Learning Integration
@@ -36,7 +38,8 @@ use rust_decimal::Decimal;
 
 /// Core feature vector used by all ML models
 #[derive(Debug, Clone)]
-pub struct FeatureVector {
+// ELIMINATED: use domain_types::FeatureVector
+// pub struct FeatureVector {
     /// Raw features before scaling
     pub raw_features: Vec<f64>,
     
@@ -118,6 +121,7 @@ impl FeatureVector {
 
 /// Market data snapshot for feature calculation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MarketSnapshot {
     /// Current price
     pub price: Decimal,
@@ -149,7 +153,8 @@ pub struct MarketSnapshot {
 
 /// Feature metadata for tracking and debugging
 #[derive(Debug, Clone)]
-pub struct FeatureMetadata {
+// ELIMINATED: use domain_types::FeatureMetadata
+// pub struct FeatureMetadata {
     /// Feature name
     pub name: String,
     
@@ -170,6 +175,7 @@ pub struct FeatureMetadata {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum FeatureCategory {
     Price,
     Volume,
@@ -183,6 +189,7 @@ pub enum FeatureCategory {
 
 /// Feature engineering statistics for monitoring
 #[derive(Debug, Clone, Default)]
+/// TODO: Add docs
 pub struct FeatureStats {
     /// Total features computed
     pub total_features: usize,

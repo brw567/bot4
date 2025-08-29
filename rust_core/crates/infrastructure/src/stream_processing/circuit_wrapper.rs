@@ -7,6 +7,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 /// Wrapper for ComponentBreaker to provide simpler API
+/// TODO: Add docs
 pub struct StreamCircuitBreaker {
     inner: ComponentBreaker,
     name: String,

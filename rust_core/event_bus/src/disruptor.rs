@@ -30,6 +30,7 @@ use crate::handlers::EventHandler;
 
 /// Configuration for the Disruptor
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DisruptorConfig {
     /// Size of the ring buffer (must be power of 2)
     pub ring_size: usize,
@@ -60,6 +61,7 @@ impl Default for DisruptorConfig {
 
 /// Wait strategies for consumers
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum WaitStrategy {
     /// Busy spin (lowest latency, highest CPU usage)
     BusySpin,
@@ -73,6 +75,7 @@ pub enum WaitStrategy {
 
 /// Producer types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum ProducerType {
     /// Single producer (fastest)
     Single,
@@ -81,6 +84,7 @@ pub enum ProducerType {
 }
 
 /// Lock-free ring buffer implementation
+/// TODO: Add docs
 pub struct RingBuffer<T> {
     /// Buffer storage (pre-allocated)
     buffer: Vec<UnsafeCell<Option<T>>>,
@@ -238,6 +242,7 @@ impl<T> RingBuffer<T> {
 }
 
 /// Main Disruptor coordinator
+/// TODO: Add docs
 pub struct Disruptor<T> {
     /// Configuration
     config: DisruptorConfig,
@@ -393,6 +398,7 @@ impl<T: Send + Sync + 'static> Disruptor<T> {
 
 /// Errors that can occur during publishing
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum PublishError {
     #[error("Disruptor is not running")]
     NotRunning,

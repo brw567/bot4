@@ -1,3 +1,4 @@
+use domain_types::ValidationResult;
 use mathematical_ops::correlation::calculate_correlation;
 // DEEP DIVE: Kyle's Lambda Validation
 // Team: Alex (Lead) + Morgan + Quinn + Full Team
@@ -19,6 +20,7 @@ use rand_distr::Normal;
 /// 2. Price impact should be linear in net order flow
 /// 3. Lambda should be stable for constant market conditions
 /// 4. Lambda increases with volatility, decreases with volume
+/// TODO: Add docs
 pub struct KyleLambdaValidator {
     analytics: OrderBookAnalytics,
     theoretical_lambda: f64,
@@ -372,7 +374,8 @@ impl KyleLambdaValidator {
 }
 
 #[derive(Debug)]
-pub struct ValidationResult {
+// ELIMINATED: use domain_types::ValidationResult
+// pub struct ValidationResult {
     pub theoretical_lambda: f64,
     pub empirical_lambda: f64,
     pub relative_error: f64,
@@ -382,6 +385,7 @@ pub struct ValidationResult {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct SensitivityResult {
     pub parameter: String,
     pub values: Vec<f64>,
@@ -391,6 +395,7 @@ pub struct SensitivityResult {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct LinearityResult {
     pub theoretical_slope: f64,
     pub empirical_slope: f64,
@@ -400,6 +405,7 @@ pub struct LinearityResult {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub struct RegimeResult {
     pub regimes: Vec<(String, f64)>,
     pub all_positive: bool,

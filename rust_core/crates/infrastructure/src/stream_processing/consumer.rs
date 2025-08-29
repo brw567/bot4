@@ -1,10 +1,17 @@
 // Stream Consumer Module - High-Performance Message Consumption
+use domain_types::market_data::MarketTick;
 // Team Lead: Casey (Consumer Architecture)  
+use domain_types::market_data::MarketTick;
 // Contributors: ALL 8 TEAM MEMBERS
+use domain_types::market_data::MarketTick;
 // Date: January 18, 2025
+use domain_types::market_data::MarketTick;
 // Performance Target: <50μs processing per message batch
+use domain_types::market_data::MarketTick;
 
+use domain_types::market_data::MarketTick;
 use super::*;
+use domain_types::market_data::MarketTick;
 use super::circuit_wrapper::StreamCircuitBreaker;
 use anyhow::Result;
 use async_trait::async_trait;
@@ -35,6 +42,7 @@ pub trait MessageHandler: Send + Sync {
 // ============================================================================
 
 /// High-performance stream consumer
+/// TODO: Add docs
 pub struct StreamConsumer {
     redis_conn: Arc<RwLock<ConnectionManager>>,
     config: ConsumerConfig,
@@ -46,6 +54,7 @@ pub struct StreamConsumer {
 
 /// Consumer configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ConsumerConfig {
     pub redis_url: String,
     pub group_name: String,
@@ -74,6 +83,7 @@ impl Default for ConsumerConfig {
 
 /// Consumer metrics - Riley's monitoring
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct ConsumerMetrics {
     pub messages_consumed: std::sync::atomic::AtomicU64,
     pub messages_acked: std::sync::atomic::AtomicU64,
@@ -331,6 +341,7 @@ impl StreamConsumer {
 // ============================================================================
 
 /// Market data handler - Casey
+/// TODO: Add docs
 pub struct MarketDataHandler {
     // Handler implementation
 }
@@ -348,6 +359,7 @@ impl MessageHandler for MarketDataHandler {
 }
 
 /// ML feature handler - Morgan
+/// TODO: Add docs
 pub struct FeatureHandler {
     // Handler implementation
 }

@@ -26,6 +26,7 @@ use crate::simd::simd_correlation;
 
 /// Correlation calculation errors
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum CorrelationError {
     #[error("Insufficient data: need at least {min} points, got {actual}")]
     InsufficientData { min: usize, actual: usize },
@@ -42,6 +43,7 @@ pub enum CorrelationError {
 
 /// Correlation calculation method
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum CorrelationMethod {
     /// Pearson product-moment correlation
     Pearson,
@@ -55,6 +57,7 @@ pub enum CorrelationMethod {
 
 /// Configuration for correlation calculations
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct CorrelationConfig {
     /// Minimum number of data points required
     pub min_periods: usize,
@@ -92,6 +95,7 @@ impl Default for CorrelationConfig {
 /// let corr = calculate_correlation(&x, &y, CorrelationMethod::Pearson).unwrap();
 /// assert!((corr - 1.0).abs() < 0.0001); // Perfect positive correlation
 /// ```
+/// TODO: Add docs
 pub fn calculate_correlation(
     x: &[f64],
     y: &[f64],
@@ -104,6 +108,7 @@ pub fn calculate_correlation(
 }
 
 /// Calculate correlation with custom configuration
+/// TODO: Add docs
 pub fn calculate_correlation_with_config(
     x: &[f64],
     y: &[f64],
@@ -261,6 +266,7 @@ fn distance_correlation(x: &[f64], y: &[f64]) -> Result<f64, CorrelationError> {
 }
 
 /// Calculate rolling correlation over a window
+/// TODO: Add docs
 pub fn rolling_correlation(
     x: &[f64],
     y: &[f64],
@@ -294,6 +300,7 @@ pub fn rolling_correlation(
 }
 
 /// Calculate correlation matrix for multiple series
+/// TODO: Add docs
 pub fn correlation_matrix(data: &Array2<f64>, method: CorrelationMethod) -> Result<Array2<f64>, CorrelationError> {
     let n_cols = data.ncols();
     let mut result = Array2::zeros((n_cols, n_cols));

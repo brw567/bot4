@@ -6,6 +6,7 @@ use statrs::distribution::{Normal, ContinuousCDF};
 use std::collections::VecDeque;
 
 /// Feature monitoring system
+/// TODO: Add docs
 pub struct FeatureMonitor {
     store: Arc<FeatureStore>,
     
@@ -23,6 +24,7 @@ pub struct FeatureMonitor {
 }
 
 /// Drift detector using statistical tests
+/// TODO: Add docs
 pub struct DriftDetector {
     feature_name: String,
     baseline_stats: BaselineStatistics,
@@ -33,6 +35,7 @@ pub struct DriftDetector {
 
 /// Baseline statistics for drift detection
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct BaselineStatistics {
     pub mean: f64,
     pub std_dev: f64,
@@ -46,6 +49,7 @@ pub struct BaselineStatistics {
 
 /// Drift detection methods
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum DriftDetectionMethod {
     KolmogorovSmirnov,
     ChiSquared,
@@ -56,6 +60,7 @@ pub enum DriftDetectionMethod {
 
 /// Quality metrics
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct QualityMetrics {
     pub completeness_rate: f64,
     pub freshness_seconds: f64,
@@ -65,6 +70,7 @@ pub struct QualityMetrics {
 }
 
 /// Alert manager
+/// TODO: Add docs
 pub struct AlertManager {
     alerts: Arc<RwLock<Vec<Alert>>>,
     alert_rules: Arc<Vec<AlertRule>>,
@@ -73,6 +79,7 @@ pub struct AlertManager {
 
 /// Alert definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Alert {
     pub id: String,
     pub severity: AlertSeverity,
@@ -85,6 +92,7 @@ pub struct Alert {
 
 /// Alert severity levels
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AlertSeverity {
     Critical,
     Warning,
@@ -92,6 +100,7 @@ pub enum AlertSeverity {
 }
 
 /// Alert rule
+/// TODO: Add docs
 pub struct AlertRule {
     pub name: String,
     pub condition: Box<dyn Fn(&FeatureValue) -> bool + Send + Sync>,
@@ -107,6 +116,7 @@ pub trait NotificationChannel: Send + Sync {
 
 /// Historical statistics
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct HistoricalStats {
     pub daily_stats: VecDeque<DailyStats>,
     pub weekly_stats: VecDeque<WeeklyStats>,
@@ -114,6 +124,7 @@ pub struct HistoricalStats {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DailyStats {
     pub date: chrono::NaiveDate,
     pub mean: f64,
@@ -123,6 +134,7 @@ pub struct DailyStats {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct WeeklyStats {
     pub week_start: chrono::NaiveDate,
     pub mean: f64,
@@ -132,6 +144,7 @@ pub struct WeeklyStats {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MonthlyStats {
     pub month: chrono::NaiveDate,
     pub mean: f64,
@@ -460,6 +473,7 @@ impl FeatureMonitor {
 
 /// Drift detection result
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DriftResult {
     pub feature: String,
     pub drift_detected: bool,
@@ -470,6 +484,7 @@ pub struct DriftResult {
 
 /// Quality report
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct QualityReport {
     pub feature: String,
     pub total_count: u64,

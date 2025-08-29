@@ -20,6 +20,7 @@ use std::num::NonZeroUsize;
 
 /// Schema Registry configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SchemaRegistryConfig {
     /// Schema Registry URL (e.g., http://localhost:8081)
     pub url: String,
@@ -87,6 +88,7 @@ impl Default for SchemaRegistryConfig {
 
 /// Authentication configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SchemaAuth {
     Basic { username: String, password: String },
     Bearer { token: String },
@@ -95,6 +97,7 @@ pub enum SchemaAuth {
 
 /// Schema compatibility levels
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum CompatibilityLevel {
     None,
     Backward,
@@ -121,6 +124,7 @@ impl CompatibilityLevel {
 
 /// Subject naming strategies
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum SubjectStrategy {
     TopicName,
     RecordName,
@@ -129,6 +133,7 @@ pub enum SubjectStrategy {
 
 /// Schema types supported
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SchemaType {
     Avro,
     Json,
@@ -137,6 +142,7 @@ pub enum SchemaType {
 
 /// Registered schema information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SchemaInfo {
     pub id: i32,
     pub version: i32,
@@ -150,6 +156,7 @@ pub struct SchemaInfo {
 
 /// Schema reference for nested schemas
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct SchemaReference {
     pub name: String,
     pub subject: String,
@@ -158,6 +165,7 @@ pub struct SchemaReference {
 
 /// Schema evolution tracking
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct SchemaEvolution {
     pub from_version: i32,
     pub to_version: i32,
@@ -168,6 +176,7 @@ pub struct SchemaEvolution {
 
 /// Types of schema changes
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum SchemaChange {
     FieldAdded { name: String, default: Option<Value> },
     FieldRemoved { name: String },
@@ -178,6 +187,7 @@ pub enum SchemaChange {
 
 /// Migration rules for complex evolutions
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MigrationRule {
     pub rule_type: String,
     pub field: String,
@@ -193,6 +203,7 @@ struct CacheEntry {
 }
 
 /// Metrics for monitoring
+/// TODO: Add docs
 pub struct RegistryMetrics {
     pub schemas_registered: AtomicU64,
     pub schemas_fetched: AtomicU64,
@@ -221,6 +232,7 @@ impl RegistryMetrics {
 
 /// Data contract for schema governance
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct DataContract {
     pub name: String,
     pub version: String,
@@ -234,6 +246,7 @@ pub struct DataContract {
 
 /// Schema within a data contract
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ContractSchema {
     pub subject: String,
     pub version: i32,
@@ -243,6 +256,7 @@ pub struct ContractSchema {
 
 /// Service Level Agreement
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ServiceLevelAgreement {
     pub availability: f64,  // e.g., 99.99
     pub latency_p99_ms: u64,
@@ -252,6 +266,7 @@ pub struct ServiceLevelAgreement {
 
 /// Data quality rules
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct QualityRule {
     pub name: String,
     pub field: String,
@@ -260,18 +275,19 @@ pub struct QualityRule {
 }
 
 /// Main Schema Registry implementation
-pub struct SchemaRegistry {
-    config: Arc<SchemaRegistryConfig>,
-    client: Arc<Client>,
-    cache: Arc<RwLock<LruCache<String, Arc<CacheEntry>>>>,
-    id_cache: Arc<DashMap<i32, Arc<SchemaInfo>>>,
-    evolution_history: Arc<RwLock<HashMap<String, Vec<SchemaEvolution>>>>,
-    contracts: Arc<RwLock<HashMap<String, DataContract>>>,
-    metrics: Arc<RegistryMetrics>,
-    request_semaphore: Arc<Semaphore>,
-    shutdown: Arc<AtomicBool>,
-    cleanup_handle: Option<tokio::task::JoinHandle<()>>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct SchemaRegistry {
+// ELIMINATED:     config: Arc<SchemaRegistryConfig>,
+// ELIMINATED:     client: Arc<Client>,
+// ELIMINATED:     cache: Arc<RwLock<LruCache<String, Arc<CacheEntry>>>>,
+// ELIMINATED:     id_cache: Arc<DashMap<i32, Arc<SchemaInfo>>>,
+// ELIMINATED:     evolution_history: Arc<RwLock<HashMap<String, Vec<SchemaEvolution>>>>,
+// ELIMINATED:     contracts: Arc<RwLock<HashMap<String, DataContract>>>,
+// ELIMINATED:     metrics: Arc<RegistryMetrics>,
+// ELIMINATED:     request_semaphore: Arc<Semaphore>,
+// ELIMINATED:     shutdown: Arc<AtomicBool>,
+// ELIMINATED:     cleanup_handle: Option<tokio::task::JoinHandle<()>>,
+// ELIMINATED: }
 
 impl SchemaRegistry {
     /// Create a new Schema Registry client

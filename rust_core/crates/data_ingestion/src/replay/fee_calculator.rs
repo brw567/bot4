@@ -21,6 +21,7 @@ use types::{Price, Quantity, Symbol, Exchange};
 
 /// Fee structure for an exchange
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct FeeStructure {
     pub exchange: Exchange,
     pub base_maker_fee_bps: f64,
@@ -33,16 +34,18 @@ pub struct FeeStructure {
 
 /// Volume-based fee tier
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct VolumeTier {
-    pub tier_name: String,
-    pub min_volume_usd: Decimal,
-    pub maker_fee_bps: f64,
-    pub taker_fee_bps: f64,
-    pub maker_rebate_bps: Option<f64>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct VolumeTier {
+// ELIMINATED:     pub tier_name: String,
+// ELIMINATED:     pub min_volume_usd: Decimal,
+// ELIMINATED:     pub maker_fee_bps: f64,
+// ELIMINATED:     pub taker_fee_bps: f64,
+// ELIMINATED:     pub maker_rebate_bps: Option<f64>,
+// ELIMINATED: }
 
 /// Special fee programs (e.g., market maker programs)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum SpecialProgram {
     MarketMaker {
         name: String,
@@ -64,6 +67,7 @@ pub enum SpecialProgram {
 
 /// Payment method discount (e.g., BNB on Binance)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct PaymentDiscount {
     pub token_symbol: String,
     pub discount_pct: f64,
@@ -73,6 +77,7 @@ pub struct PaymentDiscount {
 
 /// Maker/Taker fee structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MakerTakerFees {
     pub maker_fee_bps: f64,
     pub taker_fee_bps: f64,
@@ -82,6 +87,7 @@ pub struct MakerTakerFees {
 
 /// Volume discount calculation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct VolumeDiscount {
     pub thirty_day_volume_usd: Decimal,
     pub current_tier: TierLevel,
@@ -91,6 +97,7 @@ pub struct VolumeDiscount {
 
 /// Tier level information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct TierLevel {
     pub level: u8,
     pub name: String,
@@ -101,6 +108,7 @@ pub struct TierLevel {
 
 /// Exchange-specific fees database
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ExchangeFees {
     pub binance: FeeStructure,
     pub coinbase: FeeStructure,
@@ -477,6 +485,7 @@ impl ExchangeFees {
 }
 
 /// Fee calculator implementation
+/// TODO: Add docs
 pub struct FeeCalculator {
     exchange_fees: Arc<ExchangeFees>,
     volume_tracker: Arc<RwLock<HashMap<(Exchange, String), VolumeTracker>>>,
@@ -775,6 +784,7 @@ impl FeeCalculator {
 
 /// Order types for fee estimation
 #[derive(Debug, Clone, Copy)]
+/// TODO: Add docs
 pub enum OrderType {
     Market,
     Limit,

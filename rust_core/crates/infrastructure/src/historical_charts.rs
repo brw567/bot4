@@ -26,6 +26,7 @@ use serde::{Serialize, Deserialize};
 /// Trading timeframes for aggregation
 /// Alex: "Must support all standard trading timeframes for regime detection"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum Timeframe {
     M1,     // 1 minute - Scalping
     M5,     // 5 minutes - Short-term
@@ -406,6 +407,7 @@ impl Default for PerformanceMetrics {
 
 /// Aggregates tick data into multiple timeframe candles
 /// Avery: "Efficient aggregation is critical for real-time charting"
+/// TODO: Add docs
 pub struct ChartDataAggregator {
     /// Active candles for each timeframe
     candles: Arc<RwLock<HashMap<Timeframe, VecDeque<Candle>>>>,
@@ -592,6 +594,7 @@ impl ChartDataAggregator {
 /// Chart data ready for rendering
 /// Sam: "Data must be optimized for frontend consumption"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct ChartData {
     pub timeframe: Timeframe,
     pub candles: Vec<Candle>,
@@ -602,6 +605,7 @@ pub struct ChartData {
 
 /// Technical indicators for charts
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TechnicalIndicators;
 
 impl TechnicalIndicators {
@@ -742,6 +746,7 @@ impl TechnicalIndicators {
 }
 
 /// Chart renderer for preparing visualization data
+/// TODO: Add docs
 pub struct ChartRenderer {
     aggregator: Arc<ChartDataAggregator>,
 }

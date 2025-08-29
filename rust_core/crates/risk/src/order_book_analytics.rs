@@ -1,3 +1,4 @@
+use domain_types::market_data::PriceLevel;
 //! Using canonical Trade from domain_types
 pub use domain_types::trade::{Trade, TradeId, TradeError};
 pub use domain_types::{Price, Quantity, Symbol, Exchange};
@@ -19,6 +20,7 @@ use anyhow::Result;
 
 /// Complete Order Book Analytics with Game Theory
 /// Casey: "This is where we detect REAL market manipulation!"
+/// TODO: Add docs
 pub struct OrderBookAnalytics {
     // Core order book state
     order_book_history: VecDeque<OrderBookSnapshot>,
@@ -59,25 +61,33 @@ pub struct OrderBookAnalytics {
 
 /// Order book snapshot at a point in time
 #[derive(Debug, Clone)]
-pub struct OrderBookSnapshot {
-    pub timestamp: u64,
-    pub bids: Vec<PriceLevel>,
-    pub asks: Vec<PriceLevel>,
-    pub mid_price: Decimal,
-    pub microprice: Decimal,  // Size-weighted price
-    pub trades: Vec<Trade>,
-    // Depth at first level (for quick access)
-    pub bid_depth_1: f64,
-    pub ask_depth_1: f64,
-}
+/// TODO: Add docs
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+// pub struct OrderBookSnapshot {
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub timestamp: u64,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub bids: Vec<PriceLevel>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub asks: Vec<PriceLevel>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub mid_price: Decimal,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub microprice: Decimal,  // Size-weighted price
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub trades: Vec<Trade>,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     // Depth at first level (for quick access)
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub bid_depth_1: f64,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+//     pub ask_depth_1: f64,
+// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
+// }
 
 /// Price level in order book
 #[derive(Debug, Clone)]
-pub struct PriceLevel {
-    pub price: Decimal,
-    pub quantity: Decimal,
-    pub order_count: u32,
-}
+/// TODO: Add docs
 
 /// Executed trade
 #[derive(Debug, Clone)]
@@ -96,6 +106,7 @@ struct VPINBucket {
 
 /// Depth imbalance at multiple levels
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct DepthImbalance {
     level_1: f64,  // Top of book
     level_5: f64,  // Top 5 levels
@@ -891,7 +902,9 @@ impl MomentumIgnitionDetector {
 /// Order book metrics output
 /// Liquidity event detected in order book
 #[derive(Debug, Clone)]
-pub struct LiquidityEvent {
+/// TODO: Add docs
+// ELIMINATED: LiquidityEvent - Enhanced with Level 3 data, iceberg detection
+// pub struct LiquidityEvent {
     pub side: Side,
     pub size: f64,
     pub price_level: u32,
@@ -899,6 +912,7 @@ pub struct LiquidityEvent {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct OrderBookMetrics {
     pub timestamp: u64,
     pub imbalance: f64,
@@ -920,6 +934,7 @@ pub struct OrderBookMetrics {
 
 /// Trading recommendation based on order book
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TradingRecommendation {
     pub action: SignalAction,
     pub confidence: f64,

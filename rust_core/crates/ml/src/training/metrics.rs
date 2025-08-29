@@ -13,23 +13,27 @@ use std::collections::HashMap;
 // ============================================================================
 
 /// Mean Absolute Error
+/// TODO: Add docs
 pub fn mae(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
     let diff = y_true - y_pred;
     diff.mapv(f64::abs).mean().unwrap_or(0.0)
 }
 
 /// Mean Squared Error
+/// TODO: Add docs
 pub fn mse(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
     let diff = y_true - y_pred;
     diff.mapv(|x| x * x).mean().unwrap_or(0.0)
 }
 
 /// Root Mean Squared Error
+/// TODO: Add docs
 pub fn rmse(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
     mse(y_true, y_pred).sqrt()
 }
 
 /// Mean Absolute Percentage Error
+/// TODO: Add docs
 pub fn mape(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
     let mut sum = 0.0;
     let mut count = 0;
@@ -53,6 +57,7 @@ pub fn mape(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
 }
 
 /// R-squared score
+/// TODO: Add docs
 pub fn r2_score(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
     let ss_res = ((y_true - y_pred).mapv(|x| x * x)).sum();
     let y_mean = y_true.mean().unwrap_or(0.0);
@@ -66,6 +71,7 @@ pub fn r2_score(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
 }
 
 /// Adjusted R-squared
+/// TODO: Add docs
 pub fn adjusted_r2(y_true: &Array2<f64>, y_pred: &Array2<f64>, n_features: usize) -> f64 {
     let n_samples = y_true.shape()[0];
     let r2 = r2_score(y_true, y_pred);
@@ -78,6 +84,7 @@ pub fn adjusted_r2(y_true: &Array2<f64>, y_pred: &Array2<f64>, n_features: usize
 }
 
 /// Huber loss (robust to outliers)
+/// TODO: Add docs
 pub fn huber_loss(y_true: &Array2<f64>, y_pred: &Array2<f64>, delta: f64) -> f64 {
     let diff = y_true - y_pred;
     let mut loss = 0.0;
@@ -95,6 +102,7 @@ pub fn huber_loss(y_true: &Array2<f64>, y_pred: &Array2<f64>, delta: f64) -> f64
 }
 
 /// Quantile loss for quantile regression
+/// TODO: Add docs
 pub fn quantile_loss(y_true: &Array2<f64>, y_pred: &Array2<f64>, quantile: f64) -> f64 {
     let diff = y_true - y_pred;
     let mut loss = 0.0;
@@ -115,6 +123,7 @@ pub fn quantile_loss(y_true: &Array2<f64>, y_pred: &Array2<f64>, quantile: f64) 
 // ============================================================================
 
 /// Sharpe ratio calculation
+/// TODO: Add docs
 pub fn sharpe_ratio(returns: &Array1<f64>, risk_free_rate: f64) -> f64 {
     let mean_return = returns.mean().unwrap_or(0.0);
     let std_return = returns.std(1.0);
@@ -127,6 +136,7 @@ pub fn sharpe_ratio(returns: &Array1<f64>, risk_free_rate: f64) -> f64 {
 }
 
 /// Sortino ratio (downside risk)
+/// TODO: Add docs
 pub fn sortino_ratio(returns: &Array1<f64>, target_return: f64) -> f64 {
     let mean_return = returns.mean().unwrap_or(0.0);
     
@@ -151,6 +161,7 @@ pub fn sortino_ratio(returns: &Array1<f64>, target_return: f64) -> f64 {
 }
 
 /// Maximum drawdown
+/// TODO: Add docs
 pub fn max_drawdown(cumulative_returns: &Array1<f64>) -> f64 {
     let mut max_value = f64::NEG_INFINITY;
     let mut max_dd = 0.0;
@@ -169,6 +180,7 @@ pub fn max_drawdown(cumulative_returns: &Array1<f64>) -> f64 {
 }
 
 /// Calmar ratio (return / max drawdown)
+/// TODO: Add docs
 pub fn calmar_ratio(returns: &Array1<f64>) -> f64 {
     let annual_return = returns.mean().unwrap_or(0.0) * 252.0;
     let cumulative = returns
@@ -189,6 +201,7 @@ pub fn calmar_ratio(returns: &Array1<f64>) -> f64 {
 }
 
 /// Information ratio
+/// TODO: Add docs
 pub fn information_ratio(returns: &Array1<f64>, benchmark_returns: &Array1<f64>) -> f64 {
     let active_returns = returns - benchmark_returns;
     let tracking_error = active_returns.std(1.0);
@@ -205,6 +218,7 @@ pub fn information_ratio(returns: &Array1<f64>, benchmark_returns: &Array1<f64>)
 // ============================================================================
 
 /// Directional accuracy (correct direction predictions)
+/// TODO: Add docs
 pub fn directional_accuracy(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
     let mut correct = 0;
     let mut total = 0;
@@ -227,6 +241,7 @@ pub fn directional_accuracy(y_true: &Array2<f64>, y_pred: &Array2<f64>) -> f64 {
 }
 
 /// Hit rate (profitable trades percentage)
+/// TODO: Add docs
 pub fn hit_rate(returns: &Array1<f64>) -> f64 {
     let profitable = returns.iter().filter(|&&r| r > 0.0).count();
     let total = returns.len();
@@ -239,6 +254,7 @@ pub fn hit_rate(returns: &Array1<f64>) -> f64 {
 }
 
 /// Profit factor (gross profit / gross loss)
+/// TODO: Add docs
 pub fn profit_factor(returns: &Array1<f64>) -> f64 {
     let gross_profit: f64 = returns.iter().filter(|&&r| r > 0.0).sum();
     let gross_loss: f64 = returns.iter().filter(|&&r| r < 0.0).map(|r| r.abs()).sum();
@@ -255,6 +271,7 @@ pub fn profit_factor(returns: &Array1<f64>) -> f64 {
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MetricsReport {
     pub regression_metrics: HashMap<String, f64>,
     pub trading_metrics: HashMap<String, f64>,
@@ -262,6 +279,7 @@ pub struct MetricsReport {
     pub timestamp: u64,
 }
 
+/// TODO: Add docs
 pub struct MetricsCalculator {
     include_trading: bool,
     include_risk: bool,

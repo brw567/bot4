@@ -11,6 +11,7 @@ use parking_lot::RwLock;
 
 /// AVX512 correlation analyzer using f64x8 (512-bit vectors)
 /// Processes 8 doubles simultaneously vs 4 in AVX2
+/// TODO: Add docs
 pub struct CorrelationAnalyzerAVX512 {
     max_correlation: f64,
     price_history: Arc<RwLock<Vec<Vec<f64>>>>,

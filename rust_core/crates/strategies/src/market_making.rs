@@ -1,3 +1,4 @@
+use domain_types::MarketState;
 //! # MARKET MAKING ENGINE - Liquidity Provision Strategy
 //! Drew (Strategy Lead) + Full Team
 //! 
@@ -16,6 +17,7 @@ use serde::{Serialize, Deserialize};
 
 /// Market Making configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct MarketMakingConfig {
     /// Spread percentage from mid price
     pub base_spread_bps: u32,
@@ -78,6 +80,7 @@ impl Default for MarketMakingConfig {
 }
 
 /// Market Making Engine
+/// TODO: Add docs
 pub struct MarketMakingEngine {
     /// Configuration
     config: MarketMakingConfig,
@@ -103,7 +106,8 @@ pub struct MarketMakingEngine {
 
 /// Market state
 #[derive(Debug, Clone)]
-pub struct MarketState {
+// ELIMINATED: use domain_types::MarketState
+// pub struct MarketState {
     pub bid: Decimal,
     pub ask: Decimal,
     pub mid: Decimal,
@@ -117,6 +121,7 @@ pub struct MarketState {
 
 /// Trade flow analysis
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct TradeFlow {
     pub buy_volume: Decimal,
     pub sell_volume: Decimal,
@@ -127,6 +132,7 @@ pub struct TradeFlow {
 }
 
 /// Inventory Manager
+/// TODO: Add docs
 pub struct InventoryManager {
     current_inventory: Arc<RwLock<Decimal>>,
     target_inventory: Decimal,
@@ -185,6 +191,7 @@ impl InventoryManager {
 }
 
 /// Spread Calculator with advanced models
+/// TODO: Add docs
 pub struct SpreadCalculator {
     base_spread_bps: u32,
     min_spread_bps: u32,
@@ -252,13 +259,15 @@ impl SpreadCalculator {
 }
 
 /// Order Manager for quote management
-pub struct OrderManager {
-    active_orders: Arc<RwLock<Vec<MakerOrder>>>,
-    order_history: Arc<RwLock<Vec<OrderEvent>>>,
-    last_update: Arc<RwLock<DateTime<Utc>>>,
-}
+/// TODO: Add docs
+// ELIMINATED: pub struct OrderManager {
+// ELIMINATED:     active_orders: Arc<RwLock<Vec<MakerOrder>>>,
+// ELIMINATED:     order_history: Arc<RwLock<Vec<OrderEvent>>>,
+// ELIMINATED:     last_update: Arc<RwLock<DateTime<Utc>>>,
+// ELIMINATED: }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MakerOrder {
     pub id: String,
     pub side: OrderSide,
@@ -270,6 +279,7 @@ pub struct MakerOrder {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderEvent {
     Placed { order: MakerOrder, timestamp: DateTime<Utc> },
     Filled { order_id: String, fill_price: Decimal, fill_size: Decimal, timestamp: DateTime<Utc> },
@@ -345,6 +355,7 @@ impl OrderManager {
 }
 
 /// Risk Manager for market making
+/// TODO: Add docs
 pub struct RiskManager {
     max_inventory: Decimal,
     max_order_size: Decimal,
@@ -394,6 +405,7 @@ impl RiskManager {
 
 /// Quote representation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Quote {
     pub side: OrderSide,
     pub price: Decimal,
@@ -403,6 +415,7 @@ pub struct Quote {
 
 /// Fill event
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct FillEvent {
     pub order_id: String,
     pub price: Decimal,
@@ -416,6 +429,7 @@ pub struct FillEvent {
 
 /// Performance metrics
 #[derive(Debug, Default)]
+/// TODO: Add docs
 pub struct MarketMakingMetrics {
     pub total_volume: Decimal,
     pub buy_volume: Decimal,
@@ -575,6 +589,7 @@ impl MarketMakingEngine {
 
 /// Market making errors
 #[derive(Debug, thiserror::Error)]
+/// TODO: Add docs
 pub enum MarketMakingError {
     #[error("Exchange error: {0}")]
     ExchangeError(String),
@@ -587,6 +602,7 @@ pub enum MarketMakingError {
 }
 
 #[derive(Debug)]
+/// TODO: Add docs
 pub enum RiskViolation {
     InventoryLimitExceeded,
     OrderSizeTooLarge,
@@ -595,12 +611,14 @@ pub enum RiskViolation {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+/// TODO: Add docs
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub enum OrderStatus {
     New,
     Filled,

@@ -12,6 +12,7 @@ use std::collections::HashMap;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// TODO: Add docs
 pub enum MacroError {
     #[error("Data fetch error: {0}")]
     DataError(String),
@@ -23,6 +24,7 @@ pub enum MacroError {
 pub type Result<T> = std::result::Result<T, MacroError>;
 
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct MacroConfig {
     pub indicators: Vec<String>,
     pub correlation_window_days: u32,
@@ -45,6 +47,7 @@ impl Default for MacroConfig {
 }
 
 /// Macro Economic Correlator - tracks correlations with traditional markets
+/// TODO: Add docs
 pub struct MacroEconomicCorrelator {
     config: MacroConfig,
     correlation_matrix: Arc<RwLock<HashMap<String, f64>>>,

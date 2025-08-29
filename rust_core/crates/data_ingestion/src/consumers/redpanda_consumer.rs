@@ -33,6 +33,7 @@ use crate::monitoring::ConsumerMetrics;
 
 // Backpressure configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct BackpressureConfig {
     pub max_lag_messages: i64,
     pub max_lag_ms: i64,
@@ -61,6 +62,7 @@ impl Default for BackpressureConfig {
 
 // Consumer configuration
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ConsumerConfig {
     pub brokers: String,
     pub group_id: String,
@@ -98,6 +100,7 @@ impl Default for ConsumerConfig {
 }
 
 // Adaptive backpressure monitor using gradient descent
+/// TODO: Add docs
 pub struct AdaptiveBackpressure {
     // Current state
     current_throughput: Arc<AtomicU64>,
@@ -305,6 +308,7 @@ impl AdaptiveBackpressure {
 }
 
 // Main consumer implementation
+/// TODO: Add docs
 pub struct RedpandaConsumer {
     consumer: Arc<StreamConsumer>,
     config: ConsumerConfig,

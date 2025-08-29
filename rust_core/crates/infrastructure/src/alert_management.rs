@@ -28,6 +28,7 @@ use tokio::sync::broadcast;
 /// Alert severity levels with SLA requirements
 /// Quinn: "Severity must reflect potential financial impact"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, PartialOrd, Ord)]
+/// TODO: Add docs
 pub enum AlertSeverity {
     Critical = 4,    // Immediate action required (<1 minute SLA)
     High = 3,        // Urgent action required (<5 minutes SLA)
@@ -72,6 +73,7 @@ impl AlertSeverity {
 /// Alert categories for routing and filtering
 /// Alex: "Categories must map to system architecture layers"
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AlertCategory {
     // Risk Management
     RiskLimit,           // Position/exposure limits
@@ -134,6 +136,7 @@ impl AlertCategory {
 /// Alert structure with all necessary information
 /// Sam: "Alerts must contain actionable information"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct Alert {
     pub id: String,
     pub timestamp: u64,
@@ -182,6 +185,7 @@ impl Alert {
 }
 
 /// Alert builder for fluent API
+/// TODO: Add docs
 pub struct AlertBuilder {
     id: Option<String>,
     severity: AlertSeverity,
@@ -306,6 +310,7 @@ impl AlertBuilder {
 /// Alert rule for automatic alert generation
 /// Morgan: "Rules must be data-driven and configurable"
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AlertRule {
     pub id: String,
     pub name: String,
@@ -320,6 +325,7 @@ pub struct AlertRule {
 
 /// Alert condition for rule evaluation
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum AlertCondition {
     Threshold {
         metric: String,
@@ -348,6 +354,7 @@ pub enum AlertCondition {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum ComparisonOperator {
     GreaterThan,
     LessThan,
@@ -358,6 +365,7 @@ pub enum ComparisonOperator {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+/// TODO: Add docs
 pub enum LogicalOperator {
     And,
     Or,
@@ -442,6 +450,7 @@ impl Ord for PriorityAlert {
 
 /// Alert manager for handling all system alerts
 /// Riley: "Must handle thousands of alerts per second efficiently"
+/// TODO: Add docs
 pub struct AlertManager {
     /// Active alerts indexed by ID
     active_alerts: Arc<RwLock<HashMap<String, Alert>>>,
@@ -686,6 +695,7 @@ impl AlertManager {
 
 /// Alert statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// TODO: Add docs
 pub struct AlertStatistics {
     pub total_alerts: u64,
     pub active_alerts: u64,
@@ -701,6 +711,7 @@ pub struct AlertStatistics {
 
 /// Alert aggregator for correlation and grouping
 /// Avery: "Must identify related alerts to reduce noise"
+/// TODO: Add docs
 pub struct AlertAggregator {
     manager: Arc<AlertManager>,
     correlation_window: Duration,

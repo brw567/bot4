@@ -14,13 +14,14 @@
 //! - Dark launching techniques (Facebook)
 //! - Shadow traffic patterns (Netflix)
 
-use crate::{Order, Price, Quantity, Trade, Candle, OrderBook};
+use crate::{Order, Price, Quantity};
 use std::fmt::Debug;
 use std::time::{Duration, Instant};
 use tracing::{error, warn, info};
 
 /// Result of parallel validation
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct ValidationResult<T> {
     /// Result from the canonical implementation
     pub canonical_result: T,
@@ -36,6 +37,7 @@ pub struct ValidationResult<T> {
 
 /// Performance comparison between implementations
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PerformanceComparison {
     /// Time taken by canonical implementation
     pub canonical_duration: Duration,
@@ -47,6 +49,7 @@ pub struct PerformanceComparison {
 
 /// Discrepancy between implementations
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct Discrepancy {
     /// Field or aspect that differs
     pub field: String,
@@ -60,6 +63,7 @@ pub struct Discrepancy {
 
 /// Severity levels for discrepancies
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// TODO: Add docs
 pub enum DiscrepancySeverity {
     /// Critical - results are fundamentally different
     Critical,
@@ -76,6 +80,7 @@ pub trait ParallelValidatable: Clone {
 }
 
 /// Main parallel validator
+/// TODO: Add docs
 pub struct ParallelValidator {
     /// Whether to fail on discrepancies
     fail_on_discrepancy: bool,

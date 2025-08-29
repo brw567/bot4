@@ -1,3 +1,4 @@
+use domain_types::CorrelationMatrix;
 //! Using canonical Trade from domain_types
 pub use domain_types::trade::{Trade, TradeId, TradeError};
 pub use domain_types::{Price, Quantity, Symbol, Exchange};
@@ -20,6 +21,7 @@ use rust_decimal_macros::dec;
 
 /// Portfolio Manager - Tracks ALL portfolio state dynamically
 /// Quinn: "This is CRITICAL for risk management - NO HARDCODED VALUES!"
+/// TODO: Add docs
 pub struct PortfolioManager {
     // Account state
     pub account_equity: Arc<RwLock<Decimal>>,
@@ -57,7 +59,8 @@ pub struct PortfolioManager {
 /// Correlation matrix for portfolio diversification
 /// Quinn: "Correlation is KEY to avoiding concentrated risk!"
 #[derive(Debug, Clone)]
-pub struct CorrelationMatrix {
+// ELIMINATED: use domain_types::CorrelationMatrix
+// pub struct CorrelationMatrix {
     symbols: Vec<String>,
     matrix: Vec<Vec<f64>>,
     last_update: u64,
@@ -349,6 +352,7 @@ impl CorrelationMatrix {
 
 /// Portfolio configuration - NO HARDCODED VALUES!
 #[derive(Debug, Clone)]
+/// TODO: Add docs
 pub struct PortfolioConfig {
     pub max_positions: usize,
     pub max_position_size_pct: f64,
