@@ -7,6 +7,10 @@ pub mod state_machine;
 pub mod manager;
 pub mod position;
 pub mod router;
+pub mod partial_fills;
+pub mod partial_fills_tests;
+pub mod optimal_execution;
+pub mod chaos_tests;
 
 pub use order::{Order, OrderId, OrderType, OrderSide, TimeInForce};
 pub use state_machine::{OrderState, OrderStateMachine, StateTransition};

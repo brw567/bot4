@@ -34,8 +34,17 @@ dashmap = { workspace = true }
 parking_lot = { workspace = true }
 
 # Decimal arithmetic for precise financial calculations
-rust_decimal = "1.33"
+rust_decimal = { version = "1.33", features = ["maths"] }
 rust_decimal_macros = "1.33"
+
+# Math and optimization
+nalgebra = "0.32"
+
+# Async utilities
+futures = "0.3"
+
+# Random for testing
+rand = "0.8"
 
 # State machine
 strum = { version = "0.25", features = ["derive"] }
