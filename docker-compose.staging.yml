@@ -1,0 +1,280 @@
+version: '3.8'
+
+# Bot4 Trading Platform - Staging Environment
+# Team: Full 8-Agent ULTRATHINK Collaboration
+# Simulates K8s deployment locally for testing
+
+services:
+  # Trading Engine (simulates 3 K8s pods)
+  trading-engine-1:
+    container_name: bot4-trading-1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUST_VERSION: 1.75
+        FEATURES: "simd,hft,paper-trading"
+    environment:
+      - RUST_LOG=info,bot4=debug
+      - RUST_BACKTRACE=1
+      - NODE_ID=1
+      - DEPLOYMENT_ENV=staging
+      - ENABLE_HFT_MODE=true
+      - MAX_LATENCY_US=100
+      - DECISION_LATENCY_TARGET_US=50
+      - TIMESCALEDB_HOST=timescaledb
+      - REDIS_HOST=redis
+      - PROMETHEUS_PORT=9091
+      - HEALTH_PORT=8081
+    volumes:
+      - ./configs:/app/configs:ro
+      - ./data/node1:/app/data
+      - ./logs/node1:/app/logs
+    ports:
+      - "8081:8080"
+      - "9091:9090"
+      - "50051:50051"
+    cpus: 4
+    mem_limit: 8g
+    restart: unless-stopped
+    depends_on:
+      - timescaledb
+      - redis
+    networks:
+      - bot4-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  trading-engine-2:
+    container_name: bot4-trading-2
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUST_VERSION: 1.75
+        FEATURES: "simd,hft,paper-trading"
+    environment:
+      - RUST_LOG=info,bot4=debug
+      - RUST_BACKTRACE=1
+      - NODE_ID=2
+      - DEPLOYMENT_ENV=staging
+      - ENABLE_HFT_MODE=true
+      - MAX_LATENCY_US=100
+      - TIMESCALEDB_HOST=timescaledb
+      - REDIS_HOST=redis
+      - PROMETHEUS_PORT=9092
+      - HEALTH_PORT=8082
+    volumes:
+      - ./configs:/app/configs:ro
+      - ./data/node2:/app/data
+      - ./logs/node2:/app/logs
+    ports:
+      - "8082:8080"
+      - "9092:9090"
+      - "50052:50051"
+    cpus: 4
+    mem_limit: 8g
+    restart: unless-stopped
+    depends_on:
+      - timescaledb
+      - redis
+    networks:
+      - bot4-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  trading-engine-3:
+    container_name: bot4-trading-3
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUST_VERSION: 1.75
+        FEATURES: "simd,hft,paper-trading"
+    environment:
+      - RUST_LOG=info,bot4=debug
+      - RUST_BACKTRACE=1
+      - NODE_ID=3
+      - DEPLOYMENT_ENV=staging
+      - ENABLE_HFT_MODE=true
+      - MAX_LATENCY_US=100
+      - TIMESCALEDB_HOST=timescaledb
+      - REDIS_HOST=redis
+      - PROMETHEUS_PORT=9093
+      - HEALTH_PORT=8083
+    volumes:
+      - ./configs:/app/configs:ro
+      - ./data/node3:/app/data
+      - ./logs/node3:/app/logs
+    ports:
+      - "8083:8080"
+      - "9093:9090"
+      - "50053:50051"
+    cpus: 4
+    mem_limit: 8g
+    restart: unless-stopped
+    depends_on:
+      - timescaledb
+      - redis
+    networks:
+      - bot4-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  # HAProxy Load Balancer (simulates K8s Service)
+  haproxy:
+    image: haproxy:2.9-alpine
+    container_name: bot4-loadbalancer
+    volumes:
+      - ./configs/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "80:80"      # HTTP
+      - "8080:8080"  # API
+      - "9090:9090"  # Metrics aggregation
+      - "50051:50051" # gRPC
+    depends_on:
+      - trading-engine-1
+      - trading-engine-2
+      - trading-engine-3
+    networks:
+      - bot4-network
+    restart: unless-stopped
+
+  # TimescaleDB (Time-series database)
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: bot4-timescaledb
+    environment:
+      - POSTGRES_DB=bot4_trading
+      - POSTGRES_USER=bot4_user
+      - POSTGRES_PASSWORD=bot4_staging_pass
+      - TS_TUNE_MAX_CONNS=100
+      - TS_TUNE_MAX_BG_WORKERS=8
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./sql/init_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - bot4-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # Redis (Cache and pub/sub)
+  redis:
+    image: redis:7-alpine
+    container_name: bot4-redis
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - bot4-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Prometheus (Metrics collection)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: bot4-prometheus
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9000:9090"
+    networks:
+      - bot4-network
+    restart: unless-stopped
+    depends_on:
+      - trading-engine-1
+      - trading-engine-2
+      - trading-engine-3
+
+  # Grafana (Dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: bot4-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=bot4_staging
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./configs/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - bot4-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # Health Monitor (simulates liveness/readiness probes)
+  health-monitor:
+    image: alpine:latest
+    container_name: bot4-health-monitor
+    command: >
+      sh -c "
+      apk add --no-cache curl jq &&
+      while true; do
+        echo 'Checking health of all nodes...'
+        for i in 1 2 3; do
+          curl -sf http://trading-engine-$$i:8080/health/liveness || echo \"Node $$i unhealthy\"
+        done
+        sleep 30
+      done
+      "
+    networks:
+      - bot4-network
+    depends_on:
+      - trading-engine-1
+      - trading-engine-2
+      - trading-engine-3
+    restart: unless-stopped
+
+networks:
+  bot4-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  timescale_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:

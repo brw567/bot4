@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bot4-trading
+  namespace: bot4-trading
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: bot4-trading-role
+  namespace: bot4-trading
+rules:
+# Read ConfigMaps
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+# Read Secrets
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+# Read/Write to PVCs
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list"]
+# Read pods for self-discovery
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+# Update pod status
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["update", "patch"]
+# Read services for discovery
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bot4-trading-rolebinding
+  namespace: bot4-trading
+subjects:
+- kind: ServiceAccount
+  name: bot4-trading
+  namespace: bot4-trading
+roleRef:
+  kind: Role
+  name: bot4-trading-role
+  apiGroup: rbac.authorization.k8s.io

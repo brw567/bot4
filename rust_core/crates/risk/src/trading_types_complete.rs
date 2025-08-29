@@ -23,7 +23,7 @@ use chrono::{DateTime, Utc};
 #[derive(Debug, Clone)]
 /// TODO: Add docs
 // ELIMINATED: Duplicate EnhancedTradingSignal - use canonical_types::TradingSignal
-// pub struct EnhancedTradingSignal {
+pub struct EnhancedTradingSignal {
     // Core signal data
     pub timestamp: u64,
     pub symbol: String,

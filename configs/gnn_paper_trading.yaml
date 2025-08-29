@@ -1,0 +1,177 @@
+# GNN Paper Trading Configuration
+# Team: Full 8-Agent ULTRATHINK Collaboration
+# Purpose: Production deployment configuration for GNN-enhanced paper trading
+# Research: Best practices from Jane Street, Two Sigma, Renaissance Technologies
+
+# System Configuration
+system:
+  name: "Bot4 GNN Paper Trading"
+  version: "1.0.0"
+  environment: "paper_trading"
+  start_capital: 100000.0  # $100k starting capital
+  
+# GNN Configuration
+gnn:
+  # Graph Construction
+  min_correlation: 0.3       # Minimum correlation for edge creation
+  max_graph_nodes: 100       # Maximum nodes in graph
+  lookback_window: 100       # Historical candles for correlation
+  
+  # Temporal GNN
+  hidden_dimensions: 128     # Hidden layer size
+  num_layers: 4             # Number of GAT layers
+  attention_heads: 8        # Multi-head attention
+  dropout: 0.1              # Dropout rate
+  
+  # Order Flow Network
+  whale_threshold: 100000.0  # $100k whale detection threshold
+  anomaly_window: 1000      # Anomaly detection window size
+  spoofing_threshold: 0.3   # Spoofing probability threshold
+  
+  # Message Passing
+  message_layers: 3         # Message passing iterations
+  hidden_size: 64          # Message hidden dimensions
+  
+  # Update Frequency
+  update_interval_ms: 100   # 100ms GNN update cycle
+  
+# Exchange Configuration
+exchanges:
+  - name: "binance"
+    enabled: true
+    api_endpoint: "wss://stream.binance.com:9443/ws"
+    symbols:
+      - "BTCUSDT"
+      - "ETHUSDT"
+      - "SOLUSDT"
+    rate_limit: 1200  # requests per minute
+    
+  - name: "coinbase"
+    enabled: true
+    api_endpoint: "wss://ws-feed.exchange.coinbase.com"
+    symbols:
+      - "BTC-USD"
+      - "ETH-USD"
+      - "SOL-USD"
+    rate_limit: 600
+    
+  - name: "kraken"
+    enabled: true
+    api_endpoint: "wss://ws.kraken.com"
+    symbols:
+      - "XBT/USD"
+      - "ETH/USD"
+      - "SOL/USD"
+    rate_limit: 300
+    
+  - name: "okx"
+    enabled: true
+    api_endpoint: "wss://ws.okx.com:8443/ws/v5/public"
+    symbols:
+      - "BTC-USDT"
+      - "ETH-USDT"
+      - "SOL-USDT"
+    rate_limit: 600
+    
+  - name: "bybit"
+    enabled: true
+    api_endpoint: "wss://stream.bybit.com/v5/public/spot"
+    symbols:
+      - "BTCUSDT"
+      - "ETHUSDT"
+      - "SOLUSDT"
+    rate_limit: 600
+
+# Risk Management (RiskQuant Enhanced)
+risk:
+  # Position Limits
+  max_position_size: 0.1     # 10% max per position
+  max_positions: 20          # Maximum concurrent positions
+  max_leverage: 1.0         # No leverage in paper trading
+  
+  # Loss Limits
+  max_drawdown: 0.15        # 15% maximum drawdown
+  daily_loss_limit: 0.05    # 5% daily loss limit
+  
+  # VaR/CVaR (Coherent Risk Measures)
+  var_confidence: 0.99      # 99% VaR
+  var_limit: 0.02          # 2% daily VaR limit
+  cvar_limit: 0.03         # 3% CVaR limit
+  
+  # Kelly Criterion
+  kelly_fraction: 0.25      # 25% fractional Kelly
+  min_edge: 0.001          # 0.1% minimum edge
+  
+  # Circuit Breakers
+  circuit_breaker_threshold: 0.05  # 5% rapid loss trigger
+  cooldown_period_ms: 60000       # 1 minute cooldown
+
+# Game Theory Configuration
+game_theory:
+  # Nash Equilibrium
+  estimated_competitors: 7    # Assume 7 competitors for arbitrage
+  market_impact_factor: 0.001 # 0.1% impact per $1M
+  
+  # Prisoner's Dilemma
+  cooperation_threshold: 0.7  # Cooperate if confidence > 70%
+  defection_penalty: 0.5      # 50% size reduction on defection
+  
+  # Colonel Blotto
+  resource_allocation:       # Resource allocation across exchanges
+    binance: 0.3
+    coinbase: 0.25
+    kraken: 0.15
+    okx: 0.15
+    bybit: 0.15
+
+# Performance Targets
+targets:
+  sharpe_ratio: 2.0         # Target Sharpe ratio
+  win_rate: 0.6            # 60% win rate target
+  profit_factor: 1.5       # 1.5x profit factor
+  max_latency_us: 100      # <100μs decision latency
+  
+# Optimization Settings
+optimization:
+  enable_avx512: true       # AVX-512 SIMD optimization
+  enable_zero_copy: true    # Zero-copy serialization
+  enable_kernel_bypass: true # DPDK kernel bypass
+  cpu_affinity: [0, 1, 2, 3] # Pin to CPU cores
+  huge_pages: true          # Use huge pages
+
+# Monitoring & Alerting
+monitoring:
+  metrics_interval_sec: 10   # Metrics update every 10s
+  log_level: "INFO"
+  
+  alerts:
+    - type: "drawdown"
+      threshold: 0.1         # Alert at 10% drawdown
+      channel: "slack"
+      
+    - type: "latency"
+      threshold_us: 150      # Alert if latency > 150μs
+      channel: "pagerduty"
+      
+    - type: "whale_detection"
+      min_size: 500000       # Alert for $500k+ whales
+      channel: "telegram"
+      
+    - type: "arbitrage"
+      min_profit: 0.005      # Alert for 0.5%+ arbitrage
+      channel: "discord"
+
+# Validation Requirements
+validation:
+  min_paper_trading_days: 60    # 60 days minimum
+  min_trades: 1000              # 1000 trades minimum
+  min_sharpe: 2.0               # 2.0 Sharpe minimum
+  max_drawdown: 0.15            # 15% max drawdown
+  min_win_rate: 0.6             # 60% win rate minimum
+  
+# Data Storage
+storage:
+  trades_path: "/home/hamster/bot4/data/paper_trades/"
+  metrics_path: "/home/hamster/bot4/data/paper_metrics/"
+  graphs_path: "/home/hamster/bot4/data/correlation_graphs/"
+  retention_days: 90           # Keep 90 days of data

@@ -107,7 +107,7 @@ mod lib_tests {
         assert_eq!(CANONICAL_TYPES_VERSION, "1.0.0");
     }
 }pub mod risk_limits;
-pub use risk_limits::RiskLimits;
+pub use validation::RiskLimits;
 
 pub mod canonical_types;
 pub use canonical_types::*;

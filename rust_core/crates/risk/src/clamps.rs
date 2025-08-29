@@ -91,15 +91,16 @@ impl Default for ClampConfig {
     }
 }
 
-    #[allow(dead_code)]  // Used in future features
-    symbol: String,
-    size: f32,
-    #[allow(dead_code)]  // Used in future features
-    entry_price: f32,
-    current_price: f32,
-    #[allow(dead_code)]  // Used in future features
-    pnl: f32,
-}
+// ELIMINATED: Orphaned struct fields from deduplication
+//     #[allow(dead_code)]  // Used in future features
+//     symbol: String,
+//     size: f32,
+//     #[allow(dead_code)]  // Used in future features
+//     entry_price: f32,
+//     current_price: f32,
+//     #[allow(dead_code)]  // Used in future features
+//     pnl: f32,
+// }
 
 
 struct CrisisIndicators {

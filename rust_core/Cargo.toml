@@ -18,6 +18,7 @@ members = [
     "crates/data_ingestion",  # Layer 1.1: Redpanda high-performance ingestion
     "crates/feature_store",  # Layer 1.5: Feature Store with <10ms serving
     "crates/strategies",
+    "crates/paper_trading",  # Layer 3: Paper Trading with GNN integration
 ]
 resolver = "2"
 

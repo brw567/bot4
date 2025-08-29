@@ -427,7 +427,7 @@ impl AdvancedGameTheory {
 /// Market state for game theory calculations
 #[derive(Debug, Clone, Default)]
 // ELIMINATED: use domain_types::MarketState
-// pub struct MarketState {
+pub struct MarketState {
     pub volatility: f64,
     pub volume: f64,
     pub trend: f64,

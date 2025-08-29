@@ -460,7 +460,7 @@ pub mod microstructure_validation {
 #[derive(Debug, Clone)]
 /// TODO: Add docs
 // ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
-// pub struct ValidationReport {
+pub struct ValidationReport {
 // ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport
 //     system_name: String,
 // ELIMINATED: Duplicate - use infrastructure::validation::ValidationReport

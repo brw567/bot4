@@ -28,6 +28,7 @@ nalgebra = "0.32"
 num-complex = "0.4"
 rustfft = "6.1"
 ordered-float = "4.1"
+petgraph = "0.6"  # Graph structures for GNN
 
 # Utilities
 crossbeam = "0.8"
@@ -59,3 +60,8 @@ tokio-test = "0.4"
 approx = "0.5"
 proptest = "1.3"
 rust_decimal_macros = "1.32"
+criterion = "0.5"
+
+[[bench]]
+name = "gnn_bench"
+harness = false

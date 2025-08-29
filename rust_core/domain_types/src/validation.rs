@@ -57,6 +57,15 @@ pub trait Validatable {
     }
 }
 
+/// Market conditions for validation context
+#[derive(Debug, Clone)]
+pub struct MarketConditions {
+    pub high_volatility: bool,
+    pub low_liquidity: bool,
+    pub near_close: bool,
+    pub current_drawdown: Decimal,
+}
+
 /// Validation context with exchange rules and limits
 #[derive(Debug, Clone)]
 /// TODO: Add docs

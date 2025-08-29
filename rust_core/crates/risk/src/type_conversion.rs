@@ -296,7 +296,7 @@ pub trait TradingSignalExt {
 #[derive(Debug, Clone)]
 /// TODO: Add docs
 // ELIMINATED: Duplicate ExtendedTradingSignal - use canonical_types::TradingSignal
-// pub struct ExtendedTradingSignal {
+pub struct ExtendedTradingSignal {
     pub base: TradingSignal,
     pub entry_price: Price,
     pub stop_loss: Price,

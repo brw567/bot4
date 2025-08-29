@@ -111,7 +111,7 @@ impl<T: Send> std::ops::DerefMut for PooledObject<T> {
 
 #[derive(Debug, Clone)]
 // REMOVED: Duplicate
-// pub struct PoolStats {
+pub struct PoolStats {
     pub allocated: u64,
     pub hit_rate: f64,
     pub miss_count: u64,
@@ -372,4 +372,3 @@ impl PerformanceMetrics {
 }
 
 // Jordan: "This is how we hit <1μs - ZERO allocations, ZERO locks in hot paths!"
-// Alex: "Extract 100% performance from the hardware!"

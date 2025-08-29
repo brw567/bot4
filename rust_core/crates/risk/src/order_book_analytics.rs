@@ -63,27 +63,17 @@ pub struct OrderBookAnalytics {
 #[derive(Debug, Clone)]
 /// TODO: Add docs
 // ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-// pub struct OrderBookSnapshot {
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub timestamp: u64,
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub bids: Vec<PriceLevel>,
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub asks: Vec<PriceLevel>,
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub mid_price: Decimal,
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub microprice: Decimal,  // Size-weighted price
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub trades: Vec<Trade>,
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     // Depth at first level (for quick access)
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub bid_depth_1: f64,
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-//     pub ask_depth_1: f64,
-// ELIMINATED: Duplicate - use domain_types::market_data::OrderBookSnapshot
-// }
+pub struct OrderBookSnapshot {
+    pub timestamp: u64,
+    pub bids: Vec<PriceLevel>,
+    pub asks: Vec<PriceLevel>,
+    pub mid_price: Decimal,
+    pub microprice: Decimal,  // Size-weighted price
+    pub trades: Vec<Trade>,
+    // Depth at first level (for quick access)
+    pub bid_depth_1: f64,
+    pub ask_depth_1: f64,
+}
 
 /// Price level in order book
 #[derive(Debug, Clone)]
@@ -903,8 +893,7 @@ impl MomentumIgnitionDetector {
 /// Liquidity event detected in order book
 #[derive(Debug, Clone)]
 /// TODO: Add docs
-// ELIMINATED: LiquidityEvent - Enhanced with Level 3 data, iceberg detection
-// pub struct LiquidityEvent {
+pub struct LiquidityEvent {
     pub side: Side,
     pub size: f64,
     pub price_level: u32,

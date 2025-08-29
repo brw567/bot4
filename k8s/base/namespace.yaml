@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bot4-trading
+  labels:
+    app: bot4
+    environment: production
+    team: ultrathink
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: bot4-quota
+  namespace: bot4-trading
+spec:
+  hard:
+    requests.cpu: "16"
+    requests.memory: "32Gi"
+    limits.cpu: "32"
+    limits.memory: "64Gi"
+    persistentvolumeclaims: "10"

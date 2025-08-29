@@ -1195,7 +1195,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a22f228ab7a1b23027ccc6c350b72868017af7ea8356fbdf19f8d991c690013"
 dependencies = [
  "autocfg",
- "libm",
+ "libm 0.2.15",
  "num-bigint",
  "num-integer",
  "num-traits",
@@ -2880,6 +2880,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fixedbitset"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ce7134b9999ecaf8bcd65542e436736ef32ddca1b3e06094cb6ec5755203b80"
+
+[[package]]
 name = "flatbuffers"
 version = "25.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3869,6 +3875,7 @@ dependencies = [
  "rayon",
  "redis 0.24.0",
  "reqwest 0.11.27",
+ "risk",
  "rust_decimal",
  "rust_decimal_macros",
  "serde",
@@ -4212,6 +4219,12 @@ dependencies = [
  "cfg-if 1.0.3",
  "windows-targets 0.53.3",
 ]
+
+[[package]]
+name = "libm"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7fc7aa29613bd6a620df431842069224d8bc9011086b1db4c0e0cd47fa03ec9a"
 
 [[package]]
 name = "libm"
@@ -4602,12 +4615,13 @@ dependencies = [
  "approx",
  "async-trait",
  "chrono",
+ "criterion",
  "crossbeam",
  "dashmap 5.5.3",
  "flate2",
  "infrastructure",
  "libc",
- "libm",
+ "libm 0.2.15",
  "log",
  "memmap2",
  "nalgebra 0.32.6",
@@ -4617,6 +4631,7 @@ dependencies = [
  "num_cpus",
  "ordered-float 4.6.0",
  "parking_lot",
+ "petgraph",
  "proptest",
  "rand 0.8.5",
  "rand_distr 0.4.3",
@@ -4888,7 +4903,7 @@ checksum = "dc84195820f291c7697304f3cbdadd1cb7199c0efc917ff5eafd71225c136151"
 dependencies = [
  "byteorder",
  "lazy_static",
- "libm",
+ "libm 0.2.15",
  "num-integer",
  "num-iter",
  "num-traits",
@@ -4951,7 +4966,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
- "libm",
+ "libm 0.2.15",
 ]
 
 [[package]]
@@ -5189,6 +5204,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "packed_simd_2"
+version = "0.3.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1914cd452d8fccd6f9db48147b29fd4ae05bea9dc5d9ad578509f72415de282"
+dependencies = [
+ "cfg-if 1.0.3",
+ "libm 0.1.4",
+]
+
+[[package]]
+name = "paper_trading"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "crossbeam",
+ "dashmap 5.5.3",
+ "domain_types",
+ "hashbrown 0.15.5",
+ "log",
+ "mimalloc",
+ "nalgebra 0.32.6",
+ "parking_lot",
+ "petgraph",
+ "rand 0.8.5",
+ "rayon",
+ "rust_decimal",
+ "serde",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "parking_lot"
 version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5367,6 +5419,16 @@ checksum = "edd1101f170f5903fde0914f899bb503d9ff5271d7ba76bbb70bea63690cc0d5"
 dependencies = [
  "pest",
  "sha2",
+]
+
+[[package]]
+name = "petgraph"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4c5cc86750666a3ed20bdaf5ca2a0344f9c67674cae0515bec2da16fbaa47db"
+dependencies = [
+ "fixedbitset",
+ "indexmap",
 ]
 
 [[package]]
@@ -5805,7 +5867,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a0a01a0dc67cf4558d279f0c25b0962bd08fc6dec0137699eae304103e882fe6"
 dependencies = [
  "bytemuck",
- "libm",
+ "libm 0.2.15",
  "num-complex",
  "reborrow",
 ]
@@ -7472,6 +7534,28 @@ dependencies = [
  "nalgebra 0.32.6",
  "num-traits",
  "rand 0.8.5",
+]
+
+[[package]]
+name = "strategies"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "approx",
+ "async-trait",
+ "criterion",
+ "domain_types",
+ "hashbrown 0.15.5",
+ "mimalloc",
+ "packed_simd_2",
+ "proptest",
+ "rand 0.8.5",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "simba 0.8.1",
+ "thiserror 2.0.16",
+ "tokio",
 ]
 
 [[package]]

@@ -302,7 +302,7 @@ impl EnhancedTradingLogic {
 #[derive(Clone)]
 /// TODO: Add docs
 // ELIMINATED: Duplicate MLSignal - use canonical_types::TradingSignal
-// pub struct MLSignal {
+pub struct MLSignal {
     pub confidence: f64,
     pub predicted_move: f64,
     pub direction: f64,
@@ -332,7 +332,7 @@ pub struct MarketStructure {
 
 /// TODO: Add docs
 // ELIMINATED: Duplicate CombinedSignal - use canonical_types::TradingSignal
-// pub struct CombinedSignal {
+pub struct CombinedSignal {
     pub direction: f64,
     pub confidence: f64,
     pub ml_component: f64,
@@ -341,7 +341,7 @@ pub struct MarketStructure {
 }
 
 // REMOVED: Using canonical domain_types::market_data::MarketData
-// pub struct MarketData {
+pub struct MarketData {
     pub symbol: String,
     pub current_price: Price,
     pub bid: Price,
@@ -350,7 +350,7 @@ pub struct MarketStructure {
 }
 
 // ELIMINATED: use domain_types::Portfolio
-// pub struct Portfolio {
+pub struct Portfolio {
     pub total_equity: Decimal,
     pub heat: f64,  // 0-1 risk utilization
 }
@@ -401,4 +401,3 @@ impl RiskManager {
     }
 }
 
-// KARL: "This enhanced trading logic combines ALL our expertise!"

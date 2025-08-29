@@ -278,7 +278,7 @@ pub struct PortfolioPosition {
 }
 
 // ELIMINATED: use domain_types::CorrelationMatrix
-// pub struct CorrelationMatrix {
+pub struct CorrelationMatrix {
     data: Vec<Vec<f64>>,
 }
 
@@ -309,13 +309,12 @@ pub struct PerformanceMetrics {
 }
 
 // REMOVED: Using canonical domain_types::RiskLimits
-// #[derive(Debug)]
-// pub struct RiskLimits {
-//     pub max_position_size: Decimal,
-//     pub max_daily_loss: Decimal,
-//     pub max_leverage: f64,
-//     pub max_var: Decimal,
-//     pub kelly_cap: Decimal,
-// }
+#[derive(Debug)]
+pub struct RiskLimits {
+    pub max_position_size: Decimal,
+    pub max_daily_loss: Decimal,
+    pub max_leverage: f64,
+    pub max_var: Decimal,
+    pub kelly_cap: Decimal,
+}
 
-// CAMERON: "All risk calculations unified! No more inconsistencies!"

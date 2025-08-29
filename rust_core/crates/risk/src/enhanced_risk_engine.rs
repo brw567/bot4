@@ -72,7 +72,7 @@ impl Default for RiskConfig {
 }
 
 // REMOVED: Duplicate
-// pub struct RiskMetrics {
+pub struct RiskMetrics {
     /// Portfolio-level metrics
     pub portfolio_var: f64,
     pub portfolio_cvar: f64,
@@ -300,7 +300,7 @@ impl EnhancedRiskEngine {
 
 // Supporting structures
 // ELIMINATED: use domain_types::Portfolio
-// pub struct Portfolio {
+pub struct Portfolio {
     pub positions: Vec<Position>,
     pub total_value: f64,
     pub cash: f64,
@@ -312,7 +312,7 @@ use domain_types::canonical_types::Position;
 
 /// TODO: Add docs
 // ELIMINATED: Duplicate TradingSignal - use canonical_types::TradingSignal
-// pub struct TradingSignal {
+pub struct TradingSignal {
     pub symbol: String,
     pub win_probability: f64,
     pub expected_return: f64,
@@ -339,4 +339,3 @@ pub enum RiskViolation {
     PortfolioOverheated,
 }
 
-// CAMERON: "This is production-grade risk management. No shortcuts!"

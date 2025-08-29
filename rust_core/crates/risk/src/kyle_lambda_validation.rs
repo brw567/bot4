@@ -375,7 +375,7 @@ impl KyleLambdaValidator {
 
 #[derive(Debug)]
 // ELIMINATED: use domain_types::ValidationResult
-// pub struct ValidationResult {
+pub struct ValidationResult {
     pub theoretical_lambda: f64,
     pub empirical_lambda: f64,
     pub relative_error: f64,

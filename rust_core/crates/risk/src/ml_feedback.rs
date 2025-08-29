@@ -75,7 +75,7 @@ struct Experience {
 
 #[derive(Clone, Debug)]
 // ELIMINATED: use domain_types::MarketState
-// pub struct MarketState {
+pub struct MarketState {
     pub price: Price,
     pub volume: Quantity,
     pub volatility: Percentage,
@@ -1147,4 +1147,3 @@ mod rand {
 // Alex: "THIS is the feedback loop we were missing!"
 // Morgan: "Every trade makes us smarter!"
 // Jordan: "Online learning keeps us fast!"
-// Quinn: "Risk-aware learning prevents overfitting!"

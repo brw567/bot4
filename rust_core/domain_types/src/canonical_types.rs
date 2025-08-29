@@ -49,13 +49,10 @@ pub enum SignalAction {
 }
 
 /// Canonical FeatureVector - ML unified
-#[derive(Debug, Clone, Serialize, Deserialize)]
-/// TODO: Add docs
 // ELIMINATED: Duplicate FeatureVector - use ml::features::FeatureVector
 
 /// Canonical Portfolio - Risk & Execution unified
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// TODO: Add docs
 pub struct Portfolio {
     pub positions: Vec<Position>,
     pub cash_balance: Decimal,
@@ -84,13 +81,10 @@ pub struct Position {
 }
 
 /// Canonical RiskMetrics - Unified risk calculations
-#[derive(Debug, Clone, Serialize, Deserialize)]
-/// TODO: Add docs
 // ELIMINATED: Duplicate RiskMetrics - use risk::metrics::RiskMetrics
 
 /// Canonical CorrelationMatrix
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// TODO: Add docs
 pub struct CorrelationMatrix {
     pub symbols: Vec<String>,
     pub matrix: Vec<Vec<f64>>,

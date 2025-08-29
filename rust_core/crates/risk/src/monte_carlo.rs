@@ -131,7 +131,7 @@ pub enum JumpSizeDistribution {
 /// Correlation structure
 #[derive(Debug, Clone)]
 // ELIMINATED: use domain_types::CorrelationMatrix
-// pub struct CorrelationMatrix {
+pub struct CorrelationMatrix {
     pub assets: Vec<String>,
     pub matrix: Vec<Vec<f64>>,
     pub time_varying: bool,
@@ -940,7 +940,7 @@ pub struct StrategyValidation {
 /// Risk assessment metrics
 #[derive(Debug, Clone)]
 // REMOVED: Duplicate
-// pub struct RiskMetrics {
+pub struct RiskMetrics {
     pub tail_var_99: f64,
     pub tail_cvar_99: f64,
     pub max_drawdown_99: f64,

@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot4-trading-engine
+  namespace: bot4-trading
+spec:
+  replicas: 5
+  template:
+    spec:
+      containers:
+      - name: trading-engine
+        resources:
+          requests:
+            memory: "16Gi"
+            cpu: "8"
+            ephemeral-storage: "20Gi"
+          limits:
+            memory: "32Gi"
+            cpu: "16"
+            ephemeral-storage: "50Gi"
+        
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: RUST_LOG
+          value: "warn,bot4=info"
+        - name: ENABLE_PROFILING
+          value: "false"
+        - name: MAX_LATENCY_US
+          value: "50"
+        - name: ENABLE_HFT_MODE
+          value: "true"
+        - name: DPDK_ENABLED
+          value: "true"
+        
+        # Production health checks
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 5
+        
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      
+      # Production node selector
+      nodeSelector:
+        node-type: "high-performance"
+        environment: "production"
+      
+      # Tolerations for dedicated nodes
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "trading"
+        effect: "NoSchedule"

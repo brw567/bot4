@@ -1,0 +1,58 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bot4-trading-hpa
+  namespace: bot4-trading
+spec:
+  minReplicas: 5
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50  # More aggressive scaling in prod
+  
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 60
+  
+  - type: Pods
+    pods:
+      metric:
+        name: decision_latency_us
+      target:
+        type: AverageValue
+        averageValue: "50"  # Stricter latency target
+  
+  - type: Pods
+    pods:
+      metric:
+        name: orders_per_second
+      target:
+        type: AverageValue
+        averageValue: "20000"  # Higher throughput target
+  
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600  # Slower scale-down in prod
+      policies:
+      - type: Percent
+        value: 25
+        periodSeconds: 120
+      selectPolicy: Min
+    
+    scaleUp:
+      stabilizationWindowSeconds: 30  # Faster scale-up
+      policies:
+      - type: Percent
+        value: 200
+        periodSeconds: 30
+      - type: Pods
+        value: 5
+        periodSeconds: 30
+      selectPolicy: Max

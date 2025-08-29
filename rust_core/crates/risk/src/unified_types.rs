@@ -148,7 +148,7 @@ impl Percentage {
 
 #[derive(Debug, Clone)]
 // REMOVED: Duplicate
-// pub struct RiskMetrics {
+pub struct RiskMetrics {
     pub position_size: Quantity,
     pub confidence: Percentage,
     pub expected_return: Percentage,
@@ -183,7 +183,7 @@ impl Default for RiskMetrics {
 
 #[derive(Debug, Clone)]
 // REMOVED: Using canonical domain_types::market_data::MarketData
-// pub struct MarketData {
+pub struct MarketData {
     pub symbol: String,
     pub timestamp: u64,
     pub bid: Price,
@@ -209,6 +209,7 @@ impl MarketData {
 
 /// Position - unified position representation
 /// Morgan: "Track everything needed for ML features!"
+pub struct Position {
     pub symbol: String,
     pub side: Side,
     pub quantity: Quantity,
@@ -258,7 +259,7 @@ pub enum Side {
 #[derive(Debug, Clone)]
 /// TODO: Add docs
 // ELIMINATED: Duplicate TradingSignal - use canonical_types::TradingSignal
-// pub struct TradingSignal {
+pub struct TradingSignal {
     pub timestamp: u64,
     pub symbol: String,
     pub action: SignalAction,

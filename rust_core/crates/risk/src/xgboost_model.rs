@@ -721,7 +721,7 @@ fn sigmoid(x: f64) -> f64 {
 /// Result of training
 #[derive(Debug)]
 // ELIMINATED: use domain_types::TrainingResult
-// pub struct TrainingResult {
+pub struct TrainingResult {
     pub n_trees: usize,
     pub train_losses: Vec<f64>,
     pub validation_losses: Vec<f64>,

@@ -32,7 +32,7 @@ pub enum FeatureCategory {
 /// Feature metadata for tracking
 #[derive(Debug, Clone)]
 // ELIMINATED: use domain_types::FeatureMetadata
-// pub struct FeatureMetadata {
+pub struct FeatureMetadata {
     pub name: String,
     pub category: FeatureCategory,
     pub description: String,

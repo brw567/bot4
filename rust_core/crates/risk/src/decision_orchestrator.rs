@@ -82,8 +82,7 @@ pub struct DecisionRecord {
 
 /// Signal from a single source
 #[derive(Debug, Clone)]
-// REMOVED: use domain_types::Signal
-// pub struct Signal {
+pub struct Signal {
     pub action: SignalAction,
     pub confidence: f64,
     pub size: f64,

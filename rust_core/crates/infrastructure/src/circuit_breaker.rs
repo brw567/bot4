@@ -57,9 +57,9 @@ pub struct CircuitConfig {
 /// TODO: Add docs
 // ELIMINATED: GlobalTripConditions - Enhanced with Unified with CircuitBreaker
 // pub struct GlobalTripConditions {
-    pub component_open_ratio: f32,  // e.g., 0.5 = trip if 50% components open
-    pub min_components: u32,        // minimum components before ratio applies
-}
+//     pub component_open_ratio: f32,  // e.g., 0.5 = trip if 50% components open
+//     pub min_components: u32,        // minimum components before ratio applies
+// }
 
 impl Default for CircuitConfig {
     fn default() -> Self {
@@ -440,17 +440,17 @@ impl ComponentBreaker {
 /// TODO: Add docs
 // ELIMINATED: GlobalCircuitBreaker - Enhanced with Hystrix pattern, trip conditions
 // pub struct GlobalCircuitBreaker {
-    breakers: Arc<DashMap<String, Arc<ComponentBreaker>>>,
-    config: ArcSwap<CircuitConfig>,  // Hot-reloadable config (addresses issue #6)
-    clock: Arc<dyn Clock>,
-    
-    // Global state derived from components (Sophia Issue #3)
-    global_state: AtomicU8,  // CircuitState encoded as u8
-    global_trip_time: AtomicU64,  // Monotonic nanos when globally tripped
-    
-    // Event callback for telemetry (addresses issue #7)
-    on_event: Option<Arc<dyn Fn(CircuitEvent) + Send + Sync>>,
-}
+//     breakers: Arc<DashMap<String, Arc<ComponentBreaker>>>,
+//     config: ArcSwap<CircuitConfig>,  // Hot-reloadable config (addresses issue #6)
+//     clock: Arc<dyn Clock>,
+//     
+//     // Global state derived from components (Sophia Issue #3)
+//     global_state: AtomicU8,  // CircuitState encoded as u8
+//     global_trip_time: AtomicU64,  // Monotonic nanos when globally tripped
+//     
+//     // Event callback for telemetry (addresses issue #7)
+//     on_event: Option<Arc<dyn Fn(CircuitEvent) + Send + Sync>>,
+// }
 
 /// Events emitted by circuit breaker
 #[derive(Debug, Clone)]

@@ -1,0 +1,4 @@
+Bot4 Performance Benchmarks
+===========================
+
+Critical Path Latencies:

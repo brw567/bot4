@@ -6,6 +6,7 @@ authors.workspace = true
 
 [dependencies]
 domain_types = { path = "../../domain_types" }
+risk = { path = "../risk" }
 # Memory management - Day 2 Sprint (Critical)
 mimalloc = { workspace = true }
 crossbeam = "0.8"

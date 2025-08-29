@@ -52,7 +52,7 @@ struct PriceHistory {
 
 #[derive(Clone, Debug)]
 // REMOVED: use domain_types::Tick
-// pub struct Tick {
+pub struct Tick {
     pub timestamp: u64,
     pub price: Price,
     pub volume: Quantity,
@@ -1965,4 +1965,3 @@ pub struct MarketMetrics {
 // Alex: "THIS is what I mean by NO SIMPLIFICATIONS!"
 // Jordan: "Every calculation is REAL and OPTIMIZED!"
 // Morgan: "Features extracted from ACTUAL market data!"
-// Quinn: "Risk metrics calculated PROPERLY!"

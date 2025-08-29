@@ -1,4 +1,5 @@
 pub use domain_types::candle::{Candle, CandleError};
+use risk::unified_risk_calculations::PerformanceMetrics;
 
 // HISTORICAL PERFORMANCE CHARTS - Task 0.6 Completion
 // Full Team Implementation with External Research
@@ -139,267 +140,265 @@ impl Candle {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 // REMOVED: Duplicate
 // pub struct PerformanceMetrics {
-    pub timeframe: Timeframe,
-    pub timestamp: u64,
-    pub returns: f64,
-    pub volatility: f64,
-    pub sharpe_ratio: f64,
-    pub sortino_ratio: f64,
-    pub calmar_ratio: f64,
-    pub max_drawdown: f64,
-    pub win_rate: f64,
-    pub profit_factor: f64,
-    pub expected_value: f64,
-    pub kelly_criterion: f64,
-    pub var_95: f64,
-    pub cvar_95: f64,
-    pub skewness: f64,
-    pub kurtosis: f64,
-    pub beta: f64,        // Market correlation
-    pub alpha: f64,       // Excess returns
-    pub information_ratio: f64,
-    pub omega_ratio: f64,
-}
+//     pub timeframe: Timeframe,
+//     pub timestamp: u64,
+//     pub returns: f64,
+//     pub volatility: f64,
+//     pub sharpe_ratio: f64,
+//     pub sortino_ratio: f64,
+//     pub calmar_ratio: f64,
+//     pub max_drawdown: f64,
+//     pub win_rate: f64,
+//     pub profit_factor: f64,
+//     pub expected_value: f64,
+//     pub kelly_criterion: f64,
+//     pub var_95: f64,
+//     pub cvar_95: f64,
+//     pub skewness: f64,
+//     pub kurtosis: f64,
+//     pub beta: f64,        // Market correlation
+//     pub alpha: f64,       // Excess returns
+//     pub information_ratio: f64,
+//     pub omega_ratio: f64,
+// }
 
-impl PerformanceMetrics {
-    /// Calculate from returns series
-    /// Based on "Quantitative Portfolio Optimization" - Cornuejols & Tütüncü (2007)
-    pub fn calculate(returns: &[f64], benchmark_returns: &[f64], risk_free_rate: f64) -> Self {
-        let n = returns.len() as f64;
-        if n == 0.0 {
-            return Self::default();
-        }
-        
-        // Basic statistics
-        let mean_return = returns.iter().sum::<f64>() / n;
-        let variance = returns.iter()
-            .map(|r| (r - mean_return).powi(2))
-            .sum::<f64>() / (n - 1.0);
-        let volatility = variance.sqrt();
-        
-        // Downside deviation for Sortino
-        let downside_returns: Vec<f64> = returns.iter()
-            .filter(|&&r| r < 0.0)
-            .copied()
-            .collect();
-        let downside_deviation = if !downside_returns.is_empty() {
-            let down_var = downside_returns.iter()
-                .map(|r| r.powi(2))
-                .sum::<f64>() / downside_returns.len() as f64;
-            down_var.sqrt()
-        } else {
-            0.0
-        };
-        
-        // Risk-adjusted returns
-        let sharpe_ratio = if volatility > 0.0 {
-            (mean_return - risk_free_rate) / volatility
-        } else {
-            0.0
-        };
-        
-        let sortino_ratio = if downside_deviation > 0.0 {
-            (mean_return - risk_free_rate) / downside_deviation
-        } else {
-            0.0
-        };
-        
-        // Maximum drawdown calculation
-        let mut cumulative = 1.0;
-        let mut peak = 1.0;
-        let mut max_drawdown = 0.0;
-        
-        for &ret in returns {
-            cumulative *= 1.0 + ret;
-            peak = f64::max(peak, cumulative);
-            let drawdown = (peak - cumulative) / peak;
-            max_drawdown = f64::max(max_drawdown, drawdown);
-        }
-        
-        let calmar_ratio = if max_drawdown > 0.0 {
-            mean_return / max_drawdown
-        } else {
-            0.0
-        };
-        
-        // Win rate and profit factor
-        let wins: Vec<f64> = returns.iter().filter(|&&r| r > 0.0).copied().collect();
-        let losses: Vec<f64> = returns.iter().filter(|&&r| r < 0.0).map(|&r| -r).collect();
-        
-        let win_rate = wins.len() as f64 / n;
-        let avg_win = if !wins.is_empty() {
-            wins.iter().sum::<f64>() / wins.len() as f64
-        } else {
-            0.0
-        };
-        let avg_loss = if !losses.is_empty() {
-            losses.iter().sum::<f64>() / losses.len() as f64
-        } else {
-            0.0
-        };
-        
-        let profit_factor = if !losses.is_empty() {
-            wins.iter().sum::<f64>() / losses.iter().sum::<f64>()
-        } else if !wins.is_empty() {
-            f64::INFINITY
-        } else {
-            0.0
-        };
-        
-        // Kelly Criterion (simplified)
-        let kelly_criterion = if avg_loss > 0.0 {
-            (win_rate * avg_win - (1.0 - win_rate) * avg_loss) / avg_win
-        } else {
-            0.0
-        };
-        
-        // VaR and CVaR calculation
-        let mut sorted_returns = returns.to_vec();
-        sorted_returns.sort_by(|a, b| a.partial_cmp(b).unwrap());
-        let var_index = ((1.0 - 0.95) * n) as usize;
-        let var_95 = sorted_returns.get(var_index).copied().unwrap_or(0.0);
-        
-        let cvar_95 = if var_index > 0 {
-            sorted_returns[..var_index].iter().sum::<f64>() / var_index as f64
-        } else {
-            0.0
-        };
-        
-        // Higher moments
-        let skewness = if n > 2.0 && volatility > 0.0 {
-            let sum_cubed = returns.iter()
-                .map(|r| ((r - mean_return) / volatility).powi(3))
-                .sum::<f64>();
-            sum_cubed * n / ((n - 1.0) * (n - 2.0))
-        } else {
-            0.0
-        };
-        
-        let kurtosis = if n > 3.0 && volatility > 0.0 {
-            let sum_fourth = returns.iter()
-                .map(|r| ((r - mean_return) / volatility).powi(4))
-                .sum::<f64>();
-            sum_fourth * n * (n + 1.0) / ((n - 1.0) * (n - 2.0) * (n - 3.0)) - 
-                3.0 * (n - 1.0).powi(2) / ((n - 2.0) * (n - 3.0))
-        } else {
-            0.0
-        };
-        
-        // Beta and Alpha (CAPM)
-        let (beta, alpha) = if benchmark_returns.len() == returns.len() {
-            let bench_mean = benchmark_returns.iter().sum::<f64>() / benchmark_returns.len() as f64;
-            let covariance = returns.iter()
-                .zip(benchmark_returns.iter())
-                .map(|(r, b)| (r - mean_return) * (b - bench_mean))
-                .sum::<f64>() / (n - 1.0);
-            
-            let bench_variance = benchmark_returns.iter()
-                .map(|b| (b - bench_mean).powi(2))
-                .sum::<f64>() / (n - 1.0);
-            
-            let beta = if bench_variance > 0.0 {
-                covariance / bench_variance
-            } else {
-                0.0
-            };
-            
-            let alpha = mean_return - (risk_free_rate + beta * (bench_mean - risk_free_rate));
-            (beta, alpha)
-        } else {
-            (0.0, 0.0)
-        };
-        
-        // Information Ratio (vs benchmark)
-        let tracking_error = if benchmark_returns.len() == returns.len() {
-            let excess_returns: Vec<f64> = returns.iter()
-                .zip(benchmark_returns.iter())
-                .map(|(r, b)| r - b)
-                .collect();
-            let excess_mean = excess_returns.iter().sum::<f64>() / excess_returns.len() as f64;
-            let te_variance = excess_returns.iter()
-                .map(|e| (e - excess_mean).powi(2))
-                .sum::<f64>() / (excess_returns.len() - 1) as f64;
-            te_variance.sqrt()
-        } else {
-            0.0
-        };
-        
-        let information_ratio = if tracking_error > 0.0 {
-            alpha / tracking_error
-        } else {
-            0.0
-        };
-        
-        // Omega Ratio (gain-to-loss ratio above threshold)
-        let threshold = risk_free_rate;
-        let gains: f64 = returns.iter()
-            .filter(|&&r| r > threshold)
-            .map(|r| r - threshold)
-            .sum();
-        let losses: f64 = returns.iter()
-            .filter(|&&r| r < threshold)
-            .map(|r| threshold - r)
-            .sum();
-        
-        let omega_ratio = if losses > 0.0 {
-            gains / losses
-        } else if gains > 0.0 {
-            f64::INFINITY
-        } else {
-            0.0
-        };
-        
-        Self {
-            timeframe: Timeframe::D1, // Will be set by caller
-            timestamp: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
-            returns: mean_return,
-            volatility,
-            sharpe_ratio,
-            sortino_ratio,
-            calmar_ratio,
-            max_drawdown,
-            win_rate,
-            profit_factor,
-            expected_value: mean_return,
-            kelly_criterion,
-            var_95,
-            cvar_95,
-            skewness,
-            kurtosis,
-            beta,
-            alpha,
-            information_ratio,
-            omega_ratio,
-        }
-    }
-}
-
-impl Default for PerformanceMetrics {
-    fn default() -> Self {
-        Self {
-            timeframe: Timeframe::D1,
-            timestamp: 0,
-            returns: 0.0,
-            volatility: 0.0,
-            sharpe_ratio: 0.0,
-            sortino_ratio: 0.0,
-            calmar_ratio: 0.0,
-            max_drawdown: 0.0,
-            win_rate: 0.0,
-            profit_factor: 0.0,
-            expected_value: 0.0,
-            kelly_criterion: 0.0,
-            var_95: 0.0,
-            cvar_95: 0.0,
-            skewness: 0.0,
-            kurtosis: 0.0,
-            beta: 0.0,
-            alpha: 0.0,
-            information_ratio: 0.0,
-            omega_ratio: 0.0,
-        }
-    }
-}
+// // REMOVED: impl for eliminated struct - using canonical from risk module
+//         let n = returns.len() as f64;
+//         if n == 0.0 {
+//             return Self::default();
+//         }
+//         
+//         // Basic statistics
+//         let mean_return = returns.iter().sum::<f64>() / n;
+//         let variance = returns.iter()
+//             .map(|r| (r - mean_return).powi(2))
+//             .sum::<f64>() / (n - 1.0);
+//         let volatility = variance.sqrt();
+//         
+//         // Downside deviation for Sortino
+//         let downside_returns: Vec<f64> = returns.iter()
+//             .filter(|&&r| r < 0.0)
+//             .copied()
+//             .collect();
+//         let downside_deviation = if !downside_returns.is_empty() {
+//             let down_var = downside_returns.iter()
+//                 .map(|r| r.powi(2))
+//                 .sum::<f64>() / downside_returns.len() as f64;
+//             down_var.sqrt()
+//         } else {
+//             0.0
+//         };
+//         
+//         // Risk-adjusted returns
+//         let sharpe_ratio = if volatility > 0.0 {
+//             (mean_return - risk_free_rate) / volatility
+//         } else {
+//             0.0
+//         };
+//         
+//         let sortino_ratio = if downside_deviation > 0.0 {
+//             (mean_return - risk_free_rate) / downside_deviation
+//         } else {
+//             0.0
+//         };
+//         
+//         // Maximum drawdown calculation
+//         let mut cumulative = 1.0;
+//         let mut peak = 1.0;
+//         let mut max_drawdown = 0.0;
+//         
+//         for &ret in returns {
+//             cumulative *= 1.0 + ret;
+//             peak = f64::max(peak, cumulative);
+//             let drawdown = (peak - cumulative) / peak;
+//             max_drawdown = f64::max(max_drawdown, drawdown);
+//         }
+//         
+//         let calmar_ratio = if max_drawdown > 0.0 {
+//             mean_return / max_drawdown
+//         } else {
+//             0.0
+//         };
+//         
+//         // Win rate and profit factor
+//         let wins: Vec<f64> = returns.iter().filter(|&&r| r > 0.0).copied().collect();
+//         let losses: Vec<f64> = returns.iter().filter(|&&r| r < 0.0).map(|&r| -r).collect();
+//         
+//         let win_rate = wins.len() as f64 / n;
+//         let avg_win = if !wins.is_empty() {
+//             wins.iter().sum::<f64>() / wins.len() as f64
+//         } else {
+//             0.0
+//         };
+//         let avg_loss = if !losses.is_empty() {
+//             losses.iter().sum::<f64>() / losses.len() as f64
+//         } else {
+//             0.0
+//         };
+//         
+//         let profit_factor = if !losses.is_empty() {
+//             wins.iter().sum::<f64>() / losses.iter().sum::<f64>()
+//         } else if !wins.is_empty() {
+//             f64::INFINITY
+//         } else {
+//             0.0
+//         };
+//         
+//         // Kelly Criterion (simplified)
+//         let kelly_criterion = if avg_loss > 0.0 {
+//             (win_rate * avg_win - (1.0 - win_rate) * avg_loss) / avg_win
+//         } else {
+//             0.0
+//         };
+//         
+//         // VaR and CVaR calculation
+//         let mut sorted_returns = returns.to_vec();
+//         sorted_returns.sort_by(|a, b| a.partial_cmp(b).unwrap());
+//         let var_index = ((1.0 - 0.95) * n) as usize;
+//         let var_95 = sorted_returns.get(var_index).copied().unwrap_or(0.0);
+//         
+//         let cvar_95 = if var_index > 0 {
+//             sorted_returns[..var_index].iter().sum::<f64>() / var_index as f64
+//         } else {
+//             0.0
+//         };
+//         
+//         // Higher moments
+//         let skewness = if n > 2.0 && volatility > 0.0 {
+//             let sum_cubed = returns.iter()
+//                 .map(|r| ((r - mean_return) / volatility).powi(3))
+//                 .sum::<f64>();
+//             sum_cubed * n / ((n - 1.0) * (n - 2.0))
+//         } else {
+//             0.0
+//         };
+//         
+//         let kurtosis = if n > 3.0 && volatility > 0.0 {
+//             let sum_fourth = returns.iter()
+//                 .map(|r| ((r - mean_return) / volatility).powi(4))
+//                 .sum::<f64>();
+//             sum_fourth * n * (n + 1.0) / ((n - 1.0) * (n - 2.0) * (n - 3.0)) - 
+//                 3.0 * (n - 1.0).powi(2) / ((n - 2.0) * (n - 3.0))
+//         } else {
+//             0.0
+//         };
+//         
+//         // Beta and Alpha (CAPM)
+//         let (beta, alpha) = if benchmark_returns.len() == returns.len() {
+//             let bench_mean = benchmark_returns.iter().sum::<f64>() / benchmark_returns.len() as f64;
+//             let covariance = returns.iter()
+//                 .zip(benchmark_returns.iter())
+//                 .map(|(r, b)| (r - mean_return) * (b - bench_mean))
+//                 .sum::<f64>() / (n - 1.0);
+//             
+//             let bench_variance = benchmark_returns.iter()
+//                 .map(|b| (b - bench_mean).powi(2))
+//                 .sum::<f64>() / (n - 1.0);
+//             
+//             let beta = if bench_variance > 0.0 {
+//                 covariance / bench_variance
+//             } else {
+//                 0.0
+//             };
+//             
+//             let alpha = mean_return - (risk_free_rate + beta * (bench_mean - risk_free_rate));
+//             (beta, alpha)
+//         } else {
+//             (0.0, 0.0)
+//         };
+//         
+//         // Information Ratio (vs benchmark)
+//         let tracking_error = if benchmark_returns.len() == returns.len() {
+//             let excess_returns: Vec<f64> = returns.iter()
+//                 .zip(benchmark_returns.iter())
+//                 .map(|(r, b)| r - b)
+//                 .collect();
+//             let excess_mean = excess_returns.iter().sum::<f64>() / excess_returns.len() as f64;
+//             let te_variance = excess_returns.iter()
+//                 .map(|e| (e - excess_mean).powi(2))
+//                 .sum::<f64>() / (excess_returns.len() - 1) as f64;
+//             te_variance.sqrt()
+//         } else {
+//             0.0
+//         };
+//         
+//         let information_ratio = if tracking_error > 0.0 {
+//             alpha / tracking_error
+//         } else {
+//             0.0
+//         };
+//         
+//         // Omega Ratio (gain-to-loss ratio above threshold)
+//         let threshold = risk_free_rate;
+//         let gains: f64 = returns.iter()
+//             .filter(|&&r| r > threshold)
+//             .map(|r| r - threshold)
+//             .sum();
+//         let losses: f64 = returns.iter()
+//             .filter(|&&r| r < threshold)
+//             .map(|r| threshold - r)
+//             .sum();
+//         
+//         let omega_ratio = if losses > 0.0 {
+//             gains / losses
+//         } else if gains > 0.0 {
+//             f64::INFINITY
+//         } else {
+//             0.0
+//         };
+//         
+//         Self {
+//             timeframe: Timeframe::D1, // Will be set by caller
+//             timestamp: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+//             returns: mean_return,
+//             volatility,
+//             sharpe_ratio,
+//             sortino_ratio,
+//             calmar_ratio,
+//             max_drawdown,
+//             win_rate,
+//             profit_factor,
+//             expected_value: mean_return,
+//             kelly_criterion,
+//             var_95,
+//             cvar_95,
+//             skewness,
+//             kurtosis,
+//             beta,
+//             alpha,
+//             information_ratio,
+//             omega_ratio,
+//         }
+//     }
+// }
+// 
+// // REMOVED: Default impl - using canonical from risk module
+// // impl Default for PerformanceMetrics {
+//     fn default() -> Self {
+//         Self {
+//             timeframe: Timeframe::D1,
+//             timestamp: 0,
+//             returns: 0.0,
+//             volatility: 0.0,
+//             sharpe_ratio: 0.0,
+//             sortino_ratio: 0.0,
+//             calmar_ratio: 0.0,
+//             max_drawdown: 0.0,
+//             win_rate: 0.0,
+//             profit_factor: 0.0,
+//             expected_value: 0.0,
+//             kelly_criterion: 0.0,
+//             var_95: 0.0,
+//             cvar_95: 0.0,
+//             skewness: 0.0,
+//             kurtosis: 0.0,
+//             beta: 0.0,
+//             alpha: 0.0,
+//             information_ratio: 0.0,
+//             omega_ratio: 0.0,
+//         }
+//     }
+// }
 
 // ============================================================================
 // CHART DATA AGGREGATOR - Multi-timeframe candle builder

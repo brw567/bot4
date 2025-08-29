@@ -410,8 +410,7 @@ pub struct MarketRegimeMetrics {
 
 /// Performance metrics summary
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
-// REMOVED: Duplicate
-// pub struct PerformanceMetrics {
+pub struct PerformanceMetrics {
     pub avg_return: Option<Decimal>,
     pub avg_sharpe: Option<Decimal>,
     pub max_drawdown: Option<Decimal>,

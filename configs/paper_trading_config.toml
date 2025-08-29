@@ -1,0 +1,135 @@
+# Paper Trading Configuration
+# Team: Full 8-Agent Collaboration
+# Research Applied: Backtesting best practices, simulation patterns
+# Target: 60-90 day validation with live data
+
+[paper_trading]
+enabled = true
+mode = "live_data_simulated_execution"
+start_capital = 100000.0  # Simulated capital in USD
+data_source = "live"      # Use real-time market data
+execution = "simulated"    # Simulate order execution
+
+# Performance tracking
+track_slippage = true
+track_fees = true
+track_market_impact = true
+log_all_decisions = true
+
+[exchanges.binance]
+enabled = true
+api_key = "PAPER_TRADING_KEY"
+api_secret = "PAPER_TRADING_SECRET"
+testnet = true
+websocket_url = "wss://testnet.binance.vision/ws"
+rest_url = "https://testnet.binance.vision/api"
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "LINKUSDT"]
+
+[exchanges.coinbase]
+enabled = true
+api_key = "PAPER_TRADING_KEY"
+api_secret = "PAPER_TRADING_SECRET"
+sandbox = true
+websocket_url = "wss://ws-feed-public.sandbox.exchange.coinbase.com"
+rest_url = "https://api-public.sandbox.exchange.coinbase.com"
+symbols = ["BTC-USD", "ETH-USD", "SOL-USD", "AVAX-USD", "LINK-USD"]
+
+[exchanges.kraken]
+enabled = true
+api_key = "PAPER_TRADING_KEY"
+api_secret = "PAPER_TRADING_SECRET"
+beta = true
+websocket_url = "wss://beta-ws.kraken.com"
+rest_url = "https://api.kraken.com"
+symbols = ["XXBTZUSD", "XETHZUSD", "SOLUSD", "AVAXUSD", "LINKUSD"]
+
+[exchanges.okx]
+enabled = true
+api_key = "PAPER_TRADING_KEY"
+api_secret = "PAPER_TRADING_SECRET"
+demo = true
+websocket_url = "wss://wspap.okx.com:8443/ws/v5/public"
+rest_url = "https://www.okx.com/api/v5"
+symbols = ["BTC-USDT", "ETH-USDT", "SOL-USDT", "AVAX-USDT", "LINK-USDT"]
+
+[exchanges.bybit]
+enabled = true
+api_key = "PAPER_TRADING_KEY"
+api_secret = "PAPER_TRADING_SECRET"
+testnet = true
+websocket_url = "wss://stream-testnet.bybit.com/v5/public/spot"
+rest_url = "https://api-testnet.bybit.com"
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "LINKUSDT"]
+
+# Risk limits for paper trading
+[risk_limits]
+max_position_size_pct = 5.0    # Max 5% per position
+max_drawdown_pct = 10.0         # Stop if drawdown exceeds 10%
+max_daily_loss_pct = 3.0        # Max 3% daily loss
+max_correlation = 0.6           # Max correlation between positions
+kelly_fraction_cap = 0.15      # Conservative Kelly (15% vs 25% prod)
+
+# Strategy parameters for testing
+[strategies]
+enabled = ["market_making", "stat_arb", "momentum", "mean_reversion"]
+allocation_mode = "equal_weight"  # Start with equal allocation
+
+[strategies.market_making]
+enabled = true
+spread_bps = 10.0
+inventory_limit = 50000.0
+skew_factor = 0.5
+
+[strategies.stat_arb]
+enabled = true
+entry_zscore = 2.0
+exit_zscore = 0.5
+lookback_periods = 100
+
+[strategies.momentum]
+enabled = true
+fast_period = 20
+slow_period = 50
+atr_multiplier = 2.0
+
+[strategies.mean_reversion]
+enabled = true
+bollinger_periods = 20
+bollinger_std = 2.0
+rsi_periods = 14
+
+# ML models for paper trading
+[ml_models]
+use_pretrained = false  # Train fresh for paper trading
+online_learning = true  # Adapt during paper trading
+ensemble_size = 5
+retrain_frequency_hours = 24
+
+# Performance metrics to track
+[metrics]
+track_sharpe = true
+track_sortino = true
+track_calmar = true
+track_max_drawdown = true
+track_win_rate = true
+track_profit_factor = true
+track_kelly_criterion = true
+track_var_95 = true
+track_cvar_95 = true
+
+# Reporting
+[reporting]
+daily_report = true
+weekly_summary = true
+email_alerts = false
+slack_webhook = ""
+report_path = "/home/hamster/bot4/paper_trading_reports"
+
+# Validation criteria for production
+[validation]
+min_days = 60                   # Minimum 60 days paper trading
+min_trades = 1000               # At least 1000 trades
+min_sharpe = 2.0                # Sharpe > 2.0
+max_drawdown = 0.15             # Max 15% drawdown
+min_win_rate = 0.60             # 60% win rate
+min_profit_factor = 1.5         # Profit factor > 1.5

@@ -171,7 +171,7 @@ impl BlackScholes {
 /// Complete set of option Greeks
 #[derive(Debug, Clone)]
 // ELIMINATED: Greeks - Enhanced with Complete Greeks with Vanna, Volga, Charm
-// pub struct Greeks {
+pub struct Greeks {
     pub delta: f64,    // Price sensitivity
     pub gamma: f64,    // Delta sensitivity
     pub vega: f64,     // Volatility sensitivity
@@ -293,7 +293,7 @@ impl LocalVolatilityModel {
 
 /// Volatility Surface representation
 // ELIMINATED: VolatilitySurface - Enhanced with SABR model, SVI parameterization
-// pub struct VolatilitySurface {
+pub struct VolatilitySurface {
     /// Strike grid
     strikes: Vec<f64>,
     /// Maturity grid

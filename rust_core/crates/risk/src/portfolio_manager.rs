@@ -60,7 +60,7 @@ pub struct PortfolioManager {
 /// Quinn: "Correlation is KEY to avoiding concentrated risk!"
 #[derive(Debug, Clone)]
 // ELIMINATED: use domain_types::CorrelationMatrix
-// pub struct CorrelationMatrix {
+pub struct CorrelationMatrix {
     symbols: Vec<String>,
     matrix: Vec<Vec<f64>>,
     last_update: u64,

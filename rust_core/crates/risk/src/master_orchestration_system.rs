@@ -827,7 +827,7 @@ impl Clone for MasterOrchestrationSystem {
 #[derive(Debug, Clone)]
 /// TODO: Add docs
 // ELIMINATED: Duplicate IntegratedSignal - use canonical_types::TradingSignal
-// pub struct IntegratedSignal {
+pub struct IntegratedSignal {
     pub action: SignalAction,
     pub size: Quantity,
     pub confidence: Percentage,
