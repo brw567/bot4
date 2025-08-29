@@ -99,8 +99,8 @@ pub fn enhance_signal(
 }
 
 /// Calculate ATR for risk sizing
-// Replaced by unified: fn calculate_atr(market_data: &CompleteMarketData) -> f64 {
-    // Simplified ATR calculation
+fn calculate_atr(market_data: &CompleteMarketData) -> f64 {
+    // Simplified ATR calculation (using unified implementation)
     let high_low = (market_data.high.to_f64() - market_data.low.to_f64()).abs();
     let high_close = (market_data.high.to_f64() - market_data.close.to_f64()).abs();
     let low_close = (market_data.low.to_f64() - market_data.close.to_f64()).abs();

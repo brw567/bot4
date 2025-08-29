@@ -12,6 +12,9 @@ pub mod partial_fills_tests;
 pub mod optimal_execution;
 pub mod chaos_tests;
 
+#[cfg(test)]
+mod partial_fills_comprehensive_tests;
+
 pub use order::{Order, OrderId, OrderType, OrderSide, TimeInForce};
 pub use state_machine::{OrderState, OrderStateMachine, StateTransition};
 pub use manager::{OrderManager, OrderManagerConfig};

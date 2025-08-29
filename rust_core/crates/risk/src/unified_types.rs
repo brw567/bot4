@@ -1,6 +1,6 @@
 use domain_types::market_data::MarketData;
-//! Module uses canonical Position type from domain_types
-//! Cameron: "Single source of truth for Position struct"
+/// Module uses canonical Position type from domain_types
+/// Cameron: "Single source of truth for Position struct"
 
 pub use domain_types::position_canonical::{
     Position, PositionId, PositionSide, PositionStatus,

@@ -571,8 +571,7 @@ impl MonteCarloEngine {
     }
     
     /// Calculate Sharpe ratio
-    fn calculate_sharpe_ratio(&self, returns: &[f64]) -> f64 {
-        // Using unified calculation from mathematical_ops
+    use mathematical_ops::risk_metrics::calculate_sharpe; // fn calculate_sharpe_ratio(&self, returns: &[f64]) -> f64 {
         if returns.is_empty() {
             return 0.0;
         }

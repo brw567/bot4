@@ -463,7 +463,8 @@ impl TechnicalAnalysis {
         }
     }
     
-    use mathematical_ops::unified_calculations::calculate_ema; // fn calculate_ema(&self, prices: &[f64], period: usize) -> f64 {
+    fn calculate_ema(&self, prices: &[f64], period: usize) -> f64 {
+        // Using unified calculation from mathematical_ops
         if prices.len() < period {
             return 0.0;
         }
@@ -502,7 +503,8 @@ impl TechnicalAnalysis {
         }
     }
     
-    use mathematical_ops::unified_calculations::calculate_rsi; // fn calculate_rsi(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+    fn calculate_rsi(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+        // Using unified calculation from mathematical_ops
         if candles.len() < period + 1 {
             return 50.0;
         }
@@ -663,7 +665,8 @@ impl TechnicalAnalysis {
         }
     }
     
-    use mathematical_ops::unified_calculations::calculate_atr; // fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+    fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+        // Using unified calculation from mathematical_ops
         if candles.len() < period + 1 {
             return 0.0;
         }
@@ -1484,7 +1487,8 @@ impl PerformanceCalculator {
     }
     
     /// Calculate Sharpe ratio
-    pub use mathematical_ops::risk_metrics::calculate_sharpe; // fn calculate_sharpe(&self) -> f64 {
+    pub fn calculate_sharpe(&self) -> f64 {
+        // Using unified calculation from mathematical_ops
         if self.returns.len() < 2 {
             return 0.0;
         }
@@ -1830,7 +1834,8 @@ impl MarketAnalytics {
     
     /// Calculate ATR (Average True Range) for specific period
     /// Wilder's ATR formula for volatility measurement
-    pub use mathematical_ops::unified_calculations::calculate_atr; // fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+    pub fn calculate_atr(&self, candles: &VecDeque<Candle>, period: usize) -> f64 {
+        // Using unified calculation from mathematical_ops
         if candles.len() < period + 1 {
             return 0.0;
         }

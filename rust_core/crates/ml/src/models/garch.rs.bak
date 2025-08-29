@@ -420,8 +420,7 @@ impl GARCHModel {
     
     /// Dynamic VaR calculation using GARCH volatility
     /// Quinn: "Essential for risk management!"
-    pub fn calculate_var(&self, confidence: f32, position: f32) -> f32 {
-        // Using unified calculation from mathematical_ops
+    pub use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, confidence: f32, position: f32) -> f32 {
         let vol_forecast = self.forecast(1)[0];
         
         // Use Student's t distribution for fat tails

@@ -359,8 +359,7 @@ impl MarketAnalyticsExt for MarketAnalytics {
     /// Calculate Relative Strength Index (RSI)
     /// RSI = 100 - (100 / (1 + RS))
     /// RS = Average Gain / Average Loss
-    fn calculate_rsi(&mut self, period: usize) -> f64 {
-        // Using unified calculation from mathematical_ops
+    use mathematical_ops::unified_calculations::calculate_rsi; // fn calculate_rsi(&mut self, period: usize) -> f64 {
         if self.price_history.len() < period + 1 {
             return 50.0; // Neutral when insufficient data
         }
@@ -748,8 +747,7 @@ impl SHAPCalculator {
 }
 
 impl MarketAnalytics {
-    fn calculate_ema(&self, period: usize) -> f64 {
-        // Using unified calculation from mathematical_ops
+    use mathematical_ops::unified_calculations::calculate_ema; // fn calculate_ema(&self, period: usize) -> f64 {
         if self.price_history.len() < period {
             return *self.price_history.last().unwrap_or(&0.0);
         }
@@ -764,8 +762,7 @@ impl MarketAnalytics {
         ema
     }
     
-    fn calculate_ema_of_series(&self, series: &VecDeque<f64>, period: usize) -> f64 {
-        // Using unified calculation from mathematical_ops
+    use mathematical_ops::unified_calculations::calculate_ema; // fn calculate_ema_of_series(&self, series: &VecDeque<f64>, period: usize) -> f64 {
         if series.len() < period {
             return *series.back().unwrap_or(&0.0);
         }

@@ -451,8 +451,7 @@ struct CorrelationBreakdownDetector {
 
 impl RiskLayerCircuitBreakers {
     /// Calculate VaR with full protection
-    pub async fn calculate_var(&self, portfolio: &Portfolio) -> Result<f64, RiskCalculationError> {
-        // Using unified calculation from mathematical_ops
+    pub async use mathematical_ops::risk_metrics::calculate_var; // fn calculate_var(&self, portfolio: &Portfolio) -> Result<f64, RiskCalculationError> {
         // Check portfolio heat first
         let heat = self.calculate_portfolio_heat(portfolio);
         if heat > self.heat_breaker.max_heat {

@@ -260,8 +260,7 @@ impl GARCH {
     
     /// AVX-512 optimized variance calculation (Jordan's contribution)
     #[target_feature(enable = "avx512f")]
-    unsafe fn calculate_variance_avx512(&self, residuals: &[f64], h: &mut [f64]) {
-        // Using unified calculation from mathematical_ops
+    unsafe use mathematical_ops::risk_metrics::calculate_var; // fn calculate_variance_avx512(&self, residuals: &[f64], h: &mut [f64]) {
         let omega_vec = _mm512_set1_pd(self.omega);
         let alpha_vec = _mm512_set1_pd(self.alpha);
         let beta_vec = _mm512_set1_pd(self.beta);

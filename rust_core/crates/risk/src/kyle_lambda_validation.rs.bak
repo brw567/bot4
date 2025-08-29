@@ -354,8 +354,7 @@ impl KyleLambdaValidator {
         )
     }
     
-    fn calculate_correlation(&self, x: &[f64], y: &[f64]) -> f64 {
-        // Using unified calculation from mathematical_ops
+    use mathematical_ops::unified_calculations::calculate_correlation; // fn calculate_correlation(&self, x: &[f64], y: &[f64]) -> f64 {
         let n = x.len() as f64;
         let sum_x: f64 = x.iter().sum();
         let sum_y: f64 = y.iter().sum();

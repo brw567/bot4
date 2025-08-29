@@ -1,6 +1,6 @@
 use domain_types::order::OrderError;
-//! Module uses canonical Order type from domain_types
-//! Avery: "Single source of truth for Order struct"
+/// Module uses canonical Order type from domain_types
+/// Avery: "Single source of truth for Order struct"
 
 pub use domain_types::order::{
     Order, OrderId, OrderSide, OrderType, OrderStatus, TimeInForce,
@@ -757,6 +757,7 @@ impl OptimalExecutionEngine {
 // ELIMINATED: Duplicate ExecutionMetrics - use execution::metrics::ExecutionMetrics
 
 /// Order for execution
+pub struct ExecutionOrder {
     pub id: uuid::Uuid,
     pub symbol: String,
     pub side: Side,

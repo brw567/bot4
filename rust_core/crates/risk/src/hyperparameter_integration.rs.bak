@@ -572,8 +572,7 @@ pub struct OptimizationStats {
 }
 
 /// Calculate Pearson correlation coefficient
-fn calculate_correlation(x: &[f64], y: &[f64]) -> f64 {
-        // Using unified calculation from mathematical_ops
+use mathematical_ops::unified_calculations::calculate_correlation; // fn calculate_correlation(x: &[f64], y: &[f64]) -> f64 {
     if x.len() != y.len() || x.is_empty() {
         return 0.0;
     }

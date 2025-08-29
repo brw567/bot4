@@ -62,8 +62,7 @@ impl MacroEconomicCorrelator {
     }
     
     /// Calculate correlation between crypto and macro indicator
-    pub fn calculate_correlation(&self, crypto_data: &[f64], macro_data: &[f64]) -> f64 {
-        // Using unified calculation from mathematical_ops
+    pub use mathematical_ops::unified_calculations::calculate_correlation; // fn calculate_correlation(&self, crypto_data: &[f64], macro_data: &[f64]) -> f64 {
         if crypto_data.len() != macro_data.len() || crypto_data.is_empty() {
             return 0.0;
         }

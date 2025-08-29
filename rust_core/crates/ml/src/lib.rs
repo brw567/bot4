@@ -101,3 +101,7 @@ pub use garch::{
     ljung_box_test,
     arch_test,
 };
+
+// Test modules
+#[cfg(test)]
+mod gnn_tests;
