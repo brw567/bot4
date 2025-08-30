@@ -1,50 +1,73 @@
+---
+# ULTRATHINK RBAC Configuration
+# Team: Grace (Compliance) + Dave (Infrastructure)
+# Security: Role-based access control
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: bot4-trading
+  name: bot4-service-account
   namespace: bot4-trading
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: bot4-trading-role
+  name: bot4-role
   namespace: bot4-trading
 rules:
-# Read ConfigMaps
+# ConfigMaps - read only
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["get", "list", "watch"]
-# Read Secrets
+# Secrets - read only
 - apiGroups: [""]
   resources: ["secrets"]
-  verbs: ["get", "list"]
-# Read/Write to PVCs
-- apiGroups: [""]
-  resources: ["persistentvolumeclaims"]
-  verbs: ["get", "list"]
-# Read pods for self-discovery
+  verbs: ["get"]
+# Pods - read and update for leader election
 - apiGroups: [""]
   resources: ["pods"]
-  verbs: ["get", "list"]
-# Update pod status
+  verbs: ["get", "list", "watch", "update", "patch"]
+# Events - create for audit
 - apiGroups: [""]
-  resources: ["pods/status"]
-  verbs: ["update", "patch"]
-# Read services for discovery
-- apiGroups: [""]
-  resources: ["services", "endpoints"]
-  verbs: ["get", "list", "watch"]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+# Leases for leader election
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: bot4-trading-rolebinding
+  name: bot4-rolebinding
   namespace: bot4-trading
 subjects:
 - kind: ServiceAccount
-  name: bot4-trading
+  name: bot4-service-account
   namespace: bot4-trading
 roleRef:
   kind: Role
-  name: bot4-trading-role
+  name: bot4-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# ClusterRole for monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: bot4-metrics-reader
+rules:
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: bot4-metrics-reader-binding
+subjects:
+- kind: ServiceAccount
+  name: bot4-service-account
+  namespace: bot4-trading
+roleRef:
+  kind: ClusterRole
+  name: bot4-metrics-reader
   apiGroup: rbac.authorization.k8s.io

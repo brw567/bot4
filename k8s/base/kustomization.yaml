@@ -1,29 +1,44 @@
+# Base Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 namespace: bot4-trading
 
 resources:
-- namespace.yaml
-- deployment.yaml
-- service.yaml
-- configmap.yaml
-- secrets.yaml
-- pvc.yaml
-- hpa.yaml
-- networkpolicy.yaml
-- rbac.yaml
-- priorityclass.yaml
+  - namespace.yaml
+  - rbac.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - services.yaml
 
 commonLabels:
   app: bot4
-  version: v0.3.0
-  team: ultrathink
+  managed-by: kustomize
+
+configMapGenerator:
+  - name: bot4-scripts
+    files:
+      - scripts/startup.sh
+      - scripts/health-check.sh
+    options:
+      disableNameSuffixHash: true
+
+secretGenerator:
+  - name: bot4-secrets
+    literals:
+      - database-url=postgresql://bot4:changeme@postgres:5432/trading
+      - redis-url=redis://redis:6379
+      - api-keys=changeme
+    type: Opaque
+    options:
+      disableNameSuffixHash: true
 
 images:
-- name: bot4/trading-engine
-  newTag: v0.3.0
-- name: bot4/config-validator
-  newTag: v0.3.0
-- name: bot4/monitoring-sidecar
-  newTag: v0.3.0
+  - name: bot4/trading-engine
+    newTag: latest
+  - name: bot4/config-validator
+    newTag: latest
+
+replicas:
+  - name: bot4-trading-engine
+    count: 3

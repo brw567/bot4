@@ -1,123 +1,69 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: trading-config
-  namespace: bot4-trading
-data:
-  config.toml: |
-    # Bot4 Trading Configuration
-    # ULTRATHINK Production Settings
-    
-    [system]
-    environment = "production"
-    log_level = "info"
-    decision_latency_target_us = 100
-    tick_processing_target_us = 10
-    
-    [exchanges.binance]
-    enabled = true
-    websocket_url = "wss://stream.binance.com:9443/ws"
-    rest_url = "https://api.binance.com"
-    symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "LINKUSDT"]
-    rate_limit = 1200
-    
-    [exchanges.coinbase]
-    enabled = true
-    websocket_url = "wss://ws-feed.exchange.coinbase.com"
-    rest_url = "https://api.exchange.coinbase.com"
-    symbols = ["BTC-USD", "ETH-USD", "SOL-USD", "AVAX-USD", "LINK-USD"]
-    rate_limit = 10
-    
-    [exchanges.kraken]
-    enabled = true
-    websocket_url = "wss://ws.kraken.com"
-    rest_url = "https://api.kraken.com"
-    symbols = ["XXBTZUSD", "XETHZUSD", "SOLUSD", "AVAXUSD", "LINKUSD"]
-    rate_limit = 15
-    
-    [exchanges.okx]
-    enabled = true
-    websocket_url = "wss://ws.okx.com:8443/ws/v5/public"
-    rest_url = "https://www.okx.com"
-    symbols = ["BTC-USDT", "ETH-USDT", "SOL-USDT", "AVAX-USDT", "LINK-USDT"]
-    rate_limit = 20
-    
-    [exchanges.bybit]
-    enabled = true
-    websocket_url = "wss://stream.bybit.com/v5/public/spot"
-    rest_url = "https://api.bybit.com"
-    symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "AVAXUSDT", "LINKUSDT"]
-    rate_limit = 50
-    
-    [risk]
-    max_position_size_pct = 5.0
-    max_drawdown_pct = 20.0
-    max_daily_loss_pct = 5.0
-    max_correlation = 0.7
-    kelly_fraction_cap = 0.25
-    var_95_limit = 0.02
-    cvar_95_limit = 0.03
-    
-    [strategies]
-    enabled = ["market_making", "stat_arb", "momentum", "mean_reversion", "game_theory"]
-    allocation_mode = "kelly_weighted"
-    rebalance_frequency_minutes = 60
-    
-    [ml]
-    model_path = "/models"
-    ensemble_size = 5
-    retrain_frequency_hours = 24
-    online_learning = true
-    thompson_sampling = true
-    
-    [performance]
-    use_simd = true
-    avx512_enabled = true
-    mimalloc_enabled = true
-    zero_copy = true
-    cpu_affinity = [0, 1, 2, 3]
-    numa_node = 0
-    
-    [monitoring]
-    prometheus_port = 9090
-    health_check_port = 8080
-    metrics_interval_seconds = 10
-    
-    [database]
-    timescaledb_host = "timescaledb.bot4-trading.svc.cluster.local"
-    timescaledb_port = 5432
-    timescaledb_database = "bot4_trading"
-    connection_pool_size = 20
-    
-    [redis]
-    host = "redis.bot4-trading.svc.cluster.local"
-    port = 6379
-    db = 0
-    pool_size = 10
 ---
+# ULTRATHINK ConfigMap
+# Team: Full 8-Agent Collaboration
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: trading-scripts
+  name: bot4-config
   namespace: bot4-trading
 data:
-  startup.sh: |
-    #!/bin/bash
-    set -e
-    
-    echo "Starting Bot4 Trading Engine..."
-    echo "Environment: $DEPLOYMENT_ENV"
-    echo "Pod: $POD_NAME on Node: $NODE_NAME"
-    
-    # Set CPU affinity
-    taskset -c 0-3 \
-    numactl --cpunodebind=0 --membind=0 \
-    /app/bot4-trading-engine \
-      --config /app/config/config.toml \
-      --log-level info \
-      --prometheus-port 9090 \
-      --health-port 8080
-  
-  health_check.sh: |
-    #!/bin/bash
-    curl -f http://localhost:8080/health/liveness || exit 1
+  trading.yaml: |
+    # Trading configuration
+    system:
+      environment: production
+      version: 1.0.0
+      
+    performance:
+      decision_latency_us: 100
+      tick_processing_us: 10
+      order_submission_us: 100
+      
+    exchanges:
+      - name: binance
+        enabled: true
+        websocket_url: wss://stream.binance.com:9443/ws
+        rest_url: https://api.binance.com/api/v3
+        rate_limit: 1200
+        
+      - name: coinbase
+        enabled: true
+        websocket_url: wss://ws-feed.exchange.coinbase.com
+        rest_url: https://api.exchange.coinbase.com
+        rate_limit: 10
+        
+      - name: kraken
+        enabled: true
+        websocket_url: wss://ws.kraken.com
+        rest_url: https://api.kraken.com
+        rate_limit: 15
+        
+      - name: okx
+        enabled: true
+        websocket_url: wss://ws.okx.com:8443/ws/v5/public
+        rest_url: https://www.okx.com/api/v5
+        rate_limit: 20
+        
+      - name: bybit
+        enabled: true
+        websocket_url: wss://stream.bybit.com/v5/public/spot
+        rest_url: https://api.bybit.com
+        rate_limit: 50
+        
+    risk_management:
+      max_position_size: 10000
+      max_leverage: 3.0
+      daily_loss_limit: 5000
+      max_drawdown: 0.15
+      kelly_fraction: 0.25
+      correlation_limit: 0.7
+      
+    ml_models:
+      inference_timeout_ms: 1000
+      ensemble_size: 5
+      update_interval_hours: 24
+      
+    circuit_breakers:
+      max_consecutive_losses: 5
+      toxicity_threshold: 0.8
+      latency_threshold_ms: 500
+      error_rate_threshold: 0.05

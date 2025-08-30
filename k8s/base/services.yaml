@@ -1,0 +1,71 @@
+---
+# ULTRATHINK Service Configuration
+# Team: Dave (Infrastructure) + Eve (Exchange)
+apiVersion: v1
+kind: Service
+metadata:
+  name: bot4-trading-service
+  namespace: bot4-trading
+  labels:
+    app: bot4
+    component: trading-engine
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: ClusterIP
+  selector:
+    app: bot4
+    component: trading-engine
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+    protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+---
+# Headless service for StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: bot4-trading-headless
+  namespace: bot4-trading
+spec:
+  clusterIP: None
+  selector:
+    app: bot4
+    component: trading-engine
+  ports:
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+---
+# External service for monitoring
+apiVersion: v1
+kind: Service
+metadata:
+  name: bot4-monitoring
+  namespace: bot4-trading
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+spec:
+  type: NodePort
+  selector:
+    app: bot4
+  ports:
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    nodePort: 30090

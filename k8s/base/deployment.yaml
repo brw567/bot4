@@ -1,3 +1,7 @@
+---
+# ULTRATHINK Trading Engine Deployment
+# Team: Full 8-Agent Collaboration
+# Research: K8s HFT patterns, PodDisruptionBudget
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,7 +10,7 @@ metadata:
   labels:
     app: bot4
     component: trading-engine
-    version: v0.3.0
+    version: v1.0.0
 spec:
   replicas: 3
   strategy:
@@ -23,61 +27,60 @@ spec:
       labels:
         app: bot4
         component: trading-engine
-        version: v0.3.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9090"
         prometheus.io/path: "/metrics"
     spec:
-      # High-performance optimizations
-      hostNetwork: false
-      dnsPolicy: ClusterFirst
+      serviceAccountName: bot4-service-account
       
-      # Anti-affinity for HA
+      # Node affinity for dedicated trading nodes
       affinity:
-        podAntiAffinity:
+        nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: workload-type
                 operator: In
                 values:
-                - bot4
-            topologyKey: kubernetes.io/hostname
-        
-        # Pin to high-performance nodes
-        nodeAffinity:
+                - trading
+                - high-performance
+        podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
-            preference:
-              matchExpressions:
-              - key: node-type
-                operator: In
-                values:
-                - high-cpu
-                - trading
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - bot4
+              topologyKey: kubernetes.io/hostname
+      
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       
       # Init container for config validation
       initContainers:
       - name: config-validator
-        image: bot4/config-validator:v0.3.0
+        image: bot4/config-validator:latest
         command: ["/bin/sh", "-c"]
-        args:
-        - |
-          echo "Validating configuration..."
-          /app/validate_config --config /config/config.toml
-          echo "Configuration valid!"
+        args: ["validate-config /config/trading.yaml"]
         volumeMounts:
         - name: config
           mountPath: /config
-          readOnly: true
       
       containers:
       - name: trading-engine
-        image: bot4/trading-engine:v0.3.0
-        imagePullPolicy: Always
+        image: bot4/trading-engine:latest
+        imagePullPolicy: IfNotPresent
         
-        # Resource limits for HFT
+        # Resource requirements for HFT
         resources:
           requests:
             memory: "8Gi"
@@ -91,13 +94,9 @@ spec:
         # Environment variables
         env:
         - name: RUST_LOG
-          value: "info,bot4=debug"
-        - name: RUST_BACKTRACE
-          value: "1"
-        - name: DEPLOYMENT_ENV
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
+          value: "info"
+        - name: ENVIRONMENT
+          value: "production"
         - name: POD_NAME
           valueFrom:
             fieldRef:
@@ -106,22 +105,21 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        - name: NODE_NAME
+        - name: DATABASE_URL
           valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        
-        # Secrets for exchange APIs
-        envFrom:
-        - secretRef:
-            name: exchange-credentials
-        - configMapRef:
-            name: trading-config
+            secretKeyRef:
+              name: bot4-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: bot4-secrets
+              key: redis-url
         
         # Health checks
         livenessProbe:
           httpGet:
-            path: /health/liveness
+            path: /health/live
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -130,14 +128,13 @@ spec:
         
         readinessProbe:
           httpGet:
-            path: /health/readiness
+            path: /health/ready
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3
-          failureThreshold: 2
+          failureThreshold: 3
         
-        # Startup probe for slow initialization
         startupProbe:
           httpGet:
             path: /health/startup
@@ -146,31 +143,6 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 30
-        
-        # Volume mounts
-        volumeMounts:
-        - name: config
-          mountPath: /app/config
-          readOnly: true
-        - name: data
-          mountPath: /app/data
-        - name: logs
-          mountPath: /app/logs
-        - name: tmp
-          mountPath: /tmp
-        
-        # Security context
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-            add:
-            - NET_BIND_SERVICE
         
         # Ports
         ports:
@@ -183,54 +155,102 @@ spec:
         - name: grpc
           containerPort: 50051
           protocol: TCP
-      
-      # Sidecar for monitoring
-      - name: monitoring-sidecar
-        image: bot4/monitoring-sidecar:v0.3.0
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "200m"
         
+        # Volume mounts
         volumeMounts:
-        - name: logs
-          mountPath: /logs
+        - name: config
+          mountPath: /app/config
           readOnly: true
-        
-        env:
-        - name: PROMETHEUS_ENDPOINT
-          value: "http://prometheus:9090"
-        - name: LOG_LEVEL
-          value: "info"
+        - name: tls-certs
+          mountPath: /app/certs
+          readOnly: true
+        - name: cache
+          mountPath: /app/cache
+        - name: shared-memory
+          mountPath: /dev/shm
       
-      # Priority class for critical workload
-      priorityClassName: high-priority
-      
-      # Service account
-      serviceAccountName: bot4-trading
-      
-      # Volumes
       volumes:
       - name: config
         configMap:
-          name: trading-config
-          defaultMode: 0444
-      - name: data
-        persistentVolumeClaim:
-          claimName: trading-data
-      - name: logs
+          name: bot4-config
+      - name: tls-certs
+        secret:
+          secretName: bot4-tls
+      - name: cache
         emptyDir:
           sizeLimit: 5Gi
-      - name: tmp
+      - name: shared-memory
         emptyDir:
-          sizeLimit: 1Gi
+          medium: Memory
+          sizeLimit: 2Gi
       
-      # Termination grace period for clean shutdown
-      terminationGracePeriodSeconds: 60
-      
-      # Image pull secrets
-      imagePullSecrets:
-      - name: docker-registry-secret
+      # Tolerations for dedicated nodes
+      tolerations:
+      - key: "workload-type"
+        operator: "Equal"
+        value: "trading"
+        effect: "NoSchedule"
+---
+# PodDisruptionBudget for high availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: bot4-trading-engine-pdb
+  namespace: bot4-trading
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: bot4
+      component: trading-engine
+---
+# HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bot4-trading-engine-hpa
+  namespace: bot4-trading
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bot4-trading-engine
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Pods
+    pods:
+      metric:
+        name: trading_latency_ms
+      target:
+        type: AverageValue
+        averageValue: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+      - type: Pods
+        value: 4
+        periodSeconds: 30
+      selectPolicy: Max
