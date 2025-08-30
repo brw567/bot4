@@ -1,0 +1,133 @@
+# ULTRATHINK Paper Trading Configuration
+# Team: Full 8-Agent Collaboration
+# Duration: 60-90 days validation period
+
+paper_trading:
+  # Initial capital allocation
+  initial_balances:
+    USDT: 100000.0
+    BTC: 0.0
+    ETH: 0.0
+    SOL: 0.0
+    
+  # Risk limits (identical to production)
+  risk_limits:
+    max_position_size: 10000.0
+    max_leverage: 3.0
+    daily_loss_limit: 5000.0
+    max_drawdown: 0.15
+    correlation_limit: 0.7
+    kelly_fraction: 0.25
+    
+  # Exchange configurations
+  exchanges:
+    - name: binance
+      websocket_url: wss://testnet.binance.vision/ws
+      rest_api_url: https://testnet.binance.vision/api/v3
+      testnet: true
+      latency_ms: 50
+      fee_rate: 0.001
+      
+    - name: coinbase
+      websocket_url: wss://ws-feed-public.sandbox.exchange.coinbase.com
+      rest_api_url: https://api-public.sandbox.exchange.coinbase.com
+      testnet: true
+      latency_ms: 80
+      fee_rate: 0.0015
+      
+    - name: kraken
+      websocket_url: wss://ws.kraken.com
+      rest_api_url: https://api.kraken.com
+      testnet: false  # Kraken doesn't have testnet, use paper mode
+      latency_ms: 100
+      fee_rate: 0.0016
+      
+    - name: okx
+      websocket_url: wss://ws.okx.com:8443/ws/v5/public
+      rest_api_url: https://www.okx.com/api/v5
+      testnet: false  # Use demo trading
+      latency_ms: 70
+      fee_rate: 0.001
+      
+    - name: bybit
+      websocket_url: wss://stream-testnet.bybit.com/v5/public/spot
+      rest_api_url: https://api-testnet.bybit.com
+      testnet: true
+      latency_ms: 60
+      fee_rate: 0.001
+      
+  # Performance tracking
+  metrics:
+    interval_secs: 60
+    reporting_interval: 3600  # Hourly reports
+    
+  # Data persistence
+  persistence:
+    postgres_url: postgresql://bot3user:bot3pass@localhost/paper_trading
+    redis_url: redis://localhost:6379/1
+    save_interval_secs: 300  # 5 minutes
+    
+  # Simulation parameters
+  simulation:
+    # Slippage model based on order size
+    slippage:
+      model: linear
+      base: 0.0001  # 0.01% base slippage
+      coefficient: 0.00001  # Size-dependent component
+      
+    # Market impact (Kyle's lambda)
+    market_impact:
+      model: kyle
+      lambda: 0.0001
+      temporary_decay: 0.5
+      
+    # Order simulation
+    reject_rate: 0.01  # 1% order rejection
+    partial_fill_rate: 0.1  # 10% partial fills
+    latency_jitter_ms: 10  # Random latency variation
+    
+  # ML model validation
+  ml_validation:
+    enable_a_b_testing: true
+    control_group_size: 0.3  # 30% control
+    model_versions:
+      - production
+      - experimental_gnn
+      - experimental_rl
+      
+  # Monitoring and alerts
+  monitoring:
+    prometheus_port: 9091
+    grafana_dashboard: true
+    alert_thresholds:
+      max_drawdown: 0.10
+      daily_loss: 3000.0
+      win_rate_min: 0.45
+      sharpe_min: 1.0
+      
+  # Reporting
+  reporting:
+    daily_report: true
+    weekly_summary: true
+    email_recipients:
+      - paper-trading@bot4.ai
+    slack_webhook: ${SLACK_WEBHOOK_URL}
+    
+  # Paper trading specific features
+  features:
+    # Liquidation simulation for futures
+    simulate_liquidations: true
+    liquidation_price_buffer: 0.02
+    
+    # Funding rate simulation
+    simulate_funding: true
+    funding_interval_hours: 8
+    
+    # Network issues simulation
+    simulate_network_issues: true
+    network_failure_rate: 0.001  # 0.1% of requests
+    
+    # Black swan events
+    simulate_black_swans: true
+    black_swan_probability: 0.0001  # Daily probability
+    black_swan_magnitude: 0.20  # 20% price move

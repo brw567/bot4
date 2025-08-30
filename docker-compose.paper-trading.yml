@@ -1,0 +1,206 @@
+version: '3.8'
+
+# ULTRATHINK Paper Trading Docker Environment
+# Team: Full 8-Agent Collaboration
+# Duration: 60-90 day validation period
+
+services:
+  # PostgreSQL for paper trading data
+  postgres-paper:
+    image: timescale/timescaledb:latest-pg15
+    container_name: bot4-paper-postgres
+    environment:
+      POSTGRES_DB: paper_trading
+      POSTGRES_USER: paper_user
+      POSTGRES_PASSWORD: paper_pass
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    volumes:
+      - paper_postgres_data:/var/lib/postgresql/data
+      - ./sql/paper_trading_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paper_user -d paper_trading"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - paper_network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # Redis for real-time paper trading state
+  redis-paper:
+    image: redis:7-alpine
+    container_name: bot4-paper-redis
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    volumes:
+      - paper_redis_data:/data
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - paper_network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # Prometheus for metrics
+  prometheus-paper:
+    image: prom/prometheus:latest
+    container_name: bot4-paper-prometheus
+    volumes:
+      - ./configs/prometheus-paper.yml:/etc/prometheus/prometheus.yml
+      - paper_prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=90d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9091:9090"
+    networks:
+      - paper_network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # Grafana for visualization
+  grafana-paper:
+    image: grafana/grafana:latest
+    container_name: bot4-paper-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: bot4paper
+      GF_INSTALL_PLUGINS: grafana-piechart-panel,redis-datasource
+    volumes:
+      - paper_grafana_data:/var/lib/grafana
+      - ./configs/grafana-dashboards:/etc/grafana/provisioning/dashboards
+      - ./configs/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus-paper
+      - postgres-paper
+    networks:
+      - paper_network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # Paper Trading Engine (when compilation is fixed)
+  # paper-engine:
+  #   build:
+  #     context: ./rust_core
+  #     dockerfile: Dockerfile.paper
+  #   container_name: bot4-paper-engine
+  #   environment:
+  #     RUST_LOG: info
+  #     DATABASE_URL: postgresql://paper_user:paper_pass@postgres-paper:5432/paper_trading
+  #     REDIS_URL: redis://redis-paper:6379
+  #   volumes:
+  #     - ./configs/paper_trading.yaml:/app/config.yaml
+  #     - ./logs/paper:/app/logs
+  #   depends_on:
+  #     postgres-paper:
+  #       condition: service_healthy
+  #     redis-paper:
+  #       condition: service_healthy
+  #   networks:
+  #     - paper_network
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 4G
+  #       reservations:
+  #         memory: 2G
+
+  # Python Paper Trading Simulator (temporary)
+  paper-simulator:
+    image: python:3.11-slim
+    container_name: bot4-paper-simulator
+    working_dir: /app
+    command: python simulator.py
+    environment:
+      CONFIG_PATH: /app/configs/paper_trading.yaml
+      DATABASE_URL: postgresql://paper_user:paper_pass@postgres-paper:5432/paper_trading
+      REDIS_URL: redis://redis-paper:6379
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./scripts/paper_trading_simulator.py:/app/simulator.py
+      - ./configs/paper_trading.yaml:/app/configs/paper_trading.yaml
+      - ./logs/paper:/app/logs
+    depends_on:
+      postgres-paper:
+        condition: service_healthy
+      redis-paper:
+        condition: service_healthy
+    networks:
+      - paper_network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    restart: unless-stopped
+
+  # Market Data Collector
+  market-data-collector:
+    image: python:3.11-slim
+    container_name: bot4-market-data
+    working_dir: /app
+    command: python collector.py
+    environment:
+      EXCHANGES: "binance,coinbase,kraken,okx,bybit"
+      REDIS_URL: redis://redis-paper:6379
+      DATABASE_URL: postgresql://paper_user:paper_pass@postgres-paper:5432/paper_trading
+    volumes:
+      - ./scripts/market_data_collector.py:/app/collector.py
+      - ./configs/paper_trading.yaml:/app/configs/paper_trading.yaml
+    depends_on:
+      - redis-paper
+      - postgres-paper
+    networks:
+      - paper_network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    restart: unless-stopped
+
+networks:
+  paper_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+volumes:
+  paper_postgres_data:
+    driver: local
+  paper_redis_data:
+    driver: local
+  paper_prometheus_data:
+    driver: local
+  paper_grafana_data:
+    driver: local
